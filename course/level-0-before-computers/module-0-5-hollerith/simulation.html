@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 0.5 — Hollerith Tabulator Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+  --bg-primary:#090A0F;--bg-secondary:#12141C;--bg-tertiary:#1A1D27;
+  --bg-glass:rgba(18,20,28,0.75);
+  --text-primary:#F3F4F6;--text-secondary:#9CA3AF;--text-muted:#4B5563;
+  --accent-primary:#6366F1;--accent-hover:#4F46E5;--accent-glow:rgba(99,102,241,0.15);
+  --color-success:#10B981;--color-warning:#F59E0B;--color-danger:#EF4444;
+  --color-code-bg:#0D0E15;
+  --border-subtle:rgba(255,255,255,0.08);--border-active:rgba(99,102,241,0.4);
+  --radius-sm:6px;--radius-md:10px;--radius-lg:16px;
+  --shadow-soft:0 10px 30px -10px rgba(0,0,0,0.5);
+  --shadow-glow:0 0 20px rgba(99,102,241,0.2);
+  --transition-fast:150ms cubic-bezier(0.16,1,0.3,1);
+  --transition-smooth:300ms cubic-bezier(0.16,1,0.3,1);
+  --transition-bounce:400ms cubic-bezier(0.34,1.56,0.64,1);
+}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;padding:20px}
+  h1{color:var(--accent-primary);font-size:1.4rem;margin-bottom:4px}
+  .subtitle{color:var(--text-muted);font-size:.9rem;margin-bottom:20px}
+  .tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+  .tab{padding:8px 16px;border-radius:6px;cursor:pointer;background:var(--bg-secondary);border:2px solid var(--border-subtle);color:var(--text-muted);font-size:.85rem;transition:all .2s}
+  .tab.active{background:var(--bg-tertiary);border-color:var(--accent-primary);color:var(--accent-primary)}
+  .panel{display:none}.panel.active{display:block}
+  .intro-box{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-left:4px solid var(--color-warning);padding:14px 18px;border-radius:8px;margin-bottom:18px;font-size:.88rem;line-height:1.6;color:var(--text-muted)}
+  .intro-box strong{color:var(--color-warning)}
+  .btn{padding:8px 18px;border-radius:7px;border:none;cursor:pointer;font-size:.85rem;font-weight:600;transition:all .2s}
+  .btn-primary{background:var(--accent-primary);color:var(--bg-primary)}
+  .btn-secondary{background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-subtle)}
+  .btn-secondary:hover{border-color:var(--accent-primary);color:var(--accent-primary)}
+  .btn-success{background:var(--color-success);color:var(--bg-primary)}
+  .btn-danger{background:var(--color-danger);color:white}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  select,input[type="number"],input[type="text"]{background:var(--bg-tertiary);border:1px solid var(--border-subtle);color:var(--text-primary);border-radius:6px;padding:6px 10px;font-size:.88rem}
+  select:focus,input:focus{outline:none;border-color:var(--accent-primary)}
+  label{font-size:.8rem;color:var(--text-muted);display:block;margin-bottom:3px}
+
+  /* ===== PUNCH CARD VISUAL ===== */
+  .pcard{
+    background:var(--ivory);border:2px solid #c8b560;border-radius:6px;
+    padding:10px 8px 8px;display:inline-block;font-family:monospace;
+    position:relative;min-width:320px;
+  }
+  .pcard-corner{
+    position:absolute;top:0;left:0;width:18px;height:18px;
+    background:#c8b560;clip-path:polygon(0 0,100% 0,0 100%);
+  }
+  .pcard-label{font-size:.68rem;color:#5a4a20;text-align:center;margin-bottom:6px;letter-spacing:2px}
+  .pcard-cols{display:flex;gap:2px;justify-content:center}
+  .pcard-col{display:flex;flex-direction:column;gap:1px;align-items:center}
+  .pcard-col-num{font-size:.5rem;color:#8a7a50;margin-bottom:2px}
+  .pcard-hole{
+    width:10px;height:10px;border-radius:2px;
+    background:#d4c88a;border:1px solid #b8a860;
+    transition:all .2s;
+  }
+  .pcard-hole.punched{background:#1a0a00;border-color:#0a0500;box-shadow:inset 0 0 3px rgba(0,0,0,.8)}
+  .pcard-row-label{font-size:.52rem;color:#8a7a50;width:12px;text-align:right;margin-right:2px}
+  .pcard-row{display:flex;align-items:center;gap:2px}
+
+  /* ===== CARD PUNCHER ===== */
+  .puncher-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:800px){.puncher-layout{grid-template-columns:1fr}}
+  .form-panel{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:10px;padding:16px}
+  .form-panel h3{color:var(--accent-primary);font-size:.95rem;margin-bottom:14px}
+  .form-field{margin-bottom:12px}
+  .deck-display{display:flex;flex-direction:column;gap:10px;margin-top:10px;max-height:400px;overflow-y:auto}
+  .deck-card-wrap{background:var(--bg-tertiary);border:1px solid var(--border-subtle);border-radius:8px;padding:10px}
+  .deck-card-name{font-size:.82rem;color:var(--accent-primary);margin-bottom:6px;font-weight:600}
+
+  /* ===== TABULATOR ===== */
+  .tab-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:800px){.tab-layout{grid-template-columns:1fr}}
+  .tabulator-vis{background:#0a0f1e;border:2px solid var(--wood);border-radius:12px;padding:16px;text-align:center}
+  .tabulator-vis h3{color:var(--color-warning);font-size:.9rem;margin-bottom:12px}
+  .pin-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-bottom:12px;max-width:320px;margin:0 auto 12px}
+  .pin{width:22px;height:22px;border-radius:50%;background:var(--bg-tertiary);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;font-size:.55rem;color:var(--text-muted);transition:all .2s}
+  .pin.active{background:var(--accent-primary);border-color:var(--accent-primary);color:var(--bg-primary);box-shadow:0 0 8px var(--accent-primary)}
+  .mercury-cups{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+  .mercury-cup{width:30px;height:18px;border-radius:3px;background:#1a2a1a;border:1px solid #2a4a2a;font-size:.55rem;display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:all .2s}
+  .mercury-cup.active{background:rgba(78,204,163,.3);border-color:var(--color-success);color:var(--color-success)}
+  .counters-panel{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:10px;padding:16px}
+  .counters-panel h3{color:var(--color-success);font-size:.9rem;margin-bottom:12px}
+  .counter-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border-subtle);font-size:.85rem}
+  .counter-row:last-child{border:none}
+  .counter-label{color:var(--text-muted)}
+  .counter-val{font-family:monospace;font-size:1.1rem;font-weight:700;color:var(--accent-primary);min-width:40px;text-align:right;transition:all .2s}
+  .counter-val.tick{color:var(--color-warning)}
+  .counter-bar{height:8px;background:var(--accent-primary);border-radius:4px;transition:width .3s}
+  .counter-bar-bg{flex:1;background:var(--bg-tertiary);border-radius:4px;margin:0 10px;height:8px}
+  .card-slot{
+    width:120px;height:70px;background:#1a1a0a;border:2px dashed var(--border-subtle);
+    border-radius:6px;display:flex;align-items:center;justify-content:center;
+    margin:0 auto 12px;font-size:.75rem;color:var(--text-muted);transition:all .3s;
+  }
+  .card-slot.loaded{border-color:var(--color-warning);background:#2a2a0a}
+  .card-slot.reading{border-color:var(--accent-primary);background:#0a1a2a;animation:pulse .5s infinite alternate}
+  @keyframes pulse{0%{opacity:.7}100%{opacity:1}}
+  .processed-count{font-size:.8rem;color:var(--text-muted);text-align:center;margin-top:8px}
+
+  /* ===== SORTER ===== */
+  .sorter-layout{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+  @media(max-width:800px){.sorter-layout{grid-template-columns:1fr}}
+  .bins-row{display:flex;gap:8px;flex-wrap:wrap}
+  .bin{
+    flex:1;min-width:80px;background:var(--bg-tertiary);border:2px solid var(--border-subtle);
+    border-radius:8px;padding:8px;text-align:center;min-height:120px;
+    display:flex;flex-direction:column;gap:4px;transition:all .2s;
+  }
+  .bin.active-bin{border-color:var(--accent-primary);background:rgba(83,216,251,.08)}
+  .bin-label{font-size:.75rem;color:var(--accent-primary);font-weight:600;margin-bottom:4px}
+  .bin-card{
+    background:var(--ivory);border-radius:3px;padding:3px 6px;
+    font-size:.65rem;color:#1a0a00;font-weight:600;
+    animation:drop .3s ease-out;
+  }
+  @keyframes drop{0%{transform:translateY(-20px);opacity:0}100%{transform:translateY(0);opacity:1}}
+  .sort-controls{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:10px;padding:14px}
+  .sort-controls h3{color:var(--color-warning);font-size:.9rem;margin-bottom:12px}
+  .sort-key-btns{display:flex;flex-direction:column;gap:6px}
+  .sort-key-btn{padding:7px 12px;border-radius:6px;border:1px solid var(--border-subtle);background:var(--bg-tertiary);color:var(--text-muted);font-size:.82rem;cursor:pointer;transition:all .15s;text-align:left}
+  .sort-key-btn:hover,.sort-key-btn.active{border-color:var(--color-warning);color:var(--color-warning);background:rgba(249,202,36,.08)}
+  .sort-log{background:#0a0f1e;border:1px solid #1a2a4a;border-radius:8px;padding:10px;height:120px;overflow-y:auto;font-family:monospace;font-size:.75rem;color:var(--color-success);margin-top:10px}
+
+  /* ===== MYSTERY DECK ===== */
+  .mystery-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:800px){.mystery-grid{grid-template-columns:1fr}}
+  .mystery-counters{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:10px;padding:14px}
+  .mystery-counters h3{color:var(--accent-primary);font-size:.9rem;margin-bottom:10px}
+  .mystery-log{background:#0a0a1a;border:1px solid var(--border-subtle);border-radius:8px;padding:10px;height:180px;overflow-y:auto;font-family:monospace;font-size:.75rem;color:var(--accent-primary)}
+</style>
+</head>
+<body>
+
+<h1>🗃️ Module 0.5 — Hollerith Tabulating System (1890)</h1>
+<p class="subtitle">Punch cards. Mercury cups. Counters. The birth of data processing.</p>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('puncher')">📋 Card Puncher</div>
+  <div class="tab" onclick="switchTab('tabulator')">⚡ Tabulator</div>
+  <div class="tab" onclick="switchTab('sorter')">📂 Sorter</div>
+  <div class="tab" onclick="switchTab('mystery')">🔍 Mystery Deck</div>
+</div>
+
+<!-- =============================== PUNCHER ================================ -->
+<div id="panel-puncher" class="panel active">
+  <div class="intro-box">
+    <strong>The Pantograph Punch</strong> — enter census data for one person; watch it become holes in a card.
+    Each zone on the card encodes one attribute. Position = meaning. Hole = 1. No hole = 0.
+    Cards you punch here are automatically loaded into the Tabulator and Sorter.
+  </div>
+  <div class="puncher-layout">
+    <div class="form-panel">
+      <h3>📝 Census Form — Enter Respondent Data</h3>
+      <div class="form-field">
+        <label>Name</label>
+        <input type="text" id="inp-name" value="John Hayes" style="width:100%">
+      </div>
+      <div class="form-field">
+        <label>Age (1–99)</label>
+        <input type="number" id="inp-age" value="34" min="1" max="99" style="width:100px">
+      </div>
+      <div class="form-field">
+        <label>Occupation</label>
+        <select id="inp-occ" style="width:100%">
+          <option>Farmer</option><option>Laborer</option><option>Merchant</option>
+          <option>Teacher</option><option>Seamstress</option><option>Blacksmith</option>
+          <option>Miner</option><option>Laundress</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Birthplace</label>
+        <select id="inp-birth" style="width:100%">
+          <option>New York</option><option>Virginia</option><option>Ohio</option>
+          <option>Georgia</option><option>Massachusetts</option><option>Tennessee</option>
+          <option>Ireland</option><option>Germany</option><option>China</option>
+          <option>Italy</option><option>Poland</option><option>Russia</option>
+          <option>Mexico</option><option>Sweden</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Family Size (1–12)</label>
+        <input type="number" id="inp-family" value="5" min="1" max="12" style="width:100px">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-success" onclick="punchCard()">⚫ Punch Card</button>
+        <button class="btn btn-secondary" onclick="clearDeck()">🗑 Clear Deck</button>
+      </div>
+      <div style="margin-top:12px;font-size:.8rem;color:var(--text-muted)">
+        Cards in deck: <span id="deck-count" style="color:var(--accent-primary);font-weight:700">0</span>
+      </div>
+    </div>
+    <div class="form-panel" style="overflow:auto">
+      <h3>🃏 Punched Card Preview</h3>
+      <div id="card-preview" style="display:flex;justify-content:center;margin-bottom:14px"></div>
+      <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:8px">Card encoding:</div>
+      <div id="encoding-legend" style="font-size:.75rem;color:var(--text-muted);line-height:1.8;font-family:'JetBrains Mono',monospace"></div>
+    </div>
+  </div>
+  <div style="margin-top:16px">
+    <h3 style="color:var(--accent-primary);font-size:.9rem;margin-bottom:10px">📦 Deck (all punched cards)</h3>
+    <div class="deck-display" id="deck-display"><div style="color:var(--text-muted);font-size:.82rem">No cards yet — punch some above.</div></div>
+  </div>
+</div>
+
+<!-- =============================== TABULATOR ================================ -->
+<div id="panel-tabulator" class="panel">
+  <div class="intro-box">
+    <strong>The Tabulator</strong> — press each card into the reader. Pins drop through holes, close circuits
+    via mercury cups, and counters increment. No human counts — the electricity counts.
+  </div>
+  <div class="tab-layout">
+    <div class="tabulator-vis">
+      <h3>⚡ Pin Press & Mercury Cups</h3>
+      <div class="card-slot" id="tab-slot">[ empty — load a card ]</div>
+      <div style="font-size:.72rem;color:var(--text-muted);margin-bottom:8px">Pin grid (12 positions per column shown):</div>
+      <div class="pin-grid" id="pin-grid"></div>
+      <div style="font-size:.72rem;color:var(--text-muted);margin-bottom:6px">Mercury cups (circuit closed = green):</div>
+      <div class="mercury-cups" id="mercury-cups"></div>
+      <div class="processed-count">Cards processed: <span id="tab-processed" style="color:var(--accent-primary);font-weight:700">0</span> / <span id="tab-total">0</span></div>
+    </div>
+    <div class="counters-panel">
+      <h3>🔢 Mechanical Counters</h3>
+      <div id="counters-list"></div>
+      <div class="btn-row" style="margin-top:14px;justify-content:center">
+        <button class="btn btn-success" id="tab-run-btn" onclick="runTabulator()">▶ Process All Cards</button>
+        <button class="btn btn-primary" id="tab-step-btn" onclick="stepTabulator()">▶| One Card</button>
+        <button class="btn btn-secondary" onclick="resetTabulator()">↺ Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================== SORTER ================================ -->
+<div id="panel-sorter" class="panel">
+  <div class="intro-box">
+    <strong>The Card Sorter</strong> — choose a sort key; the machine reads each card and drops it
+    into the correct bin. No human reads the cards. The holes decide the destination.
+  </div>
+  <div class="sorter-layout">
+    <div>
+      <div style="margin-bottom:10px;font-size:.82rem;color:var(--text-muted)">
+        Cards in deck: <span id="sort-deck-count" style="color:var(--accent-primary);font-weight:700">0</span>
+      </div>
+      <div class="bins-row" id="bins-row"></div>
+      <div class="sort-log" id="sort-log"><div>[ Sorter ready ]</div></div>
+    </div>
+    <div class="sort-controls">
+      <h3>Sort Key</h3>
+      <div class="sort-key-btns">
+        <button class="sort-key-btn" onclick="setSortKey('occupation')">📋 Occupation</button>
+        <button class="sort-key-btn" onclick="setSortKey('ageGroup')">🎂 Age Group</button>
+        <button class="sort-key-btn" onclick="setSortKey('birthplace')">🌍 Birthplace</button>
+        <button class="sort-key-btn" onclick="setSortKey('familySize')">👨‍👩‍👧 Family Size</button>
+      </div>
+      <div style="margin-top:12px;font-size:.78rem;color:var(--text-muted)">
+        Active key: <span id="active-key" style="color:var(--color-warning)">occupation</span>
+      </div>
+      <div class="btn-row" style="margin-top:12px;flex-direction:column;align-items:stretch">
+        <button class="btn btn-success" onclick="runSorter()">▶ Sort Deck</button>
+        <button class="btn btn-secondary" onclick="resetSorter()" style="margin-top:6px">↺ Reset Bins</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =============================== MYSTERY ================================ -->
+<div id="panel-mystery" class="panel">
+  <div class="intro-box">
+    <strong>Mystery Deck</strong> — 8 pre-punched cards from an unknown population.
+    Run them through the tabulator, then try to identify who these people are.
+  </div>
+  <div class="mystery-grid">
+    <div>
+      <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:10px">
+        Cards: <span style="color:var(--accent-primary);font-weight:700">8</span>  &nbsp;|&nbsp;  
+        Processed: <span id="mystery-processed" style="color:var(--color-success);font-weight:700">0</span>
+      </div>
+      <div id="mystery-card-display" style="display:flex;justify-content:center;margin-bottom:12px"></div>
+      <div class="btn-row">
+        <button class="btn btn-success" onclick="runMystery()">▶ Process Mystery Deck</button>
+        <button class="btn btn-secondary" onclick="resetMystery()">↺ Reset</button>
+        <button class="btn btn-primary" onclick="revealMystery()" id="reveal-btn" style="display:none">🔍 Reveal Identities</button>
+      </div>
+    </div>
+    <div class="mystery-counters">
+      <h3>Mystery Tallies</h3>
+      <div id="mystery-tallies"></div>
+      <div class="mystery-log" id="mystery-log"><div>[ Load mystery deck and press Process ]</div></div>
+    </div>
+  </div>
+  <div id="mystery-reveal" style="display:none;margin-top:16px;background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:10px;padding:16px"></div>
+</div>
+
+<script>
+// ========== DATA SCHEMA ==========
+const OCCUPATIONS = ['Farmer','Laborer','Merchant','Teacher','Seamstress','Blacksmith','Miner','Laundress'];
+const BIRTHPLACES_US = ['New York','Virginia','Ohio','Georgia','Massachusetts','Tennessee'];
+const BIRTHPLACES_FOREIGN = ['Ireland','Germany','China','Italy','Poland','Russia','Mexico','Sweden'];
+const BIRTHPLACES = [...BIRTHPLACES_US, ...BIRTHPLACES_FOREIGN];
+
+// Card layout: 12 rows × 20 cols (simplified from 12×80)
+// Row encoding: rows 0-9 = digits, rows 10-11 = zone punches
+// Field zones: cols 0-1=age-tens, cols 2-3=age-units, cols 4-6=occupation(0-7),
+//              cols 7-11=birthplace(0-13), cols 12-13=family, cols 14-19=name hash
+const ROWS = 12; const COLS = 20;
+
+function encodeCard(person) {
+  // Returns 2D array [row][col] = 0|1
+  const grid = Array.from({length:ROWS}, () => new Array(COLS).fill(0));
+  const {age, occupation, birthplace, familySize} = person;
+  // Age: BCD in cols 0-1 (tens) and 2-3 (units)
+  const ageTens = Math.floor(age/10);
+  const ageUnits = age % 10;
+  if(ageTens > 0) grid[ageTens][0] = 1;
+  if(ageTens > 0) grid[ageTens][1] = 1;
+  grid[ageUnits][2] = 1; grid[ageUnits][3] = 1;
+  // Occupation: binary in cols 4-6 (3 bits = 8 values)
+  const occIdx = OCCUPATIONS.indexOf(occupation);
+  if(occIdx >= 0){ ['4','5','6'].forEach((c,b)=>{ if(occIdx & (4>>b)) grid[1+b][parseInt(c)]=1; }); }
+  // Birthplace: binary in cols 7-11 (4 bits = 16 values)
+  const bpIdx = BIRTHPLACES.indexOf(birthplace);
+  if(bpIdx >= 0){ for(let b=0;b<4;b++){ if(bpIdx & (8>>b)) grid[1+b][7+b]=1; } }
+  // Family size: cols 12-13
+  const fam = Math.min(familySize, 9);
+  grid[fam][12]=1; grid[fam][13]=1;
+  return grid;
+}
+
+function ageGroup(age){
+  if(age<30) return 'Under 30';
+  if(age<50) return '30–49';
+  return '50+';
+}
+
+// ========== DECK STATE ==========
+let deck = [];
+let tabPos = 0;
+let tabRunning = false;
+let tabCounters = {};
+let sortKey = 'occupation';
+let mysteryProcessed = 0;
+let mysteryCounters = {};
+
+const MYSTERY_DECK = [
+  {name:'Worker A', age:19, occupation:'Laborer', birthplace:'Italy', familySize:3},
+  {name:'Worker B', age:23, occupation:'Miner', birthplace:'Ireland', familySize:5},
+  {name:'Worker C', age:31, occupation:'Laborer', birthplace:'Poland', familySize:6},
+  {name:'Worker D', age:27, occupation:'Blacksmith', birthplace:'Germany', familySize:4},
+  {name:'Worker E', age:18, occupation:'Laborer', birthplace:'Italy', familySize:2},
+  {name:'Worker F', age:35, occupation:'Miner', birthplace:'Ireland', familySize:7},
+  {name:'Worker G', age:29, occupation:'Laborer', birthplace:'Russia', familySize:3},
+  {name:'Worker H', age:22, occupation:'Blacksmith', birthplace:'Poland', familySize:2},
+];
+
+// ========== RENDER CARD ==========
+function renderPCard(container, person, small=false) {
+  const grid = encodeCard(person);
+  const scale = small ? 0.7 : 1;
+  let html = `<div class="pcard" style="transform:scale(${scale});transform-origin:top left">
+    <div class="pcard-corner"></div>
+    <div class="pcard-label">HOLLERITH TABULATING CARD</div>`;
+  // Row labels
+  const rowLabels = ['0','1','2','3','4','5','6','7','8','9','11','12'];
+  // Col labels
+  html += '<div style="display:flex;align-items:flex-start;gap:2px"><div style="width:14px"></div><div style="display:flex;gap:2px">';
+  for(let c=0;c<COLS;c++) html += `<div class="pcard-col-num">${c+1}</div>`;
+  html += '</div></div>';
+  for(let r=0;r<ROWS;r++){
+    html += `<div class="pcard-row"><div class="pcard-row-label">${rowLabels[r]}</div>`;
+    for(let c=0;c<COLS;c++){
+      html += `<div class="pcard-hole${grid[r][c]?' punched':''}"></div>`;
+    }
+    html += '</div>';
+  }
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ========== PUNCH CARD ==========
+function punchCard() {
+  const person = {
+    name: document.getElementById('inp-name').value || 'Unknown',
+    age: parseInt(document.getElementById('inp-age').value)||1,
+    occupation: document.getElementById('inp-occ').value,
+    birthplace: document.getElementById('inp-birth').value,
+    familySize: parseInt(document.getElementById('inp-family').value)||1,
+  };
+  deck.push(person);
+  updateDeckDisplay();
+  updatePCardPreview(person);
+  updateEncodingLegend(person);
+  document.getElementById('deck-count').textContent = deck.length;
+  syncTabulator();
+  syncSorter();
+}
+
+function updatePCardPreview(person) {
+  renderPCard(document.getElementById('card-preview'), person);
+}
+
+function updateEncodingLegend(person) {
+  const grid = encodeCard(person);
+  const el = document.getElementById('encoding-legend');
+  const ageStr = grid.map((row,r)=>row[2]===1?['0','1','2','3','4','5','6','7','8','9','11','12'][r]:null).filter(Boolean).join(',');
+  const occIdx = OCCUPATIONS.indexOf(person.occupation);
+  const bpIdx = BIRTHPLACES.indexOf(person.birthplace);
+  el.innerHTML = `
+    <div>Age ${person.age} → tens col 0-1 row ${Math.floor(person.age/10)}, units col 2-3 row ${person.age%10}</div>
+    <div>Occupation "${person.occupation}" → index ${occIdx} → cols 4-6 binary ${occIdx.toString(2).padStart(3,'0')}</div>
+    <div>Birthplace "${person.birthplace}" → index ${bpIdx} → cols 7-10 binary ${bpIdx.toString(2).padStart(4,'0')}</div>
+    <div>Family ${person.familySize} → col 12-13 row ${person.familySize}</div>`;
+}
+
+function updateDeckDisplay() {
+  const el = document.getElementById('deck-display');
+  if(deck.length===0){ el.innerHTML='<div style="color:var(--text-muted);font-size:.82rem">No cards yet.</div>'; return; }
+  el.innerHTML='';
+  deck.forEach((p,i)=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'deck-card-wrap';
+    wrap.innerHTML=`<div class="deck-card-name">Card ${i+1}: ${p.name}</div>`;
+    const mini = document.createElement('div');
+    mini.style.cssText='transform:scale(0.55);transform-origin:top left;height:75px;overflow:hidden';
+    renderPCard(mini, p);
+    wrap.appendChild(mini);
+    wrap.innerHTML += `<div style="font-size:.75rem;color:var(--text-muted);margin-top:6px">Age:${p.age} | ${p.occupation} | ${p.birthplace} | Family:${p.familySize}</div>`;
+    el.appendChild(wrap);
+  });
+}
+
+function clearDeck(){
+  deck=[];
+  updateDeckDisplay();
+  document.getElementById('deck-count').textContent=0;
+  document.getElementById('card-preview').innerHTML='';
+  document.getElementById('encoding-legend').innerHTML='';
+  syncTabulator(); syncSorter();
+}
+
+// ========== TABULATOR ==========
+function syncTabulator(){
+  tabPos=0; tabCounters={};
+  initTabCounters();
+  document.getElementById('tab-processed').textContent=0;
+  document.getElementById('tab-total').textContent=deck.length;
+  document.getElementById('tab-slot').textContent='[ empty — '+deck.length+' cards ready ]';
+  document.getElementById('tab-slot').className='card-slot';
+  initPinGrid(); initMercuryCups();
+  renderCounters();
+}
+
+function initTabCounters(){
+  tabCounters={
+    'Total':0,
+    'Farmer':0,'Laborer':0,'Merchant':0,'Teacher':0,'Seamstress':0,'Blacksmith':0,'Miner':0,'Laundress':0,
+    'US-Born':0,'Foreign-Born':0,
+    'Age <30':0,'Age 30-49':0,'Age 50+':0
+  };
+}
+
+function initPinGrid(){
+  const el=document.getElementById('pin-grid');
+  el.innerHTML='';
+  for(let i=0;i<12;i++){
+    const p=document.createElement('div');
+    p.className='pin';p.id='pin-'+i;
+    p.textContent=i<10?i:(i===10?'11':'12');
+    el.appendChild(p);
+  }
+}
+
+function initMercuryCups(){
+  const el=document.getElementById('mercury-cups');
+  el.innerHTML='';
+  for(let i=0;i<COLS;i++){
+    const c=document.createElement('div');
+    c.className='mercury-cup';c.id='cup-'+i;
+    c.textContent=i+1;
+    el.appendChild(c);
+  }
+}
+
+function renderCounters(){
+  const el=document.getElementById('counters-list');
+  const total=Math.max(1,tabCounters['Total']||1);
+  el.innerHTML='';
+  Object.entries(tabCounters).forEach(([k,v])=>{
+    const row=document.createElement('div');
+    row.className='counter-row';
+    const pct=Math.round(v/total*100);
+    row.innerHTML=`
+      <span class="counter-label">${k}</span>
+      <div class="counter-bar-bg"><div class="counter-bar" style="width:${k==='Total'?100:pct}%"></div></div>
+      <span class="counter-val" id="cnt-${k.replace(/\s/g,'_')}">${v}</span>`;
+    el.appendChild(row);
+  });
+}
+
+function animatePins(person){
+  const grid=encodeCard(person);
+  // Fire pins for each row that has any hole
+  for(let r=0;r<ROWS;r++){
+    const hasHole=grid[r].some(v=>v===1);
+    const pin=document.getElementById('pin-'+r);
+    if(pin) pin.classList.toggle('active',hasHole);
+  }
+  // Fire mercury cups for each col that has a hole in any row
+  for(let c=0;c<COLS;c++){
+    const hasHole=grid.some(row=>row[c]===1);
+    const cup=document.getElementById('cup-'+c);
+    if(cup) cup.classList.toggle('active',hasHole);
+  }
+}
+
+function clearPins(){
+  for(let r=0;r<ROWS;r++){const p=document.getElementById('pin-'+r);if(p)p.classList.remove('active');}
+  for(let c=0;c<COLS;c++){const c_=document.getElementById('cup-'+c);if(c_)c_.classList.remove('active');}
+}
+
+function tabulatePerson(person){
+  tabCounters['Total']++;
+  tabCounters[person.occupation]=(tabCounters[person.occupation]||0)+1;
+  const ag=ageGroup(person.age);
+  if(ag==='Under 30') tabCounters['Age <30']++;
+  else if(ag==='30–49') tabCounters['Age 30-49']++;
+  else tabCounters['Age 50+']++;
+  if(BIRTHPLACES_FOREIGN.includes(person.birthplace)) tabCounters['Foreign-Born']++;
+  else tabCounters['US-Born']++;
+}
+
+async function stepTabulator(){
+  if(tabRunning||tabPos>=deck.length) return;
+  if(deck.length===0){alert('Punch some cards first!');return;}
+  const person=deck[tabPos];
+  const slot=document.getElementById('tab-slot');
+  slot.className='card-slot reading';
+  slot.textContent=`Reading: ${person.name}`;
+  animatePins(person);
+  await new Promise(r=>setTimeout(r,600));
+  tabulatePerson(person);
+  tabPos++;
+  document.getElementById('tab-processed').textContent=tabPos;
+  clearPins();
+  slot.className='card-slot loaded';
+  slot.textContent=`✓ ${person.name}`;
+  renderCounters();
+  // Flash updated counters
+  [person.occupation, ageGroup(person.age)<'5'?'Age <30':'Age 30+','Total'].forEach(k=>{
+    const el=document.getElementById('cnt-'+k.replace(/\s/g,'_'));
+    if(el){el.classList.add('tick');setTimeout(()=>el.classList.remove('tick'),500);}
+  });
+}
+
+async function runTabulator(){
+  if(tabRunning||deck.length===0){if(!deck.length)alert('Punch some cards first!');return;}
+  tabRunning=true;
+  document.getElementById('tab-run-btn').disabled=true;
+  while(tabPos<deck.length&&tabRunning){
+    await stepTabulator();
+    await new Promise(r=>setTimeout(r,400));
+  }
+  tabRunning=false;
+  document.getElementById('tab-run-btn').disabled=false;
+}
+
+function resetTabulator(){
+  tabRunning=false; tabPos=0;
+  initTabCounters(); renderCounters();
+  clearPins();
+  document.getElementById('tab-processed').textContent=0;
+  document.getElementById('tab-slot').className='card-slot';
+  document.getElementById('tab-slot').textContent='[ reset — '+deck.length+' cards ready ]';
+}
+
+// ========== SORTER ==========
+function setSortKey(key){
+  sortKey=key;
+  document.querySelectorAll('.sort-key-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('active-key').textContent=key;
+  resetSorter();
+}
+
+function getBins(){
+  switch(sortKey){
+    case 'occupation': return OCCUPATIONS;
+    case 'ageGroup': return ['Under 30','30–49','50+'];
+    case 'birthplace': return [...BIRTHPLACES_US.slice(0,3), ...BIRTHPLACES_FOREIGN.slice(0,4),'Other'];
+    case 'familySize': return ['1–2','3–5','6+'];
+    default: return [];
+  }
+}
+
+function getSortBin(person){
+  switch(sortKey){
+    case 'occupation': return person.occupation;
+    case 'ageGroup': return ageGroup(person.age);
+    case 'birthplace':
+      const bins=getBins();
+      return bins.includes(person.birthplace)?person.birthplace:'Other';
+    case 'familySize':
+      if(person.familySize<=2) return '1–2';
+      if(person.familySize<=5) return '3–5';
+      return '6+';
+    default: return 'Other';
+  }
+}
+
+function syncSorter(){
+  document.getElementById('sort-deck-count').textContent=deck.length;
+  resetSorter();
+}
+
+function renderBins(data={}){
+  const row=document.getElementById('bins-row');
+  row.innerHTML='';
+  getBins().forEach(b=>{
+    const bin=document.createElement('div');
+    bin.className='bin';bin.id='bin-'+b.replace(/[\s–+]/g,'_');
+    const cards=(data[b]||[]);
+    bin.innerHTML=`<div class="bin-label">${b}</div>${cards.map(p=>`<div class="bin-card">${p.name.split(' ')[0]}</div>`).join('')}
+      <div style="font-size:.65rem;color:var(--text-muted);margin-top:auto">${cards.length} card${cards.length!==1?'s':''}</div>`;
+    row.appendChild(bin);
+  });
+}
+
+function resetSorter(){renderBins();}
+
+async function runSorter(){
+  if(deck.length===0){alert('Punch some cards first!');return;}
+  const log=document.getElementById('sort-log');
+  log.innerHTML='';
+  const bins={};
+  getBins().forEach(b=>bins[b]=[]);
+  renderBins(bins);
+  for(const person of deck){
+    const bin=getSortBin(person);
+    if(!bins[bin]) bins[bin]=[];
+    bins[bin].push(person);
+    // Highlight target bin
+    const binEl=document.getElementById('bin-'+bin.replace(/[\s–+]/g,'_'));
+    if(binEl){binEl.classList.add('active-bin');setTimeout(()=>binEl&&binEl.classList.remove('active-bin'),400);}
+    renderBins(bins);
+    log.innerHTML+=`<div>> ${person.name} → ${bin}</div>`;
+    log.scrollTop=log.scrollHeight;
+    await new Promise(r=>setTimeout(r,300));
+  }
+  log.innerHTML+=`<div style="color:var(--color-warning)">Sort complete — ${deck.length} cards sorted by ${sortKey}</div>`;
+}
+
+// ========== MYSTERY DECK ==========
+let mysteryPos=0; let mysteryRunning=false;
+const mysteryCounterFields={
+  'Total':0,'Laborer':0,'Miner':0,'Blacksmith':0,
+  'Foreign-Born':0,'Age <30':0,'Age 30-49':0,'Avg Age':0
+};
+
+function initMysteryCounters(){
+  mysteryCounters={...mysteryCounterFields,count:0,ageSum:0};
+  renderMysteryTallies();
+}
+
+function renderMysteryTallies(){
+  const el=document.getElementById('mystery-tallies');
+  el.innerHTML='';
+  const display=[
+    ['Total Cards',mysteryCounters['Total']],
+    ['Laborers',mysteryCounters['Laborer']],
+    ['Miners',mysteryCounters['Miner']],
+    ['Blacksmiths',mysteryCounters['Blacksmith']],
+    ['Foreign-Born',mysteryCounters['Foreign-Born']],
+    ['Age Under 30',mysteryCounters['Age <30']],
+    ['Age 30-49',mysteryCounters['Age 30-49']],
+    ['Avg Age',mysteryCounters['count']>0?Math.round(mysteryCounters['ageSum']/mysteryCounters['count']):'—'],
+  ];
+  display.forEach(([k,v])=>{
+    const row=document.createElement('div');
+    row.className='counter-row';
+    row.innerHTML=`<span class="counter-label">${k}</span><span style="font-family:monospace;font-weight:700;color:var(--accent-primary)">${v}</span>`;
+    el.appendChild(row);
+  });
+}
+
+function resetMystery(){
+  mysteryPos=0; mysteryRunning=false;
+  initMysteryCounters();
+  document.getElementById('mystery-processed').textContent=0;
+  document.getElementById('mystery-log').innerHTML='<div>[ Load mystery deck and press Process ]</div>';
+  document.getElementById('mystery-card-display').innerHTML='';
+  document.getElementById('reveal-btn').style.display='none';
+  document.getElementById('mystery-reveal').style.display='none';
+}
+
+async function runMystery(){
+  if(mysteryRunning) return;
+  mysteryRunning=true;
+  const log=document.getElementById('mystery-log');
+  log.innerHTML='';
+  const display=document.getElementById('mystery-card-display');
+  for(let i=0;i<MYSTERY_DECK.length;i++){
+    const p=MYSTERY_DECK[i];
+    renderPCard(display, p);
+    await new Promise(r=>setTimeout(r,500));
+    // Tally
+    mysteryCounters['Total']++;
+    mysteryCounters['count']++;
+    mysteryCounters['ageSum']+=p.age;
+    if(p.occupation==='Laborer') mysteryCounters['Laborer']++;
+    if(p.occupation==='Miner') mysteryCounters['Miner']++;
+    if(p.occupation==='Blacksmith') mysteryCounters['Blacksmith']++;
+    if(BIRTHPLACES_FOREIGN.includes(p.birthplace)) mysteryCounters['Foreign-Born']++;
+    const ag=ageGroup(p.age);
+    if(ag==='Under 30') mysteryCounters['Age <30']++;
+    else if(ag==='30–49') mysteryCounters['Age 30-49']++;
+    renderMysteryTallies();
+    log.innerHTML+=`<div>> Card ${i+1}: Age ${p.age}, ${p.occupation}, from ${p.birthplace}</div>`;
+    log.scrollTop=log.scrollHeight;
+    document.getElementById('mystery-processed').textContent=i+1;
+    await new Promise(r=>setTimeout(r,400));
+  }
+  log.innerHTML+=`<div style="color:var(--accent-primary)">Processing complete — 8 cards tabulated.</div>`;
+  mysteryRunning=false;
+  document.getElementById('reveal-btn').style.display='inline-block';
+}
+
+function revealMystery(){
+  const el=document.getElementById('mystery-reveal');
+  el.style.display='block';
+  el.innerHTML=`
+    <h3 style="color:var(--accent-primary);margin-bottom:12px">🔍 Mystery Deck Revealed</h3>
+    <div style="font-size:.85rem;line-height:1.8;color:var(--text-muted)">
+    <p>This deck represents <strong style="color:var(--text-primary)">8 immigrant industrial workers</strong> from an Eastern US coal mining or steel town, circa 1890.</p>
+    <br>
+    <p><strong style="color:var(--accent-primary)">Evidence from the cards:</strong></p>
+    <ul style="margin-left:16px;line-height:2">
+      <li>100% foreign-born (Ireland, Italy, Poland, Germany, Russia) → recent immigration wave</li>
+      <li>75% Laborers or Miners → industrial manual labor, not farming</li>
+      <li>87.5% under age 30 → young men, recently arrived, no established families</li>
+      <li>Average age: ${Math.round(MYSTERY_DECK.reduce((s,p)=>s+p.age,0)/MYSTERY_DECK.length)} years → young working-age cohort</li>
+      <li>Average family size: ${(MYSTERY_DECK.reduce((s,p)=>s+p.familySize,0)/MYSTERY_DECK.length).toFixed(1)} → small families, often single men or newly arrived</li>
+    </ul>
+    <br>
+    <p>Historical context: In 1890, cities like Pittsburgh, Scranton, and Cleveland had exactly this demographic — waves of young European immigrants doing heavy industrial labor.</p>
+    </div>`;
+}
+
+// ========== TABS ==========
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['puncher','tabulator','sorter','mystery'][i]===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  if(id==='tabulator') syncTabulator();
+  if(id==='sorter') syncSorter();
+}
+
+// ========== BOOT ==========
+initTabCounters(); renderCounters();
+initMysteryCounters();
+renderBins();
+initPinGrid(); initMercuryCups();
+document.getElementById('tab-total').textContent=0;
+</script>
+</body>
+</html>

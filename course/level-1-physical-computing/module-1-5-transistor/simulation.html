@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 1.5 — Transistor Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #090A0F;
+  --bg-secondary: #12141C;
+  --bg-tertiary: #1A1D27;
+  --bg-glass: rgba(18, 20, 28, 0.75);
+  --text-primary: #F3F4F6;
+  --text-secondary: #9CA3AF;
+  --text-muted: #4B5563;
+  --accent-primary: #6366F1;
+  --accent-hover: #4F46E5;
+  --accent-glow: rgba(99, 102, 241, 0.15);
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-code-bg: #0D0E15;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(99, 102, 241, 0.4);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.2);
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;padding:20px}
+h1{color:var(--text-primary);font-size:1.5rem;font-weight:700;margin-bottom:4px}
+.subtitle{color:var(--text-secondary);font-size:.9rem;margin-bottom:20px}
+.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.tab{padding:8px 16px;border-radius:var(--radius-sm);cursor:pointer;background:var(--bg-secondary);border:1px solid var(--border-subtle);color:var(--text-secondary);font-size:.85rem;transition:all var(--transition-smooth)}
+.tab.active{background:var(--accent-glow);border-bottom:2px solid var(--accent-primary);color:var(--accent-primary)}
+.panel{display:none}.panel.active{display:block}
+.intro-box{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-left:3px solid var(--accent-primary);padding:14px 18px;border-radius:var(--radius-md);margin-bottom:18px;font-size:.88rem;line-height:1.6;color:var(--text-secondary)}
+.intro-box strong{color:var(--color-warning)}
+.btn{padding:8px 18px;border-radius:var(--radius-md);border:none;cursor:pointer;font-size:.85rem;font-weight:600;transition:all var(--transition-smooth)}
+.btn-primary{background:var(--accent-primary);color:white}
+.btn-primary:hover{background:var(--accent-hover);box-shadow:var(--shadow-glow)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+input[type=range]{accent-color:var(--accent-primary);width:100%}
+.two-col{display:grid;grid-template-columns:1fr 280px;gap:16px}
+@media(max-width:800px){.two-col{grid-template-columns:1fr}}
+.ctrl-panel{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:16px;display:flex;flex-direction:column;gap:12px}
+.ctrl-group{background:var(--bg-tertiary);border-radius:var(--radius-sm);padding:12px}
+.ctrl-group h4{font-size:.82rem;margin-bottom:8px}
+.metric-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border-subtle);font-size:.82rem}
+.metric-row:last-child{border:none}
+.metric-label{color:var(--text-secondary)}
+.metric-val{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent-primary)}
+.state-badge{padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:700;text-align:center;margin-top:6px}
+.state-off{background:rgba(239,68,68,.1);color:var(--color-danger);border:1px solid rgba(239,68,68,.3)}
+.state-on{background:rgba(16,185,129,.1);color:var(--color-success);border:1px solid rgba(16,185,129,.3)}
+.canvas-wrap{background:var(--color-code-bg);border:1px solid var(--border-subtle);border-radius:var(--radius-md);display:flex;justify-content:center;align-items:center}
+canvas{display:block}
+.slider-group{margin-bottom:10px}
+.slider-label-row{display:flex;justify-content:space-between;font-size:.78rem;color:var(--text-secondary);margin-bottom:4px}
+.slider-label-row .sv{color:var(--accent-primary);font-weight:700;font-family:'JetBrains Mono',monospace}
+</style>
+</head>
+<body>
+<h1>⚛️ Module 1.5 — Transistor Simulator</h1>
+<p class="subtitle">From P-N junctions to the MOSFET — semiconductor switching from atoms to computers.</p>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('pn')">🔬 P-N Junction</div>
+  <div class="tab" onclick="switchTab('bjt')">🔋 BJT Switch</div>
+  <div class="tab" onclick="switchTab('mosfet')">⚡ MOSFET Switch</div>
+</div>
+
+<!-- ===== P-N JUNCTION ===== -->
+<div id="panel-pn" class="panel active">
+  <div class="intro-box"><strong>P-N Junction</strong> — put P-type and N-type silicon together. A depletion region forms at the boundary. Forward bias shrinks it and lets current flow; reverse bias widens it and blocks current. This is a diode.</div>
+  <div class="two-col">
+    <div class="canvas-wrap"><canvas id="pnCanvas" width="460" height="300"></canvas></div>
+    <div class="ctrl-panel">
+      <div class="ctrl-group">
+        <h4 style="color:var(--accent-primary)">Bias Voltage</h4>
+        <div class="slider-group">
+          <div class="slider-label-row"><span>Voltage</span><span class="sv" id="pn-v-val">0.0 V</span></div>
+          <input type="range" id="pn-slider" min="-50" max="10" value="0" step="1">
+          <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text-muted)"><span>−5V reverse</span><span>+1V forward</span></div>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <h4 style="color:var(--color-success)">Junction Metrics</h4>
+        <div class="metric-row"><span class="metric-label">Bias mode</span><span class="metric-val" id="pn-mode">None</span></div>
+        <div class="metric-row"><span class="metric-label">Depletion width</span><span class="metric-val" id="pn-dep">Medium</span></div>
+        <div class="metric-row"><span class="metric-label">Current flow</span><span class="metric-val" id="pn-current">0 µA</span></div>
+        <div class="metric-row"><span class="metric-label">Forward V_f</span><span class="metric-val" style="color:var(--color-warning)">~0.6V (Si)</span></div>
+        <div class="state-badge" id="pn-state" style="background:rgba(239,68,68,.1);color:var(--color-danger);border:1px solid rgba(239,68,68,.3)">BLOCKING</div>
+      </div>
+      <div style="font-size:.75rem;color:var(--text-secondary);line-height:1.6;background:var(--bg-tertiary);border-radius:var(--radius-sm);padding:10px">
+        <strong style="color:var(--accent-primary)">Key:</strong> The depletion region is a barrier of ionised atoms with no free carriers. Forward bias pushes carriers toward the junction, shrinking this barrier. Reverse bias widens it — until it breaks down at very high voltages.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BJT ===== -->
+<div id="panel-bjt" class="panel">
+  <div class="intro-box"><strong>BJT (NPN) Switch</strong> — the base current controls a much larger collector current. β (hFE) = I_C / I_B. Small base input → large collector output. This is a current-controlled switch.</div>
+  <div class="two-col">
+    <div class="canvas-wrap"><canvas id="bjtCanvas" width="460" height="300"></canvas></div>
+    <div class="ctrl-panel">
+      <div class="ctrl-group">
+        <h4 style="color:var(--color-warning)">Base Voltage (V_BE)</h4>
+        <div class="slider-group">
+          <div class="slider-label-row"><span>V_BE</span><span class="sv" id="bjt-vbe-val">0.00 V</span></div>
+          <input type="range" id="bjt-slider" min="0" max="100" value="0" step="1">
+          <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text-muted)"><span>0V (off)</span><span>0.6V</span><span>1.0V (sat)</span></div>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <h4 style="color:var(--color-success)">Transistor Metrics</h4>
+        <div class="metric-row"><span class="metric-label">Base current I_B</span><span class="metric-val" id="bjt-ib">0 µA</span></div>
+        <div class="metric-row"><span class="metric-label">Collector current I_C</span><span class="metric-val" id="bjt-ic">0 mA</span></div>
+        <div class="metric-row"><span class="metric-label">Current gain β</span><span class="metric-val" style="color:var(--color-warning)">100</span></div>
+        <div class="metric-row"><span class="metric-label">Threshold V_BE</span><span class="metric-val" style="color:var(--color-warning)">~0.6V</span></div>
+        <div class="metric-row"><span class="metric-label">Power P = V×I</span><span class="metric-val" id="bjt-power">0 mW</span></div>
+        <div class="state-badge state-off" id="bjt-state">CUT OFF</div>
+      </div>
+      <div style="font-size:.75rem;color:var(--text-secondary);line-height:1.6;background:var(--bg-tertiary);border-radius:var(--radius-sm);padding:10px">
+        <strong style="color:var(--color-warning)">Current amplification:</strong> A base current of just 50µA controls a collector current of 5mA — a factor of 100×. In switching, we use this to fully cut off or fully saturate the transistor.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MOSFET ===== -->
+<div id="panel-mosfet" class="panel">
+  <div class="intro-box"><strong>N-Channel MOSFET Switch</strong> — gate voltage controls an inversion channel. Zero gate current needed. The dominant transistor in all modern digital chips. Billions on one chip possible because gate draws no static current.</div>
+  <div class="two-col">
+    <div class="canvas-wrap"><canvas id="mosfetCanvas" width="460" height="300"></canvas></div>
+    <div class="ctrl-panel">
+      <div class="ctrl-group">
+        <h4 style="color:#F97316">Gate Voltage (V_GS)</h4>
+        <div class="slider-group">
+          <div class="slider-label-row"><span>V_GS</span><span class="sv" id="mos-vgs-val">0.0 V</span></div>
+          <input type="range" id="mos-slider" min="0" max="50" value="0" step="1">
+          <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text-muted)"><span>0V (off)</span><span>2.5V</span><span>5V (on)</span></div>
+        </div>
+      </div>
+      <div class="ctrl-group">
+        <h4 style="color:var(--color-success)">MOSFET Metrics</h4>
+        <div class="metric-row"><span class="metric-label">Gate current I_G</span><span class="metric-val" style="color:var(--color-success)">≈ 0 (pA)</span></div>
+        <div class="metric-row"><span class="metric-label">Drain current I_D</span><span class="metric-val" id="mos-id">0 mA</span></div>
+        <div class="metric-row"><span class="metric-label">Threshold V_th</span><span class="metric-val" style="color:var(--color-warning)">~1.5V</span></div>
+        <div class="metric-row"><span class="metric-label">Channel width</span><span class="metric-val" id="mos-chan">0 nm</span></div>
+        <div class="metric-row"><span class="metric-label">Power (dynamic)</span><span class="metric-val" id="mos-power">0 nW</span></div>
+        <div class="state-badge state-off" id="mos-state">OFF (no channel)</div>
+      </div>
+      <div style="font-size:.75rem;color:var(--text-secondary);line-height:1.6;background:var(--bg-tertiary);border-radius:var(--radius-sm);padding:10px">
+        <strong style="color:#F97316">Why MOSFET dominates:</strong> Zero gate current means billions can switch simultaneously without current overload. The gate only charges a tiny capacitor — and only while switching, not while static.
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:14px;background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px">
+    <div style="font-size:.85rem;color:var(--text-secondary);margin-bottom:10px">Power comparison (same task — switching a 5V, 10mA load once per microsecond):</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+      <div style="background:var(--bg-tertiary);border-radius:var(--radius-sm);padding:12px;text-align:center">
+        <div style="font-size:.75rem;color:var(--text-secondary)">Vacuum Tube</div>
+        <div style="font-size:1.4rem;font-weight:800;color:var(--color-danger);font-family:'JetBrains Mono',monospace">2,500 mW</div>
+        <div style="font-size:.7rem;color:var(--text-muted)">always-on heater</div>
+      </div>
+      <div style="background:var(--bg-tertiary);border-radius:var(--radius-sm);padding:12px;text-align:center">
+        <div style="font-size:.75rem;color:var(--text-secondary)">BJT Transistor</div>
+        <div style="font-size:1.4rem;font-weight:800;color:var(--color-warning);font-family:'JetBrains Mono',monospace">50 mW</div>
+        <div style="font-size:.7rem;color:var(--text-muted)">base current losses</div>
+      </div>
+      <div style="background:var(--bg-tertiary);border-radius:var(--radius-sm);padding:12px;text-align:center">
+        <div style="font-size:.75rem;color:var(--text-secondary)">MOSFET</div>
+        <div style="font-size:1.4rem;font-weight:800;color:var(--color-success);font-family:'JetBrains Mono',monospace">0.001 mW</div>
+        <div style="font-size:.7rem;color:var(--text-muted)">capacitive only</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========================= P-N JUNCTION =========================
+const pnCanvas=document.getElementById('pnCanvas');
+const pCtx=pnCanvas.getContext('2d');
+let pnAnim=0;
+
+function drawPN(biasV) {
+  const W=460,H=300;
+  pCtx.clearRect(0,0,W,H); pCtx.fillStyle='#090A0F'; pCtx.fillRect(0,0,W,H);
+
+  // Normalized bias: -1 to +1
+  const norm = biasV/5;
+  // Depletion width: widens on reverse, shrinks on forward
+  const baseDepW = 60;
+  const depW = Math.max(10, baseDepW * (1 - norm*0.8));
+  const depX = W/2 - depW/2;
+
+  // P-type region (left)
+  const pGrad=pCtx.createLinearGradient(0,0,depX,0);
+  pGrad.addColorStop(0,'rgba(239,68,68,0.3)');
+  pGrad.addColorStop(1,'rgba(239,68,68,0.1)');
+  pCtx.fillStyle=pGrad; pCtx.fillRect(20,60,depX-20,180);
+  pCtx.strokeStyle='rgba(239,68,68,0.5)'; pCtx.lineWidth=2;
+  pCtx.strokeRect(20,60,depX-20,180);
+  pCtx.fillStyle='#EF4444'; pCtx.font='bold 14px monospace'; pCtx.textAlign='center';
+  pCtx.fillText('P-type',(20+depX)/2,40);
+  pCtx.fillStyle='rgba(239,68,68,0.6)'; pCtx.font='11px monospace';
+  pCtx.fillText('Holes (+)',(20+depX)/2,54);
+
+  // N-type region (right)
+  const nStart=depX+depW;
+  const nGrad=pCtx.createLinearGradient(nStart,0,W-20,0);
+  nGrad.addColorStop(0,'rgba(99,102,241,0.1)');
+  nGrad.addColorStop(1,'rgba(99,102,241,0.3)');
+  pCtx.fillStyle=nGrad; pCtx.fillRect(nStart,60,W-20-nStart,180);
+  pCtx.strokeStyle='rgba(99,102,241,0.5)'; pCtx.lineWidth=2;
+  pCtx.strokeRect(nStart,60,W-20-nStart,180);
+  pCtx.fillStyle='#818CF8'; pCtx.font='bold 14px monospace'; pCtx.textAlign='center';
+  pCtx.fillText('N-type',(nStart+W-20)/2,40);
+  pCtx.fillStyle='rgba(99,102,241,0.6)'; pCtx.font='11px monospace';
+  pCtx.fillText('Electrons (−)',(nStart+W-20)/2,54);
+
+  // Depletion region
+  const depAlpha=0.15+Math.abs(norm)*0.1;
+  pCtx.fillStyle=`rgba(150,150,150,${depAlpha})`; pCtx.fillRect(depX,60,depW,180);
+  pCtx.strokeStyle='rgba(200,200,200,0.3)'; pCtx.lineWidth=1; pCtx.setLineDash([3,3]);
+  pCtx.beginPath(); pCtx.moveTo(depX,50); pCtx.lineTo(depX,260); pCtx.stroke();
+  pCtx.beginPath(); pCtx.moveTo(depX+depW,50); pCtx.lineTo(depX+depW,260); pCtx.stroke();
+  pCtx.setLineDash([]);
+  pCtx.fillStyle='rgba(200,200,200,0.5)'; pCtx.font='9px monospace'; pCtx.textAlign='center';
+  pCtx.fillText('DEPLETION',W/2,150);
+  pCtx.fillText('REGION',W/2,163);
+
+  // Carriers in P region
+  const conducting = biasV > 0.5;
+  if (!conducting) {
+    for(let i=0;i<12;i++){
+      const x=30+Math.random()*(depX-40), y=75+Math.random()*150;
+      pCtx.fillStyle='rgba(239,68,68,0.6)'; pCtx.font='12px monospace'; pCtx.textAlign='center';
+      pCtx.fillText('+',x,y);
+    }
+    for(let i=0;i<12;i++){
+      const x=nStart+10+Math.random()*(W-30-nStart), y=75+Math.random()*150;
+      pCtx.fillStyle='rgba(99,102,241,0.6)'; pCtx.font='11px monospace'; pCtx.textAlign='center';
+      pCtx.fillText('●',x,y);
+    }
+  } else {
+    // Show current flow
+    const phase = pnAnim;
+    for(let i=0;i<8;i++){
+      const t=((phase + i/8) % 1);
+      const x=20+t*(W-40), y=145+Math.sin(i*0.8)*15;
+      pCtx.fillStyle=`rgba(16,185,129,${0.6+Math.sin(t*Math.PI)*0.3})`;
+      pCtx.beginPath(); pCtx.arc(x,y,3,0,Math.PI*2); pCtx.fill();
+    }
+  }
+
+  // Bias voltage indicator
+  const biasColor = biasV > 0.5 ? '#10B981' : biasV < -0.5 ? '#EF4444' : '#9CA3AF';
+  pCtx.fillStyle=biasColor; pCtx.font='11px monospace'; pCtx.textAlign='center';
+  pCtx.fillText(biasV>=0?`Forward: +${biasV.toFixed(1)}V`:`Reverse: ${biasV.toFixed(1)}V`,W/2,280);
+
+  pnAnim=(pnAnim+0.02)%1;
+}
+
+const pnSlider=document.getElementById('pn-slider');
+function updatePN() {
+  const raw=parseInt(pnSlider.value);
+  const v=raw/10; // -5 to +1
+  document.getElementById('pn-v-val').textContent=(v>=0?'+':'')+v.toFixed(1)+' V';
+  const conducting = v > 0.55;
+  const reverseBias = v < 0;
+  document.getElementById('pn-mode').textContent=reverseBias?'Reverse bias':v<0.55?'Near zero':'Forward bias';
+  document.getElementById('pn-dep').textContent=reverseBias?'Wide (blocking)':v>0.55?'Narrow (conducting)':'Medium';
+  const current = conducting ? Math.round((v-0.6)*100)*10 : 0;
+  document.getElementById('pn-current').textContent=conducting?(current+' µA'):'~0 µA';
+  const stateEl=document.getElementById('pn-state');
+  stateEl.textContent=conducting?'CONDUCTING':'BLOCKING';
+  stateEl.className='state-badge '+(conducting?'state-on':'state-off');
+  drawPN(v);
+}
+pnSlider.addEventListener('input',updatePN);
+setInterval(()=>{pnAnim=(pnAnim+0.02)%1;const v=parseInt(pnSlider.value)/10;if(v>0.55)drawPN(v);},50);
+updatePN();
+
+// ========================= BJT =========================
+const bjtCanvas=document.getElementById('bjtCanvas');
+const bCtx=bjtCanvas.getContext('2d');
+
+function drawBJT(vbe) {
+  const W=460,H=300;
+  bCtx.clearRect(0,0,W,H); bCtx.fillStyle='#090A0F'; bCtx.fillRect(0,0,W,H);
+  const on = vbe >= 0.6;
+  const sat = vbe >= 0.8;
+  const ib = on ? Math.max(0,(vbe-0.6)*500)*1e-6 : 0; // Amps
+  const ic = on ? Math.min(0.05, ib*100) : 0;
+
+  // Emitter (N)
+  bCtx.fillStyle='rgba(99,102,241,0.2)'; bCtx.fillRect(160,200,100,60);
+  bCtx.strokeStyle='rgba(99,102,241,0.5)'; bCtx.lineWidth=2; bCtx.strokeRect(160,200,100,60);
+  bCtx.fillStyle='#818CF8'; bCtx.font='11px monospace'; bCtx.textAlign='center';
+  bCtx.fillText('N EMITTER',210,238);
+
+  // Base (P) - thin
+  bCtx.fillStyle='rgba(239,68,68,0.2)'; bCtx.fillRect(160,160,100,40);
+  bCtx.strokeStyle='rgba(239,68,68,0.5)'; bCtx.lineWidth=2; bCtx.strokeRect(160,160,100,40);
+  bCtx.fillStyle='#EF4444'; bCtx.font='11px monospace'; bCtx.textAlign='center';
+  bCtx.fillText('P BASE (thin)',210,185);
+
+  // Collector (N)
+  bCtx.fillStyle=on?'rgba(16,185,129,0.25)':'rgba(99,102,241,0.2)';
+  bCtx.fillRect(160,80,100,80);
+  bCtx.strokeStyle=on?'rgba(16,185,129,0.6)':'rgba(99,102,241,0.5)'; bCtx.lineWidth=2;
+  bCtx.strokeRect(160,80,100,80);
+  bCtx.fillStyle=on?'#10B981':'#818CF8'; bCtx.font='11px monospace'; bCtx.textAlign='center';
+  bCtx.fillText('N COLLECTOR',210,120);
+
+  // Terminal labels
+  bCtx.fillStyle='#9CA3AF'; bCtx.font='bold 11px monospace'; bCtx.textAlign='right';
+  bCtx.fillText('E',155,235); bCtx.fillText('B',155,183); bCtx.fillText('C',155,123);
+
+  // Base current wire
+  bCtx.strokeStyle=on?'#F59E0B':'#1A1D27'; bCtx.lineWidth=2;
+  bCtx.beginPath(); bCtx.moveTo(60,180); bCtx.lineTo(160,180); bCtx.stroke();
+  bCtx.fillStyle=on?'#F59E0B':'#4B5563'; bCtx.font='10px monospace'; bCtx.textAlign='center';
+  bCtx.fillText('I_B='+(ib*1e6).toFixed(0)+'µA',90,170);
+  // Battery symbol for base
+  bCtx.strokeStyle=on?'#F59E0B':'#1A1D27'; bCtx.lineWidth=2;
+  bCtx.beginPath(); bCtx.moveTo(40,170); bCtx.lineTo(40,190); bCtx.stroke();
+  bCtx.beginPath(); bCtx.moveTo(30,175); bCtx.lineTo(50,175); bCtx.stroke();
+  bCtx.beginPath(); bCtx.moveTo(35,183); bCtx.lineTo(45,183); bCtx.stroke();
+  bCtx.fillStyle=on?'#F59E0B':'#4B5563'; bCtx.font='9px monospace'; bCtx.textAlign='center';
+  bCtx.fillText(vbe.toFixed(2)+'V',40,205);
+
+  // Collector circuit
+  bCtx.strokeStyle=on?'#10B981':'#1A1D27'; bCtx.lineWidth=2.5;
+  bCtx.beginPath(); bCtx.moveTo(350,30); bCtx.lineTo(260,30); bCtx.lineTo(260,100); bCtx.stroke();
+  bCtx.fillStyle=on?'#10B981':'#4B5563'; bCtx.font='10px monospace'; bCtx.textAlign='center';
+  bCtx.fillText('+5V',350,25);
+  bCtx.fillText('I_C='+(ic*1000).toFixed(1)+'mA',300,60);
+
+  // Emitter to ground
+  bCtx.strokeStyle='#1A1D27'; bCtx.lineWidth=2;
+  bCtx.beginPath(); bCtx.moveTo(210,260); bCtx.lineTo(210,285); bCtx.stroke();
+  bCtx.beginPath(); bCtx.moveTo(195,285); bCtx.lineTo(225,285); bCtx.stroke();
+  bCtx.beginPath(); bCtx.moveTo(200,290); bCtx.lineTo(220,290); bCtx.stroke();
+  bCtx.beginPath(); bCtx.moveTo(205,295); bCtx.lineTo(215,295); bCtx.stroke();
+  bCtx.fillStyle='#4B5563'; bCtx.font='9px monospace'; bCtx.textAlign='center';
+  bCtx.fillText('GND',210,306);
+
+  // Output bulb
+  bCtx.strokeStyle=on?'#F59E0B':'#4B5563'; bCtx.lineWidth=2;
+  bCtx.beginPath(); bCtx.arc(380,120,18,0,Math.PI*2); bCtx.stroke();
+  if(on){bCtx.fillStyle=`rgba(245,158,11,${Math.min(1,ic/0.05)*0.4})`;bCtx.fill();bCtx.shadowBlur=15;bCtx.shadowColor='#F59E0B';}
+  bCtx.shadowBlur=0;
+  bCtx.fillStyle='white'; bCtx.font='14px serif'; bCtx.textAlign='center';
+  bCtx.fillText(on?'💡':'○',380,124);
+  bCtx.strokeStyle=on?'#10B981':'#1A1D27'; bCtx.lineWidth=2;
+  bCtx.beginPath(); bCtx.moveTo(350,30); bCtx.lineTo(380,30); bCtx.lineTo(380,102); bCtx.stroke();
+  bCtx.beginPath(); bCtx.moveTo(380,138); bCtx.lineTo(380,165); bCtx.lineTo(260,165); bCtx.lineTo(260,140); bCtx.stroke();
+
+  // State
+  bCtx.fillStyle=on?'#10B981':'#EF4444'; bCtx.font='bold 11px monospace'; bCtx.textAlign='center';
+  bCtx.fillText(on?(sat?'SATURATED':'ACTIVE'):'CUT OFF',210,155);
+}
+
+const bjtSlider=document.getElementById('bjt-slider');
+function updateBJT(){
+  const pct=parseInt(bjtSlider.value)/100;
+  const vbe=pct;
+  const on=vbe>=0.6;
+  const ib=on?Math.max(0,(vbe-0.6)*500):0; // mA
+  const ic=Math.min(50,ib*100); // mA
+  document.getElementById('bjt-vbe-val').textContent=vbe.toFixed(2)+' V';
+  document.getElementById('bjt-ib').textContent=on?(ib*1000).toFixed(0)+' µA':'0 µA';
+  document.getElementById('bjt-ic').textContent=ic.toFixed(2)+' mA';
+  document.getElementById('bjt-power').textContent=(vbe*ib+5*ic/1000*1000).toFixed(1)+' mW';
+  const stateEl=document.getElementById('bjt-state');
+  stateEl.textContent=on?'CONDUCTING':'CUT OFF';
+  stateEl.className='state-badge '+(on?'state-on':'state-off');
+  drawBJT(vbe);
+}
+bjtSlider.addEventListener('input',updateBJT);
+updateBJT();
+
+// ========================= MOSFET =========================
+const mosCanvas=document.getElementById('mosfetCanvas');
+const mCtx=mosCanvas.getContext('2d');
+
+function drawMOSFET(vgs) {
+  const W=460,H=300;
+  mCtx.clearRect(0,0,W,H); mCtx.fillStyle='#090A0F'; mCtx.fillRect(0,0,W,H);
+  const vth=1.5;
+  const on=vgs>vth;
+  const chanStrength=on?Math.min(1,(vgs-vth)/3.5):0;
+  const id=on?chanStrength*30:0; // mA
+
+  // P-type body
+  mCtx.fillStyle='rgba(239,68,68,0.1)'; mCtx.fillRect(80,80,280,160);
+  mCtx.strokeStyle='rgba(239,68,68,0.3)'; mCtx.lineWidth=1.5; mCtx.strokeRect(80,80,280,160);
+  mCtx.fillStyle='rgba(239,68,68,0.4)'; mCtx.font='10px monospace'; mCtx.textAlign='center';
+  mCtx.fillText('P-type substrate (body)',220,250);
+
+  // Source (N+, left)
+  mCtx.fillStyle='rgba(99,102,241,0.4)'; mCtx.fillRect(90,100,60,80);
+  mCtx.strokeStyle='rgba(99,102,241,0.7)'; mCtx.lineWidth=2; mCtx.strokeRect(90,100,60,80);
+  mCtx.fillStyle='#818CF8'; mCtx.font='10px monospace'; mCtx.textAlign='center';
+  mCtx.fillText('N+',120,145); mCtx.fillText('SOURCE',120,157);
+
+  // Drain (N+, right)
+  mCtx.fillStyle='rgba(16,185,129,0.4)'; mCtx.fillRect(290,100,60,80);
+  mCtx.strokeStyle='rgba(16,185,129,0.7)'; mCtx.lineWidth=2; mCtx.strokeRect(290,100,60,80);
+  mCtx.fillStyle='#10B981'; mCtx.font='10px monospace'; mCtx.textAlign='center';
+  mCtx.fillText('N+',320,145); mCtx.fillText('DRAIN',320,157);
+
+  // SiO2 Gate oxide
+  mCtx.fillStyle='rgba(200,200,255,0.15)'; mCtx.fillRect(155,80,130,20);
+  mCtx.strokeStyle='rgba(200,200,255,0.4)'; mCtx.lineWidth=1; mCtx.strokeRect(155,80,130,20);
+  mCtx.fillStyle='rgba(200,200,255,0.5)'; mCtx.font='9px monospace'; mCtx.textAlign='center';
+  mCtx.fillText('SiO₂ (insulator)',220,93);
+
+  // Gate metal
+  mCtx.fillStyle=`rgba(245,158,11,${0.3+chanStrength*0.4})`; mCtx.fillRect(155,55,130,25);
+  mCtx.strokeStyle=`rgba(245,158,11,${0.5+chanStrength*0.4})`; mCtx.lineWidth=2; mCtx.strokeRect(155,55,130,25);
+  mCtx.fillStyle='#F59E0B'; mCtx.font='10px monospace'; mCtx.textAlign='center';
+  mCtx.fillText('GATE',220,70);
+
+  // Inversion channel (forms when VGS > Vth)
+  if(chanStrength > 0) {
+    const chanAlpha = chanStrength * 0.7;
+    mCtx.fillStyle=`rgba(99,102,241,${chanAlpha})`;
+    mCtx.fillRect(150,100,140,12);
+    mCtx.strokeStyle=`rgba(99,102,241,${chanAlpha+0.2})`; mCtx.lineWidth=1;
+    mCtx.strokeRect(150,100,140,12);
+    mCtx.fillStyle=`rgba(129,140,248,${chanAlpha+0.1})`; mCtx.font='8px monospace'; mCtx.textAlign='center';
+    mCtx.fillText('N-CHANNEL (inversion)',220,109);
+    // Current flow particles
+    const phase=Date.now()/300%1;
+    for(let i=0;i<5;i++){
+      const t=((phase+i/5)%1);
+      const x=150+t*140, y=106;
+      mCtx.fillStyle=`rgba(129,140,248,0.8)`; mCtx.beginPath(); mCtx.arc(x,y,2,0,Math.PI*2); mCtx.fill();
+    }
+  }
+
+  // Gate wire
+  mCtx.strokeStyle=`rgba(245,158,11,${0.4+chanStrength*0.4})`; mCtx.lineWidth=2;
+  mCtx.beginPath(); mCtx.moveTo(220,55); mCtx.lineTo(220,25); mCtx.lineTo(60,25); mCtx.stroke();
+  mCtx.fillStyle='#F59E0B'; mCtx.font='10px monospace'; mCtx.textAlign='center';
+  mCtx.fillText(vgs.toFixed(1)+'V',40,22);
+
+  // Source/Drain terminals
+  mCtx.strokeStyle='#4B5563'; mCtx.lineWidth=2;
+  mCtx.beginPath(); mCtx.moveTo(120,180); mCtx.lineTo(120,230); mCtx.stroke();
+  mCtx.beginPath(); mCtx.moveTo(105,230); mCtx.lineTo(135,230); mCtx.stroke(); // GND
+  mCtx.fillStyle='#4B5563'; mCtx.font='9px monospace'; mCtx.textAlign='center';
+  mCtx.fillText('GND',120,245);
+
+  // Drain circuit
+  const outColor=on?'#10B981':'#1A1D27';
+  mCtx.strokeStyle=outColor; mCtx.lineWidth=2.5;
+  mCtx.beginPath(); mCtx.moveTo(320,100); mCtx.lineTo(320,40); mCtx.lineTo(400,40); mCtx.stroke();
+  mCtx.fillStyle=on?'#10B981':'#4B5563'; mCtx.font='10px monospace'; mCtx.textAlign='center';
+  mCtx.fillText('+5V',420,38); mCtx.fillText('I_D='+id.toFixed(1)+'mA',370,65);
+
+  // Output LED
+  mCtx.strokeStyle=on?'#F59E0B':'#4B5563'; mCtx.lineWidth=2;
+  mCtx.beginPath(); mCtx.arc(400,120,16,0,Math.PI*2); mCtx.stroke();
+  if(on){mCtx.fillStyle=`rgba(245,158,11,${chanStrength*0.5})`;mCtx.fill();mCtx.shadowBlur=15*chanStrength;mCtx.shadowColor='#F59E0B';}
+  mCtx.shadowBlur=0;
+  mCtx.fillStyle='white'; mCtx.font='12px serif'; mCtx.textAlign='center';
+  mCtx.fillText(on?'💡':'○',400,124);
+  mCtx.strokeStyle=outColor; mCtx.lineWidth=2;
+  mCtx.beginPath(); mCtx.moveTo(400,40); mCtx.lineTo(400,104); mCtx.stroke();
+  mCtx.beginPath(); mCtx.moveTo(400,136); mCtx.lineTo(400,180); mCtx.lineTo(320,180); mCtx.lineTo(320,180); mCtx.stroke();
+
+  // State label
+  mCtx.fillStyle=on?'#10B981':'#EF4444'; mCtx.font='bold 10px monospace'; mCtx.textAlign='center';
+  mCtx.fillText(on?'CHANNEL FORMED — CONDUCTING':'NO CHANNEL — OFF',220,275);
+}
+
+const mosSlider=document.getElementById('mos-slider');
+function updateMOS(){
+  const vgs=parseInt(mosSlider.value)/10;
+  const vth=1.5, on=vgs>vth;
+  const cs=on?Math.min(1,(vgs-vth)/3.5):0;
+  const id=cs*30;
+  document.getElementById('mos-vgs-val').textContent=vgs.toFixed(1)+' V';
+  document.getElementById('mos-id').textContent=id.toFixed(1)+' mA';
+  document.getElementById('mos-chan').textContent=on?Math.round(cs*10)+'nm (approx)':'0 nm';
+  document.getElementById('mos-power').textContent=on?(cs*30*0.001*1000).toFixed(2)+' nW':'0 nW';
+  const stateEl=document.getElementById('mos-state');
+  stateEl.textContent=on?'ON (channel active)':'OFF (no channel)';
+  stateEl.className='state-badge '+(on?'state-on':'state-off');
+  drawMOSFET(vgs);
+}
+mosSlider.addEventListener('input',updateMOS);
+setInterval(()=>{const v=parseInt(mosSlider.value)/10;if(v>1.5)drawMOSFET(v);},50);
+updateMOS();
+
+// ========================= TABS =========================
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['pn','bjt','mosfet'][i]===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+}
+</script>
+</body>
+</html>

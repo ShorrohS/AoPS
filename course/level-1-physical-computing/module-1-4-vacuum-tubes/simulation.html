@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 1.4 — Vacuum Tube Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #090A0F;
+  --bg-secondary: #12141C;
+  --bg-tertiary: #1A1D27;
+  --bg-glass: rgba(18, 20, 28, 0.75);
+  --text-primary: #F3F4F6;
+  --text-secondary: #9CA3AF;
+  --text-muted: #4B5563;
+  --accent-primary: #6366F1;
+  --accent-hover: #4F46E5;
+  --accent-glow: rgba(99, 102, 241, 0.15);
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-code-bg: #0D0E15;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-active: rgba(99, 102, 241, 0.4);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.2);
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;padding:20px}
+h1{color:var(--text-primary);font-size:1.5rem;font-weight:700;margin-bottom:4px}
+.subtitle{color:var(--text-secondary);font-size:.9rem;margin-bottom:20px}
+.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.tab{padding:8px 16px;border-radius:var(--radius-sm);cursor:pointer;background:var(--bg-secondary);border:1px solid var(--border-subtle);color:var(--text-secondary);font-size:.85rem;transition:all var(--transition-smooth)}
+.tab.active{background:var(--accent-glow);border-bottom:2px solid var(--accent-primary);color:var(--accent-primary)}
+.panel{display:none}.panel.active{display:block}
+.intro-box{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-left:3px solid var(--accent-primary);padding:14px 18px;border-radius:var(--radius-md);margin-bottom:18px;font-size:.88rem;line-height:1.6;color:var(--text-secondary)}
+.intro-box strong{color:var(--color-warning)}
+.btn{padding:8px 18px;border-radius:var(--radius-md);border:none;cursor:pointer;font-size:.85rem;font-weight:600;transition:all var(--transition-smooth)}
+.btn-primary{background:var(--accent-primary);color:white}.btn-primary:hover{background:var(--accent-hover);box-shadow:var(--shadow-glow)}
+.btn-secondary{background:transparent;border:1px solid var(--border-subtle);color:var(--text-secondary)}.btn-secondary:hover{border-color:var(--border-active);color:var(--accent-primary)}
+.btn-success{background:var(--color-success);color:#000}
+.btn-danger{background:var(--color-danger);color:white}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+input[type=range]{accent-color:var(--accent-primary);width:100%}
+
+/* ===== TRIODE ANATOMY ===== */
+.triode-layout{display:grid;grid-template-columns:1fr 300px;gap:16px}
+@media(max-width:800px){.triode-layout{grid-template-columns:1fr}}
+.triode-canvas-wrap{background:var(--color-code-bg);border:1px solid var(--border-subtle);border-radius:var(--radius-md);display:flex;justify-content:center;align-items:center}
+.triode-controls{display:flex;flex-direction:column;gap:12px}
+.ctrl-card{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px}
+.ctrl-card h4{font-size:.85rem;margin-bottom:10px}
+.ctrl-card h4.heat-h{color:#F97316}
+.ctrl-card h4.grid-h{color:var(--color-warning)}
+.ctrl-card h4.meter-h{color:var(--color-success)}
+.slider-row{margin-bottom:8px}
+.slider-label{display:flex;justify-content:space-between;font-size:.78rem;color:var(--text-secondary);margin-bottom:4px}
+.slider-val{color:var(--accent-primary);font-weight:700;font-family:'JetBrains Mono',monospace}
+.meter-bar-bg{height:20px;background:var(--bg-tertiary);border-radius:var(--radius-sm);overflow:hidden;margin-top:6px}
+.meter-bar{height:100%;transition:width .2s;border-radius:var(--radius-sm)}
+.state-label{font-size:.85rem;font-weight:700;text-align:center;padding:6px;border-radius:var(--radius-sm);margin-top:6px}
+.state-off{background:rgba(239,68,68,.1);color:var(--color-danger);border:1px solid rgba(239,68,68,.3)}
+.state-on{background:rgba(16,185,129,.1);color:var(--color-success);border:1px solid rgba(16,185,129,.3)}
+.curve-wrap{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px}
+.curve-wrap h4{color:var(--accent-primary);font-size:.85rem;margin-bottom:8px}
+
+/* ===== SWITCH COMPARISON ===== */
+.switch-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.switch-layout{grid-template-columns:1fr}}
+.sw-panel{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:16px}
+.sw-panel h3{font-size:.9rem;margin-bottom:12px}
+.sw-panel.relay-panel h3{color:var(--color-warning)}
+.sw-panel.tube-panel h3{color:#F97316}
+.sw-canvas-wrap{background:var(--color-code-bg);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);margin-bottom:10px}
+.sw-stats{font-size:.8rem;color:var(--text-secondary);line-height:1.8}
+.sw-stat-val{color:var(--accent-primary);font-family:'JetBrains Mono',monospace;font-weight:700}
+.speedup-display{background:var(--bg-secondary);border:1px solid var(--border-active);border-radius:var(--radius-md);padding:16px;text-align:center;margin-top:14px}
+.speedup-num{font-size:2.5rem;font-weight:900;color:var(--accent-primary);font-family:'JetBrains Mono',monospace}
+
+/* ===== ENIAC GRID ===== */
+.eniac-layout{display:grid;grid-template-columns:1fr 280px;gap:16px}
+@media(max-width:800px){.eniac-layout{grid-template-columns:1fr}}
+.eniac-canvas-wrap{background:var(--color-code-bg);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:10px}
+.eniac-stats{display:flex;flex-direction:column;gap:10px}
+.estat{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px;text-align:center}
+.estat .ev{font-size:1.5rem;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--accent-primary)}
+.estat .el{font-size:.72rem;color:var(--text-muted);margin-top:2px}
+.estat.failed .ev{color:var(--color-danger)}
+.log-box{background:var(--color-code-bg);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:10px;height:140px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#F97316}
+</style>
+</head>
+<body>
+<h1>💡 Module 1.4 — Vacuum Tube Simulator</h1>
+<p class="subtitle">From Edison's curiosity to ENIAC's 17,468 tubes — electrons in glass replace metal contacts.</p>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('triode')">🔬 Triode Anatomy</div>
+  <div class="tab" onclick="switchTab('switch')">⚡ Relay vs Tube Speed</div>
+  <div class="tab" onclick="switchTab('eniac')">🏭 ENIAC Scale</div>
+</div>
+
+<!-- ===== TRIODE ANATOMY ===== -->
+<div id="panel-triode" class="panel active">
+  <div class="intro-box"><strong>Triode anatomy</strong> — adjust heater temperature and grid voltage. Watch electrons flow from cathode to plate. The grid voltage is the control signal: negative cuts off current, positive allows it.</div>
+  <div class="triode-layout">
+    <div>
+      <div class="triode-canvas-wrap">
+        <canvas id="triodeCanvas" width="440" height="340"></canvas>
+      </div>
+      <div class="curve-wrap" style="margin-top:12px">
+        <h4>📈 Characteristic Curve (Plate Current vs Grid Voltage)</h4>
+        <canvas id="curveCanvas" width="440" height="130"></canvas>
+      </div>
+    </div>
+    <div class="triode-controls">
+      <div class="ctrl-card">
+        <h4 class="heat-h">🔥 Cathode Heater</h4>
+        <div class="slider-row">
+          <div class="slider-label"><span>Temperature</span><span class="slider-val" id="temp-val">800°C</span></div>
+          <input type="range" id="temp-slider" min="0" max="100" value="75">
+        </div>
+        <div style="font-size:.75rem;color:var(--text-secondary)">Emission: <span id="emission-val" style="color:#F97316;font-weight:700">High</span></div>
+        <div style="font-size:.75rem;color:var(--text-secondary);margin-top:4px">Electron cloud density: <span id="cloud-val" style="color:#F97316;font-weight:700">75%</span></div>
+      </div>
+      <div class="ctrl-card">
+        <h4 class="grid-h">⚡ Grid Voltage</h4>
+        <div class="slider-row">
+          <div class="slider-label"><span>Grid V</span><span class="slider-val" id="grid-val">0 V</span></div>
+          <input type="range" id="grid-slider" min="-80" max="20" value="0" step="1">
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text-muted)">
+          <span>−8V (cut-off)</span><span>0V</span><span>+2V (sat.)</span>
+        </div>
+      </div>
+      <div class="ctrl-card">
+        <h4 class="meter-h">📊 Output (Plate Current)</h4>
+        <div style="font-size:1.6rem;font-weight:800;font-family:'JetBrains Mono',monospace;text-align:center" id="plate-current-val">0.0 mA</div>
+        <div class="meter-bar-bg"><div class="meter-bar" id="plate-bar" style="width:0%;background:var(--color-success)"></div></div>
+        <div class="state-label state-off" id="tube-state">TUBE: CUT OFF</div>
+        <div style="margin-top:8px;font-size:.75rem;color:var(--text-secondary)">
+          Amplification µ: <span style="color:var(--accent-primary);font-weight:700" id="mu-val">40</span><br>
+          Threshold voltage: <span style="color:var(--accent-primary);font-weight:700">≈ −4V</span>
+        </div>
+      </div>
+      <div style="background:var(--bg-tertiary);border-radius:var(--radius-sm);padding:12px;font-size:.75rem;color:var(--text-secondary);line-height:1.6">
+        <strong style="color:var(--accent-primary)">Key:</strong> The grid voltage change needed to swing plate current from 0 to max is only ~6V. This small input controls a large output — that's amplification. The same property lets us use a tiny logic signal to switch a power circuit.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SWITCH COMPARISON ===== -->
+<div id="panel-switch" class="panel">
+  <div class="intro-box"><strong>Speed race</strong> — press "Switch" on each device and watch them toggle. The time scale shows the real difference: a relay takes milliseconds, a tube takes microseconds.</div>
+  <div class="switch-layout">
+    <div class="sw-panel relay-panel">
+      <h3>⚙️ Relay Switch</h3>
+      <div class="sw-canvas-wrap"><canvas id="relaySwCanvas" width="260" height="160"></canvas></div>
+      <div class="sw-stats">
+        <div>Switching time: <span class="sw-stat-val">15 ms</span></div>
+        <div>State: <span class="sw-stat-val" id="relay-sw-state">OFF</span></div>
+        <div>Operations/sec: <span class="sw-stat-val" id="relay-ops">~33</span></div>
+        <div>Switches completed: <span class="sw-stat-val" id="relay-count">0</span></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="doRelaySwitch()">🔀 Switch</button>
+        <button class="btn btn-secondary" onclick="autoRelay()">▶ Auto (5 sec)</button>
+      </div>
+    </div>
+    <div class="sw-panel tube-panel">
+      <h3>💡 Vacuum Tube Switch</h3>
+      <div class="sw-canvas-wrap"><canvas id="tubeSwCanvas" width="260" height="160"></canvas></div>
+      <div class="sw-stats">
+        <div>Switching time: <span class="sw-stat-val">1 µs</span></div>
+        <div>State: <span class="sw-stat-val" id="tube-sw-state">OFF</span></div>
+        <div>Operations/sec: <span class="sw-stat-val" id="tube-ops">~500,000</span></div>
+        <div>Switches completed: <span class="sw-stat-val" id="tube-count">0</span></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="doTubeSwitch()">🔀 Switch</button>
+        <button class="btn btn-secondary" onclick="autoTube()">▶ Auto (5 sec)</button>
+      </div>
+    </div>
+  </div>
+  <div class="speedup-display">
+    <div style="font-size:.8rem;color:var(--text-secondary);margin-bottom:6px">Speed advantage: Vacuum Tube vs Relay</div>
+    <div class="speedup-num">15,000×</div>
+    <div style="font-size:.82rem;color:var(--text-secondary);margin-top:6px">15ms relay ÷ 1µs tube = 15,000 times faster switching</div>
+    <div style="font-size:.78rem;color:var(--text-muted);margin-top:4px">This translates directly to 15,000× more operations per second for the same logic circuit</div>
+  </div>
+</div>
+
+<!-- ===== ENIAC GRID ===== -->
+<div id="panel-eniac" class="panel">
+  <div class="intro-box"><strong>ENIAC at scale</strong> — 17,468 vacuum tubes. Each one can fail. Watch the failure rate in real time. This is why reliability was the #1 limitation of vacuum tube computers.</div>
+  <div class="eniac-layout">
+    <div class="eniac-canvas-wrap">
+      <canvas id="eniacCanvas" width="560" height="380"></canvas>
+    </div>
+    <div class="eniac-stats">
+      <div class="estat"><div class="ev" id="e-total">17,468</div><div class="el">Total Tubes</div></div>
+      <div class="estat"><div class="ev" id="e-working" style="color:var(--color-success)">17,468</div><div class="el">Working</div></div>
+      <div class="estat failed"><div class="ev" id="e-failed">0</div><div class="el">Failed</div></div>
+      <div class="estat"><div class="ev" id="e-uptime" style="color:var(--color-warning)">100%</div><div class="el">Uptime</div></div>
+      <div class="estat"><div class="ev" id="e-hours">0</div><div class="el">Sim Hours</div></div>
+      <div class="log-box" id="eniac-log"><div>[ ENIAC — ready ]</div></div>
+      <div class="btn-row" style="justify-content:center">
+        <button class="btn btn-danger" onclick="startEniac()">▶ Run ENIAC</button>
+        <button class="btn btn-secondary" onclick="resetEniac()">↺ Reset</button>
+        <button class="btn btn-success" onclick="fixAll()">🔧 Fix All</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========================= TRIODE =========================
+const triodeCanvas=document.getElementById('triodeCanvas');
+const tCtx=triodeCanvas.getContext('2d');
+const curveCanvas=document.getElementById('curveCanvas');
+const cCtx=curveCanvas.getContext('2d');
+let animFrame=null, particlePhase=0;
+
+function getPlateCurrent(tempPct, gridV) {
+  if(tempPct < 20) return 0;
+  const emission = tempPct/100;
+  // Simplified tube characteristic: sigmoid-like curve
+  const vt = -4; // threshold
+  const normalized = Math.max(0, Math.min(1, (gridV/10 - vt/10 + 0.4)));
+  return emission * normalized * 50; // mA, max ~50mA
+}
+
+function drawTriode(tempPct, gridV) {
+  const W=440, H=340;
+  tCtx.clearRect(0,0,W,H);
+  tCtx.fillStyle='#0D0E15'; tCtx.fillRect(0,0,W,H);
+  const Ic = getPlateCurrent(tempPct, gridV);
+  const on = Ic > 2;
+
+  // Glass envelope
+  tCtx.strokeStyle='rgba(150,200,255,0.3)'; tCtx.lineWidth=3;
+  tCtx.beginPath(); tCtx.ellipse(220,170,110,140,0,0,Math.PI*2); tCtx.stroke();
+  tCtx.fillStyle='rgba(100,150,200,0.04)'; tCtx.fill();
+
+  // Heater glow
+  const heatGlow = tempPct/100;
+  if(heatGlow > 0.2) {
+    const grad=tCtx.createRadialGradient(220,270,0,220,270,30*heatGlow);
+    grad.addColorStop(0,`rgba(255,${100+Math.round(100*heatGlow)},0,${0.6*heatGlow})`);
+    grad.addColorStop(1,'rgba(255,100,0,0)');
+    tCtx.fillStyle=grad; tCtx.fillRect(180,240,80,60);
+  }
+
+  // Cathode (bottom)
+  const cathColor=heatGlow>0.3?`rgb(255,${Math.round(100+155*heatGlow)},0)`:'#4B5563';
+  tCtx.strokeStyle=cathColor; tCtx.lineWidth=4;
+  tCtx.beginPath(); tCtx.moveTo(180,280); tCtx.lineTo(260,280); tCtx.stroke();
+  tCtx.fillStyle=cathColor; tCtx.font='11px monospace'; tCtx.textAlign='center';
+  tCtx.fillText('CATHODE',220,310);
+  tCtx.fillText('(heated)',220,322);
+
+  // Electron cloud
+  if(heatGlow > 0.3) {
+    const numParticles = Math.floor(heatGlow * 20);
+    for(let i=0;i<numParticles;i++) {
+      const angle = (i/numParticles)*Math.PI*2 + particlePhase;
+      const r = 20+Math.random()*15;
+      const ex = 220 + r*Math.cos(angle);
+      const ey = 265 + r*Math.sin(angle)*0.4;
+      const alpha = 0.3+Math.random()*0.4;
+      tCtx.fillStyle=`rgba(129,140,248,${alpha*heatGlow})`;
+      tCtx.beginPath(); tCtx.arc(ex,ey,1.5,0,Math.PI*2); tCtx.fill();
+    }
+  }
+
+  // Electron stream (when conducting)
+  if(on && heatGlow > 0.3) {
+    const streamCount = Math.floor(Ic/5);
+    for(let i=0;i<Math.min(streamCount,8);i++) {
+      const t = ((particlePhase*2 + i*0.13) % 1);
+      const ex = 200 + Math.sin(i*1.3)*25;
+      const ey = 280 - t*180;
+      const alpha = 0.5+Math.sin(t*Math.PI)*0.4;
+      tCtx.fillStyle=`rgba(129,140,248,${alpha})`;
+      tCtx.beginPath(); tCtx.arc(ex,ey,2,0,Math.PI*2); tCtx.fill();
+    }
+  }
+
+  // Grid (middle - wire mesh)
+  const gridColor = gridV < -3 ? '#EF4444' : gridV > 0 ? '#10B981' : '#9CA3AF';
+  tCtx.strokeStyle=gridColor; tCtx.lineWidth=1.5;
+  for(let x=155;x<=285;x+=15) {
+    tCtx.beginPath(); tCtx.moveTo(x,175); tCtx.lineTo(x,205); tCtx.stroke();
+  }
+  tCtx.beginPath(); tCtx.moveTo(150,175); tCtx.lineTo(290,175); tCtx.stroke();
+  tCtx.beginPath(); tCtx.moveTo(150,205); tCtx.lineTo(290,205); tCtx.stroke();
+  tCtx.fillStyle=gridColor; tCtx.font='11px monospace'; tCtx.textAlign='center';
+  tCtx.fillText('GRID',220,168);
+  tCtx.fillText(`${gridV>=0?'+':''}${gridV}V`,220,160);
+  // Grid voltage indicator
+  tCtx.strokeStyle=gridColor; tCtx.lineWidth=2;
+  tCtx.beginPath(); tCtx.moveTo(310,190); tCtx.lineTo(350,190); tCtx.stroke();
+  tCtx.fillStyle=gridColor; tCtx.font='9px monospace'; tCtx.textAlign='left';
+  tCtx.fillText('Vgrid',355,193);
+
+  // Plate (top)
+  const plateColor = on ? '#10B981' : '#4B5563';
+  tCtx.strokeStyle=plateColor; tCtx.lineWidth=4;
+  tCtx.beginPath(); tCtx.moveTo(160,80); tCtx.lineTo(280,80); tCtx.stroke();
+  tCtx.fillStyle=plateColor; tCtx.font='11px monospace'; tCtx.textAlign='center';
+  tCtx.fillText('PLATE (Anode)',220,70);
+  tCtx.fillText(on?`Ip = ${Ic.toFixed(1)}mA`:'Ip ≈ 0',220,58);
+
+  // Output wire and bulb
+  tCtx.strokeStyle=on?'#818CF8':'#1A1D27'; tCtx.lineWidth=2.5;
+  tCtx.beginPath(); tCtx.moveTo(280,80); tCtx.lineTo(380,80); tCtx.stroke();
+  tCtx.beginPath(); tCtx.moveTo(380,80); tCtx.lineTo(380,140); tCtx.stroke();
+  tCtx.strokeStyle=on?'#F59E0B':'#4B5563'; tCtx.lineWidth=2;
+  tCtx.beginPath(); tCtx.arc(380,155,14,0,Math.PI*2); tCtx.stroke();
+  if(on){tCtx.fillStyle=`rgba(245,158,11,${Math.min(1,Ic/50)*0.5})`;tCtx.fill();tCtx.shadowBlur=20*Ic/50;tCtx.shadowColor='#F59E0B';}
+  tCtx.shadowBlur=0;
+  tCtx.fillStyle='white'; tCtx.font='11px serif'; tCtx.textAlign='center';
+  tCtx.fillText(on?'💡':'○',380,159);
+  tCtx.strokeStyle='#1A1D27'; tCtx.lineWidth=2;
+  tCtx.beginPath(); tCtx.moveTo(380,169); tCtx.lineTo(380,220); tCtx.stroke();
+  tCtx.beginPath(); tCtx.moveTo(160,280); tCtx.lineTo(120,280); tCtx.lineTo(120,220); tCtx.lineTo(380,220); tCtx.stroke();
+  // Battery
+  tCtx.strokeStyle='#818CF8'; tCtx.lineWidth=2;
+  tCtx.beginPath(); tCtx.moveTo(380,170); tCtx.lineTo(380,169); tCtx.stroke();
+  tCtx.fillStyle='#818CF8'; tCtx.font='9px monospace'; tCtx.textAlign='right';
+  tCtx.fillText('+250V',376,100);
+
+  // Vacuum label
+  tCtx.fillStyle='rgba(100,150,200,0.3)'; tCtx.font='italic 10px sans-serif'; tCtx.textAlign='center';
+  tCtx.fillText('VACUUM',220,230);
+}
+
+function drawCurve(currentGridV, tempPct) {
+  const W=440, H=130;
+  cCtx.clearRect(0,0,W,H); cCtx.fillStyle='#0D0E15'; cCtx.fillRect(0,0,W,H);
+  // Axes
+  cCtx.strokeStyle='#1A1D27'; cCtx.lineWidth=1;
+  cCtx.beginPath(); cCtx.moveTo(40,10); cCtx.lineTo(40,110); cCtx.stroke();
+  cCtx.beginPath(); cCtx.moveTo(40,110); cCtx.lineTo(W-10,110); cCtx.stroke();
+  // Labels
+  cCtx.fillStyle='#4B5563'; cCtx.font='9px monospace'; cCtx.textAlign='center';
+  cCtx.fillText('Grid Voltage →',220,H-2);
+  cCtx.save(); cCtx.translate(12,60); cCtx.rotate(-Math.PI/2);
+  cCtx.fillText('Ip (mA)',0,0); cCtx.restore();
+  // Grid voltage labels
+  for(let v=-8;v<=2;v+=2) {
+    const x=40+(v+8)/10*(W-55);
+    cCtx.fillStyle='#4B5563'; cCtx.font='8px monospace'; cCtx.textAlign='center';
+    cCtx.fillText(v+'V',x,H-2);
+  }
+  // Curve
+  cCtx.beginPath(); cCtx.strokeStyle='#F59E0B'; cCtx.lineWidth=2;
+  for(let v=-8;v<=2;v+=0.1) {
+    const x=40+(v+8)/10*(W-55);
+    const ip=getPlateCurrent(tempPct, v);
+    const y=110-ip/50*95;
+    v===-8?cCtx.moveTo(x,y):cCtx.lineTo(x,y);
+  }
+  cCtx.stroke();
+  // Current point
+  const cx=40+(currentGridV+8)/10*(W-55);
+  const cy=110-getPlateCurrent(tempPct,currentGridV)/50*95;
+  cCtx.fillStyle='#6366F1'; cCtx.beginPath(); cCtx.arc(cx,cy,5,0,Math.PI*2); cCtx.fill();
+  // Threshold line
+  cCtx.strokeStyle='rgba(239,68,68,0.4)'; cCtx.lineWidth=1; cCtx.setLineDash([3,3]);
+  const tx=40+(-4+8)/10*(W-55);
+  cCtx.beginPath(); cCtx.moveTo(tx,10); cCtx.lineTo(tx,110); cCtx.stroke();
+  cCtx.setLineDash([]);
+  cCtx.fillStyle='#4B5563'; cCtx.font='8px monospace'; cCtx.textAlign='left';
+  cCtx.fillText('threshold',tx+2,20);
+}
+
+const tempSlider=document.getElementById('temp-slider');
+const gridSlider=document.getElementById('grid-slider');
+
+function updateTriode() {
+  const t=parseInt(tempSlider.value);
+  const g=parseInt(gridSlider.value)/10; // -8 to +2
+  const temp=Math.round(300+t*9)+'°C';
+  const Ic=getPlateCurrent(t,g);
+  const on=Ic>2;
+  document.getElementById('temp-val').textContent=temp;
+  document.getElementById('emission-val').textContent=t<30?'None':t<60?'Low':'High';
+  document.getElementById('cloud-val').textContent=t+'%';
+  document.getElementById('grid-val').textContent=(g>=0?'+':'')+g.toFixed(1)+' V';
+  document.getElementById('plate-current-val').textContent=Ic.toFixed(1)+' mA';
+  document.getElementById('plate-bar').style.width=Math.min(100,Ic/50*100)+'%';
+  document.getElementById('plate-bar').style.background=on?'var(--color-success)':'#1A1D27';
+  const stateEl=document.getElementById('tube-state');
+  stateEl.textContent=on?'TUBE: CONDUCTING':'TUBE: CUT OFF';
+  stateEl.className='state-label '+(on?'state-on':'state-off');
+  drawTriode(t,g); drawCurve(g,t);
+}
+
+tempSlider.addEventListener('input',updateTriode);
+gridSlider.addEventListener('input',updateTriode);
+
+function animateTriode() {
+  particlePhase=(particlePhase+0.02)%1;
+  updateTriode();
+  animFrame=requestAnimationFrame(animateTriode);
+}
+animateTriode();
+
+// ========================= SWITCH COMPARISON =========================
+let relayState=false, tubeState=false;
+let relayCount=0, tubeCount=0;
+let relayAnimating=false, tubeAnimating=false;
+let relayAutoInterval=null, tubeAutoInterval=null;
+
+function drawSwitchPanel(canvasId, state, label, animProgress) {
+  const canvas=document.getElementById(canvasId); const ctx=canvas.getContext('2d');
+  const W=260,H=160;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#0D0E15'; ctx.fillRect(0,0,W,H);
+  const isRelay=canvasId.includes('relay');
+  const on=state;
+
+  if(isRelay) {
+    // Draw relay schematic
+    ctx.strokeStyle=on?'#10B981':'#4B5563'; ctx.lineWidth=2;
+    // Coil
+    for(let i=0;i<5;i++){ctx.beginPath();ctx.ellipse(80,60+i*10,18,5,0,0,Math.PI*2);ctx.strokeStyle=on?'#F59E0B':'#1A1D27';ctx.stroke();}
+    // Armature
+    const armY=on?104:118;
+    ctx.strokeStyle='#9CA3AF'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(110,110); ctx.lineTo(180,armY); ctx.stroke();
+    ctx.fillStyle='#9CA3AF'; ctx.beginPath(); ctx.arc(110,110,4,0,Math.PI*2); ctx.fill();
+    // Contacts
+    ctx.strokeStyle='#9CA3AF'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(180,100); ctx.lineTo(200,100); ctx.stroke();
+    ctx.fillStyle=on?'#10B981':'#EF4444';
+    ctx.beginPath(); ctx.arc(180,armY,5,0,Math.PI*2); ctx.fill();
+    // Output bulb
+    ctx.strokeStyle=on?'#F59E0B':'#4B5563'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(235,80,14,0,Math.PI*2); ctx.stroke();
+    if(on){ctx.fillStyle='rgba(245,158,11,0.4)';ctx.fill();}
+    ctx.fillStyle='white'; ctx.font='12px serif'; ctx.textAlign='center';
+    ctx.fillText(on?'💡':'○',235,84);
+    // Switch time bar
+    if(animProgress>0&&animProgress<1){
+      ctx.fillStyle='#1A1D27'; ctx.fillRect(20,140,220,10);
+      ctx.fillStyle=on?'#10B981':'#F59E0B';
+      ctx.fillRect(20,140,animProgress*220,10);
+    }
+    ctx.fillStyle=on?'#10B981':'#4B5563'; ctx.font='10px monospace'; ctx.textAlign='left';
+    ctx.fillText(on?'CLOSED (15ms)':'OPEN',20,130);
+  } else {
+    // Tube triode schematic
+    ctx.strokeStyle='rgba(150,200,255,0.2)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.ellipse(120,80,70,60,0,0,Math.PI*2); ctx.stroke();
+    // Cathode
+    const heatColor=on?'#F97316':'#553300';
+    ctx.strokeStyle=heatColor; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(85,120); ctx.lineTo(155,120); ctx.stroke();
+    // Grid
+    ctx.strokeStyle=on?'#10B981':'#EF4444'; ctx.lineWidth=1.5;
+    for(let x=75;x<=165;x+=15){ctx.beginPath();ctx.moveTo(x,65);ctx.lineTo(x,80);ctx.stroke();}
+    // Electron stream
+    if(on){
+      for(let i=0;i<4;i++){
+        const t=((Date.now()/200+i*0.25)%1);
+        ctx.fillStyle=`rgba(129,140,248,${0.6-t*0.4})`;
+        ctx.beginPath(); ctx.arc(100+i*15,120-t*80,2,0,Math.PI*2); ctx.fill();
+      }
+    }
+    // Plate
+    ctx.strokeStyle=on?'#10B981':'#4B5563'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(75,45); ctx.lineTo(165,45); ctx.stroke();
+    // Output bulb
+    ctx.strokeStyle=on?'#F59E0B':'#4B5563'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(220,80,14,0,Math.PI*2); ctx.stroke();
+    if(on){ctx.fillStyle='rgba(245,158,11,0.4)';ctx.fill();}
+    ctx.fillStyle='white'; ctx.font='12px serif'; ctx.textAlign='center';
+    ctx.fillText(on?'💡':'○',220,84);
+    // Switch time
+    ctx.fillStyle=on?'#10B981':'#4B5563'; ctx.font='10px monospace'; ctx.textAlign='left';
+    ctx.fillText(on?'ON (1µs)':'OFF',10,130);
+  }
+}
+
+function doRelaySwitch(){
+  if(relayAnimating)return;
+  relayAnimating=true; relayState=!relayState; relayCount++;
+  document.getElementById('relay-sw-state').textContent=relayState?'ON':'OFF';
+  document.getElementById('relay-count').textContent=relayCount;
+  // Animate over 400ms (scaled from 15ms)
+  let start=null;
+  function step(ts){
+    if(!start)start=ts;
+    const p=Math.min(1,(ts-start)/400);
+    drawSwitchPanel('relaySwCanvas',relayState,'Relay',p);
+    if(p<1)requestAnimationFrame(step);
+    else{relayAnimating=false;drawSwitchPanel('relaySwCanvas',relayState,'Relay',0);}
+  }
+  requestAnimationFrame(step);
+}
+
+function doTubeSwitch(){
+  tubeState=!tubeState; tubeCount++;
+  document.getElementById('tube-sw-state').textContent=tubeState?'ON':'OFF';
+  document.getElementById('tube-count').textContent=tubeCount;
+  drawSwitchPanel('tubeSwCanvas',tubeState,'Tube',0);
+}
+
+function autoRelay(){
+  if(relayAutoInterval)clearInterval(relayAutoInterval);
+  let n=0; const END=5000;
+  relayAutoInterval=setInterval(()=>{doRelaySwitch();n+=15;if(n>=END){clearInterval(relayAutoInterval);relayAutoInterval=null;}},420);
+}
+
+function autoTube(){
+  // Tubes switch so fast we just show the count
+  let count=0;
+  const totalSwitches=Math.floor(5*500000);
+  let display=0;
+  const step=10000;
+  const interval=setInterval(()=>{
+    display=Math.min(totalSwitches,display+step*50);
+    tubeCount=display; tubeState=!tubeState;
+    document.getElementById('tube-sw-state').textContent=tubeState?'ON':'OFF';
+    document.getElementById('tube-count').textContent=display.toLocaleString();
+    drawSwitchPanel('tubeSwCanvas',tubeState,'Tube',0);
+    if(display>=totalSwitches)clearInterval(interval);
+  },50);
+}
+
+drawSwitchPanel('relaySwCanvas',false,'Relay',0);
+drawSwitchPanel('tubeSwCanvas',false,'Tube',0);
+
+// ========================= ENIAC GRID =========================
+const TOTAL_TUBES=17468;
+const COLS=Math.ceil(Math.sqrt(TOTAL_TUBES*560/380));
+const ROWS=Math.ceil(TOTAL_TUBES/COLS);
+let tubeStatus=new Array(TOTAL_TUBES).fill(1); // 1=working, 0=failed
+let eniacTimer=null, eniacHours=0;
+let failedCount=0;
+
+function drawEniac(){
+  const canvas=document.getElementById('eniacCanvas');
+  const ctx=canvas.getContext('2d');
+  const W=560,H=380;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#0D0E15'; ctx.fillRect(0,0,W,H);
+  const cw=Math.floor(W/COLS), ch=Math.floor(H/ROWS);
+  const tw=Math.max(1,cw-1), th=Math.max(1,ch-1);
+  tubeStatus.forEach((s,i)=>{
+    const c=i%COLS, r=Math.floor(i/COLS);
+    if(r>=ROWS)return;
+    ctx.fillStyle=s===1?'rgba(245,158,11,0.7)':s===2?'#EF4444':'rgba(30,30,30,0.8)';
+    ctx.fillRect(c*cw+1,r*ch+1,tw,th);
+  });
+  ctx.fillStyle='rgba(245,158,11,0.15)'; ctx.font='bold 10px monospace'; ctx.textAlign='right';
+  ctx.fillText(`${TOTAL_TUBES} tubes`,W-5,H-5);
+}
+
+function eniacLog(msg){
+  const log=document.getElementById('eniac-log');
+  log.innerHTML+=`<div>> ${msg}</div>`; log.scrollTop=log.scrollHeight;
+}
+
+function startEniac(){
+  if(eniacTimer)return;
+  eniacLog('ENIAC starting...');
+  eniacTimer=setInterval(()=>{
+    eniacHours++;
+    document.getElementById('e-hours').textContent=eniacHours;
+    // Poisson: ~7 failures per simulated hour
+    const numFails=Math.floor(Math.random()*3+5);
+    let newFails=0;
+    for(let i=0;i<numFails;i++){
+      const idx=Math.floor(Math.random()*TOTAL_TUBES);
+      if(tubeStatus[idx]===1){tubeStatus[idx]=0;failedCount++;newFails++;}
+    }
+    const working=TOTAL_TUBES-failedCount;
+    document.getElementById('e-working').textContent=working.toLocaleString();
+    document.getElementById('e-failed').textContent=failedCount.toLocaleString();
+    const pct=Math.round(working/TOTAL_TUBES*100);
+    document.getElementById('e-uptime').textContent=pct+'%';
+    document.getElementById('e-uptime').style.color=pct>90?'var(--color-success)':pct>70?'var(--color-warning)':'var(--color-danger)';
+    if(newFails>0) eniacLog(`Hour ${eniacHours}: ${newFails} tube(s) failed — total failed: ${failedCount}`);
+    if(pct<50){clearInterval(eniacTimer);eniacTimer=null;eniacLog('ENIAC SHUTDOWN: too many failures');}
+    drawEniac();
+  },800);
+}
+
+function resetEniac(){
+  clearInterval(eniacTimer); eniacTimer=null;
+  tubeStatus=new Array(TOTAL_TUBES).fill(1); failedCount=0; eniacHours=0;
+  document.getElementById('e-working').textContent=TOTAL_TUBES.toLocaleString();
+  document.getElementById('e-failed').textContent='0';
+  document.getElementById('e-uptime').textContent='100%';
+  document.getElementById('e-uptime').style.color='var(--color-success)';
+  document.getElementById('e-hours').textContent='0';
+  document.getElementById('eniac-log').innerHTML='<div>[ Reset — all tubes nominal ]</div>';
+  drawEniac();
+}
+
+function fixAll(){
+  tubeStatus=tubeStatus.map(s=>1); failedCount=0;
+  document.getElementById('e-working').textContent=TOTAL_TUBES.toLocaleString();
+  document.getElementById('e-failed').textContent='0';
+  document.getElementById('e-uptime').textContent='100%';
+  document.getElementById('e-uptime').style.color='var(--color-success)';
+  eniacLog('All tubes replaced — ENIAC operational');
+  drawEniac();
+}
+
+drawEniac();
+
+// ========================= TABS =========================
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['triode','switch','eniac'][i]===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+}
+
+updateTriode();
+</script>
+</body>
+</html>
