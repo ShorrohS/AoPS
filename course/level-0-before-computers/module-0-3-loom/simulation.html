@@ -5,233 +5,174 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Module 0.3 — Jacquard Loom Simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root{
-  --bg-primary:#090A0F;--bg-secondary:#12141C;--bg-tertiary:#1A1D27;
-  --bg-glass:rgba(18,20,28,0.75);
-  --text-primary:#F3F4F6;--text-secondary:#9CA3AF;--text-muted:#4B5563;
-  --accent-primary:#6366F1;--accent-hover:#4F46E5;--accent-glow:rgba(99,102,241,0.15);
-  --color-success:#10B981;--color-warning:#F59E0B;--color-danger:#EF4444;
-  --color-code-bg:#0D0E15;
-  --border-subtle:rgba(255,255,255,0.08);--border-active:rgba(99,102,241,0.4);
-  --radius-sm:6px;--radius-md:10px;--radius-lg:16px;
-  --shadow-soft:0 10px 30px -10px rgba(0,0,0,0.5);
-  --shadow-glow:0 0 20px rgba(99,102,241,0.2);
-  --transition-fast:150ms cubic-bezier(0.16,1,0.3,1);
-  --transition-smooth:300ms cubic-bezier(0.16,1,0.3,1);
-  --transition-bounce:400ms cubic-bezier(0.34,1.56,0.64,1);
-  --font-mono:'JetBrains Mono',monospace;
+:root{
+  --bg-paper:#F4F3EF; --bg-washi:#FDFDFD; --bg-warm:#EEECE6; --bg-canvas:#F8F7F3;
+  --text-sumi:#1C1C1C; --text-body:#3A3A3A; --text-muted:#888880; --text-ghost:#BBBBB5;
+  --accent-red:#C82A2A; --accent-indigo:#1C2D42; --accent-gold:#8B6914; --accent-ink:#1C1C1C;
+  --border-hair:#1C1C1C; --border-light:#D8D6CE; --border-paper:#E8E6DF;
+  --radius-xs:2px; --radius-sm:4px;
+  --ease-out:cubic-bezier(0.16,1,0.3,1); --t-fast:120ms; --t-med:240ms; --t-slow:400ms;
 }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; padding: 20px; }
-  h1 { color: var(--accent-primary); font-size: 1.4rem; margin-bottom: 4px; }
-  .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
-  .intro-box { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-left: 4px solid var(--color-warning); padding: 14px 18px; border-radius: 8px; margin-bottom: 18px; font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); }
-  .intro-box strong { color: var(--color-warning); }
-  .btn { padding: 9px 20px; border-radius: 7px; border: none; cursor: pointer; font-size: 0.88rem; font-weight: 600; transition: all 0.2s; }
-  .btn-primary { background: var(--accent-primary); color: var(--bg-primary); }
-  .btn-primary:hover { opacity: 0.85; }
-  .btn-secondary { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-subtle); }
-  .btn-secondary:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
-  .btn-success { background: var(--color-success); color: var(--bg-primary); }
-  .btn-success:hover { opacity: 0.85; }
-  .btn-danger { background: var(--color-danger); color: white; }
-  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes zen-fade-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shuttle-left{from{left:calc(100% - 88px)}to{left:0}}
+@keyframes shuttle-right{from{left:0}to{left:calc(100% - 88px)}}
+@keyframes drop{0%{transform:translateY(-12px);opacity:0}100%{transform:translateY(0);opacity:1}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-0.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:28px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 20px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;border:1px solid var(--border-hair);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast) var(--ease-out),color var(--t-fast) var(--ease-out)}
+.zen-btn:hover{background:var(--accent-ink);color:#FDFDFD}
+.zen-btn.primary{background:var(--accent-ink);color:#FDFDFD}.zen-btn.primary:hover{background:#2C2C2C}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red);background:transparent}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.zen-btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
 
-  /* ===== LAYOUT ===== */
-  .main-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-  @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } }
+/* ── BENTO LAYOUT ── */
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:900px){.bento{grid-template-columns:1fr}}
+.bento-cell{background:var(--bg-washi);padding:24px}
+.bento-cell.canvas-cell{background:var(--bg-canvas);padding:20px}
+.cell-title{font-family:'Noto Serif JP',serif;font-size:13px;font-weight:400;color:var(--text-sumi);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px}
+.cell-meta{font-size:11px;color:var(--text-muted);margin-bottom:14px}
 
-  /* ===== CARD DESIGNER ===== */
-  .designer { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 16px; }
-  .designer h2 { color: var(--accent-primary); font-size: 1rem; margin-bottom: 4px; }
-  .designer .sub { color: var(--text-muted); font-size: 0.78rem; margin-bottom: 14px; }
+/* ── PRESET PILLS ── */
+.presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.preset-btn{padding:5px 12px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;border:1px solid var(--border-paper);background:var(--bg-warm);color:var(--text-muted);cursor:pointer;border-radius:var(--radius-xs);transition:all var(--t-fast)}
+.preset-btn:hover{border-color:var(--border-hair);color:var(--text-sumi)}
 
-  .card-chain { display: flex; flex-direction: column; gap: 3px; }
-  .card-row { display: flex; align-items: center; gap: 4px; }
-  .card-num {
-    width: 22px; font-size: 0.75rem; color: var(--text-muted); text-align: right;
-    flex-shrink: 0;
-  }
-  .card-cells { display: flex; gap: 3px; }
-  .hole {
-    width: 32px; height: 32px; border-radius: 5px;
-    border: 2px solid var(--border-subtle); cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1rem; transition: all 0.12s; user-select: none;
-    background: var(--bg-tertiary);
-  }
-  .hole.punched { background: var(--color-warning); border-color: var(--color-warning); }
-  .hole:hover { border-color: var(--accent-primary); }
-  .hole.active-row { border-color: var(--accent-primary); }
+/* ── CARD CHAIN DESIGNER ── */
+.col-headers{display:flex;gap:3px;margin-bottom:4px;padding-left:26px}
+.col-h{width:32px;text-align:center;font-size:10px;font-weight:500;color:var(--text-ghost);font-family:'JetBrains Mono',monospace}
+.card-chain{display:flex;flex-direction:column;gap:3px}
+.card-row{display:flex;align-items:center;gap:4px}
+.card-num{width:22px;font-size:10px;color:var(--text-muted);text-align:right;flex-shrink:0;font-family:'JetBrains Mono',monospace}
+.card-cells{display:flex;gap:3px}
+.hole{width:32px;height:32px;border:1px solid var(--border-paper);background:var(--bg-warm);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all var(--t-fast);user-select:none;color:var(--text-ghost);border-radius:var(--radius-xs)}
+.hole:hover{border-color:var(--border-hair)}
+.hole.punched{background:var(--accent-ink);border-color:var(--accent-ink);color:var(--bg-washi)}
+.hole.active-row{border-color:var(--accent-red)}
+.binary-row{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-ghost);padding-left:4px;align-self:center}
+.binary-row span.b1{color:var(--accent-indigo)}
+.binary-display{margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;color:var(--text-muted)}
+.binary-display span.bval{color:var(--accent-ink)}
 
-  .col-headers { display: flex; gap: 3px; margin-bottom: 4px; padding-left: 26px; }
-  .col-h { width: 32px; text-align: center; font-size: 0.7rem; color: var(--text-muted); }
+/* ── WARP THREADS ── */
+.warp-display{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;margin-bottom:12px;border-radius:var(--radius-xs)}
+.warp-row-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);margin-bottom:8px}
+.warp-threads{display:flex;gap:4px;justify-content:center}
+.warp-thread{width:28px;height:40px;border:1px solid var(--border-paper);transition:all 250ms var(--ease-out);display:flex;align-items:flex-end;justify-content:center;padding-bottom:3px;border-radius:var(--radius-xs);background:var(--bg-warm)}
+.warp-thread.up{background:var(--accent-ink);border-color:var(--accent-ink);transform:translateY(-10px)}
+.warp-thread.down{background:var(--bg-warm)}
+.t-num{font-size:9px;color:var(--text-ghost);font-family:'JetBrains Mono',monospace}
+.warp-thread.up .t-num{color:rgba(255,255,255,0.5)}
 
-  .binary-row { font-family: monospace; font-size: 0.78rem; color: var(--text-muted); padding-left: 4px; }
-  .binary-row span.b1 { color: var(--color-warning); }
+/* ── SHUTTLE ── */
+.shuttle-track-wrap{display:flex;align-items:center;gap:8px;margin-bottom:12px;height:26px}
+.shuttle-track{flex:1;height:2px;background:var(--border-paper);position:relative}
+.shuttle{position:absolute;top:-9px;height:20px;width:80px;background:var(--accent-red);display:flex;align-items:center;justify-content:center;transition:left 400ms ease-in-out;border-radius:var(--radius-xs)}
+.shuttle-txt{font-size:9px;color:white;opacity:.85;font-weight:500;letter-spacing:0.06em}
+.shuttle-track-label{font-size:10px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:0.1em;flex-shrink:0}
 
-  /* ===== LOOM DISPLAY ===== */
-  .loom-wrap { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 16px; }
-  .loom-wrap h2 { color: var(--accent-primary); font-size: 1rem; margin-bottom: 4px; }
-  .loom-wrap .sub { color: var(--text-muted); font-size: 0.78rem; margin-bottom: 14px; }
+/* ── FABRIC CANVAS ── */
+.fabric-wrap{border:1px solid var(--border-paper);overflow:hidden;border-radius:var(--radius-xs)}
+.fabric-label{background:var(--bg-warm);color:var(--text-muted);font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;padding:5px 10px;border-bottom:1px solid var(--border-paper)}
+canvas#fabricCanvas{display:block;width:100%}
 
-  /* Warp threads display */
-  .warp-display {
-    background: #0a0f1e; border: 2px solid var(--wood);
-    border-radius: 8px; padding: 10px; margin-bottom: 12px;
-    display: flex; flex-direction: column; gap: 2px;
-  }
-  .warp-row-label { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px; }
-  .warp-threads { display: flex; gap: 4px; justify-content: center; }
-  .warp-thread {
-    width: 28px; height: 40px; border-radius: 3px;
-    border: 1px solid var(--border-subtle);
-    transition: all 0.25s;
-    display: flex; align-items: center; justify-content: flex-end;
-    flex-direction: column; padding-bottom: 2px;
-    position: relative;
-  }
-  .warp-thread.up {
-    background: linear-gradient(180deg, var(--thread-up), #b8941a);
-    border-color: var(--thread-up);
-    transform: translateY(-10px);
-  }
-  .warp-thread.down {
-    background: linear-gradient(180deg, #2a3a5a, #1a2a3a);
-    border-color: var(--border-subtle);
-  }
-  .warp-thread .t-num { font-size: 0.65rem; color: rgba(255,255,255,0.5); }
+/* ── STATUS ROW ── */
+.loom-status{display:flex;gap:0;margin-top:12px;border:1px solid var(--border-paper)}
+.ls-item{flex:1;padding:10px 14px;border-right:1px solid var(--border-paper);font-size:12px}
+.ls-item:last-child{border-right:none}
+.lv{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:400;color:var(--text-sumi);display:block;margin-bottom:2px}
+.ll{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted)}
 
-  /* Shuttle */
-  .shuttle-row {
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 10px; height: 24px;
-  }
-  .shuttle {
-    height: 18px; width: 80px; border-radius: 10px;
-    background: linear-gradient(90deg, var(--weft), #b03040);
-    box-shadow: 0 2px 8px rgba(233,69,96,0.4);
-    transition: transform 0.4s ease-in-out;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .shuttle .s-txt { font-size: 0.6rem; color: white; opacity: 0.8; }
-  .shuttle-track {
-    flex: 1; height: 4px; background: var(--bg-tertiary); border-radius: 2px;
-  }
-
-  /* Fabric canvas */
-  .fabric-wrap { border: 2px solid var(--wood); border-radius: 8px; overflow: hidden; }
-  .fabric-label { background: var(--wood); color: var(--ivory, #f5f0e0); font-size: 0.72rem; padding: 4px 10px; letter-spacing: 1px; }
-  canvas#fabricCanvas { display: block; width: 100%; }
-
-  /* Status info */
-  .loom-status {
-    background: var(--bg-tertiary); border-radius: 8px; padding: 10px 14px;
-    margin-top: 10px; display: flex; gap: 16px; flex-wrap: wrap;
-  }
-  .ls-item { font-size: 0.8rem; }
-  .ls-item .lv { color: var(--accent-primary); font-weight: 700; margin-right: 4px; font-family: monospace; }
-  .ls-item .ll { color: var(--text-muted); }
-
-  /* Presets */
-  .presets { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-  .preset-btn {
-    padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border-subtle);
-    background: var(--bg-tertiary); color: var(--text-muted); font-size: 0.78rem; cursor: pointer;
-    transition: all 0.15s;
-  }
-  .preset-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
-
-  /* Speed control */
-  .speed-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .speed-row label { font-size: 0.8rem; color: var(--text-muted); }
-  input[type="range"] { accent-color: var(--accent-primary); width: 100px; }
+/* ── SPEED ROW ── */
+.speed-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.speed-label-txt{font-size:11px;color:var(--text-muted);white-space:nowrap;font-weight:500;text-transform:uppercase;letter-spacing:0.1em}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:1px;background:var(--border-hair);cursor:pointer;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--accent-ink);border-radius:50%;cursor:grab}
+input[type=range]::-webkit-slider-thumb:active{background:var(--accent-red)}
 </style>
 </head>
 <body>
 
-<h1>🧵 Module 0.3 — Jacquard Loom Simulator</h1>
-<p class="subtitle">Program a punch card chain. The loom executes it — hole by hole, row by row.</p>
-
-<div class="intro-box">
-  <strong>How to use:</strong> Each row is one punch card. Each column is one warp thread.
-  <strong style="color:var(--color-warning)">Click a cell to punch a hole</strong> (thread goes UP — shown in gold) or leave it empty (thread stays DOWN).
-  When you press <strong>Weave</strong>, the loom reads your cards in sequence and builds the fabric.
-  <br><br>
-  The card chain is your <em>program</em>. The loom is the <em>machine</em>. They are separate.
+<div class="zen-header">
+  <h1 class="zen-title">Module 0.3 — Jacquard Loom Simulator</h1>
+  <p class="zen-subtitle">Program a punch card chain. The loom executes it — hole by hole, row by row.</p>
 </div>
 
-<div class="main-layout">
+<div class="zen-intro">
+  <strong>How to use:</strong> Each row is one punch card. Each column is one warp thread.
+  Click a cell to punch a hole (filled = thread UP). Leave it empty (thread stays DOWN).
+  Press Weave — the loom reads your cards in sequence and builds the fabric.
+  <br><br>The card chain is your <em>program</em>. The loom is the <em>machine</em>. They are separate.
+</div>
 
+<div class="bento">
   <!-- LEFT: Card Designer -->
-  <div class="designer">
-    <h2>📋 Punch Card Chain Designer</h2>
-    <p class="sub">Click cells to punch holes. Yellow = hole (thread UP). Dark = no hole (thread DOWN).</p>
+  <div class="bento-cell">
+    <div class="cell-title">Punch Card Chain Designer</div>
+    <div class="cell-meta">Click cells to punch holes. Filled = hole (thread UP). Empty = no hole (thread DOWN).</div>
 
     <div class="presets">
-      <span style="font-size:0.78rem; color:var(--text-muted); align-self:center;">Presets:</span>
+      <span style="font-size:10px;color:var(--text-muted);align-self:center;text-transform:uppercase;letter-spacing:0.1em;font-weight:500">Presets:</span>
       <button class="preset-btn" onclick="loadPreset('checkerboard')">Checkerboard</button>
       <button class="preset-btn" onclick="loadPreset('stripes-h')">H. Stripes</button>
       <button class="preset-btn" onclick="loadPreset('stripes-v')">V. Stripes</button>
       <button class="preset-btn" onclick="loadPreset('diagonal')">Diagonal</button>
       <button class="preset-btn" onclick="loadPreset('letter-H')">Letter H</button>
-      <button class="preset-btn" onclick="loadPreset('clear')">Clear All</button>
+      <button class="preset-btn" onclick="loadPreset('clear')">Clear</button>
     </div>
 
     <div class="col-headers" id="col-headers"></div>
     <div class="card-chain" id="card-chain"></div>
 
-    <div style="margin-top: 12px;">
-      <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:6px;">Binary encoding of your cards:</div>
-      <div id="binary-display" style="font-family:monospace; font-size:0.78rem; line-height:1.7; color:var(--text-muted);"></div>
-    </div>
+    <div class="binary-display" id="binary-display"></div>
   </div>
 
   <!-- RIGHT: Loom Display -->
-  <div class="loom-wrap">
-    <h2>🏭 Loom Execution</h2>
-    <p class="sub">Press Weave to run your card chain. Watch the threads respond to each card.</p>
+  <div class="bento-cell canvas-cell">
+    <div class="cell-title">Loom Execution</div>
 
     <div class="speed-row">
-      <label>Speed:</label>
+      <span class="speed-label-txt">Speed</span>
       <input type="range" id="speed-slider" min="1" max="5" value="3">
-      <span id="speed-label" style="font-size:0.78rem; color:var(--accent-primary);">Medium</span>
+      <span id="speed-label" style="font-size:11px;color:var(--accent-indigo);font-family:'JetBrains Mono',monospace;min-width:60px">Medium</span>
     </div>
 
     <div class="warp-display">
-      <div class="warp-row-label">Warp threads — current card state</div>
+      <div class="warp-row-label">Warp threads — current card</div>
       <div class="warp-threads" id="warp-threads"></div>
     </div>
 
-    <div class="shuttle-row">
-      <span style="font-size:0.72rem; color:var(--text-muted);">Shuttle</span>
-      <div class="shuttle-track">
-        <div class="shuttle" id="shuttle"><span class="s-txt">weft →</span></div>
+    <div class="shuttle-track-wrap">
+      <span class="shuttle-track-label">Shuttle</span>
+      <div class="shuttle-track" id="shuttle-track">
+        <div class="shuttle" id="shuttle" style="left:0"><span class="shuttle-txt">weft →</span></div>
       </div>
     </div>
 
     <div class="fabric-wrap">
-      <div class="fabric-label">WOVEN FABRIC — builds as cards execute</div>
+      <div class="fabric-label">Woven Fabric — builds as cards execute</div>
       <canvas id="fabricCanvas" width="256" height="256"></canvas>
     </div>
 
     <div class="loom-status">
       <div class="ls-item"><span class="lv" id="stat-card">—</span><span class="ll">Card</span></div>
-      <div class="ls-item"><span class="lv" id="stat-threads">—</span><span class="ll">Threads up</span></div>
-      <div class="ls-item"><span class="lv" id="stat-binary">—</span><span class="ll">Binary row</span></div>
+      <div class="ls-item"><span class="lv" id="stat-threads">—</span><span class="ll">Threads Up</span></div>
+      <div class="ls-item"><span class="lv" id="stat-binary" style="font-size:10px">—</span><span class="ll">Binary Row</span></div>
       <div class="ls-item"><span class="lv" id="stat-state">Ready</span><span class="ll">State</span></div>
     </div>
 
     <div class="btn-row">
-      <button class="btn btn-success" id="weave-btn" onclick="startWeave()">▶ Weave</button>
-      <button class="btn btn-secondary" onclick="stopWeave()">■ Stop</button>
-      <button class="btn btn-secondary" onclick="resetLoom()">↺ Reset Fabric</button>
+      <button class="zen-btn primary" id="weave-btn" onclick="startWeave()">▶ Weave</button>
+      <button class="zen-btn danger" onclick="stopWeave()">■ Stop</button>
+      <button class="zen-btn" onclick="resetLoom()">Reset Fabric</button>
     </div>
   </div>
 </div>
@@ -244,10 +185,9 @@ let weaving = false;
 let weaveTimeout = null;
 let fabricCtx = null;
 let currentRow = 0;
-let shuttleDir = 1; // 1 = right, -1 = left
+let shuttleDir = 1;
 const CELL_SIZE = 32;
 
-// ===== SPEED =====
 const SPEEDS = [600, 400, 250, 150, 80];
 const SPEED_LABELS = ['Very Slow', 'Slow', 'Medium', 'Fast', 'Very Fast'];
 document.getElementById('speed-slider').addEventListener('input', function() {
@@ -257,9 +197,7 @@ function getDelay() {
   return SPEEDS[document.getElementById('speed-slider').value - 1];
 }
 
-// ===== INIT =====
 function init() {
-  // Column headers
   const hdrs = document.getElementById('col-headers');
   hdrs.innerHTML = '<div style="width:22px"></div>';
   for (let c = 0; c < COLS; c++) {
@@ -280,12 +218,10 @@ function renderCardChain() {
     const rowEl = document.createElement('div');
     rowEl.className = 'card-row';
     rowEl.id = `card-row-${r}`;
-
     const num = document.createElement('div');
     num.className = 'card-num';
     num.textContent = r + 1;
     rowEl.appendChild(num);
-
     const cells = document.createElement('div');
     cells.className = 'card-cells';
     row.forEach((val, c) => {
@@ -296,14 +232,11 @@ function renderCardChain() {
       cells.appendChild(cell);
     });
     rowEl.appendChild(cells);
-
-    // Binary representation inline
     const binEl = document.createElement('div');
     binEl.className = 'binary-row';
-    binEl.style.cssText = 'font-size:0.7rem; padding-left:6px; align-self:center;';
+    binEl.style.cssText = 'font-size:10px; padding-left:6px; align-self:center;';
     binEl.innerHTML = row.map(v => `<span class="${v ? 'b1' : ''}">${v}</span>`).join('');
     rowEl.appendChild(binEl);
-
     chain.appendChild(rowEl);
   });
   updateBinaryDisplay();
@@ -321,11 +254,10 @@ function updateBinaryDisplay() {
     const bits = row.join('');
     const dec = parseInt(bits, 2);
     const hex = '0x' + dec.toString(16).toUpperCase().padStart(2, '0');
-    return `<div>Card ${i+1}: <span style="color:var(--color-warning)">${bits}</span> = ${dec} = ${hex}</div>`;
+    return `<div>Card ${i+1}: <span class="bval">${bits}</span> = ${dec} = ${hex}</div>`;
   }).join('');
 }
 
-// ===== WARP THREADS =====
 function renderWarpThreads(upThreads) {
   const el = document.getElementById('warp-threads');
   el.innerHTML = '';
@@ -337,7 +269,6 @@ function renderWarpThreads(upThreads) {
   }
 }
 
-// ===== FABRIC CANVAS =====
 function initFabric() {
   const canvas = document.getElementById('fabricCanvas');
   fabricCtx = canvas.getContext('2d');
@@ -347,11 +278,10 @@ function initFabric() {
 function clearFabric() {
   if (!fabricCtx) return;
   const canvas = document.getElementById('fabricCanvas');
-  fabricCtx.fillStyle = '#090A0F';
+  fabricCtx.fillStyle = '#F8F7F3';
   fabricCtx.fillRect(0, 0, canvas.width, canvas.height);
-  // Draw warp lines
   for (let c = 0; c < COLS; c++) {
-    fabricCtx.fillStyle = '#1a2a3a';
+    fabricCtx.fillStyle = '#E8E6DF';
     fabricCtx.fillRect(c * CELL_SIZE + 2, 0, CELL_SIZE - 4, canvas.height);
   }
 }
@@ -359,46 +289,39 @@ function clearFabric() {
 function weaveFabricRow(rowIndex, cardData, dir) {
   if (!fabricCtx) return;
   const y = rowIndex * CELL_SIZE;
-  const weftColor = dir > 0 ? '#EF4444' : '#c03050';
-
+  const weftColor = dir > 0 ? '#C82A2A' : '#a02020';
   for (let c = 0; c < COLS; c++) {
     if (cardData[c] === 1) {
-      // Thread UP — warp covers weft (show thread color)
-      fabricCtx.fillStyle = '#c8a020';
+      fabricCtx.fillStyle = '#1C1C1C';
       fabricCtx.fillRect(c * CELL_SIZE + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2);
     } else {
-      // Thread DOWN — weft passes over (show weft color)
       fabricCtx.fillStyle = weftColor;
       fabricCtx.fillRect(c * CELL_SIZE + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2);
     }
-    // Grid lines
-    fabricCtx.strokeStyle = '#090A0F';
+    fabricCtx.strokeStyle = '#F8F7F3';
     fabricCtx.lineWidth = 1;
     fabricCtx.strokeRect(c * CELL_SIZE + 0.5, y + 0.5, CELL_SIZE - 1, CELL_SIZE - 1);
   }
 }
 
-// ===== SHUTTLE ANIMATION =====
 async function animateShuttle(dir) {
   const shuttle = document.getElementById('shuttle');
-  const track = shuttle.parentElement;
-  const trackW = track.offsetWidth - shuttle.offsetWidth;
+  const track = document.getElementById('shuttle-track');
+  const trackW = track.offsetWidth - 80;
   if (dir > 0) {
-    shuttle.style.marginLeft = '0';
-    shuttle.style.marginRight = 'auto';
+    shuttle.style.left = '0px';
     await new Promise(r => setTimeout(r, 50));
-    shuttle.style.transition = `margin-left ${getDelay() * 0.8}ms ease-in-out`;
-    shuttle.style.marginLeft = trackW + 'px';
+    shuttle.style.transition = `left ${getDelay() * 0.8}ms ease-in-out`;
+    shuttle.style.left = trackW + 'px';
   } else {
-    shuttle.style.marginLeft = trackW + 'px';
+    shuttle.style.left = trackW + 'px';
     await new Promise(r => setTimeout(r, 50));
-    shuttle.style.transition = `margin-left ${getDelay() * 0.8}ms ease-in-out`;
-    shuttle.style.marginLeft = '0';
+    shuttle.style.transition = `left ${getDelay() * 0.8}ms ease-in-out`;
+    shuttle.style.left = '0px';
   }
   return new Promise(r => setTimeout(r, getDelay() * 0.85));
 }
 
-// ===== WEAVE =====
 async function startWeave() {
   if (weaving) return;
   weaving = true;
@@ -406,41 +329,29 @@ async function startWeave() {
   shuttleDir = 1;
   clearFabric();
   renderWarpThreads([]);
-  document.getElementById('stat-state').textContent = 'Weaving...';
+  document.getElementById('stat-state').textContent = 'Weaving…';
   document.getElementById('weave-btn').disabled = true;
 
   for (let r = 0; r < ROWS; r++) {
     if (!weaving) break;
     currentRow = r;
-
-    // Highlight active card row
     document.querySelectorAll('.card-row').forEach((el, i) => {
-      el.style.background = i === r ? 'rgba(83,216,251,0.1)' : '';
+      el.style.background = i === r ? 'rgba(200,42,42,0.06)' : '';
       el.querySelectorAll('.hole').forEach(h => h.classList.toggle('active-row', i === r));
     });
-
     const upThreads = cards[r].map((v, i) => v ? i : -1).filter(i => i >= 0);
     renderWarpThreads(upThreads);
-
-    // Update status
     const bits = cards[r].join('');
     document.getElementById('stat-card').textContent = `${r+1}/${ROWS}`;
     document.getElementById('stat-threads').textContent = `${upThreads.length}`;
     document.getElementById('stat-binary').textContent = bits;
-
     await new Promise(resolve => setTimeout(resolve, getDelay() * 0.4));
-
-    // Animate shuttle
     await animateShuttle(shuttleDir);
-
-    // Weave this row into fabric
     weaveFabricRow(r, cards[r], shuttleDir);
     shuttleDir *= -1;
-
     await new Promise(resolve => setTimeout(resolve, getDelay() * 0.3));
   }
 
-  // Reset highlights
   document.querySelectorAll('.card-row').forEach(el => {
     el.style.background = '';
     el.querySelectorAll('.hole').forEach(h => h.classList.remove('active-row'));
@@ -471,59 +382,13 @@ function resetLoom() {
   document.getElementById('stat-state').textContent = 'Ready';
 }
 
-// ===== PRESETS =====
 const PRESETS = {
-  'checkerboard': [
-    [1,0,1,0,1,0,1,0],
-    [0,1,0,1,0,1,0,1],
-    [1,0,1,0,1,0,1,0],
-    [0,1,0,1,0,1,0,1],
-    [1,0,1,0,1,0,1,0],
-    [0,1,0,1,0,1,0,1],
-    [1,0,1,0,1,0,1,0],
-    [0,1,0,1,0,1,0,1],
-  ],
-  'stripes-h': [
-    [1,1,1,1,1,1,1,1],
-    [1,1,1,1,1,1,1,1],
-    [0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0],
-    [1,1,1,1,1,1,1,1],
-    [1,1,1,1,1,1,1,1],
-    [0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0],
-  ],
-  'stripes-v': [
-    [1,1,0,0,1,1,0,0],
-    [1,1,0,0,1,1,0,0],
-    [1,1,0,0,1,1,0,0],
-    [1,1,0,0,1,1,0,0],
-    [1,1,0,0,1,1,0,0],
-    [1,1,0,0,1,1,0,0],
-    [1,1,0,0,1,1,0,0],
-    [1,1,0,0,1,1,0,0],
-  ],
-  'diagonal': [
-    [1,0,0,0,0,0,0,0],
-    [0,1,0,0,0,0,0,0],
-    [0,0,1,0,0,0,0,0],
-    [0,0,0,1,0,0,0,0],
-    [0,0,0,0,1,0,0,0],
-    [0,0,0,0,0,1,0,0],
-    [0,0,0,0,0,0,1,0],
-    [0,0,0,0,0,0,0,1],
-  ],
-  'letter-H': [
-    [1,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,1],
-    [1,1,1,1,1,1,1,1],
-    [1,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,1],
-    [0,0,0,0,0,0,0,0],
-  ],
-  'clear': Array.from({length: 8}, () => new Array(8).fill(0)),
+  'checkerboard':[[1,0,1,0,1,0,1,0],[0,1,0,1,0,1,0,1],[1,0,1,0,1,0,1,0],[0,1,0,1,0,1,0,1],[1,0,1,0,1,0,1,0],[0,1,0,1,0,1,0,1],[1,0,1,0,1,0,1,0],[0,1,0,1,0,1,0,1]],
+  'stripes-h':[[1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,1],[1,1,1,1,1,1,1,1],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]],
+  'stripes-v':[[1,1,0,0,1,1,0,0],[1,1,0,0,1,1,0,0],[1,1,0,0,1,1,0,0],[1,1,0,0,1,1,0,0],[1,1,0,0,1,1,0,0],[1,1,0,0,1,1,0,0],[1,1,0,0,1,1,0,0],[1,1,0,0,1,1,0,0]],
+  'diagonal':[[1,0,0,0,0,0,0,0],[0,1,0,0,0,0,0,0],[0,0,1,0,0,0,0,0],[0,0,0,1,0,0,0,0],[0,0,0,0,1,0,0,0],[0,0,0,0,0,1,0,0],[0,0,0,0,0,0,1,0],[0,0,0,0,0,0,0,1]],
+  'letter-H':[[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,1],[0,0,0,0,0,0,0,0]],
+  'clear':Array.from({length:8},()=>new Array(8).fill(0)),
 };
 
 function loadPreset(name) {
@@ -533,7 +398,6 @@ function loadPreset(name) {
   renderCardChain();
 }
 
-// ===== BOOT =====
 init();
 </script>
 </body>

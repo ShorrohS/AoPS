@@ -1,0 +1,359 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 6.2 — Stacks and Queues</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes push-anim{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes enq-anim{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.zen-btn.success{border-color:var(--accent-gold);color:var(--accent-gold)}.zen-btn.success:hover{background:var(--accent-gold);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+/* Stack visual — vertical */
+.stack-container{display:flex;flex-direction:column;gap:3px;max-height:240px;overflow-y:auto;padding:4px 0}
+.stack-item{padding:9px 14px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);font-family:'JetBrains Mono',monospace;font-size:13px;display:flex;justify-content:space-between;align-items:center;transition:all var(--t-fast);animation:push-anim .2s var(--ease-out)}
+.stack-item.top{border-color:var(--accent-red);background:rgba(200,42,42,0.06)}
+.si-val{color:var(--text-sumi)}
+.si-label{font-size:9px;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase}
+/* Queue visual — horizontal */
+.queue-container{display:flex;gap:3px;overflow-x:auto;padding:4px 0;min-height:55px;align-items:center}
+.queue-item{padding:9px 14px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);font-family:'JetBrains Mono',monospace;font-size:13px;flex-shrink:0;animation:enq-anim .2s var(--ease-out);position:relative}
+.queue-item.front{border-color:var(--accent-gold)}
+.queue-item.rear{border-color:var(--accent-indigo)}
+.qi-label{font-size:8px;color:var(--text-muted);position:absolute;top:2px;right:4px}
+/* Stat */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.stat-box{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:300;line-height:1;margin-bottom:2px;display:block;color:var(--text-sumi)}
+.sv.red{color:var(--accent-red)}.sv.gold{color:var(--accent-gold)}.sv.indigo{color:var(--accent-indigo)}
+.sl{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:120px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs)}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 6.2 — Stacks and Queues</h1>
+  <p class="zen-subtitle">Stack (LIFO) · Queue (FIFO) · BFS with Queue</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('stack')">Stack</div>
+  <div class="zen-tab" onclick="switchTab('queue')">Queue</div>
+  <div class="zen-tab" onclick="switchTab('bfs')">BFS with Queue</div>
+</div>
+
+<!-- STACK -->
+<div id="panel-stack" class="panel active">
+  <div class="zen-intro"><strong>Stack: Last In, First Out (LIFO).</strong> Push adds to the top; pop removes from the top. The call stack, undo history, and bracket matching all use this pattern. Run the bracket checker to see a stack in action.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Stack operations</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+        <input id="stk-val" type="text" value="42" style="font-family:'JetBrains Mono',monospace;font-size:13px;width:70px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+        <button class="zen-btn primary" onclick="stkPush()">push()</button>
+        <button class="zen-btn danger" onclick="stkPop()">pop()</button>
+        <button class="zen-btn" onclick="stkPeek()">peek()</button>
+        <button class="zen-btn danger" onclick="stkClear()">clear()</button>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px">↑ top</div>
+      <div class="stack-container" id="stk-vis"><div style="color:var(--text-ghost);font-size:12px;text-align:center;padding:20px">Stack empty</div></div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px">↓ bottom</div>
+      <div class="stat-row" style="margin-top:10px">
+        <div class="stat-box"><span class="sv indigo" id="stk-size">0</span><span class="sl">Size</span></div>
+        <div class="stat-box"><span class="sv gold" id="stk-top">—</span><span class="sl">Top</span></div>
+        <div class="stat-box"><span class="sv red" id="stk-ops">0</span><span class="sl">Operations</span></div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Bracket checker (uses a stack)</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+        <input id="brk-input" type="text" value="({[]})" placeholder="Enter brackets..." style="font-family:'JetBrains Mono',monospace;font-size:14px;flex:1;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:6px 10px;color:var(--text-sumi)">
+        <button class="zen-btn primary" onclick="runBrackets()">Check</button>
+      </div>
+      <div id="brk-result" style="font-family:'JetBrains Mono',monospace;font-size:13px;padding:10px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:10px;color:var(--text-muted)">Enter a string and press Check</div>
+      <div class="op-log" id="stk-log"><div class="linfo">> LIFO: last pushed is first popped. The top is always the most recently added.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- QUEUE -->
+<div id="panel-queue" class="panel">
+  <div class="zen-intro"><strong>Queue: First In, First Out (FIFO).</strong> Enqueue adds to the rear; dequeue removes from the front. Print queues, process schedulers, and BFS all use this pattern. Elements are served in the order they arrived.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Queue operations (front → rear)</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+        <input id="q-val" type="text" value="P1" style="font-family:'JetBrains Mono',monospace;font-size:13px;width:70px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+        <button class="zen-btn primary" onclick="qEnqueue()">enqueue()</button>
+        <button class="zen-btn danger" onclick="qDequeue()">dequeue()</button>
+        <button class="zen-btn" onclick="qPeek()">peek front</button>
+        <button class="zen-btn danger" onclick="qClear()">clear()</button>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px">← dequeue (front) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; enqueue (rear) →</div>
+      <div class="queue-container" id="q-vis"><div style="color:var(--text-ghost);font-size:12px">Queue empty</div></div>
+      <div class="stat-row" style="margin-top:10px">
+        <div class="stat-box"><span class="sv indigo" id="q-size">0</span><span class="sl">Size</span></div>
+        <div class="stat-box"><span class="sv gold" id="q-front">—</span><span class="sl">Front</span></div>
+        <div class="stat-box"><span class="sv red" id="q-ops">0</span><span class="sl">Operations</span></div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Scheduler simulation</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">Add processes to the queue, then run them one at a time (FIFO):</div>
+      <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+        <button class="zen-btn" onclick="schedAdd('P1')">Add P1</button>
+        <button class="zen-btn" onclick="schedAdd('P2')">Add P2</button>
+        <button class="zen-btn" onclick="schedAdd('P3')">Add P3</button>
+        <button class="zen-btn primary" onclick="schedRun()">▶ Run next</button>
+      </div>
+      <div id="sched-cpu" style="padding:10px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-muted)">CPU: idle</div>
+      <div class="op-log" id="q-log"><div class="linfo">> FIFO: first enqueued is first dequeued. Orders are served in arrival order.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- BFS WITH QUEUE -->
+<div id="panel-bfs" class="panel">
+  <div class="zen-intro"><strong>BFS uses a queue to explore level by level.</strong> Enqueue the start node. Dequeue a node, visit it, enqueue its unvisited neighbours. The queue ensures closest nodes are explored first — guaranteeing shortest paths.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Graph (click to set start)</div>
+      <canvas id="bfs-canvas" width="320" height="220" style="display:block;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);cursor:pointer;width:100%"></canvas>
+      <div class="btn-row" style="margin-top:8px">
+        <button class="zen-btn primary" onclick="bfsStep()">↓ Step</button>
+        <button class="zen-btn" onclick="bfsRunAll()">▶ Run all</button>
+        <button class="zen-btn danger" onclick="bfsReset()">↺ Reset</button>
+      </div>
+      <div class="stat-row" style="margin-top:10px">
+        <div class="stat-box"><span class="sv indigo" id="bfs-visited">0</span><span class="sl">Visited</span></div>
+        <div class="stat-box"><span class="sv gold" id="bfs-level">0</span><span class="sl">Level</span></div>
+        <div class="stat-box"><span class="sv red" id="bfs-q-size">0</span><span class="sl">Queue size</span></div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">BFS Queue state</div>
+      <div style="margin-bottom:8px">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Queue (front → rear):</div>
+        <div id="bfs-queue-vis" class="queue-container" style="min-height:40px"></div>
+      </div>
+      <div style="margin-bottom:8px">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">Visit order:</div>
+        <div id="bfs-order" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent-gold)">—</div>
+      </div>
+      <div class="op-log" id="bfs-log"><div class="linfo">> Click a node to set the BFS start, then step through.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== STACK =====
+let stkData=[], stkOps=0;
+function stkLog(m,cls='lmuted'){const el=document.getElementById('stk-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function renderStk(){
+  const vis=document.getElementById('stk-vis');
+  if(!stkData.length){vis.innerHTML='<div style="color:var(--text-ghost);font-size:12px;text-align:center;padding:20px">Stack empty</div>';
+    document.getElementById('stk-top').textContent='—';return;}
+  vis.innerHTML=stkData.slice().reverse().map((v,ri)=>`
+    <div class="stack-item ${ri===0?'top':''}">
+      <span class="si-val">${v}</span>
+      <span class="si-label">${ri===0?'← top':''}</span>
+    </div>`).join('');
+  document.getElementById('stk-top').textContent=stkData[stkData.length-1];
+  document.getElementById('stk-size').textContent=stkData.length;
+  document.getElementById('stk-ops').textContent=stkOps;
+}
+function stkPush(){stkOps++;const v=document.getElementById('stk-val').value||'0';stkData.push(v);stkLog(`push(${v}) → top is now ${v}`,'linfo');renderStk();}
+function stkPop(){stkOps++;if(!stkData.length){stkLog('Stack underflow!','lerr');return;}const v=stkData.pop();stkLog(`pop() → removed ${v}${stkData.length?', top is now '+stkData[stkData.length-1]:', stack empty'}`,'lok');renderStk();}
+function stkPeek(){if(!stkData.length){stkLog('Stack empty','lerr');return;}stkLog(`peek() → top = ${stkData[stkData.length-1]} (not removed)`,'linfo');}
+function stkClear(){stkData=[];stkOps=0;stkLog('clear()','lmuted');renderStk();}
+
+function runBrackets(){
+  const s=document.getElementById('brk-input').value;
+  const pairs={')':'(', ']':'[', '}':'{'};
+  const stack=[];
+  let trace='';
+  for(const c of s){
+    if('([{'.includes(c)){stack.push(c);trace+=`push '${c}'  stack:[${stack.join('')}]\n`;}
+    else if(')]}'.includes(c)){
+      if(!stack.length||stack[stack.length-1]!==pairs[c]){
+        trace+=`MISMATCH: expected '${pairs[c]}', found '${c}' or empty\n`;
+        document.getElementById('brk-result').innerHTML=`<span style="color:var(--accent-red)">✗ INVALID — mismatch at '${c}'</span>`;
+        document.getElementById('stk-log').innerHTML='<div class="lerr">> '+trace.replace(/\n/g,'</div><div class="lerr">> ')+'</div>';
+        return;
+      }
+      trace+=`pop '${stack.pop()}' matched with '${c}'  stack:[${stack.join('')}]\n`;
+    }
+  }
+  const valid=stack.length===0;
+  document.getElementById('brk-result').innerHTML=valid?
+    `<span style="color:var(--accent-gold)">✓ VALID — all brackets match</span>`:
+    `<span style="color:var(--accent-red)">✗ INVALID — unclosed: [${stack.join('')}]</span>`;
+  document.getElementById('stk-log').innerHTML='<div class="linfo">> Trace:</div><div class="lmuted">> '+trace.trim().replace(/\n/g,'</div><div class="lmuted">> ')+'</div>';
+}
+renderStk();
+
+// ===== QUEUE =====
+let qData=[], qOps=0, schedQ=['P2','P3'];
+function qLog(m,cls='lmuted'){const el=document.getElementById('q-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function renderQ(){
+  const vis=document.getElementById('q-vis');
+  if(!qData.length){vis.innerHTML='<div style="color:var(--text-ghost);font-size:12px">Queue empty</div>';
+    document.getElementById('q-front').textContent='—';return;}
+  vis.innerHTML=qData.map((v,i)=>`
+    <div class="queue-item ${i===0?'front':i===qData.length-1?'rear':''}">
+      ${v}
+      <span class="qi-label">${i===0?'front':i===qData.length-1?'rear':''}</span>
+    </div>`).join('<span style="font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--border-paper);align-self:center">|</span>');
+  document.getElementById('q-front').textContent=qData[0];
+  document.getElementById('q-size').textContent=qData.length;
+  document.getElementById('q-ops').textContent=qOps;
+}
+function qEnqueue(){qOps++;const v=document.getElementById('q-val').value||'x';qData.push(v);qLog(`enqueue(${v}) → added to rear, size=${qData.length}`,'linfo');renderQ();}
+function qDequeue(){qOps++;if(!qData.length){qLog('Queue empty!','lerr');return;}const v=qData.shift();qLog(`dequeue() → ${v} removed from front, size=${qData.length}`,'lok');renderQ();}
+function qPeek(){if(!qData.length){qLog('Queue empty','lerr');return;}qLog(`front = ${qData[0]} (not removed)`,'linfo');}
+function qClear(){qData=[];qOps=0;qLog('clear()','lmuted');renderQ();}
+
+function schedAdd(p){schedQ.push(p);qData.push(p);qOps++;qLog(`${p} → joined queue (position ${qData.length})`,'linfo');renderQ();}
+function schedRun(){
+  if(!qData.length){document.getElementById('sched-cpu').textContent='CPU: idle (queue empty)';return;}
+  const p=qData.shift();qOps++;
+  document.getElementById('sched-cpu').innerHTML=`CPU: <strong style="color:var(--accent-gold)">${p}</strong> is running...`;
+  setTimeout(()=>{document.getElementById('sched-cpu').textContent='CPU: idle';qLog(`${p} finished. Next: ${qData[0]||'none'}`,'lok');renderQ();},600);
+  renderQ();
+}
+renderQ();
+
+// ===== BFS =====
+const BFS_NODES=[
+  {id:0,x:160,y:30,label:'A'},
+  {id:1,x:80,y:100,label:'B'},
+  {id:2,x:240,y:100,label:'C'},
+  {id:3,x:40,y:170,label:'D'},
+  {id:4,x:130,y:170,label:'E'},
+  {id:5,x:200,y:170,label:'F'},
+  {id:6,x:290,y:170,label:'G'},
+];
+const BFS_EDGES=[[0,1],[0,2],[1,3],[1,4],[2,5],[2,6]];
+const BFS_ADJ={0:[1,2],1:[0,3,4],2:[0,5,6],3:[1],4:[1],5:[2],6:[2]};
+let bfsStart=0, bfsVisited=new Set(), bfsQueue=[], bfsOrder=[], bfsLevel=0, bfsLevelMap={};
+
+function bfsDrawGraph(){
+  const canvas=document.getElementById('bfs-canvas');
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=(canvas.clientWidth||320)*dpr; canvas.height=220*dpr;
+  ctx.scale(dpr,dpr); const W=canvas.clientWidth||320, H=220;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#F8F7F3'; ctx.fillRect(0,0,W,H);
+  const scaleX=W/320;
+  // Edges
+  BFS_EDGES.forEach(([a,b])=>{
+    const na=BFS_NODES[a], nb=BFS_NODES[b];
+    ctx.strokeStyle='#D8D6CE'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(na.x*scaleX,na.y); ctx.lineTo(nb.x*scaleX,nb.y); ctx.stroke();
+  });
+  // Nodes
+  BFS_NODES.forEach(n=>{
+    let fill='#F8F7F3', stroke='#D8D6CE', textColor='#888880';
+    if(n.id===bfsStart){stroke='#C82A2A';fill='rgba(200,42,42,0.08)';textColor='#C82A2A';}
+    if(bfsVisited.has(n.id)){stroke='#8B6914';fill='rgba(139,105,20,0.1)';textColor='#8B6914';}
+    if(bfsQueue.includes(n.id)&&!bfsVisited.has(n.id)){stroke='#1C2D42';fill='rgba(28,45,66,0.1)';textColor='#1C2D42';}
+    ctx.beginPath(); ctx.arc(n.x*scaleX,n.y,16,0,Math.PI*2);
+    ctx.fillStyle=fill; ctx.fill();
+    ctx.strokeStyle=stroke; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle=textColor; ctx.font='bold 13px JetBrains Mono,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(n.label, n.x*scaleX, n.y);
+    if(bfsLevelMap[n.id]!==undefined){
+      ctx.fillStyle='#888880'; ctx.font='9px Inter,sans-serif';
+      ctx.fillText('L'+bfsLevelMap[n.id], n.x*scaleX, n.y+22);
+    }
+  });
+}
+
+document.getElementById('bfs-canvas').onclick=function(e){
+  const rect=this.getBoundingClientRect();
+  const scaleX=(this.clientWidth||320)/320;
+  const mx=(e.clientX-rect.left)/scaleX, my=e.clientY-rect.top;
+  BFS_NODES.forEach(n=>{if(Math.hypot(n.x-mx,n.y-my)<18){bfsStart=n.id;bfsReset();}});
+};
+
+function bfsReset(){
+  bfsVisited=new Set(); bfsQueue=[bfsStart]; bfsOrder=[]; bfsLevel=0; bfsLevelMap={[bfsStart]:0};
+  document.getElementById('bfs-visited').textContent=0;
+  document.getElementById('bfs-level').textContent=0;
+  document.getElementById('bfs-q-size').textContent=1;
+  document.getElementById('bfs-order').textContent='—';
+  document.getElementById('bfs-log').innerHTML='<div class="linfo">> BFS from node '+BFS_NODES[bfsStart].label+'. Queue starts with just the start node.</div>';
+  renderBfsQueue(); bfsDrawGraph();
+}
+
+function renderBfsQueue(){
+  const el=document.getElementById('bfs-queue-vis');
+  if(!bfsQueue.length){el.innerHTML='<span style="color:var(--text-ghost);font-size:12px">Empty</span>';return;}
+  el.innerHTML=bfsQueue.map((id,i)=>`
+    <div class="queue-item ${i===0?'front':i===bfsQueue.length-1?'rear':''}">
+      ${BFS_NODES[id].label}
+      <span class="qi-label">${i===0?'front':''}</span>
+    </div>`).join('');
+}
+
+function bfsLog(m,cls='lmuted'){const el=document.getElementById('bfs-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+
+function bfsStep(){
+  if(!bfsQueue.length){bfsLog('BFS complete — all reachable nodes visited','lok');return;}
+  const nodeId=bfsQueue.shift();
+  if(bfsVisited.has(nodeId)){bfsStep();return;}
+  bfsVisited.add(nodeId);
+  bfsOrder.push(BFS_NODES[nodeId].label);
+  const currentLevel=bfsLevelMap[nodeId]||0;
+  if(currentLevel>bfsLevel) bfsLevel=currentLevel;
+  const neighbours=(BFS_ADJ[nodeId]||[]).filter(n=>!bfsVisited.has(n));
+  neighbours.forEach(n=>{if(!bfsQueue.includes(n)){bfsQueue.push(n);bfsLevelMap[n]=currentLevel+1;}});
+  bfsLog(`Dequeue ${BFS_NODES[nodeId].label} (level ${currentLevel}) → enqueue neighbours: ${neighbours.map(n=>BFS_NODES[n].label).join(',')|| 'none'}`, 'linfo');
+  document.getElementById('bfs-visited').textContent=bfsVisited.size;
+  document.getElementById('bfs-level').textContent=bfsLevel;
+  document.getElementById('bfs-q-size').textContent=bfsQueue.length;
+  document.getElementById('bfs-order').textContent=bfsOrder.join(' → ');
+  renderBfsQueue(); bfsDrawGraph();
+}
+
+function bfsRunAll(){let g=20;while(bfsQueue.length&&g-->0)bfsStep();}
+
+bfsReset();
+
+function switchTab(id){
+  ['stack','queue','bfs'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);p.style.display=t===id?'block':'none';p.classList.toggle('active',t===id);
+  });
+  if(id==='bfs') setTimeout(bfsDrawGraph,50);
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+window.addEventListener('resize',()=>{ if(document.getElementById('panel-bfs').style.display!=='none') bfsDrawGraph(); });
+</script>
+</body>
+</html>

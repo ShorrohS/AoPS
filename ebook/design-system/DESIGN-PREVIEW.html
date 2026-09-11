@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AoPS Publishing Design System — Living Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/aops-book.css">
+<style>
+/* Preview scaffold — not part of the design system */
+.ds-nav {
+  position: fixed;
+  top: 0; left: 0;
+  width: 220px;
+  height: 100vh;
+  background: #1C2D42;
+  overflow-y: auto;
+  padding: 24px 0;
+  z-index: 100;
+  font-family: 'Inter', sans-serif;
+}
+.ds-nav h2 {
+  font-family: 'Noto Serif JP', serif !important;
+  font-size: 13px !important;
+  font-weight: 300 !important;
+  color: rgba(255,255,255,0.5) !important;
+  padding: 0 20px 12px !important;
+  border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+  margin-bottom: 12px !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+.ds-nav a {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.55);
+  padding: 7px 20px;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+}
+.ds-nav a:hover { color: white; border-left-color: #C82A2A; background: rgba(255,255,255,0.05); }
+.ds-main { margin-left: 220px; }
+.ds-section {
+  padding: 64px 64px 80px;
+  border-bottom: 1px solid #D4D0C4;
+  max-width: 960px;
+}
+.ds-section-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #888880;
+  margin-bottom: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #E8E5DC;
+}
+.ds-section-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px;
+  font-weight: 300;
+  color: #E8E5DC;
+  float: right;
+  line-height: 1;
+  margin-top: -8px;
+}
+.ds-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #8B6914;
+  background: rgba(139,105,20,0.08);
+  border: 1px solid rgba(139,105,20,0.2);
+  padding: 2px 8px;
+  border-radius: 2px;
+  display: inline-block;
+  margin: 24px 0 10px;
+}
+.ds-swatch-row { display: flex; gap: 0; margin: 16px 0; flex-wrap: wrap; }
+.ds-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+.ds-swatch-chip {
+  width: 120px;
+  height: 64px;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+.ds-swatch-info {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #4A5568;
+  padding: 6px 4px 0;
+  line-height: 1.6;
+}
+.ds-type-sample {
+  padding: 16px 0;
+  border-bottom: 1px solid #E8E5DC;
+}
+.ds-type-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #888880;
+  margin-bottom: 8px;
+}
+@media (max-width: 800px) {
+  .ds-nav { display: none; }
+  .ds-main { margin-left: 0; }
+  .ds-section { padding: 32px 24px; }
+}
+</style>
+</head>
+<body class="aops-book" style="background:#F5F4EF;padding:0;margin:0">
+
+<!-- NAV -->
+<nav class="ds-nav">
+  <h2>AoPS Design System</h2>
+  <a href="#cover">Cover</a>
+  <a href="#colors">Color Palette</a>
+  <a href="#typography">Typography</a>
+  <a href="#chapter-opener">Chapter Opener</a>
+  <a href="#body-text">Body Text</a>
+  <a href="#callouts">Callouts</a>
+  <a href="#figures">Figures</a>
+  <a href="#code">Code Blocks</a>
+  <a href="#tables">Tables</a>
+  <a href="#quotes">Pull Quotes</a>
+  <a href="#toc">Table of Contents</a>
+  <a href="#timeline">Timeline</a>
+  <a href="#glossary">Glossary</a>
+  <a href="#reflection">Reflection</a>
+  <a href="#modern">Modern Connection</a>
+  <a href="#takeaways">Key Takeaways</a>
+  <a href="#margins">Margins &amp; Layout</a>
+</nav>
+
+<div class="ds-main">
+
+<!-- ================================================================
+     COVER
+     ================================================================ -->
+<section class="ds-section" id="cover" style="padding:0;max-width:100%">
+  <div class="ds-section-title" style="padding:24px 64px 16px;margin:0">
+    <span class="ds-section-num">01</span>
+    Cover Design
+  </div>
+
+  <div class="book-cover" style="max-width:520px;min-height:680px;margin:32px 64px;border:1px solid #D4D0C4;box-shadow:0 8px 40px rgba(0,0,0,0.12)">
+    <div class="cover-top-band">
+      <span class="cover-logo">AoPS</span>
+      <span class="cover-level-tag">Level 0</span>
+    </div>
+
+    <div class="cover-body">
+      <!-- Ink-wash illustration (SVG inline) -->
+      <svg class="cover-illustration" viewBox="0 0 400 500" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- Gear teeth motif -->
+        <circle cx="200" cy="200" r="80" stroke="#1C2D42" stroke-width="1.5" fill="none"/>
+        <circle cx="200" cy="200" r="50" stroke="#1C2D42" stroke-width="1" fill="none"/>
+        <circle cx="200" cy="200" r="20" stroke="#1C2D42" stroke-width="2" fill="none"/>
+        <path d="M200 120 L208 140 L192 140 Z" fill="#1C2D42" opacity="0.6"/>
+        <path d="M280 200 L260 208 L260 192 Z" fill="#1C2D42" opacity="0.6"/>
+        <path d="M200 280 L192 260 L208 260 Z" fill="#1C2D42" opacity="0.6"/>
+        <path d="M120 200 L140 192 L140 208 Z" fill="#1C2D42" opacity="0.6"/>
+        <!-- Punch card holes -->
+        <rect x="40" y="340" width="320" height="80" rx="2" stroke="#1C2D42" stroke-width="1" fill="none" opacity="0.3"/>
+        <circle cx="70" cy="360" r="4" fill="#1C2D42" opacity="0.4"/>
+        <circle cx="90" cy="360" r="4" fill="#1C2D42" opacity="0.2"/>
+        <circle cx="110" cy="360" r="4" fill="#1C2D42" opacity="0.4"/>
+        <circle cx="130" cy="360" r="4" fill="#1C2D42" opacity="0.4"/>
+        <circle cx="150" cy="360" r="4" fill="#1C2D42" opacity="0.2"/>
+        <circle cx="70" cy="380" r="4" fill="#1C2D42" opacity="0.2"/>
+        <circle cx="90" cy="380" r="4" fill="#1C2D42" opacity="0.4"/>
+        <circle cx="110" cy="380" r="4" fill="#1C2D42" opacity="0.2"/>
+        <circle cx="130" cy="380" r="4" fill="#1C2D42" opacity="0.4"/>
+        <circle cx="150" cy="380" r="4" fill="#1C2D42" opacity="0.4"/>
+        <!-- Binary dots -->
+        <text x="40" y="460" font-family="JetBrains Mono, monospace" font-size="12" fill="#1C2D42" opacity="0.2">01001000 01100101</text>
+        <text x="40" y="480" font-family="JetBrains Mono, monospace" font-size="12" fill="#1C2D42" opacity="0.2">01101100 01101100</text>
+        <!-- Tally marks -->
+        <line x1="50" y1="50" x2="50" y2="90" stroke="#1C2D42" stroke-width="1" opacity="0.3"/>
+        <line x1="60" y1="50" x2="60" y2="90" stroke="#1C2D42" stroke-width="1" opacity="0.3"/>
+        <line x1="70" y1="50" x2="70" y2="90" stroke="#1C2D42" stroke-width="1" opacity="0.3"/>
+        <line x1="80" y1="50" x2="80" y2="90" stroke="#1C2D42" stroke-width="1" opacity="0.3"/>
+        <line x1="48" y1="70" x2="92" y2="70" stroke="#1C2D42" stroke-width="1.5" opacity="0.4"/>
+      </svg>
+
+      <div>
+        <div class="cover-series">Art of Problem Solving</div>
+        <div class="cover-title">Before<br>Computers</div>
+        <div class="cover-rule"></div>
+        <div class="cover-subtitle">The Origins of Computation</div>
+        <div class="cover-tagline">From Tally Sticks to Turing</div>
+      </div>
+    </div>
+
+    <div class="cover-bottom-band">
+      <span class="cover-level-label">Level 0</span>
+      <span class="cover-series-label">AoPS Ebook Series</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================================================================
+     COLORS
+     ================================================================ -->
+<section class="ds-section" id="colors" style="background:#F5F4EF">
+  <div class="ds-section-title"><span class="ds-section-num">02</span>Color Palette</div>
+
+  <div class="ds-label">Primary Palette</div>
+  <div class="ds-swatch-row">
+    <div class="ds-swatch">
+      <div class="ds-swatch-chip" style="background:#1C1C1C"></div>
+      <div class="ds-swatch-info">--ink<br>#1C1C1C<br>Sumi Ink</div>
+    </div>
+    <div class="ds-swatch">
+      <div class="ds-swatch-chip" style="background:#F5F4EF;border:1px solid #D4D0C4"></div>
+      <div class="ds-swatch-info">--paper<br>#F5F4EF<br>Washi Paper</div>
+    </div>
+    <div class="ds-swatch">
+      <div class="ds-swatch-chip" style="background:#EEECE4"></div>
+      <div class="ds-swatch-info">--warm<br>#EEECE4<br>Aged Parchment</div>
+    </div>
+    <div class="ds-swatch">
+      <div class="ds-swatch-chip" style="background:#E8E5DC"></div>
+      <div class="ds-swatch-info">--bone<br>#E8E5DC<br>Bone White</div>
+    </div>
+    <div class="ds-swatch">
+      <div class="ds-swatch-chip" style="background:#D4D0C4"></div>
+      <div class="ds-swatch-info">--ghost<br>#D4D0C4<br>Stone Dust</div>
+    </div>
+  </div>
+
+  <div class="ds-label">Accent Palette</div>
+  <div class="ds-swatch-row">
+    <div class="ds-swatch">
+      <div class="ds-swatch-chip" style="background:#1C2D42"></div>
+      <div class="ds-swatch-info">--indigo<br>#1C2D42<br>Deep Indigo</div>
+    </div>
+    <div class="ds-swatch">
+      <div class="ds-swatch-chip" style="background:#C82A2A"></div>
+      <div class="ds-swatch-info">--lacquer<br>#C82A2A<br>Lacquer Red</div>
+    </div>
+    <div class="ds-swatch">
+      <div class="ds-swatch-chip" style="background:#8B6914"></div>
+      <div class="ds-swatch-info">--gold<br>#8B6914<br>Antique Gold</div>
+    </div>
+    <div class="ds-swatch">
+      <div class="ds-swatch-chip" style="background:#3D5B3F"></div>
+      <div class="ds-swatch-info">--sage<br>#3D5B3F<br>Bamboo Sage</div>
+    </div>
+    <div class="ds-swatch">
+      <div class="ds-swatch-chip" style="background:#4A5568"></div>
+      <div class="ds-swatch-info">--slate<br>#4A5568<br>Ink Wash</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================================================================
+     TYPOGRAPHY
+     ================================================================ -->
+<section class="ds-section" id="typography">
+  <div class="ds-section-title"><span class="ds-section-num">03</span>Typography Hierarchy</div>
+
+  <div class="ds-type-sample">
+    <div class="ds-type-meta">CHAPTER LABEL — Inter 11px/600, uppercase, #1C2D42, tracking 0.22em</div>
+    <span class="chapter-label">Chapter One</span>
+  </div>
+
+  <div class="ds-type-sample">
+    <div class="ds-type-meta">CHAPTER TITLE — Noto Serif JP 32px/300, #1C1C1C, tracking -0.01em</div>
+    <h1 class="chapter-title" style="margin:0">Why Humans Needed to Compute</h1>
+  </div>
+
+  <div class="ds-type-sample">
+    <div class="ds-type-meta">CHAPTER SUBTITLE — Inter 13px/400, uppercase, #4A5568, tracking 0.12em</div>
+    <div class="chapter-subtitle" style="margin:0">The Census Crisis · Navigation Errors · The Birth of Data Processing</div>
+  </div>
+
+  <div class="ds-type-sample">
+    <div class="ds-type-meta">SECTION HEAD H2 — Noto Serif JP 22px/400, #1C1C1C</div>
+    <h2 style="margin:0;border:none;padding:0">The Census That Broke Human Capacity</h2>
+  </div>
+
+  <div class="ds-type-sample">
+    <div class="ds-type-meta">SUBSECTION H3 — Inter 12px/600, uppercase, #1C2D42, tracking 0.12em</div>
+    <h3 style="margin:0">Problem 1: The 1880 US Census</h3>
+  </div>
+
+  <div class="ds-type-sample">
+    <div class="ds-type-meta">BODY TEXT — EB Garamond 17px/400, #1C1C1C, line-height 1.75</div>
+    <p>The 1880 United States Census employed hundreds of trained clerks who hand-tallied results on paper. The final count was published in 1888 — a full eight years after the census was taken. The mathematics was alarming: the 1890 census would count an even larger population, and at current rates, the results might not arrive before the 1900 census began.</p>
+    <p>This was not a failure of effort or diligence. It was a failure of <em>scale</em>. Human cognition is remarkable, but it degrades under the pressure of millions of identical, repetitive arithmetic operations. Every calculation harbored the possibility of error; every error propagated through subsequent tallies.</p>
+  </div>
+
+  <div class="ds-type-sample">
+    <div class="ds-type-meta">LEAD PARAGRAPH — EB Garamond 18px/400 italic, line-height 1.7</div>
+    <p class="lead-para" style="margin:0">In the summer of 1880, the United States government faced a problem that would change the course of human civilization — not through any act of heroism or invention, but through the quiet, grinding impossibility of counting fifty million people by hand.</p>
+  </div>
+
+  <div class="ds-type-sample">
+    <div class="ds-type-meta">INLINE CODE — JetBrains Mono 0.86em, #1C2D42, --bone bg</div>
+    <p>The Hollerith machine encoded each census field at a specific <code>column position</code> on the card, making the hole's position the data — a principle identical to modern <code>fixed-width record formats</code>.</p>
+  </div>
+
+  <div class="ds-type-sample">
+    <div class="ds-type-meta">CAPTION — Inter 13px/400 italic, #4A5568</div>
+    <figcaption style="margin:0">Figure 1.1 — The 1880 census tally room. Each clerk processed approximately 500 records per day. With 50 million records to process, the arithmetic of human computation simply could not keep pace.</figcaption>
+  </div>
+</section>
+
+
+<!-- ================================================================
+     CHAPTER OPENER
+     ================================================================ -->
+<section class="ds-section" id="chapter-opener" style="background:#F5F4EF">
+  <div class="ds-section-title"><span class="ds-section-num">04</span>Chapter Opening Layout</div>
+
+  <div style="border:1px solid #D4D0C4;margin-top:24px;background:#F5F4EF">
+
+    <!-- Chapter opener band with SVG motif -->
+    <div class="chapter-opener-band">
+      <svg viewBox="0 0 800 160" fill="none" xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:100%;height:100%;opacity:0.25">
+        <!-- Tally marks dissolving into order — Chapter 1 motif -->
+        <g stroke="#1C2D42" stroke-width="1">
+          <!-- Scattered tally marks on left -->
+          <line x1="40" y1="40" x2="40" y2="80"/>
+          <line x1="52" y1="35" x2="52" y2="82"/>
+          <line x1="64" y1="42" x2="64" y2="78"/>
+          <line x1="76" y1="38" x2="76" y2="80"/>
+          <line x1="36" y1="60" x2="82" y2="58" stroke-width="1.5"/>
+          <line x1="96" y1="45" x2="96" y2="75"/>
+          <line x1="108" y1="40" x2="108" y2="80"/>
+          <line x1="120" y1="43" x2="120" y2="77"/>
+          <line x1="132" y1="38" x2="132" y2="82"/>
+          <line x1="92" y1="60" x2="138" y2="60" stroke-width="1.5"/>
+          <!-- Transition zone — organizing -->
+          <line x1="200" y1="35" x2="200" y2="85" stroke-width="1.5"/>
+          <line x1="216" y1="35" x2="216" y2="85" stroke-width="1.5"/>
+          <line x1="232" y1="35" x2="232" y2="85" stroke-width="1.5"/>
+          <line x1="248" y1="35" x2="248" y2="85" stroke-width="1.5"/>
+          <line x1="264" y1="35" x2="264" y2="85" stroke-width="1.5"/>
+          <line x1="195" y1="60" x2="270" y2="60" stroke-width="2"/>
+          <!-- Organized structure on right -->
+          <rect x="350" y="30" width="80" height="100" rx="1" stroke-width="1"/>
+          <rect x="450" y="30" width="80" height="100" rx="1" stroke-width="1"/>
+          <rect x="550" y="30" width="80" height="100" rx="1" stroke-width="1"/>
+          <rect x="650" y="30" width="80" height="100" rx="1" stroke-width="1"/>
+          <line x1="350" y1="55" x2="430" y2="55"/>
+          <line x1="350" y1="75" x2="430" y2="75"/>
+          <line x1="350" y1="95" x2="430" y2="95"/>
+          <line x1="450" y1="55" x2="530" y2="55"/>
+          <line x1="450" y1="75" x2="530" y2="75"/>
+        </g>
+      </svg>
+    </div>
+
+    <div style="padding:48px 56px 64px">
+      <span class="chapter-label">Chapter One</span>
+      <hr class="chapter-rule">
+      <h1 class="chapter-title">Why Humans Needed to Compute</h1>
+      <div class="chapter-subtitle">The Census Crisis · Navigation · Arithmetic at Scale</div>
+
+      <span class="chapter-divider"></span>
+
+      <p class="lead-para drop-cap">In the summer of 1880, fifty million Americans were counted. Eight years later, the government was still counting. This was not a scandal of incompetence — it was a collision between human cognitive limits and the unstoppable arithmetic of scale. That collision, repeated across census halls, navigation charts, and artillery ranges, made computing an inevitability.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================================================================
+     CALLOUTS
+     ================================================================ -->
+<section class="ds-section" id="callouts">
+  <div class="ds-section-title"><span class="ds-section-num">05</span>Callout Styles</div>
+
+  <div class="callout callout-historical">
+    <div class="callout-label">⊕ Historical Note</div>
+    <div class="callout-body">
+      <p>Between 1930 and 1945, the US government's Mathematical Tables Project employed over 450 people as professional "computers." Many were women with mathematics degrees who could not obtain other professional work due to discrimination. These same women would later program ENIAC, the first general-purpose electronic computer.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-insight">
+    <div class="callout-label">◆ Key Insight</div>
+    <div class="callout-body">
+      <p>Computation, at its core, is the manipulation of symbols according to rules. A human doing long division is computing. A gear turning in a calculating machine is computing. A transistor switching in a chip is computing. The difference is not in kind but in speed, reliability, and tirelessness.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-think">
+    <div class="callout-label">◇ Think About It</div>
+    <div class="callout-body">
+      <p>The 1880 census took 8 years to tabulate. The US Constitution requires a census every 10 years. At what point does the census become meaningless? If results arrive after the next census begins, can they influence any policy? What does this tell us about the relationship between <em>data velocity</em> and decision-making?</p>
+    </div>
+  </div>
+
+  <div class="callout callout-try">
+    <div class="callout-label">▷ Try It Yourself</div>
+    <div class="callout-body">
+      <p>Open the simulation and take on the role of an 1880 census clerk. Process twenty records manually, then switch to machine mode and process 50 million. Pay attention to how your accuracy changes as fatigue sets in — and notice that the machine never tires.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-challenge">
+    <div class="callout-label">✦ Challenge</div>
+    <div class="callout-body">
+      <p>The 1890 census employed 100 Hollerith tabulators, each processing 65 cards per minute. Calculate: how many hours would it take to process all 62,979,766 records? The historical record says 6 weeks — does your calculation match? What accounts for any difference?</p>
+    </div>
+  </div>
+
+  <div class="callout callout-deep">
+    <div class="callout-label">∇ Deep Dive</div>
+    <div class="callout-body">
+      <p>The connection between Hollerith's punch card system and modern SQL databases is not metaphorical — it is direct. Each Hollerith card was a <em>record</em>: a fixed set of fields describing one entity. The card sorter performed what we now call a <code>SELECT ... WHERE</code> operation. The tabulator performed <code>COUNT</code> and <code>SUM</code>. Every database management system built since 1970 is, in this sense, a Hollerith machine running at electronic speed.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-future">
+    <div class="callout-label">→ Future Connection</div>
+    <div class="callout-body">
+      <p>The punch card's binary encoding — hole = 1, no hole = 0 — is the direct ancestor of the bit. When you store a character in a Python string, you are still fundamentally encoding information as a positional binary value, just as Hollerith did in 1890. The medium changed from stiff cardboard to silicon. The logic did not change at all.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================================================================
+     FIGURES
+     ================================================================ -->
+<section class="ds-section" id="figures" style="background:#F5F4EF">
+  <div class="ds-section-title"><span class="ds-section-num">06</span>Figure Styling</div>
+
+  <!-- Standard figure -->
+  <figure>
+    <div class="figure-wrapper">
+      <div class="figure-label">Figure 1.1</div>
+      <div class="figure-screen" style="height:220px;display:flex;align-items:center;justify-content:center">
+        <div style="text-align:center;color:#888880;font-family:'JetBrains Mono',monospace;font-size:12px">
+          <div style="font-size:48px;opacity:0.2;margin-bottom:8px">📊</div>
+          [Census Simulator — Human Mode]<br>
+          <span style="font-size:10px;opacity:0.6">simulation screenshot</span>
+        </div>
+      </div>
+      <hr class="figure-sep">
+      <figcaption>
+        <strong>The 1880 census simulation in human mode.</strong> Each card represents one of twenty census records. The clerk must click each record to process it, tallying occupations, age groups, and family sizes manually. Notice how errors accumulate as attention drifts — a problem that plagued every census before mechanisation.
+      </figcaption>
+    </div>
+  </figure>
+
+  <!-- Interactive figure with badge -->
+  <figure>
+    <div class="figure-wrapper">
+      <span class="figure-badge">Interactive</span>
+      <div class="figure-label">Figure 3.2</div>
+      <div class="figure-screen" style="height:200px;display:flex;align-items:center;justify-content:center">
+        <div style="text-align:center;color:#888880;font-family:'JetBrains Mono',monospace;font-size:12px">
+          <div style="font-size:48px;opacity:0.2;margin-bottom:8px">🧵</div>
+          [Jacquard Loom — Weaving in Progress]<br>
+          <span style="font-size:10px;opacity:0.6">simulation screenshot</span>
+        </div>
+      </div>
+      <hr class="figure-sep">
+      <figcaption>
+        <strong>The Jacquard loom simulation mid-weave.</strong> The gold squares show warp threads currently raised by the punch card's holes. The red squares show where the weft thread (shuttle) passes below. Together, these binary decisions — up or down, 1 or 0 — produce the pattern. The card chain is the program; the loom is the machine.
+      </figcaption>
+    </div>
+  </figure>
+
+  <!-- Figure pair -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <figure>
+      <div class="figure-wrapper">
+        <div class="figure-label">Figure 4.1</div>
+        <div class="figure-screen" style="height:160px;display:flex;align-items:center;justify-content:center">
+          <div style="text-align:center;color:#888880;font-family:'JetBrains Mono',monospace;font-size:11px">
+            [Difference Engine<br>Step-by-step]
+          </div>
+        </div>
+        <hr class="figure-sep">
+        <figcaption>The Difference Engine stepping through finite differences. Each crank advances the calculation by addition alone.</figcaption>
+      </div>
+    </figure>
+    <figure>
+      <div class="figure-wrapper">
+        <div class="figure-label">Figure 4.2</div>
+        <div class="figure-screen" style="height:160px;display:flex;align-items:center;justify-content:center">
+          <div style="text-align:center;color:#888880;font-family:'JetBrains Mono',monospace;font-size:11px">
+            [Analytical Engine<br>Store + Mill]
+          </div>
+        </div>
+        <hr class="figure-sep">
+        <figcaption>The Analytical Engine emulator with its Store (memory) and Mill (processor) — the first computer architecture.</figcaption>
+      </div>
+    </figure>
+  </div>
+</section>
+
+
+<!-- ================================================================
+     CODE BLOCKS
+     ================================================================ -->
+<section class="ds-section" id="code">
+  <div class="ds-section-title"><span class="ds-section-num">07</span>Code Blocks</div>
+
+  <p>Hollerith's encoding scheme assigned each character to a combination of row and column positions. The letter A, for example, is encoded as the simultaneous presence of holes in row 12 and column 1 of the same card column:</p>
+
+  <div class="code-caption">Hollerith Character Encoding (12-row system)</div>
+  <pre>
+Letter  Zone punch   Digit punch   Column encoding
+──────  ──────────   ───────────   ───────────────
+A       Row 12       Row 1         12-1
+B       Row 12       Row 2         12-2
+...
+Z       Row 11       Row 9         11-9
+0       (none)       Row 0         0
+1       (none)       Row 1         1</pre>
+
+  <p>In the 1928 IBM standard, this became the foundation of the 80-column punch card format — 80 characters per card, 12 punch positions per column, yielding 960 possible hole positions per card.</p>
+
+  <pre>
+# Modern Python equivalent of Hollerith's concept
+record = {
+    'name':       'Thomas Hartwell',
+    'age':        42,
+    'occupation': 'Farmer',
+    'birthplace': 'Virginia',
+    'family_size': 6
+}
+
+# This is structurally identical to one Hollerith punch card.
+# The key→value mapping is Hollerith's column→hole position mapping,
+# abstracted through a century of software evolution.</pre>
+</section>
+
+
+<!-- ================================================================
+     TABLES
+     ================================================================ -->
+<section class="ds-section" id="tables" style="background:#F5F4EF">
+  <div class="ds-section-title"><span class="ds-section-num">08</span>Tables</div>
+
+  <p>The results of the 1890 census demonstrated, in concrete numbers, the civilisational impact of mechanical computation:</p>
+
+  <div class="book-table-wrap">
+    <table class="book-table">
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>1880 (Manual)</th>
+          <th>1890 (Hollerith)</th>
+          <th>Improvement</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Population counted</td><td>50,189,209</td><td>62,979,766</td><td>+25% larger</td></tr>
+        <tr><td>Time to basic count</td><td>~2.5 years</td><td><strong>6 weeks</strong></td><td>~20× faster</td></tr>
+        <tr><td>Full tabulation</td><td>8 years</td><td>~2.5 years</td><td>~3× faster</td></tr>
+        <tr><td>Error rate</td><td>~5%</td><td>&lt;1%</td><td>5× more accurate</td></tr>
+        <tr><td>Cost</td><td>~$11.5M</td><td>~$5M</td><td>$5M+ saved</td></tr>
+      </tbody>
+    </table>
+    <div class="table-caption">Table 5.1 — Comparison of 1880 and 1890 US Census tabulation methods. The Hollerith system delivered results in time to influence the apportionment debates of that Congress — something the manual system had never achieved.</div>
+  </div>
+</section>
+
+
+<!-- ================================================================
+     PULL QUOTES
+     ================================================================ -->
+<section class="ds-section" id="quotes">
+  <div class="ds-section-title"><span class="ds-section-num">09</span>Pull Quotes &amp; Opening Stories</div>
+
+  <p>Opening story / scene-setting blockquote:</p>
+
+  <div class="opening-story">
+    <p>Imagine you are the United States government in 1880. You need to count fifty million people, record their ages, occupations, birthplaces, and family sizes — and you need to do it accurately enough to redraw congressional districts and allocate federal funding.</p>
+    <p>You have pencils, paper, and humans.</p>
+    <p><strong>It takes eight years.</strong> By the time you finish, the next census is already two years away.</p>
+  </div>
+
+  <p>Pull quote from body text:</p>
+
+  <blockquote>
+    "I wish to God these calculations had been executed by steam."
+    <cite>— Charles Babbage, 1821, upon finding errors in a published mathematical table</cite>
+  </blockquote>
+
+  <p>Named attribution quote:</p>
+
+  <blockquote>
+    "The Engine might act upon other things besides number... the Engine might compose elaborate and scientific pieces of music of any degree of complexity or extent."
+    <cite>— Ada Lovelace, Note A, 1843</cite>
+  </blockquote>
+</section>
+
+
+<!-- ================================================================
+     TABLE OF CONTENTS
+     ================================================================ -->
+<section class="ds-section" id="toc" style="background:#F5F4EF">
+  <div class="ds-section-title"><span class="ds-section-num">10</span>Table of Contents</div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+
+    <div class="toc-entry">
+      <span class="toc-chapter-num" style="color:#4A5568">Preface</span>
+      <span class="toc-chapter-title" style="font-size:14px;color:#4A5568">A Note on This Series</span>
+      <span class="toc-dots">· · · · · · · · · · · · · · · · · · · · · · · · · · · ·</span>
+      <span class="toc-page" style="font-style:italic">vii</span>
+    </div>
+    <div class="toc-entry">
+      <span class="toc-chapter-num" style="color:#4A5568">Introduction</span>
+      <span class="toc-chapter-title" style="font-size:14px;color:#4A5568">Before the Machine</span>
+      <span class="toc-dots">· · · · · · · · · · · · · · · · · · · · · · · · · · · ·</span>
+      <span class="toc-page" style="font-style:italic">xi</span>
+    </div>
+
+    <div class="toc-part" style="margin-top:32px">Part One — The Human Problem</div>
+
+    <div class="toc-entry">
+      <span class="toc-chapter-num">Chapter One</span>
+      <span class="toc-chapter-title">Why Humans Needed to Compute</span>
+      <span class="toc-dots">· · · · · · · · · · · · · · · · · · · · · · · · · · · ·</span>
+      <span class="toc-page">3</span>
+    </div>
+    <div class="toc-sub-entry">
+      <span class="toc-sub-title">The Census Crisis of 1880</span>
+      <span class="toc-dots">· · · · · · ·</span>
+      <span class="toc-page" style="font-size:12px;color:#888880">7</span>
+    </div>
+    <div class="toc-sub-entry">
+      <span class="toc-sub-title">Navigation and the Cost of Errors</span>
+      <span class="toc-dots">· · · · · · ·</span>
+      <span class="toc-page" style="font-size:12px;color:#888880">12</span>
+    </div>
+    <div class="toc-sub-entry">
+      <span class="toc-sub-title">Artillery and Wartime Calculation</span>
+      <span class="toc-dots">· · · · · · ·</span>
+      <span class="toc-page" style="font-size:12px;color:#888880">17</span>
+    </div>
+
+    <div class="toc-part" style="margin-top:32px">Part Two — Mechanical Minds</div>
+
+    <div class="toc-entry">
+      <span class="toc-chapter-num">Chapter Two</span>
+      <span class="toc-chapter-title">Gears and Levers</span>
+      <span class="toc-dots">· · · · · · · · · · · · · · · · · · · · · · · · · · · ·</span>
+      <span class="toc-page">29</span>
+    </div>
+    <div class="toc-entry">
+      <span class="toc-chapter-num">Chapter Three</span>
+      <span class="toc-chapter-title">The Loom That Taught Computers</span>
+      <span class="toc-dots">· · · · · · · · · · · · · · · · · · · · · · · · · · · ·</span>
+      <span class="toc-page">57</span>
+    </div>
+    <div class="toc-entry">
+      <span class="toc-chapter-num">Chapter Four</span>
+      <span class="toc-chapter-title">Babbage and Ada</span>
+      <span class="toc-dots">· · · · · · · · · · · · · · · · · · · · · · · · · · · ·</span>
+      <span class="toc-page">89</span>
+    </div>
+    <div class="toc-entry">
+      <span class="toc-chapter-num">Chapter Five</span>
+      <span class="toc-chapter-title">Hollerith and the Birth of Data</span>
+      <span class="toc-dots">· · · · · · · · · · · · · · · · · · · · · · · · · · · ·</span>
+      <span class="toc-page">121</span>
+    </div>
+
+    <div class="toc-part" style="margin-top:32px">Back Matter</div>
+
+    <div class="toc-entry">
+      <span class="toc-chapter-num" style="color:#4A5568">Glossary</span>
+      <span class="toc-chapter-title" style="font-size:14px;color:#4A5568">Key Terms and Definitions</span>
+      <span class="toc-dots">· · · · · · · · · · · · · · · · · · · · · · · · · · · ·</span>
+      <span class="toc-page">157</span>
+    </div>
+    <div class="toc-entry">
+      <span class="toc-chapter-num" style="color:#4A5568">Timeline</span>
+      <span class="toc-chapter-title" style="font-size:14px;color:#4A5568">Computing History 2400 BC – 1945</span>
+      <span class="toc-dots">· · · · · · · · · · · · · · · · · · · · · · · · · · · ·</span>
+      <span class="toc-page">165</span>
+    </div>
+    <div class="toc-entry">
+      <span class="toc-chapter-num" style="color:#4A5568">Further Reading</span>
+      <span class="toc-chapter-title" style="font-size:14px;color:#4A5568">Where to Go Next</span>
+      <span class="toc-dots">· · · · · · · · · · · · · · · · · · · · · · · · · · · ·</span>
+      <span class="toc-page">169</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================================================================
+     TIMELINE
+     ================================================================ -->
+<section class="ds-section" id="timeline">
+  <div class="ds-section-title"><span class="ds-section-num">11</span>Timeline Component</div>
+
+  <div class="timeline" style="counter-reset:none">
+    <div class="timeline-entry">
+      <span class="timeline-year">~2400 BC</span>
+      <span class="timeline-dot"></span>
+      <div class="timeline-content-wrap">
+        <div class="timeline-event">The Abacus</div>
+        <div class="timeline-desc">First external state storage: beads represent digits. Counting is offloaded from the mind to a physical object.</div>
+      </div>
+    </div>
+    <div class="timeline-entry">
+      <span class="timeline-year">1617</span>
+      <span class="timeline-dot"></span>
+      <div class="timeline-content-wrap">
+        <div class="timeline-event">Napier's Bones</div>
+        <div class="timeline-desc">Multiplication encoded in physical rods. The machine doesn't compute — it encodes, so the human only needs to add.</div>
+      </div>
+    </div>
+    <div class="timeline-entry">
+      <span class="timeline-year">1642</span>
+      <span class="timeline-dot"></span>
+      <div class="timeline-content-wrap">
+        <div class="timeline-event">Pascal's Pascaline</div>
+        <div class="timeline-desc">First mechanical carry: gears automatically advance the next digit when a wheel overflows 9 to 0.</div>
+      </div>
+    </div>
+    <div class="timeline-entry">
+      <span class="timeline-year">1804</span>
+      <span class="timeline-dot" style="background:var(--lacquer)"></span>
+      <div class="timeline-content-wrap">
+        <div class="timeline-event">Jacquard Loom</div>
+        <div class="timeline-desc">The first stored instructions: punch cards separate the pattern (program) from the loom (machine). Software is born conceptually.</div>
+      </div>
+    </div>
+    <div class="timeline-entry">
+      <span class="timeline-year">1837</span>
+      <span class="timeline-dot" style="background:var(--lacquer)"></span>
+      <div class="timeline-content-wrap">
+        <div class="timeline-event">Babbage's Analytical Engine</div>
+        <div class="timeline-desc">First design of a general-purpose programmable computer: Store (RAM), Mill (CPU), conditional branch, loops, I/O.</div>
+      </div>
+    </div>
+    <div class="timeline-entry">
+      <span class="timeline-year">1890</span>
+      <span class="timeline-dot" style="background:var(--gold)"></span>
+      <div class="timeline-content-wrap">
+        <div class="timeline-event">Hollerith Tabulating Machine</div>
+        <div class="timeline-desc">First industrial data processing: holes in cards become electrical signals become counted data. The 1890 census completed in 6 weeks instead of 8 years.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================================================================
+     GLOSSARY
+     ================================================================ -->
+<section class="ds-section" id="glossary" style="background:#F5F4EF">
+  <div class="ds-section-title"><span class="ds-section-num">12</span>Glossary Component</div>
+
+  <div class="glossary-entry">
+    <div class="glossary-term">Algorithm</div>
+    <div class="glossary-def">
+      <p>A finite, precise, unambiguous sequence of steps that produces a result from a given input. An algorithm must terminate, each step must be unambiguous, and it must work for any valid input — not just one specific case. The word derives from the name of the 9th-century Persian mathematician al-Khwarizmi. Ada Lovelace's 1843 procedure for computing Bernoulli numbers is considered the first published algorithm intended for execution by a machine.</p>
+    </div>
+  </div>
+
+  <div class="glossary-entry">
+    <div class="glossary-term">Carry</div>
+    <div class="glossary-def">
+      <p>In arithmetic, the carry is the digit that is "carried" to the next higher position when the sum of digits in the current position exceeds the base. In binary addition, 1 + 1 = 10: the result digit is 0 and the carry digit is 1. Pascal's Pascaline implemented mechanical carry in 1642; every modern CPU implements electronic carry in its adder circuits.</p>
+    </div>
+  </div>
+
+  <div class="glossary-entry">
+    <div class="glossary-term">Stored Instructions</div>
+    <div class="glossary-def">
+      <p>The principle that a machine's operating procedure can be encoded in an external medium (punch cards, magnetic storage, silicon memory) and loaded into the machine to change its behaviour without altering its physical structure. First demonstrated by the Jacquard loom (1804); formalised by the stored-program computer concept (1945–1948).</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================================================================
+     REFLECTION QUESTIONS
+     ================================================================ -->
+<section class="ds-section" id="reflection">
+  <div class="ds-section-title"><span class="ds-section-num">13</span>Reflection Questions</div>
+
+  <ol class="reflection-list" style="counter-reset:reflection">
+    <li>The 1880 census took 8 years and the 1890 census took 6 weeks. How does the <em>speed</em> of results change what is possible politically and economically — not just administratively?</li>
+    <li>Pascal built the Pascaline at age 18 to help his father, a tax collector. Hollerith built his machine after witnessing the census problem firsthand. What does this tell us about the relationship between personal frustration and technological innovation?</li>
+    <li>Ada Lovelace wrote that the Analytical Engine "might compose elaborate and scientific pieces of music." In 2024, AI systems do exactly this. Was Ada a prophet, or was she describing something that was always inevitable given the principles she understood?</li>
+    <li>Babbage's machines were never built in his lifetime. The Science Museum built the Difference Engine from his drawings in 1991 — and it worked perfectly. Does a design count as an invention if it was never realised? What does Babbage's case tell us about the relationship between ideas and implementation?</li>
+    <li>Every concept in this level — punch cards, stored instructions, data encoding, mechanical carry — still exists in a direct descendant in the computer you are reading this on. Trace the chain from one idea in this book to a specific feature of a modern system you use every day.</li>
+  </ol>
+</section>
+
+
+<!-- ================================================================
+     MODERN CONNECTION
+     ================================================================ -->
+<section class="ds-section" id="modern" style="background:#F5F4EF">
+  <div class="ds-section-title"><span class="ds-section-num">14</span>Modern Connection Panel</div>
+
+  <div class="modern-connection">
+    <div class="modern-connection-label">→ Connection to Modern Computing</div>
+
+    <div class="modern-connection-arrow">
+      <span class="modern-connection-from">Jacquard's Loom</span>
+      <span class="modern-connection-to">Software: the program is separate from the machine that executes it. Every `.py`, `.js`, and `.exe` file is Jacquard's card chain, just encoded in electrons rather than punched in cardboard.</span>
+    </div>
+
+    <div class="modern-connection-arrow">
+      <span class="modern-connection-from">Babbage's Store</span>
+      <span class="modern-connection-to">RAM: the Store held up to 1,000 numbers of 50 digits each. Your laptop's RAM holds billions of numbers. The structure — addressable locations holding mutable values — is identical.</span>
+    </div>
+
+    <div class="modern-connection-arrow">
+      <span class="modern-connection-from">Ada's Algorithm</span>
+      <span class="modern-connection-to">Functions: Ada's procedure for computing Bernoulli numbers had inputs, a sequence of operations, and an output. This is the definition of a function in every programming language ever written.</span>
+    </div>
+
+    <div class="modern-connection-arrow">
+      <span class="modern-connection-from">Hollerith's Record</span>
+      <span class="modern-connection-to">Database rows: each punch card was a record with fixed fields. A SQL table row is a punch card. <code>SELECT * FROM census WHERE occupation='Farmer'</code> is the Hollerith card sorter, expressed in text.</span>
+    </div>
+
+    <div class="modern-connection-arrow">
+      <span class="modern-connection-from">The Mechanical Carry</span>
+      <span class="modern-connection-to">The carry flag: every CPU has a carry flag that fires when an addition overflows its bit width. Pascal's gear that clicked forward when a wheel hit 9 is the direct ancestor of the CF bit in x86-64's EFLAGS register.</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================================================================
+     KEY TAKEAWAYS
+     ================================================================ -->
+<section class="ds-section" id="takeaways">
+  <div class="ds-section-title"><span class="ds-section-num">15</span>Key Takeaways</div>
+
+  <div class="key-takeaways">
+    <div class="key-takeaways-title">Chapter Five — Key Takeaways</div>
+    <ul>
+      <li>Herman Hollerith's tabulating machine reduced the 1890 US Census from 8 years to 6 weeks — a 62× speed improvement — while simultaneously halving the cost and reducing error rates by 5×.</li>
+      <li>Hollerith's system introduced the <em>record</em> as a data structure: a fixed-format collection of fields describing one entity. This concept is the direct ancestor of every database row and every struct in modern programming.</li>
+      <li>The physical medium of encoding changed from Jacquard's cardboard cards (1804) to Hollerith's stiff census cards (1890) to IBM's 80-column standard (1928) to magnetic tape (1950s) to silicon RAM (1970s). The logical structure — binary, positional, addressable — never changed.</li>
+      <li>The Tabulating Machine Company became IBM. IBM dominated computing for the next 70 years. The punch card remained the primary data input medium for early computers into the 1970s — 80 years after Hollerith's first census machine.</li>
+      <li>A hole in a Hollerith card and a bit in modern DRAM are the same thing: a physical state (present/absent, charged/uncharged) that encodes a binary value (1/0) at a specific address. The implementation is 130 years apart; the abstraction is identical.</li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ================================================================
+     MARGINS & LAYOUT
+     ================================================================ -->
+<section class="ds-section" id="margins">
+  <div class="ds-section-title"><span class="ds-section-num">16</span>Margins &amp; Layout Ruler</div>
+
+  <div style="background:var(--warm);border:1px solid var(--ghost);padding:32px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--slate);line-height:2">
+    <div>Content max-width:  720px</div>
+    <div>Text max-width:     640px</div>
+    <div>Container padding:  64px (desktop) / 32px (tablet) / 16px (mobile)</div>
+    <div>Base unit:          8px</div>
+    <div>Vertical rhythm:    28px (17px × 1.75 leading)</div>
+    <div></div>
+    <div>Spacing scale:</div>
+    <div>  --sp-xs   4px</div>
+    <div>  --sp-sm   8px</div>
+    <div>  --sp-md   16px</div>
+    <div>  --sp-lg   32px</div>
+    <div>  --sp-xl   64px</div>
+    <div>  --sp-2xl  96px</div>
+    <div>  --sp-3xl  128px</div>
+    <div></div>
+    <div>Print (A5):  148mm × 210mm</div>
+    <div>  Top: 18mm / Bottom: 16mm</div>
+    <div>  Inner: 20mm / Outer: 28mm</div>
+  </div>
+</section>
+
+
+<!-- Footer -->
+<section class="ds-section" style="background:var(--indigo);color:rgba(255,255,255,0.55)">
+  <div style="font-family:'Inter',sans-serif;font-size:11px;line-height:2">
+    <div style="font-family:'Noto Serif JP',serif;font-size:18px;font-weight:300;color:white;margin-bottom:16px">AoPS Publishing Design System</div>
+    <div>Version 1.0 · Japanese Zen Garden Theme</div>
+    <div>Used across all AoPS Ebook Levels: 0 through 12</div>
+    <div style="margin-top:16px;font-family:'JetBrains Mono',monospace">aops-book.css · DESIGN-SYSTEM.md</div>
+  </div>
+</section>
+
+</div><!-- /ds-main -->
+</body>
+</html>

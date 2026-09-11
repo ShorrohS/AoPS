@@ -5,184 +5,184 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Module 1.2 — Relay & Switch Simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg-primary:#090A0F;--bg-secondary:#12141C;--bg-tertiary:#1A1D27;
-  --text-primary:#F3F4F6;--text-secondary:#9CA3AF;--text-muted:#4B5563;
-  --accent-primary:#6366F1;--accent-hover:#4F46E5;--accent-glow:rgba(99,102,241,0.15);
-  --color-success:#10B981;--color-warning:#F59E0B;--color-danger:#EF4444;
-  --color-code-bg:#0D0E15;
-  --border-subtle:rgba(255,255,255,0.08);--border-active:rgba(99,102,241,0.4);
-  --radius-sm:6px;--radius-md:10px;--radius-lg:16px;
-  --shadow-glow:0 0 20px rgba(99,102,241,0.2);
-  --transition-fast:150ms cubic-bezier(0.16,1,0.3,1);
-  --transition-smooth:300ms cubic-bezier(0.16,1,0.3,1);
+  --bg-paper:#F4F3EF; --bg-washi:#FDFDFD; --bg-warm:#EEECE6; --bg-canvas:#F8F7F3;
+  --text-sumi:#1C1C1C; --text-body:#3A3A3A; --text-muted:#888880; --text-ghost:#BBBBB5;
+  --accent-red:#C82A2A; --accent-indigo:#1C2D42; --accent-gold:#8B6914; --accent-ink:#1C1C1C;
+  --border-hair:#1C1C1C; --border-light:#D8D6CE; --border-paper:#E8E6DF;
+  --radius-xs:2px; --ease-out:cubic-bezier(0.16,1,0.3,1); --t-fast:120ms; --t-med:240ms;
+  /* JS compat */
+  --color-success:#8B6914; --color-warning:#C82A2A; --color-danger:#C82A2A;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;padding:20px}
-h1{color:var(--color-danger);font-size:1.4rem;margin-bottom:4px}
-.subtitle{color:var(--text-muted);font-size:.9rem;margin-bottom:20px}
-.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-.tab{padding:8px 16px;border-radius:6px;cursor:pointer;background:var(--bg-secondary);border:2px solid var(--border-subtle);color:var(--text-muted);font-size:.85rem;transition:all .2s}
-.tab.active{background:var(--bg-tertiary);border-color:var(--color-danger);color:var(--color-danger)}
-.panel{display:none}.panel.active{display:block}
-.intro-box{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-left:4px solid var(--color-warning);padding:14px 18px;border-radius:8px;margin-bottom:18px;font-size:.88rem;line-height:1.6;color:var(--text-muted)}
-.intro-box strong{color:var(--color-warning)}
-.btn{padding:9px 22px;border-radius:8px;border:none;cursor:pointer;font-size:.88rem;font-weight:700;transition:all .15s;letter-spacing:.5px}
-.btn-green{background:var(--color-success);color:#0a1a10}
-.btn-green:hover{filter:brightness(1.15)}
-.btn-red{background:var(--color-danger);color:white}
-.btn-red:hover{filter:brightness(1.15)}
-.btn-secondary{background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-subtle)}
-.btn-secondary:hover{border-color:var(--color-danger);color:var(--color-danger)}
-.btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes zen-fade-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast) var(--ease-out),border-color var(--t-fast) var(--ease-out);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:zen-fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 20px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-hair);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast) var(--ease-out),color var(--t-fast) var(--ease-out)}
+.zen-btn:hover{background:var(--accent-ink);color:#FDFDFD}
+.zen-btn.primary{background:var(--accent-ink);color:#FDFDFD}.zen-btn.primary:hover{background:#2C2C2C}
+.zen-btn.success{border-color:var(--accent-gold);color:var(--accent-gold);background:transparent}.zen-btn.success:hover{background:var(--accent-gold);color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red);background:transparent}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:1px;background:var(--border-hair);cursor:pointer;margin:14px 0;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;background:var(--accent-ink);border-radius:50%;cursor:grab}
+input[type=range]::-webkit-slider-thumb:active{background:var(--accent-red)}
 
-/* ===== RELAY ANATOMY ===== */
-.anatomy-layout{display:grid;grid-template-columns:1fr 320px;gap:20px}
-@media(max-width:800px){.anatomy-layout{grid-template-columns:1fr}}
-.relay-canvas-wrap{background:#0a0f1e;border:2px solid var(--border-subtle);border-radius:10px;display:flex;justify-content:center;align-items:center;padding:10px}
-.relay-info{display:flex;flex-direction:column;gap:12px}
-.info-box{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:8px;padding:14px}
-.info-box h4{font-size:.85rem;margin-bottom:8px}
-.info-box h4.ctrl{color:var(--color-warning)}
-.info-box h4.out{color:var(--color-success)}
-.info-box h4.state{color:var(--color-danger)}
-.info-row{display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0;border-bottom:1px solid var(--border-subtle)}
-.info-row:last-child{border:none}
+/* BENTO TWO-COL */
+.two-col{display:grid;grid-template-columns:1fr 300px;gap:1px;background:var(--border-light)}
+@media(max-width:800px){.two-col{grid-template-columns:1fr}}
+.zen-pane{background:var(--bg-washi);padding:22px}
+.zen-pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:14px}
+.pane-title.gold{color:var(--accent-gold)}
+.pane-title.red{color:var(--accent-red)}
+.pane-title.indigo{color:var(--accent-indigo)}
+
+/* RELAY ANATOMY */
+.canvas-wrap{background:var(--bg-canvas);border:1px solid var(--border-paper);display:flex;justify-content:center;align-items:center;padding:8px;border-radius:var(--radius-xs)}
+canvas{display:block}
+.metric-block{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border-paper)}
+.metric-block:last-child{border:none;margin-bottom:0;padding-bottom:0}
+.metric-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border-paper);font-size:12px}
+.metric-row:last-child{border:none}
 .ir-label{color:var(--text-muted)}
-.ir-val{font-family:'JetBrains Mono',monospace;font-weight:700}
-.current-slider{width:100%;accent-color:var(--color-warning);margin:8px 0}
-.state-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:700}
-.state-open{background:#1a0a0a;color:var(--color-danger);border:1px solid var(--color-danger)}
-.state-closed{background:#0a1a0a;color:var(--color-success);border:1px solid var(--color-success)}
+.ir-val{font-family:'JetBrains Mono',monospace;font-weight:400;color:var(--text-sumi)}
+.state-badge{display:inline-block;padding:3px 12px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;border-radius:var(--radius-xs);margin-top:6px}
+.state-open{background:rgba(200,42,42,.08);color:var(--accent-red);border:1px solid rgba(200,42,42,.3)}
+.state-closed{background:rgba(139,105,20,.08);color:var(--accent-gold);border:1px solid rgba(139,105,20,.3)}
+.current-slider{width:100%;margin:12px 0}
+.insight-line{font-size:12px;color:var(--text-muted);line-height:1.6;padding:10px 14px;background:var(--bg-warm);border-radius:var(--radius-xs)}
 
-/* ===== LATCH ===== */
-.latch-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-@media(max-width:700px){.latch-layout{grid-template-columns:1fr}}
-.latch-canvas-wrap{background:#0a0f1e;border:2px solid var(--border-subtle);border-radius:10px;display:flex;justify-content:center;align-items:center;padding:10px}
-.latch-controls{display:flex;flex-direction:column;gap:14px}
-.latch-state-display{background:var(--bg-secondary);border:2px solid var(--border-subtle);border-radius:10px;padding:20px;text-align:center}
-.latch-bit{font-size:5rem;font-weight:900;font-family:'JetBrains Mono',monospace;transition:all .3s}
-.latch-bit.one{color:var(--color-success);text-shadow:0 0 30px var(--color-success)}
-.latch-bit.zero{color:var(--color-danger);opacity:.6}
-.latch-label{font-size:.8rem;color:var(--text-muted);margin-top:6px}
-.latch-history{background:var(--bg-tertiary);border-radius:8px;padding:10px;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-muted);height:100px;overflow-y:auto}
+/* LATCH */
+.latch-bit-display{background:var(--bg-washi);border:1px solid var(--border-paper);padding:24px;text-align:center;border-radius:var(--radius-xs)}
+.latch-bit{font-family:'JetBrains Mono',monospace;font-size:5rem;font-weight:300;line-height:1;transition:all .3s}
+.latch-bit.one{color:var(--accent-gold)}
+.latch-bit.zero{color:var(--text-ghost)}
+.latch-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);margin-top:8px}
+.latch-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-body);height:90px;overflow-y:auto;line-height:1.7;border-radius:var(--radius-xs)}
 
-/* ===== SWITCH LOGIC ===== */
-.logic-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+/* LOGIC GATES */
+.logic-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border-light)}
 @media(max-width:900px){.logic-grid{grid-template-columns:1fr}}
-.gate-panel{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:10px;padding:16px}
-.gate-panel h3{font-size:.9rem;margin-bottom:4px}
-.gate-panel h3.not-h{color:var(--color-danger)}
-.gate-panel h3.and-h{color:var(--color-warning)}
-.gate-panel h3.or-h{color:var(--color-success)}
-.gate-canvas{background:#0a0f1e;border:1px solid var(--border-subtle);border-radius:8px;display:block;margin:10px 0}
-.input-toggles{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}
-.toggle-btn{padding:8px 16px;border-radius:6px;border:2px solid var(--border-subtle);background:var(--bg-tertiary);cursor:pointer;font-size:.9rem;font-weight:700;font-family:'JetBrains Mono',monospace;transition:all .15s;min-width:70px;text-align:center}
-.toggle-btn.on{background:var(--color-warning);border-color:var(--color-warning);color:#0a0a00}
+.gate-pane{background:var(--bg-washi);padding:20px}
+.gate-pane h3{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.gate-pane h3.not-h{color:var(--accent-red)}
+.gate-pane h3.and-h{color:var(--accent-gold)}
+.gate-pane h3.or-h{color:var(--accent-indigo)}
+.gate-meta{font-size:11px;color:var(--text-muted);margin-bottom:10px;line-height:1.5}
+.gate-canvas{background:var(--bg-canvas);border:1px solid var(--border-paper);display:block;margin:10px 0;border-radius:var(--radius-xs)}
+.input-toggles{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.toggle-btn{padding:7px 16px;border:1px solid var(--border-paper);background:var(--bg-warm);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:400;transition:all var(--t-fast);min-width:70px;text-align:center;border-radius:var(--radius-xs);color:var(--text-sumi)}
+.toggle-btn.on{background:var(--accent-ink);color:#FDFDFD;border-color:var(--accent-ink)}
 .toggle-btn.off{color:var(--text-muted)}
-.output-display{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg-tertiary);border-radius:8px;margin-bottom:10px}
-.output-light{width:30px;height:30px;border-radius:50%;border:2px solid #555;transition:all .2s}
-.output-light.on{background:var(--color-success);border-color:var(--color-success);box-shadow:0 0 16px var(--color-success)}
-.output-light.off{background:#1a2a1a;border-color:#2a4a2a}
-.output-label{font-size:.85rem;font-weight:700;font-family:'JetBrains Mono',monospace}
-.truth-table{width:100%;border-collapse:collapse;font-size:.78rem;margin-top:8px}
-.truth-table th{background:var(--bg-tertiary);color:var(--text-muted);padding:5px 8px;border:1px solid var(--border-subtle);text-align:center}
-.truth-table td{padding:5px 8px;border:1px solid var(--border-subtle);text-align:center;font-family:'JetBrains Mono',monospace}
-.truth-table tr.active-row td{background:rgba(83,216,251,.15);color:var(--color-danger)}
-.truth-table td.val-1{color:var(--color-success);font-weight:700}
-.truth-table td.val-0{color:var(--color-danger)}
-.gate-desc{font-size:.75rem;color:var(--text-muted);line-height:1.5;margin-top:8px}
+.output-display{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg-warm);margin-bottom:10px;border-radius:var(--radius-xs)}
+.output-light{width:26px;height:26px;border-radius:50%;border:1px solid var(--border-light);transition:all var(--t-med)}
+.output-light.on{background:var(--accent-red);border-color:var(--accent-red);box-shadow:0 0 12px rgba(200,42,42,.4)}
+.output-light.off{background:var(--bg-canvas);border-color:var(--border-light)}
+.output-label{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text-sumi)}
+.truth-table{width:100%;border-collapse:collapse;font-size:12px}
+.truth-table th{background:var(--bg-warm);color:var(--text-muted);padding:5px 10px;border:1px solid var(--border-paper);font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;text-align:center}
+.truth-table td{padding:5px 10px;border:1px solid var(--border-paper);text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px}
+.truth-table tr.active-row td{background:rgba(200,42,42,.06);color:var(--text-sumi)}
+.val-1{color:var(--accent-indigo);font-weight:500}
+.val-0{color:var(--text-muted)}
+.gate-desc{font-size:11px;color:var(--text-muted);line-height:1.5;margin-top:8px}
 </style>
 </head>
 <body>
-<h1>🔌 Module 1.2 — Relay & Switch Simulator</h1>
-<p class="subtitle">The electrically-controlled switch: the atom of all computation.</p>
 
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('anatomy')">⚙️ Relay Anatomy</div>
-  <div class="tab" onclick="switchTab('latch')">💾 Self-Latching Memory</div>
-  <div class="tab" onclick="switchTab('logic')">🧠 Switch Logic (AND/OR/NOT)</div>
+<div class="zen-header">
+  <h1 class="zen-title">Module 1.2 — Relay &amp; Switch Simulator</h1>
+  <p class="zen-subtitle">The electrically-controlled switch — atom of all computation</p>
 </div>
 
-<!-- ===== RELAY ANATOMY ===== -->
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('anatomy')">Relay Anatomy</div>
+  <div class="zen-tab" onclick="switchTab('latch')">Self-Latching Memory</div>
+  <div class="zen-tab" onclick="switchTab('logic')">AND / OR / NOT</div>
+</div>
+
+<!-- RELAY ANATOMY -->
 <div id="panel-anatomy" class="panel active">
-  <div class="intro-box">
+  <div class="zen-intro">
     <strong>How a relay works</strong> — a small control current energises a coil → electromagnet attracts the armature → contacts close → large output circuit switches. The two circuits never touch.
   </div>
-  <div class="anatomy-layout">
-    <div class="relay-canvas-wrap">
-      <canvas id="relayCanvas" width="420" height="320"></canvas>
+  <div class="two-col">
+    <div class="zen-pane" style="background:var(--bg-canvas)">
+      <div class="canvas-wrap" style="border:none;padding:0">
+        <canvas id="relayCanvas" width="420" height="320"></canvas>
+      </div>
     </div>
-    <div class="relay-info">
-      <div class="info-box">
-        <h4 class="ctrl">⚡ Control Circuit</h4>
-        <div class="info-row"><span class="ir-label">Control current</span><span class="ir-val" id="ctrl-current">0 mA</span></div>
-        <div class="info-row"><span class="ir-label">Coil strength</span><span class="ir-val" id="coil-strength">0%</span></div>
+    <div class="zen-pane">
+      <div class="metric-block">
+        <div class="pane-title gold">Control Circuit</div>
+        <div class="metric-row"><span class="ir-label">Control current</span><span class="ir-val" id="ctrl-current">0 mA</span></div>
+        <div class="metric-row"><span class="ir-label">Coil strength</span><span class="ir-val" id="coil-strength">0%</span></div>
         <input type="range" class="current-slider" id="ctrl-slider" min="0" max="100" value="0">
-        <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text-muted)"><span>0 mA</span><span>50 mA</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-ghost)"><span>0 mA</span><span>50 mA</span></div>
       </div>
-      <div class="info-box">
-        <h4 class="state">🔀 Relay State</h4>
-        <div class="info-row"><span class="ir-label">Contacts</span><span class="ir-val" id="contact-state"><span class="state-badge state-open">OPEN</span></span></div>
-        <div class="info-row"><span class="ir-label">Threshold (close)</span><span class="ir-val" style="color:var(--color-warning)">~40 mA</span></div>
-        <div class="info-row"><span class="ir-label">Threshold (open)</span><span class="ir-val" style="color:var(--color-warning)">~30 mA</span></div>
-        <div class="info-row"><span class="ir-label">Hysteresis</span><span class="ir-val" style="color:var(--text-muted)">10 mA</span></div>
+      <div class="metric-block">
+        <div class="pane-title red">Relay State</div>
+        <div class="metric-row"><span class="ir-label">Contacts</span><span class="ir-val" id="contact-state"><span class="state-badge state-open">OPEN</span></span></div>
+        <div class="metric-row"><span class="ir-label">Threshold (close)</span><span class="ir-val" style="color:var(--accent-gold)">~20 mA</span></div>
+        <div class="metric-row"><span class="ir-label">Release</span><span class="ir-val" style="color:var(--accent-gold)">~15 mA</span></div>
       </div>
-      <div class="info-box">
-        <h4 class="out">💡 Output Circuit</h4>
-        <div class="info-row"><span class="ir-label">Output state</span><span class="ir-val" id="output-state">OFF</span></div>
-        <div class="info-row"><span class="ir-label">Output current</span><span class="ir-val" id="output-current">0 mA</span></div>
-        <div class="info-row"><span class="ir-label">Control isolation</span><span class="ir-val" style="color:var(--color-success)">✓ Complete</span></div>
+      <div class="metric-block">
+        <div class="pane-title indigo">Output Circuit</div>
+        <div class="metric-row"><span class="ir-label">Output state</span><span class="ir-val" id="output-state">OFF</span></div>
+        <div class="metric-row"><span class="ir-label">Output current</span><span class="ir-val" id="output-current">0 mA</span></div>
+        <div class="metric-row"><span class="ir-label">Isolation</span><span class="ir-val" style="color:var(--accent-gold)">Complete</span></div>
       </div>
-      <div style="background:var(--bg-tertiary);border-radius:8px;padding:12px;font-size:.78rem;color:var(--text-muted);line-height:1.6">
-        <strong style="color:var(--color-danger)">Key insight:</strong> The control coil and output contacts are in completely separate circuits. A 5mA signal can switch a 10A load. This isolation is why relays are still used in cars and industrial equipment today.
-      </div>
+      <div class="insight-line">Control coil and output contacts are in completely separate circuits. A 5mA signal can switch a 10A load — that's why relays are still used in cars and industrial equipment today.</div>
     </div>
   </div>
 </div>
 
-<!-- ===== SELF-LATCHING ===== -->
+<!-- SELF-LATCHING -->
 <div id="panel-latch" class="panel">
-  <div class="intro-box">
+  <div class="zen-intro">
     <strong>Self-latching relay</strong> — once SET, the relay holds its own state through its own contacts, even after the SET button is released. This is the first 1-bit memory cell.
   </div>
-  <div class="latch-layout">
-    <div class="latch-canvas-wrap">
-      <canvas id="latchCanvas" width="380" height="300"></canvas>
+  <div class="two-col">
+    <div class="zen-pane" style="background:var(--bg-canvas)">
+      <canvas id="latchCanvas" width="380" height="300" style="display:block;margin:0 auto"></canvas>
     </div>
-    <div class="latch-controls">
-      <div class="latch-state-display">
+    <div class="zen-pane">
+      <div class="latch-bit-display" style="margin-bottom:14px">
         <div class="latch-bit zero" id="latch-bit">0</div>
-        <div class="latch-label">Stored bit (relay state)</div>
+        <div class="latch-label">Stored bit</div>
       </div>
-      <div style="display:flex;gap:12px;justify-content:center">
-        <button class="btn btn-green" onmousedown="setLatch(true)" onmouseup="releaseLatch()" ontouchstart="setLatch(true)" ontouchend="releaseLatch()">SET (hold)</button>
-        <button class="btn btn-red" onclick="resetLatch()">RESET</button>
+      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:14px">
+        <button class="zen-btn success" onmousedown="setLatch(true)" onmouseup="releaseLatch()" ontouchstart="setLatch(true)" ontouchend="releaseLatch()">SET (hold)</button>
+        <button class="zen-btn danger" onclick="resetLatch()">RESET</button>
       </div>
-      <div>
-        <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:6px">Event log:</div>
-        <div class="latch-history" id="latch-history"></div>
-      </div>
-      <div style="background:var(--bg-tertiary);border-radius:8px;padding:12px;font-size:.78rem;color:var(--text-muted);line-height:1.6">
-        <strong style="color:var(--color-success)">Memory principle:</strong> The relay's own contacts are wired in parallel with the SET button. Once SET closes the relay, the relay's contacts provide an alternative current path — it holds itself closed. RESET breaks this path by opening the power supply briefly.
-      </div>
+      <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:6px">Event log</div>
+      <div class="latch-log" id="latch-history"></div>
+      <div class="insight-line" style="margin-top:14px">The relay's own contacts are wired in parallel with the SET button. Once SET closes the relay, the relay provides its own holding current — it remembers without any human input.</div>
     </div>
   </div>
 </div>
 
-<!-- ===== LOGIC GATES ===== -->
+<!-- LOGIC GATES -->
 <div id="panel-logic" class="panel">
-  <div class="intro-box">
-    <strong>AND, OR, NOT from relay switches</strong> — toggle the inputs and watch the output and truth table respond.
-    Series switches → AND logic. Parallel switches → OR logic. Normally-closed contacts → NOT logic.
+  <div class="zen-intro">
+    <strong>AND, OR, NOT from relay switches</strong> — toggle the inputs and watch the output and truth table respond. Series = AND. Parallel = OR. Normally-closed contact = NOT.
   </div>
   <div class="logic-grid">
     <!-- NOT -->
-    <div class="gate-panel">
-      <h3 class="not-h">NOT Gate (Inverter)</h3>
-      <p style="font-size:.75rem;color:var(--text-muted);margin-bottom:8px">Normally-closed relay contact. Input ON → contacts open → output OFF.</p>
+    <div class="gate-pane">
+      <h3 class="not-h">NOT Gate</h3>
+      <p class="gate-meta">Normally-closed relay contact. Input ON → contacts open → output OFF.</p>
       <canvas class="gate-canvas" id="not-canvas" width="260" height="160"></canvas>
       <div class="input-toggles">
         <button class="toggle-btn off" id="not-a" onclick="toggleGateInput('not','a')">A = 0</button>
@@ -198,12 +198,12 @@ h1{color:var(--color-danger);font-size:1.4rem;margin-bottom:4px}
           <tr id="not-r1"><td class="val-1">1</td><td class="val-0">0</td></tr>
         </tbody>
       </table>
-      <p class="gate-desc">Relay wired with normally-closed (NC) contacts. No input = contacts touching = circuit closed = output ON. Input energises coil = contacts open = output OFF.</p>
+      <p class="gate-desc">NC relay contact: no input = contacts touching = output ON. Input energises coil = contacts open = output OFF.</p>
     </div>
     <!-- AND -->
-    <div class="gate-panel">
+    <div class="gate-pane">
       <h3 class="and-h">AND Gate</h3>
-      <p style="font-size:.75rem;color:var(--text-muted);margin-bottom:8px">Two relay contacts in series. Both must close for current to flow.</p>
+      <p class="gate-meta">Two relay contacts in series. Both must close for current to flow.</p>
       <canvas class="gate-canvas" id="and-canvas" width="260" height="160"></canvas>
       <div class="input-toggles">
         <button class="toggle-btn off" id="and-a" onclick="toggleGateInput('and','a')">A = 0</button>
@@ -222,12 +222,12 @@ h1{color:var(--color-danger);font-size:1.4rem;margin-bottom:4px}
           <tr id="and-r3"><td class="val-1">1</td><td class="val-1">1</td><td class="val-1">1</td></tr>
         </tbody>
       </table>
-      <p class="gate-desc">Two normally-open contacts in series. Current must flow through both relay contacts. Either relay open → circuit broken → output 0.</p>
+      <p class="gate-desc">Two NO contacts in series. Either relay open → circuit broken → output 0.</p>
     </div>
     <!-- OR -->
-    <div class="gate-panel">
+    <div class="gate-pane">
       <h3 class="or-h">OR Gate</h3>
-      <p style="font-size:.75rem;color:var(--text-muted);margin-bottom:8px">Two relay contacts in parallel. Either can close the circuit.</p>
+      <p class="gate-meta">Two relay contacts in parallel. Either can close the circuit.</p>
       <canvas class="gate-canvas" id="or-canvas" width="260" height="160"></canvas>
       <div class="input-toggles">
         <button class="toggle-btn off" id="or-a" onclick="toggleGateInput('or','a')">A = 0</button>
@@ -246,7 +246,7 @@ h1{color:var(--color-danger);font-size:1.4rem;margin-bottom:4px}
           <tr id="or-r3"><td class="val-1">1</td><td class="val-1">1</td><td class="val-1">1</td></tr>
         </tbody>
       </table>
-      <p class="gate-desc">Two normally-open contacts in parallel. Current can flow through either path. Either relay closed → circuit complete → output 1.</p>
+      <p class="gate-desc">Two NO contacts in parallel. Either relay closed → circuit complete → output 1.</p>
     </div>
   </div>
 </div>
@@ -255,153 +255,114 @@ h1{color:var(--color-danger);font-size:1.4rem;margin-bottom:4px}
 // ========================= RELAY ANATOMY =========================
 const relayCanvas = document.getElementById('relayCanvas');
 const rCtx = relayCanvas.getContext('2d');
-let relayState = false; // contacts closed?
-let lastClosedAt = 40; // hysteresis: closes at 40, opens at 30
-let isHeld = false;
+let relayState = false;
 
 function drawRelay(currentPct) {
   const W=420, H=320;
   rCtx.clearRect(0,0,W,H);
-  rCtx.fillStyle='#090A0F'; rCtx.fillRect(0,0,W,H);
+  rCtx.fillStyle='#F8F7F3'; rCtx.fillRect(0,0,W,H);
 
   const closed = relayState;
   const coilStrength = Math.min(1, currentPct/50);
 
-  // ---- COIL (control circuit) ----
   const coilX=60, coilY=100, coilW=80, coilH=60;
-  // Iron core
-  rCtx.fillStyle='#555'; rCtx.fillRect(coilX+10, coilY+5, 20, coilH-10);
-  // Coil turns
-  const coilColor=`rgba(249,202,36,${0.3+coilStrength*0.7})`;
+  rCtx.fillStyle='#D8D6CE'; rCtx.fillRect(coilX+10, coilY+5, 20, coilH-10);
+  const coilAlpha = 0.2+coilStrength*0.7;
   for(let i=0;i<8;i++){
     rCtx.beginPath();
     rCtx.ellipse(coilX+20, coilY+10+i*6, 22, 5, 0, 0, Math.PI*2);
-    rCtx.strokeStyle=coilColor; rCtx.lineWidth=2; rCtx.stroke();
+    rCtx.strokeStyle=`rgba(139,105,20,${coilAlpha})`; rCtx.lineWidth=2; rCtx.stroke();
   }
-  // Magnetic field lines when energised
   if(coilStrength>0.3){
     for(let i=0;i<3;i++){
-      const alpha=coilStrength*0.4;
       rCtx.beginPath();
       rCtx.arc(coilX+20, coilY+coilH/2, 35+i*15, -Math.PI*0.7, Math.PI*0.7);
-      rCtx.strokeStyle=`rgba(83,216,251,${alpha-i*0.1})`; rCtx.lineWidth=1; rCtx.stroke();
+      rCtx.strokeStyle=`rgba(28,45,66,${coilStrength*0.3-i*0.08})`; rCtx.lineWidth=1; rCtx.stroke();
     }
   }
-  rCtx.fillStyle='#F59E0B'; rCtx.font='11px monospace'; rCtx.textAlign='center';
+  rCtx.fillStyle='#888880'; rCtx.font='10px monospace'; rCtx.textAlign='center';
   rCtx.fillText('COIL',coilX+20,coilY-10);
-  rCtx.fillStyle='var(--text-muted)';
 
-  // Control circuit wires (yellow = control)
-  rCtx.strokeStyle=currentPct>0?'#F59E0B':'#2a3a5a'; rCtx.lineWidth=2;
+  rCtx.strokeStyle=currentPct>0?'#8B6914':'#D8D6CE'; rCtx.lineWidth=1.5;
   rCtx.beginPath(); rCtx.moveTo(20,coilY+10); rCtx.lineTo(coilX,coilY+10); rCtx.stroke();
   rCtx.beginPath(); rCtx.moveTo(20,coilY+coilH-10); rCtx.lineTo(coilX,coilY+coilH-10); rCtx.stroke();
-  // Battery (control)
-  rCtx.strokeStyle='#F59E0B'; rCtx.lineWidth=2;
+  rCtx.strokeStyle='#8B6914'; rCtx.lineWidth=1.5;
   rCtx.beginPath(); rCtx.moveTo(15,coilY); rCtx.lineTo(15,coilY+coilH); rCtx.stroke();
-  rCtx.fillStyle='#F59E0B'; rCtx.font='10px monospace'; rCtx.textAlign='left';
+  rCtx.fillStyle='#8B6914'; rCtx.font='9px monospace'; rCtx.textAlign='left';
   rCtx.fillText('5V',2,coilY-5);
 
-  // ---- ARMATURE ----
   const armBaseX=coilX+60, armBaseY=coilY+coilH/2;
-  const armAngle = closed ? 0.1 : 0.35; // radians: tilted when open, flat when closed
+  const armAngle = closed ? 0.1 : 0.35;
   const armLen=90;
   const armEndX=armBaseX+armLen*Math.cos(armAngle);
   const armEndY=armBaseY+armLen*Math.sin(armAngle);
-
-  rCtx.strokeStyle='#aaa'; rCtx.lineWidth=4;
+  rCtx.strokeStyle='#888880'; rCtx.lineWidth=3;
   rCtx.beginPath(); rCtx.moveTo(armBaseX,armBaseY); rCtx.lineTo(armEndX,armEndY); rCtx.stroke();
-  // Pivot dot
-  rCtx.fillStyle='#888'; rCtx.beginPath(); rCtx.arc(armBaseX,armBaseY,5,0,Math.PI*2); rCtx.fill();
-  // Spring (shown as zigzag above pivot)
-  rCtx.strokeStyle='#555'; rCtx.lineWidth=1.5;
+  rCtx.fillStyle='#D8D6CE'; rCtx.beginPath(); rCtx.arc(armBaseX,armBaseY,5,0,Math.PI*2); rCtx.fill();
+  rCtx.strokeStyle='#D8D6CE'; rCtx.lineWidth=1.5;
   for(let i=0;i<5;i++){
     const sx=armBaseX+8+i*6, sy=armBaseY-(closed?18:12);
-    rCtx.beginPath();
-    rCtx.moveTo(sx,sy+(i%2===0?0:5));
-    rCtx.lineTo(sx+6,sy+(i%2===0?5:0));
-    rCtx.stroke();
+    rCtx.beginPath(); rCtx.moveTo(sx,sy+(i%2===0?0:5)); rCtx.lineTo(sx+6,sy+(i%2===0?5:0)); rCtx.stroke();
   }
-  rCtx.fillStyle='#555'; rCtx.font='9px monospace'; rCtx.textAlign='left';
-  rCtx.fillText('spring',armBaseX+8,armBaseY-28);
-
-  rCtx.fillStyle='#aaa'; rCtx.font='11px monospace'; rCtx.textAlign='center';
+  rCtx.fillStyle='#888880'; rCtx.font='10px monospace'; rCtx.textAlign='center';
   rCtx.fillText('ARMATURE',armBaseX+armLen/2,armBaseY+20);
 
-  // ---- CONTACTS ----
   const contactX=armBaseX+armLen+10, topY=150, botY=200;
-  // Fixed contact
-  rCtx.strokeStyle='#888'; rCtx.lineWidth=3;
+  rCtx.strokeStyle='#D8D6CE'; rCtx.lineWidth=2;
   rCtx.beginPath(); rCtx.moveTo(contactX,topY); rCtx.lineTo(contactX+20,topY); rCtx.stroke();
-  rCtx.fillStyle='#888'; rCtx.beginPath(); rCtx.arc(contactX,topY,5,0,Math.PI*2); rCtx.fill();
-  // Moving contact (at arm tip)
+  rCtx.fillStyle='#D8D6CE'; rCtx.beginPath(); rCtx.arc(contactX,topY,4,0,Math.PI*2); rCtx.fill();
   const movingY = closed ? topY+2 : botY;
-  rCtx.strokeStyle=closed?'var(--color-success)':'#888'; rCtx.lineWidth=3;
+  rCtx.strokeStyle=closed?'#8B6914':'#D8D6CE'; rCtx.lineWidth=3;
   rCtx.beginPath(); rCtx.moveTo(armEndX,armEndY); rCtx.lineTo(contactX,movingY); rCtx.stroke();
-  rCtx.fillStyle=closed?'var(--color-success)':'#EF4444';
-  rCtx.beginPath(); rCtx.arc(contactX,movingY,6,0,Math.PI*2); rCtx.fill();
-  // "spark" when just closing
+  rCtx.fillStyle=closed?'#8B6914':'#C82A2A';
+  rCtx.beginPath(); rCtx.arc(contactX,movingY,5,0,Math.PI*2); rCtx.fill();
   if(closed && coilStrength>0.7){
-    rCtx.fillStyle='rgba(249,202,36,0.6)';
-    rCtx.beginPath(); rCtx.arc(contactX,topY,8,0,Math.PI*2); rCtx.fill();
+    rCtx.fillStyle='rgba(139,105,20,0.4)';
+    rCtx.beginPath(); rCtx.arc(contactX,topY,7,0,Math.PI*2); rCtx.fill();
   }
-
-  // Contact label
-  rCtx.fillStyle=closed?'var(--color-success)':'var(--color-danger)';
-  rCtx.font='bold 11px monospace'; rCtx.textAlign='left';
+  rCtx.fillStyle=closed?'#8B6914':'#C82A2A';
+  rCtx.font='bold 10px monospace'; rCtx.textAlign='left';
   rCtx.fillText(closed?'CLOSED':'OPEN', contactX+12, topY+4);
 
-  // Output circuit wires (blue = output, separate circuit)
-  const outColor=closed?'#818CF8':'#1a2a3a';
-  rCtx.strokeStyle=outColor; rCtx.lineWidth=2.5;
-  // Top wire from battery+ to fixed contact
-  rCtx.beginPath(); rCtx.moveTo(W-20,80); rCtx.lineTo(contactX+20,80); rCtx.lineTo(contactX+20,topY); rCtx.stroke();
-  // Wire from contact to bulb
-  rCtx.beginPath(); rCtx.moveTo(contactX+20,topY); rCtx.lineTo(W-40,topY); rCtx.stroke();
-  // Bulb
-  const bulbX=W-35, bulbY=topY+40;
-  rCtx.strokeStyle=closed?'var(--color-warning)':'#555'; rCtx.lineWidth=2;
-  rCtx.beginPath(); rCtx.arc(bulbX,bulbY,18,0,Math.PI*2); rCtx.stroke();
-  if(closed){
-    rCtx.fillStyle='rgba(249,202,36,0.5)'; rCtx.fill();
-    rCtx.shadowBlur=15; rCtx.shadowColor='var(--color-warning)';
-  }
-  rCtx.shadowBlur=0;
-  rCtx.fillStyle='white'; rCtx.font='14px serif'; rCtx.textAlign='center';
-  rCtx.fillText(closed?'💡':'○',bulbX,bulbY+5);
-  // Wire back to battery-
-  rCtx.strokeStyle=outColor; rCtx.lineWidth=2.5;
-  rCtx.beginPath(); rCtx.moveTo(bulbX,bulbY+18); rCtx.lineTo(bulbX,H-20); rCtx.lineTo(W-20,H-20); rCtx.stroke();
-  // Battery (output)
+  const outColor=closed?'#1C2D42':'#E8E6DF';
   rCtx.strokeStyle=outColor; rCtx.lineWidth=2;
+  rCtx.beginPath(); rCtx.moveTo(W-20,80); rCtx.lineTo(contactX+20,80); rCtx.lineTo(contactX+20,topY); rCtx.stroke();
+  rCtx.beginPath(); rCtx.moveTo(contactX+20,topY); rCtx.lineTo(W-40,topY); rCtx.stroke();
+  const bulbX=W-35, bulbY=topY+40;
+  rCtx.strokeStyle=closed?'#C82A2A':'#D8D6CE'; rCtx.lineWidth=2;
+  rCtx.beginPath(); rCtx.arc(bulbX,bulbY,16,0,Math.PI*2); rCtx.stroke();
+  if(closed){rCtx.fillStyle='rgba(200,42,42,0.2)'; rCtx.fill();}
+  rCtx.fillStyle='#3A3A3A'; rCtx.font='13px serif'; rCtx.textAlign='center';
+  rCtx.fillText(closed?'💡':'○',bulbX,bulbY+5);
+  rCtx.strokeStyle=outColor; rCtx.lineWidth=2;
+  rCtx.beginPath(); rCtx.moveTo(bulbX,bulbY+17); rCtx.lineTo(bulbX,H-20); rCtx.lineTo(W-20,H-20); rCtx.stroke();
+  rCtx.strokeStyle=outColor; rCtx.lineWidth=1.5;
   rCtx.beginPath(); rCtx.moveTo(W-20,80); rCtx.lineTo(W-20,H-20); rCtx.stroke();
-  rCtx.fillStyle='#818CF8'; rCtx.font='10px monospace'; rCtx.textAlign='right';
+  rCtx.fillStyle='#1C2D42'; rCtx.font='9px monospace'; rCtx.textAlign='right';
   rCtx.fillText('12V',W-2,H/2);
 
-  // Labels
-  rCtx.fillStyle='rgba(249,202,36,0.4)';
+  rCtx.fillStyle='rgba(139,105,20,0.1)';
   rCtx.fillRect(0,H-25,150,25);
-  rCtx.fillStyle='#F59E0B'; rCtx.font='10px monospace'; rCtx.textAlign='left';
-  rCtx.fillText('CONTROL CIRCUIT (5V/5mA)',5,H-10);
-  rCtx.fillStyle='rgba(83,216,251,0.15)';
-  rCtx.fillRect(W-160,H-25,160,25);
-  rCtx.fillStyle='#818CF8'; rCtx.textAlign='right';
-  rCtx.fillText('OUTPUT CIRCUIT (12V)',W-5,H-10);
+  rCtx.fillStyle='#8B6914'; rCtx.font='9px monospace'; rCtx.textAlign='left';
+  rCtx.fillText('CONTROL CIRCUIT',5,H-10);
+  rCtx.fillStyle='rgba(28,45,66,0.08)';
+  rCtx.fillRect(W-130,H-25,130,25);
+  rCtx.fillStyle='#1C2D42'; rCtx.textAlign='right';
+  rCtx.fillText('OUTPUT CIRCUIT',W-5,H-10);
 }
 
 const ctrlSlider = document.getElementById('ctrl-slider');
 ctrlSlider.addEventListener('input', function(){
   const pct = parseInt(this.value);
-  const mA = Math.round(pct/2); // 0-100 → 0-50mA
-  // Hysteresis: close at 40mA (80%), open at 30mA (60%)
+  const mA = Math.round(pct/2);
   if(!relayState && mA >= 20) relayState = true;
   if(relayState && mA < 15) relayState = false;
-
   document.getElementById('ctrl-current').textContent = mA + ' mA';
   document.getElementById('coil-strength').textContent = Math.round(pct*2) + '%';
   document.getElementById('contact-state').innerHTML =
     relayState ? '<span class="state-badge state-closed">CLOSED</span>' : '<span class="state-badge state-open">OPEN</span>';
   document.getElementById('output-state').textContent = relayState ? 'ON ✓' : 'OFF';
-  document.getElementById('output-state').style.color = relayState ? 'var(--color-success)' : 'var(--color-danger)';
+  document.getElementById('output-state').style.color = relayState ? 'var(--accent-gold)' : 'var(--accent-red)';
   document.getElementById('output-current').textContent = relayState ? '50 mA' : '0 mA';
   drawRelay(pct);
 });
@@ -415,117 +376,83 @@ let setPressed = false;
 
 function drawLatch(){
   const W=380,H=300;
-  lCtx.clearRect(0,0,W,H); lCtx.fillStyle='#090A0F'; lCtx.fillRect(0,0,W,H);
-  const s=latchState;
-  const sp=setPressed;
+  lCtx.clearRect(0,0,W,H); lCtx.fillStyle='#F8F7F3'; lCtx.fillRect(0,0,W,H);
+  const s=latchState, sp=setPressed;
+  const holdColor=s?'#8B6914':'#E8E6DF';
+  const setColor=sp?'#8B6914':'#D8D6CE';
+  const outColor=s?'#1C2D42':'#E8E6DF';
 
-  // Color wires based on state
-  const holdColor=s?'#10B981':'#1a3a2a';
-  const setColor=sp?'#F59E0B':'#2a3a2a';
-  const outColor=s?'#818CF8':'#1a2a3a';
-
-  // Battery
-  lCtx.strokeStyle='#F59E0B'; lCtx.lineWidth=2;
+  lCtx.strokeStyle='#8B6914'; lCtx.lineWidth=1.5;
   lCtx.beginPath(); lCtx.moveTo(30,60); lCtx.lineTo(30,240); lCtx.stroke();
-  lCtx.fillStyle='#F59E0B'; lCtx.font='10px monospace'; lCtx.textAlign='center';
+  lCtx.fillStyle='#8B6914'; lCtx.font='9px monospace'; lCtx.textAlign='center';
   lCtx.fillText('9V',30,50);
-
-  // Top rail
-  lCtx.strokeStyle='#F59E0B'; lCtx.lineWidth=2;
   lCtx.beginPath(); lCtx.moveTo(30,60); lCtx.lineTo(350,60); lCtx.stroke();
-  // Bottom rail
-  lCtx.strokeStyle='#2a4a2a'; lCtx.lineWidth=2;
+  lCtx.strokeStyle='#E8E6DF'; lCtx.lineWidth=1.5;
   lCtx.beginPath(); lCtx.moveTo(30,240); lCtx.lineTo(350,240); lCtx.stroke();
 
-  // SET button
-  lCtx.strokeStyle=setColor; lCtx.lineWidth=2.5;
+  lCtx.strokeStyle=setColor; lCtx.lineWidth=2;
   lCtx.beginPath(); lCtx.moveTo(80,60); lCtx.lineTo(80,100); lCtx.stroke();
   lCtx.beginPath(); lCtx.moveTo(80,sp?105:120); lCtx.lineTo(80,140); lCtx.stroke();
   lCtx.beginPath(); lCtx.moveTo(65,100); lCtx.lineTo(100,100); lCtx.stroke();
   lCtx.beginPath(); lCtx.moveTo(65,sp?105:120); lCtx.lineTo(100,sp?105:120); lCtx.stroke();
-  lCtx.fillStyle=setColor; lCtx.font='11px monospace'; lCtx.textAlign='center';
+  lCtx.fillStyle=setColor; lCtx.font='10px monospace'; lCtx.textAlign='center';
   lCtx.fillText('SET',80,170);
 
-  // HOLD path (relay's own contacts, parallel to SET)
-  lCtx.strokeStyle=holdColor; lCtx.lineWidth=2.5;
+  lCtx.strokeStyle=holdColor; lCtx.lineWidth=2;
   lCtx.beginPath(); lCtx.moveTo(130,60); lCtx.lineTo(130,100); lCtx.stroke();
   lCtx.beginPath(); lCtx.moveTo(130,s?105:125); lCtx.lineTo(130,140); lCtx.stroke();
   lCtx.beginPath(); lCtx.moveTo(115,100); lCtx.lineTo(148,100); lCtx.stroke();
   lCtx.beginPath(); lCtx.moveTo(115,s?105:125); lCtx.lineTo(148,s?105:125); lCtx.stroke();
-  lCtx.fillStyle=holdColor; lCtx.font='11px monospace'; lCtx.textAlign='center';
+  lCtx.fillStyle=holdColor; lCtx.font='10px monospace'; lCtx.textAlign='center';
   lCtx.fillText('HOLD',130,170); lCtx.fillText('(NC)',130,183);
 
-  // Junction wire
-  lCtx.strokeStyle='#F59E0B'; lCtx.lineWidth=2;
+  lCtx.strokeStyle='#8B6914'; lCtx.lineWidth=1.5;
   lCtx.beginPath(); lCtx.moveTo(80,140); lCtx.lineTo(210,140); lCtx.stroke();
-  lCtx.beginPath(); lCtx.moveTo(130,140); lCtx.lineTo(130,140); lCtx.stroke();
-  // Junction dots
-  lCtx.fillStyle='#F59E0B';
-  lCtx.beginPath(); lCtx.arc(130,140,4,0,Math.PI*2); lCtx.fill();
+  lCtx.fillStyle='#8B6914';
+  lCtx.beginPath(); lCtx.arc(130,140,3,0,Math.PI*2); lCtx.fill();
 
-  // Relay coil
   const coilX=200, coilY=110;
   for(let i=0;i<6;i++){
     lCtx.beginPath();
     lCtx.ellipse(coilX,coilY+i*8,18,5,0,0,Math.PI*2);
-    lCtx.strokeStyle=s?'rgba(78,204,163,0.8)':'rgba(100,100,100,0.5)'; lCtx.lineWidth=2; lCtx.stroke();
+    lCtx.strokeStyle=s?'rgba(139,105,20,0.7)':'rgba(200,200,200,0.5)'; lCtx.lineWidth=1.5; lCtx.stroke();
   }
   lCtx.beginPath(); lCtx.moveTo(210,140); lCtx.lineTo(210,110); lCtx.stroke();
   lCtx.beginPath(); lCtx.moveTo(210,160); lCtx.lineTo(210,240); lCtx.stroke();
-  lCtx.strokeStyle='#2a4a2a'; lCtx.lineWidth=2;
-  lCtx.fillStyle=s?'var(--color-success)':'#555'; lCtx.font='10px monospace'; lCtx.textAlign='center';
-  lCtx.fillText('RELAY',210,180); lCtx.fillText('COIL',210,192);
+  lCtx.fillStyle=s?'#8B6914':'#888880'; lCtx.font='9px monospace'; lCtx.textAlign='center';
+  lCtx.fillText('RELAY',210,180); lCtx.fillText('COIL',210,191);
 
-  // Output contacts
   const ocX=290, ocY=100;
-  lCtx.strokeStyle=s?'var(--color-success)':'#555'; lCtx.lineWidth=2.5;
+  lCtx.strokeStyle=s?'#8B6914':'#D8D6CE'; lCtx.lineWidth=2;
   lCtx.beginPath(); lCtx.moveTo(ocX,60); lCtx.lineTo(ocX,ocY); lCtx.stroke();
   lCtx.beginPath(); lCtx.moveTo(ocX,s?ocY+5:ocY+22); lCtx.lineTo(ocX,140); lCtx.stroke();
   lCtx.beginPath(); lCtx.moveTo(ocX-12,ocY); lCtx.lineTo(ocX+12,ocY); lCtx.stroke();
-  lCtx.fillStyle=s?'var(--color-success)':'#EF4444';
-  lCtx.beginPath(); lCtx.arc(ocX,s?ocY+5:ocY+22,5,0,Math.PI*2); lCtx.fill();
-  lCtx.fillStyle=s?'var(--color-success)':'#555'; lCtx.font='10px monospace'; lCtx.textAlign='center';
+  lCtx.fillStyle=s?'#8B6914':'#C82A2A';
+  lCtx.beginPath(); lCtx.arc(ocX,s?ocY+5:ocY+22,4,0,Math.PI*2); lCtx.fill();
+  lCtx.fillStyle=s?'#8B6914':'#888880'; lCtx.font='9px monospace'; lCtx.textAlign='center';
   lCtx.fillText(s?'CLOSED':'OPEN',ocX,160);
 
-  // Output circuit
-  lCtx.strokeStyle=outColor; lCtx.lineWidth=2.5;
+  lCtx.strokeStyle=outColor; lCtx.lineWidth=2;
   lCtx.beginPath(); lCtx.moveTo(ocX,60); lCtx.lineTo(350,60); lCtx.stroke();
   lCtx.beginPath(); lCtx.moveTo(350,60); lCtx.lineTo(350,180); lCtx.stroke();
-  // Bulb
-  lCtx.strokeStyle=s?'var(--color-warning)':'#555'; lCtx.lineWidth=2;
-  lCtx.beginPath(); lCtx.arc(350,195,15,0,Math.PI*2); lCtx.stroke();
-  if(s){lCtx.fillStyle='rgba(249,202,36,0.4)'; lCtx.fill(); lCtx.shadowBlur=12; lCtx.shadowColor='#F59E0B';}
-  lCtx.shadowBlur=0;
-  lCtx.fillStyle='white'; lCtx.font='12px serif'; lCtx.textAlign='center';
+  lCtx.strokeStyle=s?'#C82A2A':'#D8D6CE'; lCtx.lineWidth=1.5;
+  lCtx.beginPath(); lCtx.arc(350,195,14,0,Math.PI*2); lCtx.stroke();
+  if(s){lCtx.fillStyle='rgba(200,42,42,0.15)'; lCtx.fill();}
+  lCtx.fillStyle='#3A3A3A'; lCtx.font='11px serif'; lCtx.textAlign='center';
   lCtx.fillText(s?'💡':'○',350,200);
-  lCtx.strokeStyle=outColor; lCtx.lineWidth=2.5;
+  lCtx.strokeStyle=outColor; lCtx.lineWidth=2;
   lCtx.beginPath(); lCtx.moveTo(350,210); lCtx.lineTo(350,240); lCtx.stroke();
 
-  // RESET button (breaks bottom rail)
-  lCtx.strokeStyle='#EF4444'; lCtx.lineWidth=2;
+  lCtx.strokeStyle='#C82A2A'; lCtx.lineWidth=1.5;
   lCtx.beginPath(); lCtx.moveTo(260,240); lCtx.lineTo(290,240); lCtx.stroke();
-  lCtx.strokeStyle='#EF4444'; lCtx.lineWidth=2;
-  lCtx.beginPath(); lCtx.moveTo(270,240); lCtx.lineTo(270,220); lCtx.stroke(); // button tap
-  lCtx.fillStyle='#EF4444'; lCtx.font='10px monospace'; lCtx.textAlign='center';
+  lCtx.beginPath(); lCtx.moveTo(270,240); lCtx.lineTo(270,220); lCtx.stroke();
+  lCtx.fillStyle='#C82A2A'; lCtx.font='9px monospace'; lCtx.textAlign='center';
   lCtx.fillText('RESET',275,215);
 }
 
-function setLatch(on){
-  setPressed=on;
-  if(on) latchState=true;
-  updateLatchDisplay('SET pressed — relay energised, contacts close, latch path active');
-  drawLatch();
-}
-function releaseLatch(){
-  setPressed=false;
-  updateLatchDisplay('SET released — latch holds via own contacts');
-  drawLatch();
-}
-function resetLatch(){
-  latchState=false; setPressed=false;
-  updateLatchDisplay('RESET pressed — power interrupted, relay releases');
-  drawLatch();
-}
+function setLatch(on){ setPressed=on; if(on) latchState=true; updateLatchDisplay('SET pressed — relay energised, latch path active'); drawLatch(); }
+function releaseLatch(){ setPressed=false; updateLatchDisplay('SET released — latch holds via own contacts'); drawLatch(); }
+function resetLatch(){ latchState=false; setPressed=false; updateLatchDisplay('RESET pressed — power interrupted, relay releases'); drawLatch(); }
 function updateLatchDisplay(msg){
   const bit=document.getElementById('latch-bit');
   bit.textContent=latchState?'1':'0';
@@ -537,11 +464,7 @@ function updateLatchDisplay(msg){
 drawLatch();
 
 // ========================= LOGIC GATES =========================
-const gateState = {
-  not:{a:0},
-  and:{a:0,b:0},
-  or:{a:0,b:0}
-};
+const gateState = { not:{a:0}, and:{a:0,b:0}, or:{a:0,b:0} };
 
 function toggleGateInput(gate, input){
   gateState[gate][input] = gateState[gate][input] ? 0 : 1;
@@ -549,8 +472,7 @@ function toggleGateInput(gate, input){
   const v = gateState[gate][input];
   btn.textContent = `${input.toUpperCase()} = ${v}`;
   btn.className = 'toggle-btn ' + (v ? 'on' : 'off');
-  updateGate(gate);
-  drawGateCanvas(gate);
+  updateGate(gate); drawGateCanvas(gate);
 }
 
 function updateGate(gate){
@@ -559,138 +481,114 @@ function updateGate(gate){
   if(gate==='not') out = s.a ? 0 : 1;
   else if(gate==='and') out = (s.a && s.b) ? 1 : 0;
   else out = (s.a || s.b) ? 1 : 0;
-
   const light = document.getElementById(`${gate}-out-light`);
   const label = document.getElementById(`${gate}-out-label`);
   light.className = 'output-light ' + (out ? 'on' : 'off');
   label.textContent = `Output = ${out}`;
-  label.style.color = out ? 'var(--color-success)' : 'var(--color-danger)';
-
-  // Highlight active row in truth table
+  label.style.color = out ? 'var(--accent-red)' : 'var(--text-muted)';
   const rows = document.querySelectorAll(`#${gate}-tt tbody tr`);
   rows.forEach(r=>r.classList.remove('active-row'));
-  if(gate==='not'){
-    const rowIdx = s.a;
-    if(rows[rowIdx]) rows[rowIdx].classList.add('active-row');
-  } else {
-    const rowIdx = (s.a<<1)|s.b;
-    if(rows[rowIdx]) rows[rowIdx].classList.add('active-row');
-  }
+  if(gate==='not'){ if(rows[s.a]) rows[s.a].classList.add('active-row'); }
+  else { const ri=(s.a<<1)|s.b; if(rows[ri]) rows[ri].classList.add('active-row'); }
 }
 
 function drawGateCanvas(gate){
   const canvas = document.getElementById(`${gate}-canvas`);
   const ctx = canvas.getContext('2d');
   const W=260,H=160;
-  ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#090A0F'; ctx.fillRect(0,0,W,H);
-
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#F8F7F3'; ctx.fillRect(0,0,W,H);
   const s=gateState[gate];
   const activeA=s.a===1, activeB=s.b?s.b===1:false;
+  const onColor='#8B6914', offColor='#D8D6CE', contactOn='#8B6914', contactOff='#C82A2A';
+  const wireOn='#1C2D42', wireOff='#E8E6DF';
 
   if(gate==='not'){
-    // Input wire
-    ctx.strokeStyle=activeA?'#F59E0B':'#2a3a5a'; ctx.lineWidth=2.5;
+    ctx.strokeStyle=activeA?onColor:offColor; ctx.lineWidth=2;
     ctx.beginPath(); ctx.moveTo(10,80); ctx.lineTo(90,80); ctx.stroke();
-    // Relay coil box
-    ctx.strokeStyle=activeA?'#10B981':'#555'; ctx.lineWidth=2;
+    ctx.strokeStyle=activeA?onColor:'#D8D6CE'; ctx.lineWidth=1.5;
     ctx.strokeRect(90,60,60,40);
-    ctx.fillStyle=activeA?'#10B981':'#555'; ctx.font='9px monospace'; ctx.textAlign='center';
+    ctx.fillStyle=activeA?onColor:'#888880'; ctx.font='8px monospace'; ctx.textAlign='center';
     ctx.fillText('COIL',120,77); ctx.fillText(activeA?'ON':'OFF',120,90);
-    // NC contact (normally-closed: open when energised)
     const contactOpen=activeA;
-    ctx.strokeStyle=contactOpen?'#555':'#10B981'; ctx.lineWidth=2.5;
+    ctx.strokeStyle=contactOpen?offColor:onColor; ctx.lineWidth=2;
     ctx.beginPath(); ctx.moveTo(200,H/2-30); ctx.lineTo(200,H/2-10); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(200,contactOpen?H/2+5:H/2); ctx.lineTo(200,H/2+30); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(190,H/2-10); ctx.lineTo(215,H/2-10); ctx.stroke();
-    ctx.fillStyle=contactOpen?'#EF4444':'#10B981';
-    ctx.beginPath(); ctx.arc(200,contactOpen?H/2+5:H/2,5,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='#555'; ctx.font='9px monospace'; ctx.textAlign='center';
-    ctx.fillText('NC',200,H/2+45);
-    // Output
+    ctx.fillStyle=contactOpen?contactOff:contactOn;
+    ctx.beginPath(); ctx.arc(200,contactOpen?H/2+5:H/2,4,0,Math.PI*2); ctx.fill();
     const outOn=!contactOpen;
-    ctx.strokeStyle=outOn?'#818CF8':'#1a2a3a'; ctx.lineWidth=2.5;
+    ctx.strokeStyle=outOn?wireOn:wireOff; ctx.lineWidth=2;
     ctx.beginPath(); ctx.moveTo(200,H/2+30); ctx.lineTo(200,H-10); ctx.lineTo(W-10,H-10); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(W-10,H-10); ctx.lineTo(W-10,30); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(W-10,30); ctx.lineTo(200,30); ctx.lineTo(200,H/2-30); ctx.stroke();
-    // Bulb output
-    ctx.strokeStyle=outOn?'#F59E0B':'#555'; ctx.lineWidth=2;
-    ctx.beginPath(); ctx.arc(W-30,H/2,14,0,Math.PI*2); ctx.stroke();
-    if(outOn){ctx.fillStyle='rgba(249,202,36,0.3)'; ctx.fill();}
-    ctx.fillStyle='white'; ctx.font='11px serif'; ctx.textAlign='center';
+    ctx.strokeStyle=outOn?'#C82A2A':'#D8D6CE'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.arc(W-30,H/2,13,0,Math.PI*2); ctx.stroke();
+    if(outOn){ctx.fillStyle='rgba(200,42,42,0.15)'; ctx.fill();}
+    ctx.fillStyle='#3A3A3A'; ctx.font='11px serif'; ctx.textAlign='center';
     ctx.fillText(outOn?'💡':'○',W-30,H/2+4);
-    // Labels
-    ctx.fillStyle='#555'; ctx.font='9px monospace';
-    ctx.fillText('INPUT A',30,70); ctx.fillText('OUTPUT',W-30,H/2-20);
-
   } else {
-    // Draw two relay contacts for AND (series) or OR (parallel)
-    const colors={a:activeA?'#F59E0B':'#2a3a5a', b:activeB?'#F59E0B':'#2a3a5a'};
-
     if(gate==='and'){
-      // Series contacts: both must close
       [0,1].forEach(i=>{
-        const cX=80+i*80, cY=80;
-        const on = i===0?activeA:activeB;
-        ctx.strokeStyle=on?'#10B981':'#555'; ctx.lineWidth=2.5;
+        const cX=80+i*80, cY=80, on=i===0?activeA:activeB;
+        ctx.strokeStyle=on?onColor:offColor; ctx.lineWidth=2;
         ctx.beginPath(); ctx.moveTo(cX,cY-25); ctx.lineTo(cX,cY-8); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(cX,on?cY-2:cY+12); ctx.lineTo(cX,cY+25); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(cX-12,cY-8); ctx.lineTo(cX+12,cY-8); ctx.stroke();
-        ctx.fillStyle=on?'#10B981':'#EF4444';
-        ctx.beginPath(); ctx.arc(cX,on?cY-2:cY+12,5,0,Math.PI*2); ctx.fill();
-        ctx.fillStyle=on?'#10B981':'#555'; ctx.font='9px monospace'; ctx.textAlign='center';
+        ctx.fillStyle=on?contactOn:contactOff;
+        ctx.beginPath(); ctx.arc(cX,on?cY-2:cY+12,4,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle='#888880'; ctx.font='9px monospace'; ctx.textAlign='center';
         ctx.fillText(i===0?'A':'B',cX,cY+40);
+        ctx.strokeStyle=on?onColor:'#E8E6DF'; ctx.lineWidth=1.5;
+        for(let j=0;j<4;j++){ctx.beginPath();ctx.ellipse(cX,cY-50+j*9,14,4,0,0,Math.PI*2);ctx.stroke();}
+        const wc=i>0?(activeA?wireOn:wireOff):(activeA?onColor:offColor);
+        ctx.strokeStyle=wc; ctx.lineWidth=1.5;
+        ctx.beginPath(); ctx.moveTo(cX,cY+25); ctx.lineTo(cX+80,cY+25); ctx.stroke();
       });
-      // Series wire connecting them
-      const wireColor=(activeA&&activeB)?'#818CF8':'#1a2a3a';
-      ctx.strokeStyle=wireColor; ctx.lineWidth=2.5;
+      const out=activeA&&activeB;
+      ctx.strokeStyle=out?wireOn:wireOff; ctx.lineWidth=2;
       ctx.beginPath(); ctx.moveTo(10,80); ctx.lineTo(80,80-25); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(80,80+25); ctx.lineTo(160,80-25); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(160,80+25); ctx.lineTo(230,80); ctx.stroke();
-      // Output bulb
-      const out=activeA&&activeB;
-      ctx.strokeStyle=out?'#F59E0B':'#555'; ctx.lineWidth=2;
+      ctx.strokeStyle=out?'#C82A2A':'#D8D6CE'; ctx.lineWidth=1.5;
       ctx.beginPath(); ctx.arc(245,80,12,0,Math.PI*2); ctx.stroke();
-      if(out){ctx.fillStyle='rgba(249,202,36,0.4)'; ctx.fill();}
-      ctx.fillStyle='white'; ctx.font='10px serif'; ctx.textAlign='center';
+      if(out){ctx.fillStyle='rgba(200,42,42,0.15)'; ctx.fill();}
+      ctx.fillStyle='#3A3A3A'; ctx.font='10px serif'; ctx.textAlign='center';
       ctx.fillText(out?'💡':'○',245,84);
     } else {
-      // Parallel contacts
       [0,1].forEach(i=>{
-        const cX=120, cY=55+i*80;
-        const on=i===0?activeA:activeB;
-        ctx.strokeStyle=on?'#10B981':'#555'; ctx.lineWidth=2.5;
+        const cX=120, cY=55+i*80, on=i===0?activeA:activeB;
+        ctx.strokeStyle=on?onColor:offColor; ctx.lineWidth=2;
         ctx.beginPath(); ctx.moveTo(cX,cY-20); ctx.lineTo(cX,cY-5); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(cX,on?cY:cY+15); ctx.lineTo(cX,cY+20); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(cX-12,cY-5); ctx.lineTo(cX+12,cY-5); ctx.stroke();
-        ctx.fillStyle=on?'#10B981':'#EF4444';
+        ctx.fillStyle=on?contactOn:contactOff;
         ctx.beginPath(); ctx.arc(cX,on?cY:cY+15,4,0,Math.PI*2); ctx.fill();
-        ctx.fillStyle=on?'#10B981':'#555'; ctx.font='9px monospace'; ctx.textAlign='center';
-        ctx.fillText(i===0?'A':'B',cX-25,cY);
+        ctx.fillStyle='#888880'; ctx.font='9px monospace'; ctx.textAlign='center';
+        ctx.fillText(i===0?'A':'B',cX-24,cY);
+        ctx.strokeStyle=on?onColor:'#E8E6DF'; ctx.lineWidth=1.5;
+        for(let j=0;j<4;j++){ctx.beginPath();ctx.ellipse(cX,cY-50+j*9,14,4,0,0,Math.PI*2);ctx.stroke();}
       });
       const out=activeA||activeB;
-      const wc=out?'#818CF8':'#1a2a3a';
-      ctx.strokeStyle=wc; ctx.lineWidth=2;
+      ctx.strokeStyle=out?wireOn:wireOff; ctx.lineWidth=2;
       ctx.beginPath(); ctx.moveTo(10,95); ctx.lineTo(50,95); ctx.lineTo(50,55); ctx.lineTo(120,55-20); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(50,95); ctx.lineTo(50,135); ctx.lineTo(120,135-20); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(120,55+20); ctx.lineTo(195,95); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(120,135+20); ctx.lineTo(195,95); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(195,95); ctx.lineTo(245,95); ctx.stroke();
-      ctx.strokeStyle=out?'#F59E0B':'#555'; ctx.lineWidth=2;
+      ctx.strokeStyle=out?'#C82A2A':'#D8D6CE'; ctx.lineWidth=1.5;
       ctx.beginPath(); ctx.arc(245,95,12,0,Math.PI*2); ctx.stroke();
-      if(out){ctx.fillStyle='rgba(249,202,36,0.4)'; ctx.fill();}
-      ctx.fillStyle='white'; ctx.font='10px serif'; ctx.textAlign='center';
+      if(out){ctx.fillStyle='rgba(200,42,42,0.15)'; ctx.fill();}
+      ctx.fillStyle='#3A3A3A'; ctx.font='10px serif'; ctx.textAlign='center';
       ctx.fillText(out?'💡':'○',245,99);
     }
   }
 }
 
-// Init
 ['not','and','or'].forEach(g=>{updateGate(g);drawGateCanvas(g);});
 
 // ========================= TABS =========================
 function switchTab(id){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['anatomy','latch','logic'][i]===id));
+  document.querySelectorAll('.zen-tab').forEach((t,i)=>t.classList.toggle('active',['anatomy','latch','logic'][i]===id));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
 }

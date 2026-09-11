@@ -1,0 +1,543 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 3.2 — The Fetch-Decode-Execute Cycle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;
+  --text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;
+  --accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--accent-ink:#1C1C1C;
+  --border-hair:#1C1C1C;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;
+  --ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes zen-fade-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes phase-pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes reg-change{0%{background:rgba(200,42,42,0.2)}100%{background:transparent}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast),border-color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:zen-fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 20px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-hair);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast),color var(--t-fast)}
+.zen-btn:hover{background:var(--accent-ink);color:#FDFDFD}
+.zen-btn.primary{background:var(--accent-ink);color:#FDFDFD}.zen-btn.primary:hover{background:#2C2C2C}
+.zen-btn.success{border-color:var(--accent-gold);color:var(--accent-gold);background:transparent}.zen-btn.success:hover{background:var(--accent-gold);color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red);background:transparent}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.zen-btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.zen-pane{background:var(--bg-washi);padding:22px}
+.zen-pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:14px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+
+/* CPU Registers */
+.reg-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:14px}
+.reg-box{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px 12px;border-radius:var(--radius-xs);transition:background var(--t-fast)}
+.reg-box.changed{animation:reg-change 0.5s var(--ease-out)}
+.reg-box.pc{border-color:var(--accent-indigo)}
+.reg-box.ir{border-color:var(--accent-gold)}
+.rb-name{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:3px}
+.rb-val{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:300;color:var(--text-sumi);line-height:1}
+.rb-val.active{color:var(--accent-red)}
+
+/* Phase indicator */
+.phase-row{display:flex;gap:2px;margin-bottom:16px}
+.phase-box{flex:1;padding:8px;text-align:center;border:1px solid var(--border-paper);border-radius:var(--radius-xs);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);transition:all var(--t-med)}
+.phase-box.active{border-color:var(--accent-red);background:rgba(200,42,42,0.08);color:var(--accent-red);animation:phase-pulse 1s ease-in-out infinite}
+.phase-box.done{border-color:var(--accent-gold);background:rgba(139,105,20,0.06);color:var(--accent-gold)}
+
+/* Memory table */
+.mem-table{border-collapse:collapse;width:100%;font-size:12px;margin-bottom:10px}
+.mem-table th{background:var(--bg-warm);color:var(--text-muted);padding:6px 10px;border:1px solid var(--border-paper);font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.08em;text-align:left}
+.mem-table td{padding:6px 10px;border:1px solid var(--border-paper);font-family:'JetBrains Mono',monospace;font-size:12px}
+.mem-table tr.pc-row td{background:rgba(28,45,66,0.08);font-weight:500;color:var(--accent-indigo)}
+.mem-table tr.pc-row td:first-child::after{content:' ←PC';font-size:9px;color:var(--accent-red)}
+
+/* Editable memory cells */
+.mem-input{width:36px;font-family:'JetBrains Mono',monospace;font-size:12px;background:transparent;border:none;border-bottom:1px solid var(--border-paper);color:var(--text-sumi);text-align:center;padding:1px 2px}
+.mem-input:focus{outline:none;border-bottom-color:var(--accent-indigo)}
+
+/* Instruction log */
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:160px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;color:var(--text-body);border-radius:var(--radius-xs)}
+.log-fetch{color:var(--accent-indigo)}.log-decode{color:var(--accent-gold)}.log-exec{color:var(--accent-red)}.log-info{color:var(--text-muted)}.log-halt{color:var(--accent-red);font-weight:500}
+
+/* Pipeline viz */
+.pipe-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;margin-bottom:16px}
+.pipe-cell{padding:8px;text-align:center;border:1px solid var(--border-paper);border-radius:var(--radius-xs);min-height:52px;font-family:'JetBrains Mono',monospace;font-size:10px;display:flex;flex-direction:column;justify-content:center;gap:3px;transition:all var(--t-med)}
+.pipe-cell.fetch{background:rgba(28,45,66,0.08);border-color:var(--accent-indigo);color:var(--accent-indigo)}
+.pipe-cell.decode{background:rgba(139,105,20,0.08);border-color:var(--accent-gold);color:var(--accent-gold)}
+.pipe-cell.execute{background:rgba(200,42,42,0.08);border-color:var(--accent-red);color:var(--accent-red)}
+.pipe-cell.writeback{background:rgba(61,91,63,0.08);border-color:#3D5B3F;color:#3D5B3F}
+.pipe-cell.empty{background:var(--bg-canvas);color:var(--text-ghost)}
+.pipe-cell.flush{background:rgba(200,42,42,0.15);border-color:var(--accent-red)}
+.pipe-header{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em}
+</style>
+</head>
+<body>
+
+<div class="zen-header">
+  <h1 class="zen-title">Module 3.2 — The Fetch-Decode-Execute Cycle</h1>
+  <p class="zen-subtitle">Single-Step CPU · Program Editor · Pipeline Visualiser</p>
+</div>
+
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('cpu')">Single-Step CPU</div>
+  <div class="zen-tab" onclick="switchTab('editor')">Program Editor</div>
+  <div class="zen-tab" onclick="switchTab('pipeline')">Pipeline</div>
+</div>
+
+<!-- ===== SINGLE-STEP CPU ===== -->
+<div id="panel-cpu" class="panel active">
+  <div class="zen-intro">
+    <strong>Step through the FDE cycle one phase at a time.</strong> Watch the Program Counter advance, the Instruction Register load, registers update, and memory change. The pre-loaded program computes 5 + 3 = 8.
+  </div>
+
+  <div class="bento2">
+    <div class="zen-pane">
+      <div class="pane-title gold">CPU State</div>
+
+      <div class="phase-row" id="phase-row">
+        <div class="phase-box" id="ph-fetch">Fetch</div>
+        <div class="phase-box" id="ph-decode">Decode</div>
+        <div class="phase-box" id="ph-execute">Execute</div>
+      </div>
+
+      <div class="reg-grid">
+        <div class="reg-box pc" id="rb-pc"><div class="rb-name">PC</div><div class="rb-val" id="rv-pc">0x00</div></div>
+        <div class="reg-box ir" id="rb-ir"><div class="rb-name">IR</div><div class="rb-val" id="rv-ir">0x--</div></div>
+        <div class="reg-box" id="rb-a"><div class="rb-name">Reg A</div><div class="rb-val" id="rv-a">0x00</div></div>
+        <div class="reg-box" id="rb-b"><div class="rb-name">Reg B</div><div class="rb-val" id="rv-b">0x00</div></div>
+        <div class="reg-box" id="rb-c"><div class="rb-name">Reg C</div><div class="rb-val" id="rv-c">0x00</div></div>
+        <div class="reg-box" id="rb-d"><div class="rb-name">Reg D</div><div class="rb-val" id="rv-d">0x00</div></div>
+      </div>
+
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Cycles: <span id="cycle-count" style="font-family:'JetBrains Mono',monospace;color:var(--text-sumi)">0</span></div>
+
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" id="step-btn" onclick="stepCPU()">↓ Step</button>
+        <button class="zen-btn" id="run-btn" onclick="runCPU()">▶ Run</button>
+        <button class="zen-btn danger" onclick="resetCPU()">↺ Reset</button>
+      </div>
+    </div>
+
+    <div class="zen-pane warm">
+      <div class="pane-title indigo">Memory (0x00 – 0x0F)</div>
+      <table class="mem-table" id="mem-display">
+        <thead><tr><th>Addr</th><th>Hex</th><th>Mnemonic</th></tr></thead>
+        <tbody id="mem-tbody"></tbody>
+      </table>
+
+      <div class="pane-title red" style="margin-bottom:6px">FDE Log</div>
+      <div class="op-log" id="fde-log"><div class="log-info">&gt; CPU ready. Press Step to begin.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PROGRAM EDITOR ===== -->
+<div id="panel-editor" class="panel">
+  <div class="zen-intro">
+    <strong>Write your own program</strong> by entering hex opcodes directly into memory cells. Then switch to Single-Step to execute it. Use the ISA reference table below.
+  </div>
+
+  <div class="bento2">
+    <div class="zen-pane">
+      <div class="pane-title gold">Memory Editor</div>
+      <table class="mem-table">
+        <thead><tr><th>Addr</th><th>Hex Value (edit)</th><th>Dec</th></tr></thead>
+        <tbody id="editor-tbody"></tbody>
+      </table>
+      <div class="btn-row">
+        <button class="zen-btn primary" onclick="loadEditorToMem()">Load into CPU</button>
+        <button class="zen-btn" onclick="loadDefaultProgram()">Load Default (5+3)</button>
+        <button class="zen-btn danger" onclick="clearEditor()">Clear All</button>
+      </div>
+    </div>
+
+    <div class="zen-pane warm">
+      <div class="pane-title indigo">ISA Quick Reference</div>
+      <table style="border-collapse:collapse;width:100%;font-size:11px">
+        <thead><tr style="background:var(--bg-warm)">
+          <th style="padding:5px 8px;border:1px solid var(--border-paper);text-align:left;color:var(--text-muted);font-size:9px;text-transform:uppercase;letter-spacing:.08em">Op</th>
+          <th style="padding:5px 8px;border:1px solid var(--border-paper);text-align:left;color:var(--text-muted);font-size:9px;text-transform:uppercase;letter-spacing:.08em">Mnemonic</th>
+          <th style="padding:5px 8px;border:1px solid var(--border-paper);text-align:left;color:var(--text-muted);font-size:9px;text-transform:uppercase;letter-spacing:.08em">Format</th>
+          <th style="padding:5px 8px;border:1px solid var(--border-paper);text-align:left;color:var(--text-muted);font-size:9px;text-transform:uppercase;letter-spacing:.08em">Description</th>
+        </tr></thead>
+        <tbody>
+          ${[
+            ['01','LOAD_A imm','01 vv','A ← vv'],
+            ['02','LOAD_B imm','02 vv','B ← vv'],
+            ['03','LOAD_C imm','03 vv','C ← vv'],
+            ['10','ADD','10','A ← A + B'],
+            ['11','SUB','11','A ← A − B'],
+            ['12','AND','12','A ← A AND B'],
+            ['13','OR','13','A ← A OR B'],
+            ['20','STORE addr','20 aa','mem[aa] ← A'],
+            ['21','LOAD_A_MEM addr','21 aa','A ← mem[aa]'],
+            ['30','JMP addr','30 aa','PC ← aa'],
+            ['31','JZ addr','31 aa','if A=0: PC ← aa'],
+            ['FF','HALT','FF','Stop'],
+          ].map(([op,mn,fmt,desc]) =>
+            `<tr><td style="padding:4px 8px;border:1px solid var(--border-paper);font-family:'JetBrains Mono',monospace;color:var(--accent-indigo)">${op}</td>
+            <td style="padding:4px 8px;border:1px solid var(--border-paper);font-family:'JetBrains Mono',monospace;font-size:11px">${mn}</td>
+            <td style="padding:4px 8px;border:1px solid var(--border-paper);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)">${fmt}</td>
+            <td style="padding:4px 8px;border:1px solid var(--border-paper);font-size:11px;color:var(--text-muted)">${desc}</td></tr>`
+          ).join('')}
+        </tbody>
+      </table>
+      <div style="margin-top:12px;font-size:11px;color:var(--text-muted);line-height:1.7">
+        Registers: A=0, B=1, C=2, D=3. All values in hex. 2-byte instructions: opcode + operand.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PIPELINE ===== -->
+<div id="panel-pipeline" class="panel">
+  <div class="zen-intro">
+    <strong>4-stage pipeline visualiser</strong> — Fetch, Decode, Execute, Writeback. Watch instructions flow through the pipeline simultaneously. Observe the performance gain vs single-step execution — and what happens when a branch causes a flush.
+  </div>
+
+  <div class="zen-pane" style="margin-bottom:1px">
+    <div class="pane-title gold" style="margin-bottom:8px">Pipeline Stages — 6 Instructions</div>
+    <div style="display:grid;grid-template-columns:80px repeat(10,1fr);gap:2px;margin-bottom:16px" id="pipe-container"></div>
+
+    <div style="display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:14px;background:rgba(28,45,66,0.2);border:1px solid var(--accent-indigo);border-radius:1px"></div><span style="font-size:11px;color:var(--text-muted)">Fetch</span></div>
+      <div style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:14px;background:rgba(139,105,20,0.2);border:1px solid var(--accent-gold);border-radius:1px"></div><span style="font-size:11px;color:var(--text-muted)">Decode</span></div>
+      <div style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:14px;background:rgba(200,42,42,0.2);border:1px solid var(--accent-red);border-radius:1px"></div><span style="font-size:11px;color:var(--text-muted)">Execute</span></div>
+      <div style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:14px;background:rgba(61,91,63,0.2);border:1px solid #3D5B3F;border-radius:1px"></div><span style="font-size:11px;color:var(--text-muted)">Writeback</span></div>
+      <div style="display:flex;align-items:center;gap:6px"><div style="width:14px;height:14px;background:rgba(200,42,42,0.15);border:1px solid var(--accent-red);border-radius:1px"></div><span style="font-size:11px;color:var(--text-muted)">Flushed (branch penalty)</span></div>
+    </div>
+
+    <div class="btn-row" style="margin-top:0;margin-bottom:14px">
+      <button class="zen-btn primary" onclick="stepPipe()">↓ Cycle</button>
+      <button class="zen-btn" onclick="runPipe()">▶ Auto</button>
+      <button class="zen-btn danger" onclick="resetPipe()">↺ Reset</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="reg-box"><div class="rb-name">Clock Cycle</div><div class="rb-val" id="pipe-cycle">0</div></div>
+      <div class="reg-box"><div class="rb-name">Instructions Completed</div><div class="rb-val" id="pipe-done">0</div></div>
+      <div class="reg-box"><div class="rb-name">Pipeline Flushes</div><div class="rb-val active" id="pipe-flushes">0</div></div>
+      <div class="reg-box"><div class="rb-name">Wasted Cycles</div><div class="rb-val active" id="pipe-wasted">0</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== ISA DEFINITION =====
+const MNEMONICS = {
+  0x01:'LOAD_A', 0x02:'LOAD_B', 0x03:'LOAD_C',
+  0x10:'ADD', 0x11:'SUB', 0x12:'AND', 0x13:'OR',
+  0x20:'STORE', 0x21:'LOAD_A_MEM', 0x30:'JMP', 0x31:'JZ', 0xFF:'HALT'
+};
+const HAS_OPERAND = new Set([0x01,0x02,0x03,0x20,0x21,0x30,0x31]);
+
+function mnemonicFor(mem, addr) {
+  const op = mem[addr];
+  const mn = MNEMONICS[op] || '???';
+  if (HAS_OPERAND.has(op) && addr+1 < mem.length)
+    return `${mn} 0x${mem[addr+1].toString(16).padStart(2,'0').toUpperCase()}`;
+  return mn;
+}
+
+// ===== DEFAULT PROGRAM: 5 + 3 = 8, store at 0x0A =====
+const DEFAULT_PROG = [
+  0x01, 0x05,  // 0x00: LOAD_A 5
+  0x02, 0x03,  // 0x02: LOAD_B 3
+  0x10,        // 0x04: ADD (A = A + B = 8)
+  0x20, 0x0A,  // 0x05: STORE 0x0A
+  0xFF,        // 0x07: HALT
+  0,0,         // 0x08-0x09: padding
+  0,0,0,0,0,0  // 0x0A-0x0F: data
+];
+
+// ===== CPU STATE =====
+let MEM = new Uint8Array(16);
+let REGS = {PC:0, IR:0, A:0, B:0, C:0, D:0};
+let cycles = 0, halted = false, running = false, runTimer = null;
+let phase = 'idle'; // 'fetch','decode','execute','idle'
+
+function loadDefaultProgram() {
+  DEFAULT_PROG.forEach((v,i) => { if(i<16) MEM[i]=v; });
+}
+
+function resetCPU() {
+  clearInterval(runTimer); running = false;
+  MEM.fill(0); loadDefaultProgram();
+  REGS = {PC:0, IR:0, A:0, B:0, C:0, D:0};
+  cycles = 0; halted = false; phase = 'idle';
+  setPhase('idle');
+  document.getElementById('step-btn').disabled = false;
+  document.getElementById('run-btn').disabled = false;
+  renderRegs(); renderMemDisplay();
+  document.getElementById('fde-log').innerHTML = '<div class="log-info">&gt; CPU reset. Ready.</div>';
+}
+
+function setPhase(p) {
+  ['fetch','decode','execute'].forEach(ph => {
+    const el = document.getElementById('ph-' + ph);
+    el.className = 'phase-box' + (ph === p ? ' active' : (phase === 'execute' && p === 'idle' && ph !== 'execute' ? ' done' : ''));
+  });
+  phase = p;
+}
+
+function renderRegs() {
+  const map = {pc:'PC', ir:'IR', a:'A', b:'B', c:'C', d:'D'};
+  Object.entries(map).forEach(([id, key]) => {
+    const el = document.getElementById('rv-' + id);
+    el.textContent = '0x' + REGS[key].toString(16).padStart(2,'0').toUpperCase();
+  });
+  document.getElementById('cycle-count').textContent = cycles;
+}
+
+function flashReg(id) {
+  const box = document.getElementById('rb-' + id);
+  box.classList.add('changed');
+  setTimeout(() => box.classList.remove('changed'), 500);
+}
+
+function renderMemDisplay() {
+  const tbody = document.getElementById('mem-tbody');
+  tbody.innerHTML = '';
+  for (let i = 0; i < 16; i++) {
+    const tr = document.createElement('tr');
+    if (i === REGS.PC) tr.className = 'pc-row';
+    const mn = mnemonicFor(MEM, i);
+    tr.innerHTML = `<td>0x${i.toString(16).padStart(2,'0').toUpperCase()}</td>
+      <td>${MEM[i].toString(16).padStart(2,'0').toUpperCase()}</td>
+      <td style="color:var(--text-muted);font-size:10px">${MNEMONICS[MEM[i]] ? mn : ''}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+function fdeLog(msg, cls='') {
+  const el = document.getElementById('fde-log');
+  const d = document.createElement('div'); d.className = cls; d.textContent = '> ' + msg;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+
+function stepCPU() {
+  if (halted) return;
+  cycles++;
+
+  // === FETCH ===
+  setPhase('fetch');
+  const pc = REGS.PC;
+  REGS.IR = MEM[pc];
+  REGS.PC++;
+  flashReg('pc'); flashReg('ir');
+  fdeLog(`[FETCH] PC=0x${pc.toString(16).padStart(2,'0').toUpperCase()} → IR=0x${REGS.IR.toString(16).padStart(2,'0').toUpperCase()} (${MNEMONICS[REGS.IR]||'???'})`, 'log-fetch');
+
+  // === DECODE ===
+  setPhase('decode');
+  const op = REGS.IR;
+  let operand = null;
+  if (HAS_OPERAND.has(op)) {
+    operand = MEM[REGS.PC];
+    REGS.PC++;
+    flashReg('pc');
+    fdeLog(`[DECODE] opcode=0x${op.toString(16).toUpperCase()} operand=0x${operand.toString(16).padStart(2,'0').toUpperCase()}`, 'log-decode');
+  } else {
+    fdeLog(`[DECODE] opcode=0x${op.toString(16).toUpperCase()} (no operand)`, 'log-decode');
+  }
+
+  // === EXECUTE ===
+  setPhase('execute');
+  const prevA = REGS.A;
+  switch(op) {
+    case 0x01: REGS.A = operand; flashReg('a'); fdeLog(`[EXEC] A ← ${operand} (0x${operand.toString(16).padStart(2,'0').toUpperCase()})`, 'log-exec'); break;
+    case 0x02: REGS.B = operand; flashReg('b'); fdeLog(`[EXEC] B ← ${operand}`, 'log-exec'); break;
+    case 0x03: REGS.C = operand; flashReg('c'); fdeLog(`[EXEC] C ← ${operand}`, 'log-exec'); break;
+    case 0x10: REGS.A = (REGS.A + REGS.B) & 0xFF; flashReg('a'); fdeLog(`[EXEC] A ← A+B = ${REGS.A}`, 'log-exec'); break;
+    case 0x11: REGS.A = (REGS.A - REGS.B + 256) & 0xFF; flashReg('a'); fdeLog(`[EXEC] A ← A-B = ${REGS.A}`, 'log-exec'); break;
+    case 0x12: REGS.A = REGS.A & REGS.B; flashReg('a'); fdeLog(`[EXEC] A ← A AND B = 0x${REGS.A.toString(16)}`, 'log-exec'); break;
+    case 0x13: REGS.A = REGS.A | REGS.B; flashReg('a'); fdeLog(`[EXEC] A ← A OR B = 0x${REGS.A.toString(16)}`, 'log-exec'); break;
+    case 0x20: MEM[operand] = REGS.A; fdeLog(`[EXEC] mem[0x${operand.toString(16).padStart(2,'0').toUpperCase()}] ← A (${REGS.A})`, 'log-exec'); break;
+    case 0x21: REGS.A = MEM[operand]; flashReg('a'); fdeLog(`[EXEC] A ← mem[0x${operand.toString(16).padStart(2,'0').toUpperCase()}] = ${REGS.A}`, 'log-exec'); break;
+    case 0x30: REGS.PC = operand; flashReg('pc'); fdeLog(`[EXEC] JMP → PC=0x${operand.toString(16).padStart(2,'0').toUpperCase()}`, 'log-exec'); break;
+    case 0x31:
+      if (REGS.A === 0) { REGS.PC = operand; flashReg('pc'); fdeLog(`[EXEC] JZ taken → PC=0x${operand.toString(16).padStart(2,'0').toUpperCase()}`, 'log-exec'); }
+      else fdeLog(`[EXEC] JZ not taken (A=${REGS.A})`, 'log-exec');
+      break;
+    case 0xFF:
+      halted = true;
+      fdeLog('[HALT] Execution stopped.', 'log-halt');
+      setPhase('idle');
+      document.getElementById('step-btn').disabled = true;
+      clearInterval(runTimer); running = false;
+      break;
+    default: fdeLog(`[EXEC] Unknown opcode 0x${op.toString(16)}`, 'log-halt');
+  }
+
+  if (op !== 0xFF) setPhase('idle');
+  renderRegs(); renderMemDisplay();
+}
+
+function runCPU() {
+  if (running) { clearInterval(runTimer); running = false; document.getElementById('run-btn').textContent = '▶ Run'; return; }
+  running = true; document.getElementById('run-btn').textContent = '■ Stop';
+  runTimer = setInterval(() => { if (halted) { clearInterval(runTimer); running=false; document.getElementById('run-btn').textContent='▶ Run'; return; } stepCPU(); }, 400);
+}
+
+// ===== EDITOR =====
+let EDITOR_MEM = new Uint8Array(16);
+
+function renderEditor() {
+  const tbody = document.getElementById('editor-tbody');
+  tbody.innerHTML = '';
+  for (let i = 0; i < 16; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="padding:4px 8px;border:1px solid var(--border-paper);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-muted)">0x${i.toString(16).padStart(2,'0').toUpperCase()}</td>
+      <td style="padding:2px 8px;border:1px solid var(--border-paper)"><input class="mem-input" id="ed-${i}" type="text" value="${EDITOR_MEM[i].toString(16).padStart(2,'0').toUpperCase()}" maxlength="2"></td>
+      <td style="padding:4px 8px;border:1px solid var(--border-paper);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)">${EDITOR_MEM[i]}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+function loadEditorToMem() {
+  for (let i = 0; i < 16; i++) {
+    const v = parseInt(document.getElementById('ed-'+i).value, 16);
+    EDITOR_MEM[i] = isNaN(v) ? 0 : v & 0xFF;
+  }
+  DEFAULT_PROG.forEach((v,i) => MEM[i] = EDITOR_MEM[i] || v);
+  resetCPU();
+  MEM.set(EDITOR_MEM);
+  renderMemDisplay();
+  alert('Program loaded into CPU. Switch to Single-Step tab to run it.');
+}
+
+function loadDefaultProgram2() {
+  DEFAULT_PROG.forEach((v,i) => { if(i<16) EDITOR_MEM[i]=v; });
+  renderEditor();
+}
+
+function clearEditor() { EDITOR_MEM.fill(0); renderEditor(); }
+
+// ===== PIPELINE =====
+const PIPE_STAGES = ['Fetch','Decode','Exec','WB'];
+const PIPE_INSTRS = ['LOAD_A 5','LOAD_B 3','ADD','STORE 0x0A','LOAD_C 7','HALT'];
+const PIPE_COLORS = ['fetch','decode','execute','writeback'];
+let pCycle = 0, pDone = 0, pFlushes = 0, pWasted = 0, pRunning = false, pTimer = null;
+// Branch at instruction index 4 (pretend LOAD_C is actually a JZ — for demo)
+const BRANCH_IDX = 3;
+const FLUSH_AT_CYCLE = 5; // the cycle where the branch causes flush
+
+function renderPipeline() {
+  const container = document.getElementById('pipe-container');
+  const numCycles = 10;
+  const numInstrs = PIPE_INSTRS.length;
+
+  // Build the pipeline occupancy grid
+  // cell[instr][cycle] = stage name or null or 'flush'
+  const grid = Array.from({length: numInstrs}, () => Array(numCycles).fill(null));
+
+  for (let i = 0; i < numInstrs; i++) {
+    for (let s = 0; s < 4; s++) {
+      const c = i + s; // cycle when this instruction is in stage s
+      if (c < numCycles) {
+        // If this instruction is flushed (speculative execution after branch)
+        if (i > BRANCH_IDX && c < FLUSH_AT_CYCLE + 3) {
+          grid[i][c] = 'flush';
+        } else {
+          grid[i][c] = PIPE_COLORS[s];
+        }
+      }
+    }
+    // After flush, real execution starts later
+    if (i > BRANCH_IDX) {
+      for (let s = 0; s < 4; s++) {
+        const c = (i + 3) + s; // delayed by 3 cycles (flush penalty)
+        if (c < numCycles) grid[i][c] = PIPE_COLORS[s];
+      }
+    }
+  }
+
+  container.innerHTML = '';
+
+  // Header row — cycle numbers
+  const blank = document.createElement('div');
+  blank.style.cssText = 'padding:4px;font-size:9px;color:var(--text-muted);text-align:center';
+  blank.textContent = 'Instruction';
+  container.appendChild(blank);
+  for (let c = 0; c < numCycles; c++) {
+    const h = document.createElement('div');
+    h.style.cssText = `padding:4px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted);text-align:center;border-bottom:1px solid var(--border-paper)`;
+    h.textContent = `C${c+1}`;
+    container.appendChild(h);
+  }
+
+  // Instruction rows
+  for (let i = 0; i < numInstrs; i++) {
+    const label = document.createElement('div');
+    label.style.cssText = 'padding:4px 6px;font-family:\'JetBrains Mono\',monospace;font-size:9px;color:var(--text-muted);display:flex;align-items:center;';
+    label.textContent = `I${i+1}`;
+    container.appendChild(label);
+    for (let c = 0; c < numCycles; c++) {
+      const cell = document.createElement('div');
+      const stage = grid[i][c];
+      const isActive = c < pCycle;
+      cell.style.cssText = 'padding:4px 2px;text-align:center;border:1px solid var(--border-paper);border-radius:1px;min-height:28px;font-family:\'JetBrains Mono\',monospace;font-size:8px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;';
+      if (!isActive) {
+        cell.style.opacity = '0.2';
+      } else if (stage === 'fetch')     { cell.style.background='rgba(28,45,66,0.15)'; cell.style.color='var(--accent-indigo)'; cell.style.borderColor='var(--accent-indigo)'; cell.textContent='F'; }
+      else if (stage === 'decode')   { cell.style.background='rgba(139,105,20,0.15)'; cell.style.color='var(--accent-gold)'; cell.style.borderColor='var(--accent-gold)'; cell.textContent='D'; }
+      else if (stage === 'execute')  { cell.style.background='rgba(200,42,42,0.15)'; cell.style.color='var(--accent-red)'; cell.style.borderColor='var(--accent-red)'; cell.textContent='E'; }
+      else if (stage === 'writeback'){ cell.style.background='rgba(61,91,63,0.15)'; cell.style.color='#3D5B3F'; cell.style.borderColor='#3D5B3F'; cell.textContent='W'; }
+      else if (stage === 'flush')    { cell.style.background='rgba(200,42,42,0.1)'; cell.style.color='var(--accent-red)'; cell.style.borderColor='var(--accent-red)'; cell.textContent='✗'; }
+      container.appendChild(cell);
+    }
+  }
+
+  document.getElementById('pipe-cycle').textContent = pCycle;
+  document.getElementById('pipe-done').textContent = pDone;
+  document.getElementById('pipe-flushes').textContent = pFlushes;
+  document.getElementById('pipe-wasted').textContent = pWasted;
+}
+
+function stepPipe() {
+  if (pCycle >= 10) return;
+  pCycle++;
+  if (pCycle === FLUSH_AT_CYCLE) { pFlushes++; pWasted += 3; }
+  if (pCycle > 4) pDone = Math.min(pCycle - 3, PIPE_INSTRS.length);
+  renderPipeline();
+}
+
+function runPipe() {
+  if (pRunning) { clearInterval(pTimer); pRunning=false; return; }
+  pRunning = true;
+  pTimer = setInterval(() => { if(pCycle>=10){clearInterval(pTimer);pRunning=false;return;} stepPipe(); }, 400);
+}
+
+function resetPipe() {
+  clearInterval(pTimer); pRunning=false; pCycle=0; pDone=0; pFlushes=0; pWasted=0;
+  renderPipeline();
+}
+
+// ===== INIT =====
+resetCPU();
+loadDefaultProgram2(); renderEditor();
+resetPipe();
+
+// ===== TABS =====
+function switchTab(id) {
+  const tabs = ['cpu','editor','pipeline'];
+  document.querySelectorAll('.zen-tab').forEach((t,i) => t.classList.toggle('active', tabs[i] === id));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+}
+</script>
+</body>
+</html>

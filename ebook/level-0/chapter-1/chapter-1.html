@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AoPS — Chapter One: Why Did Humans Need to Compute?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ═══════════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════════ */
+:root {
+  --ink:          #1C1C1C;
+  --paper:        #F5F4EF;
+  --warm:         #EEECE4;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --indigo:       #1C2D42;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --slate:        #4A5568;
+  --indigo-tint:  rgba(28,45,66,0.08);
+  --lacquer-tint: rgba(200,42,42,0.07);
+  --gold-tint:    rgba(139,105,20,0.08);
+  --sage-tint:    rgba(61,91,63,0.07);
+
+  --font-display: 'Noto Serif JP', 'Noto Serif', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  32px;
+  --space-xl:  64px;
+  --space-2xl: 96px;
+  --space-3xl: 128px;
+
+  --content-width: 720px;
+  --text-width:    640px;
+  --line-height:   1.75;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { background: #C8C6C0; scroll-behavior: smooth; }
+
+body {
+  background: #C8C6C0;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: var(--line-height);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE WRAPPER — simulates printed book page
+═══════════════════════════════════════════════ */
+.book-page {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  background: var(--paper);
+  min-height: 100vh;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 16px 56px rgba(0,0,0,0.22);
+  position: relative;
+}
+
+/* ═══════════════════════════════════════════════
+   RUNNING HEADER
+═══════════════════════════════════════════════ */
+.running-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  height: 36px;
+  background: var(--paper);
+  border-bottom: 0.5px solid var(--ghost);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 64px;
+}
+.running-header span {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ghost);
+}
+.running-header .rh-chapter { color: var(--slate); }
+
+/* ═══════════════════════════════════════════════
+   CHAPTER OPENER — FULL-BLEED HEADER BAND
+═══════════════════════════════════════════════ */
+.chapter-opener {
+  width: 100%;
+  background: var(--indigo);
+  position: relative;
+  overflow: hidden;
+  padding: 0 64px 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 320px;
+}
+
+/* Ink-wash texture */
+.chapter-opener::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(28,45,66,0.5) 0%, transparent 55%),
+    radial-gradient(ellipse at 0% 100%, rgba(8,14,22,0.8) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Lacquer left edge */
+.chapter-opener::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--lacquer);
+}
+
+/* Opener motif SVG — tally marks dissolving */
+.opener-motif {
+  position: absolute;
+  top: 0; right: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+
+.chapter-num-label {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(200,42,42,0.9);
+  margin-bottom: 20px;
+}
+
+.chapter-rule {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin-bottom: 28px;
+}
+
+.chapter-title {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 300;
+  color: rgba(245,244,239,0.96);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin-bottom: 16px;
+}
+
+.chapter-subtitle {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(245,244,239,0.4);
+}
+
+/* Ghost chapter number — decorative */
+.chapter-ghost-num {
+  position: absolute;
+  right: 56px;
+  bottom: 40px;
+  font-family: var(--font-mono);
+  font-size: 120px;
+  font-weight: 300;
+  color: rgba(245,244,239,0.04);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  z-index: 1;
+  user-select: none;
+}
+
+/* ═══════════════════════════════════════════════
+   INK-WASH ILLUSTRATION BAND
+   Appears between chapter opener and body
+═══════════════════════════════════════════════ */
+.chapter-illustration {
+  width: 100%;
+  height: 160px;
+  background: var(--warm);
+  border-top: 1px solid var(--ghost);
+  border-bottom: 1px solid var(--ghost);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.chapter-illustration::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(238,236,228,0.5) 100%);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════════ */
+.chapter-body {
+  padding: 56px 96px 80px;
+  max-width: var(--content-width);
+}
+
+/* ── Section headings ── */
+h2.section-head {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-top: var(--space-2xl);
+  margin-bottom: var(--space-lg);
+  padding-top: var(--space-2xl);
+  border-top: 1px solid var(--ghost);
+}
+h2.section-head:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+h3.sub-head {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--indigo);
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-md);
+}
+
+/* ── Body prose ── */
+p.lead {
+  font-family: var(--font-body);
+  font-size: 19px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  margin-bottom: var(--space-lg);
+  max-width: var(--text-width);
+}
+
+/* Drop cap on lead paragraph */
+p.lead.drop-cap::first-letter {
+  font-family: var(--font-display);
+  font-size: 4.4em;
+  font-weight: 300;
+  color: var(--indigo);
+  float: left;
+  line-height: 0.8;
+  margin-right: 8px;
+  margin-top: 6px;
+}
+
+p.body {
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.78;
+  max-width: var(--text-width);
+  text-indent: 1.4em;
+}
+p.body.no-indent { text-indent: 0; }
+p.body + p.body { margin-top: 0; }
+p.body + p.body.no-indent,
+p.body.no-indent + p.body { margin-top: var(--space-md); }
+
+/* ── Pull quote ── */
+.pull-quote {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--indigo);
+  border-left: 3px solid var(--indigo);
+  padding: 10px 0 10px 28px;
+  margin: var(--space-xl) 0 var(--space-xl) -4px;
+  line-height: 1.5;
+  max-width: 520px;
+}
+.pull-quote cite {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--slate);
+  margin-top: 14px;
+}
+
+/* ── Section break ornament ── */
+.section-break {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: var(--space-xl) 0;
+}
+.sb-line { flex: 1; height: 1px; background: var(--bone); max-width: 120px; }
+.sb-dot  { width: 3px; height: 3px; border-radius: 50%; background: var(--ghost); }
+
+/* ═══════════════════════════════════════════════
+   CALLOUTS — all 7 types
+═══════════════════════════════════════════════ */
+.callout {
+  margin: var(--space-xl) 0;
+  padding: 20px 24px;
+  max-width: var(--text-width);
+}
+
+.callout-label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.callout p, .callout-body {
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: var(--ink);
+  text-indent: 0;
+}
+.callout p + p { margin-top: var(--space-sm); }
+
+.callout em { font-style: italic; }
+.callout strong { font-weight: 500; }
+
+/* Historical Note */
+.callout-historical {
+  border-left: 3px solid var(--sage);
+  background: var(--sage-tint);
+}
+.callout-historical .callout-label { color: var(--sage); }
+
+/* Key Insight */
+.callout-insight {
+  border-left: 3px solid var(--gold);
+  background: var(--gold-tint);
+}
+.callout-insight .callout-label { color: var(--gold); }
+
+/* Think About It */
+.callout-think {
+  border-left: 3px solid var(--indigo);
+  background: var(--indigo-tint);
+}
+.callout-think .callout-label { color: var(--indigo); }
+
+/* Simulation / Try It */
+.callout-sim {
+  border-left: 3px solid var(--slate);
+  background: var(--bone);
+}
+.callout-sim .callout-label { color: var(--slate); }
+
+/* Challenge */
+.callout-challenge {
+  border-left: 3px solid var(--lacquer);
+  background: var(--lacquer-tint);
+}
+.callout-challenge .callout-label { color: var(--lacquer); }
+
+/* Deep Dive */
+.callout-deep {
+  border-left: 3px solid var(--indigo);
+  background: var(--warm);
+}
+.callout-deep .callout-label { color: var(--indigo); }
+.callout-deep p { font-style: italic; }
+
+/* Future Connection */
+.callout-future {
+  border-left: 3px solid var(--gold);
+  background: var(--warm);
+}
+.callout-future .callout-label { color: var(--gold); }
+
+/* ═══════════════════════════════════════════════
+   TABLES
+═══════════════════════════════════════════════ */
+.table-wrap {
+  margin: var(--space-xl) 0;
+  overflow-x: auto;
+  max-width: var(--text-width);
+}
+.book-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+}
+.book-table th {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--slate);
+  background: var(--warm);
+  padding: 10px 14px;
+  border-top: 1.5px solid var(--ink);
+  border-bottom: 1px solid var(--ghost);
+  text-align: left;
+  white-space: nowrap;
+}
+.book-table td {
+  font-family: var(--font-sans);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--bone);
+  color: var(--ink);
+  vertical-align: top;
+  line-height: 1.55;
+}
+.book-table td:first-child {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+}
+.book-table td.mono {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--indigo);
+}
+.book-table tr:last-child td { border-bottom: 1.5px solid var(--ink); }
+.book-table tr.highlight td { background: rgba(28,45,66,0.04); }
+
+.table-caption {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--slate);
+  margin-top: 10px;
+  line-height: 1.5;
+  max-width: var(--text-width);
+}
+.table-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--indigo);
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ═══════════════════════════════════════════════
+   SIMULATION FIGURE BLOCK
+═══════════════════════════════════════════════ */
+.sim-figure {
+  margin: var(--space-xl) 0;
+  max-width: var(--text-width);
+}
+.sim-figure-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--indigo);
+  border: 1px solid var(--indigo);
+  padding: 3px 9px;
+  border-radius: 2px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.sim-figure-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--indigo);
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--ghost);
+  display: block;
+}
+.sim-figure-frame {
+  border: 1px solid var(--ghost);
+  background: var(--warm);
+  padding: 28px 32px;
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+.sim-figure-frame::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: rgba(28,45,66,0.2);
+}
+.sim-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ghost);
+}
+.sim-preview-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--ink);
+}
+.sim-preview-subtitle {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-top: 2px;
+}
+.sim-tabs-preview {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--ghost);
+  margin-bottom: 16px;
+}
+.sim-tab-p {
+  padding: 8px 18px;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ghost);
+  border-bottom: 2px solid transparent;
+}
+.sim-tab-p.active {
+  color: var(--lacquer);
+  border-bottom-color: var(--lacquer);
+}
+.sim-stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  margin-bottom: 16px;
+}
+.sim-stat {
+  background: var(--paper);
+  border: 1px solid var(--bone);
+  padding: 12px;
+  text-align: center;
+}
+.sim-stat-val {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--ink);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.sim-stat-label {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ghost);
+}
+.sim-records-preview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.sim-record {
+  background: var(--paper);
+  border: 1px solid var(--bone);
+  padding: 10px 12px;
+  border-radius: 1px;
+}
+.sim-record-name {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 5px;
+}
+.sim-record-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.sim-tag {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--slate);
+  background: var(--warm);
+  padding: 1px 6px;
+  border-radius: 1px;
+}
+.sim-tag.hi {
+  background: var(--indigo);
+  color: rgba(245,244,239,0.9);
+}
+.sim-link-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--bone);
+}
+.sim-open-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--indigo);
+  border: 1px solid var(--indigo);
+  padding: 9px 18px;
+  text-decoration: none;
+  border-radius: 1px;
+  transition: background 0.12s;
+}
+.sim-open-btn:hover { background: var(--ink); }
+.sim-note {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--slate);
+  line-height: 1.5;
+}
+.sim-figure-caption {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-style: italic;
+  color: var(--slate);
+  margin-top: 10px;
+  line-height: 1.55;
+}
+
+/* ═══════════════════════════════════════════════
+   CHALLENGE SECTION
+═══════════════════════════════════════════════ */
+.challenge-section {
+  margin-top: var(--space-2xl);
+  border-top: 1.5px solid var(--ink);
+  padding-top: var(--space-xl);
+  max-width: var(--text-width);
+}
+.challenge-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: var(--space-xl);
+}
+.challenge-num {
+  font-family: var(--font-mono);
+  font-size: 42px;
+  font-weight: 300;
+  color: var(--lacquer);
+  line-height: 1;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+  opacity: 0.7;
+}
+.challenge-title-block {}
+.challenge-overline {
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--lacquer);
+  margin-bottom: 6px;
+}
+.challenge-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 300;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+.challenge-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.challenge-meta-item {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--slate);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.challenge-meta-item::before {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--ghost);
+}
+
+.challenge-setup {
+  background: var(--warm);
+  border: 1px solid var(--bone);
+  border-left: 3px solid var(--lacquer);
+  padding: 20px 24px;
+  margin-bottom: var(--space-xl);
+}
+.challenge-setup-label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--lacquer);
+  margin-bottom: 12px;
+}
+.challenge-setup p {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 300;
+  color: var(--ink);
+  line-height: 1.8;
+  margin-bottom: var(--space-sm);
+}
+.challenge-setup p:last-child { margin-bottom: 0; }
+.challenge-setup strong {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.challenge-part {
+  margin-bottom: var(--space-xl);
+}
+.challenge-part-label {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--indigo);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--bone);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.challenge-part-label span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--lacquer);
+  background: var(--lacquer-tint);
+  border: 1px solid rgba(200,42,42,0.2);
+  padding: 2px 8px;
+  border-radius: 1px;
+}
+
+ol.challenge-questions {
+  list-style: none;
+  counter-reset: q-counter;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-left: 0;
+}
+ol.challenge-questions li {
+  counter-increment: q-counter;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+ol.challenge-questions li::before {
+  content: counter(q-counter, upper-alpha) attr(data-sub);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--lacquer);
+  min-width: 24px;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+ol.challenge-questions li p {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 300;
+  color: var(--ink);
+  line-height: 1.75;
+}
+ol.challenge-questions li p em {
+  font-style: italic;
+  color: var(--slate);
+}
+ol.challenge-questions li p strong {
+  font-weight: 500;
+}
+
+/* Rubric table */
+.rubric-wrap { margin-top: var(--space-xl); }
+.rubric-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-bottom: 10px;
+  display: block;
+}
+.rubric-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.rubric-table th {
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--slate);
+  background: var(--warm);
+  padding: 8px 12px;
+  border-top: 1.5px solid var(--ink);
+  border-bottom: 1px solid var(--ghost);
+  text-align: left;
+}
+.rubric-table td {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 300;
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--bone);
+  color: var(--ink);
+  vertical-align: top;
+}
+.rubric-table td:first-child {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--indigo);
+  font-weight: 400;
+  white-space: nowrap;
+}
+.rubric-table td:nth-child(2) {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--lacquer);
+  font-weight: 400;
+  text-align: center;
+}
+.rubric-table tr:last-child td {
+  border-bottom: 1.5px solid var(--ink);
+  font-weight: 500;
+}
+.rubric-table tr.total td { background: var(--warm); }
+
+/* Hint accordion */
+.hint-block {
+  margin-top: var(--space-lg);
+  border: 1px solid var(--bone);
+}
+.hint-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--warm);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate);
+  border-bottom: 1px solid var(--bone);
+  text-align: left;
+  gap: 8px;
+}
+.hint-toggle:hover { background: var(--bone); }
+.hint-toggle-arrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ghost);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.hint-content {
+  padding: 16px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--ink);
+  line-height: 1.75;
+  display: none;
+}
+.hint-content.open { display: block; }
+.hint-content code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--bone);
+  border: 1px solid var(--ghost);
+  padding: 1px 5px;
+  border-radius: 2px;
+  color: var(--indigo);
+}
+
+/* ═══════════════════════════════════════════════
+   CHAPTER SUMMARY / BRIDGE
+═══════════════════════════════════════════════ */
+.chapter-summary {
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--ghost);
+  max-width: var(--text-width);
+}
+
+.chapter-nav {
+  margin-top: var(--space-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0;
+  border-top: 1px solid var(--bone);
+  border-bottom: 1px solid var(--bone);
+}
+.nav-label {
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ghost);
+  margin-bottom: 4px;
+}
+.nav-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--indigo);
+}
+.nav-next { text-align: right; }
+
+/* ═══════════════════════════════════════════════
+   PAGE FOOTER
+═══════════════════════════════════════════════ */
+.page-footer {
+  height: 48px;
+  border-top: 0.5px solid var(--ghost);
+  padding: 0 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--paper);
+}
+.page-footer-series {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ghost);
+}
+.page-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--ghost);
+  letter-spacing: 0.05em;
+}
+
+/* ═══════════════════════════════════════════════
+   INLINE CODE
+═══════════════════════════════════════════════ */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--bone);
+  border: 1px solid var(--ghost);
+  padding: 1px 5px;
+  border-radius: 2px;
+  color: var(--indigo);
+}
+
+/* ═══════════════════════════════════════════════
+   SMALL CAPS UTILITY
+═══════════════════════════════════════════════ */
+.sc {
+  font-variant: small-caps;
+  letter-spacing: 0.04em;
+}
+
+</style>
+</head>
+<body>
+
+<article class="book-page" aria-label="Chapter One — Why Did Humans Need to Compute?">
+
+  <!-- ── Running header ── -->
+  <header class="running-header" role="banner">
+    <span>Volume 0 — Before Computers</span>
+    <span class="rh-chapter">Chapter One</span>
+  </header>
+
+
+  <!-- ══════════════════════════════════════════
+       CHAPTER OPENER — full-bleed indigo band
+  ══════════════════════════════════════════ -->
+  <div class="chapter-opener" role="heading" aria-level="1">
+
+    <!-- Motif: tally marks dissolving into ledger columns -->
+    <svg class="opener-motif" viewBox="0 0 720 320" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+      <!-- Tally groups — left, solid -->
+      <g stroke="#F5F4EF" stroke-width="1.4" stroke-linecap="round" opacity="0.18">
+        <line x1="40"  y1="80"  x2="40"  y2="150"/>
+        <line x1="56"  y1="80"  x2="56"  y2="150"/>
+        <line x1="72"  y1="80"  x2="72"  y2="150"/>
+        <line x1="88"  y1="80"  x2="88"  y2="150"/>
+        <line x1="32"  y1="115" x2="98"  y2="108"/>
+        <line x1="108" y1="80"  x2="108" y2="150"/>
+        <line x1="124" y1="80"  x2="124" y2="150"/>
+        <line x1="140" y1="80"  x2="140" y2="150"/>
+        <line x1="156" y1="80"  x2="156" y2="150"/>
+        <line x1="100" y1="115" x2="166" y2="108"/>
+        <line x1="176" y1="80"  x2="176" y2="150"/>
+        <line x1="192" y1="80"  x2="192" y2="150"/>
+        <line x1="208" y1="80"  x2="208" y2="150"/>
+      </g>
+      <!-- Fading tally groups -->
+      <g stroke="#F5F4EF" stroke-width="1" stroke-linecap="round" opacity="0.1">
+        <line x1="240" y1="80"  x2="240" y2="150"/>
+        <line x1="256" y1="80"  x2="256" y2="150"/>
+        <line x1="272" y1="80"  x2="272" y2="150"/>
+        <line x1="288" y1="80"  x2="288" y2="150"/>
+        <line x1="232" y1="115" x2="298" y2="108"/>
+        <line x1="308" y1="80"  x2="308" y2="150"/>
+        <line x1="324" y1="80"  x2="324" y2="150"/>
+        <line x1="340" y1="80"  x2="340" y2="150"/>
+      </g>
+      <!-- Emerging ledger / grid — right half -->
+      <g stroke="#F5F4EF" stroke-width="0.5" opacity="0.1">
+        <line x1="380" y1="60"  x2="680" y2="60"/>
+        <line x1="380" y1="90"  x2="680" y2="90"/>
+        <line x1="380" y1="120" x2="680" y2="120"/>
+        <line x1="380" y1="150" x2="680" y2="150"/>
+        <line x1="380" y1="180" x2="680" y2="180"/>
+        <line x1="420" y1="50"  x2="420" y2="200"/>
+        <line x1="480" y1="50"  x2="480" y2="200"/>
+        <line x1="540" y1="50"  x2="540" y2="200"/>
+        <line x1="600" y1="50"  x2="600" y2="200"/>
+        <line x1="660" y1="50"  x2="660" y2="200"/>
+      </g>
+      <!-- Lacquer accent dots — data points -->
+      <g fill="#C82A2A" opacity="0.45">
+        <circle cx="420" cy="60"  r="2.5"/>
+        <circle cx="480" cy="90"  r="2.5"/>
+        <circle cx="540" cy="60"  r="2.5"/>
+        <circle cx="600" cy="120" r="2.5"/>
+        <circle cx="660" cy="90"  r="2.5"/>
+        <circle cx="480" cy="150" r="2.5"/>
+        <circle cx="540" cy="120" r="2.5"/>
+        <circle cx="600" cy="60"  r="2.5"/>
+      </g>
+      <!-- Horizontal fade divider between tally and grid -->
+      <line x1="355" y1="50" x2="355" y2="200" stroke="#F5F4EF" stroke-width="0.5" opacity="0.08"/>
+    </svg>
+
+    <!-- Ghost chapter number -->
+    <div class="chapter-ghost-num" aria-hidden="true">01</div>
+
+    <!-- Chapter metadata -->
+    <p class="chapter-num-label">Module 0.1 &nbsp;·&nbsp; Level 0 — Before Computers</p>
+    <div class="chapter-rule" role="separator"></div>
+    <h1 class="chapter-title">Why Did Humans<br>Need to Compute?</h1>
+    <p class="chapter-subtitle">The problem that forced computing into existence</p>
+
+  </div>
+
+
+  <!-- ══════════════════════════════════════════
+       ILLUSTRATION BAND
+  ══════════════════════════════════════════ -->
+  <figure class="chapter-illustration" aria-label="Decorative illustration: tally marks and ledger grid representing the census counting problem">
+    <svg viewBox="0 0 672 140" fill="none" xmlns="http://www.w3.org/2000/svg" width="672" height="140" aria-hidden="true">
+      <defs>
+        <linearGradient id="illus-fade-l" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%"   stop-color="#EEECE4" stop-opacity="1"/>
+          <stop offset="15%"  stop-color="#EEECE4" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="illus-fade-r" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="85%"  stop-color="#EEECE4" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#EEECE4" stop-opacity="1"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Five hundred tally groups, abstracted -->
+      <g stroke="#1C2D42" stroke-linecap="round" opacity="0.18">
+        <!-- Solid groups, leftmost -->
+        <g stroke-width="1.2">
+          <line x1="32"  y1="30" x2="32"  y2="90"/>
+          <line x1="44"  y1="30" x2="44"  y2="90"/>
+          <line x1="56"  y1="30" x2="56"  y2="90"/>
+          <line x1="68"  y1="30" x2="68"  y2="90"/>
+          <line x1="25"  y1="60" x2="76"  y2="54"/>
+          <line x1="88"  y1="30" x2="88"  y2="90"/>
+          <line x1="100" y1="30" x2="100" y2="90"/>
+          <line x1="112" y1="30" x2="112" y2="90"/>
+          <line x1="124" y1="30" x2="124" y2="90"/>
+          <line x1="81"  y1="60" x2="132" y2="54"/>
+          <line x1="144" y1="30" x2="144" y2="90"/>
+          <line x1="156" y1="30" x2="156" y2="90"/>
+          <line x1="168" y1="30" x2="168" y2="90"/>
+          <line x1="180" y1="30" x2="180" y2="90"/>
+          <line x1="137" y1="60" x2="188" y2="54"/>
+          <line x1="200" y1="30" x2="200" y2="90"/>
+          <line x1="212" y1="30" x2="212" y2="90"/>
+          <line x1="224" y1="30" x2="224" y2="90"/>
+        </g>
+        <!-- Fading groups -->
+        <g stroke-width="0.8" opacity="0.5">
+          <line x1="248" y1="30" x2="248" y2="90"/>
+          <line x1="260" y1="30" x2="260" y2="90"/>
+          <line x1="272" y1="30" x2="272" y2="90"/>
+          <line x1="284" y1="30" x2="284" y2="90"/>
+          <line x1="241" y1="60" x2="292" y2="54"/>
+          <line x1="304" y1="30" x2="304" y2="90"/>
+          <line x1="316" y1="30" x2="316" y2="90"/>
+        </g>
+        <g stroke-width="0.5" opacity="0.25">
+          <line x1="336" y1="30" x2="336" y2="90"/>
+          <line x1="348" y1="30" x2="348" y2="90"/>
+        </g>
+      </g>
+
+      <!-- Emerging order — ledger lines -->
+      <g stroke="#1C2D42" stroke-width="0.6" opacity="0.12">
+        <line x1="370" y1="25"  x2="640" y2="25"/>
+        <line x1="370" y1="50"  x2="640" y2="50"/>
+        <line x1="370" y1="75"  x2="640" y2="75"/>
+        <line x1="370" y1="100" x2="640" y2="100"/>
+        <line x1="370" y1="125" x2="640" y2="125"/>
+        <line x1="400" y1="15"  x2="400" y2="135"/>
+        <line x1="450" y1="15"  x2="450" y2="135"/>
+        <line x1="500" y1="15"  x2="500" y2="135"/>
+        <line x1="550" y1="15"  x2="550" y2="135"/>
+        <line x1="600" y1="15"  x2="600" y2="135"/>
+      </g>
+
+      <!-- Lacquer dots in grid -->
+      <g fill="#C82A2A" opacity="0.5">
+        <circle cx="400" cy="25"  r="2.2"/>
+        <circle cx="450" cy="75"  r="2.2"/>
+        <circle cx="500" cy="25"  r="2.2"/>
+        <circle cx="500" cy="100" r="2.2"/>
+        <circle cx="550" cy="50"  r="2.2"/>
+        <circle cx="600" cy="25"  r="2.2"/>
+        <circle cx="600" cy="100" r="2.2"/>
+      </g>
+
+      <!-- Divider line -->
+      <line x1="355" y1="15" x2="355" y2="135" stroke="#1C2D42" stroke-width="0.8" opacity="0.15"/>
+      <!-- Labels -->
+      <text x="160" y="115" font-family="JetBrains Mono, monospace" font-size="9" fill="#1C2D42" opacity="0.35" text-anchor="middle">Human counting — 1880</text>
+      <text x="510" y="115" font-family="JetBrains Mono, monospace" font-size="9" fill="#1C2D42" opacity="0.35" text-anchor="middle">Mechanical tabulation — 1890</text>
+
+      <!-- Edge fade overlays -->
+      <rect x="0"   y="0" width="60"  height="140" fill="url(#illus-fade-l)"/>
+      <rect x="612" y="0" width="60"  height="140" fill="url(#illus-fade-r)"/>
+    </svg>
+  </figure>
+
+
+  <!-- ══════════════════════════════════════════
+       CHAPTER BODY
+  ══════════════════════════════════════════ -->
+  <main class="chapter-body">
+
+
+    <!-- ── THE PROBLEM ── -->
+    <section aria-labelledby="section-problem">
+      <h2 class="section-head" id="section-problem" style="border-top:none;padding-top:0;margin-top:0;">The Problem</h2>
+
+      <p class="lead drop-cap">Imagine you are the United States government in 1880. You need to count fifty million people — record their ages, occupations, birthplaces, and family sizes — accurately enough to redraw congressional districts and allocate federal funding.</p>
+
+      <p class="body no-indent">You have pencils, paper, and humans.</p>
+
+      <p class="body no-indent" style="font-family:var(--font-display);font-size:19px;font-weight:300;color:var(--indigo);text-indent:0;margin-top:var(--space-md);margin-bottom:var(--space-md);">It takes eight years.</p>
+
+      <p class="body no-indent">By the time you finish, the next census is already two years away.</p>
+
+      <p class="body">This was not a failure of effort. It was a failure of <strong>scale</strong>. Human brains are remarkable instruments, but they break down when asked to perform the same arithmetic operation millions of times without error.</p>
+
+      <p class="body">That breakdown is exactly why computing had to be invented.</p>
+
+    </section>
+
+
+    <!-- ── THE STORY ── -->
+    <section aria-labelledby="section-story">
+      <h2 class="section-head" id="section-story">The Story</h2>
+
+      <!-- Problem 1 -->
+      <h3 class="sub-head">Problem One — The Census Crisis</h3>
+
+      <p class="body no-indent">The 1880 <abbr title="United States">US</abbr> Census employed hundreds of clerks who hand-tallied results on paper. The final count was published in 1888 — eight years after the census was taken.</p>
+
+      <p class="body">The <abbr title="United States">US</abbr> Constitution requires a census every ten years. The arithmetic was alarming: <strong>the 1890 census was going to be even larger</strong>, and at the current rate, it might not be finished before the 1900 census began. Congress held a competition to find a faster method. A young engineer named Herman Hollerith won it — but that is Module 0.5's story.</p>
+
+      <p class="body">The point here is simpler: large-scale counting broke human capacity.</p>
+
+      <div class="callout callout-historical" role="note" aria-label="Historical Note">
+        <div class="callout-label"><span aria-hidden="true">⊕</span> Historical Note</div>
+        <p>The clerks employed on the 1880 census were not unskilled workers — many held degrees in mathematics. The problem was not human intelligence. It was human <em>throughput</em>: a trained clerk could process roughly 500 records per day. Fifty million records divided by 500 clerks processing 500 records each is 200 working days of pure counting — before verification, compilation, or printing. The eight-year figure reflects the full pipeline, not just the arithmetic phase.</p>
+      </div>
+
+      <div class="section-break" role="separator" aria-hidden="true">
+        <div class="sb-line"></div>
+        <div class="sb-dot"></div><div class="sb-dot"></div><div class="sb-dot"></div>
+        <div class="sb-line"></div>
+      </div>
+
+      <!-- Problem 2 -->
+      <h3 class="sub-head">Problem Two — Navigation and the Cost of Error</h3>
+
+      <p class="body no-indent">In the seventeenth and eighteenth centuries, a ship's navigator relied on printed mathematical tables to determine position at sea. These tables — logarithms, trigonometric values, astronomical positions — were computed by hand and typeset by hand.</p>
+
+      <p class="body">Hand computation means human error. Typesetting means a second layer of human error applied to the first.</p>
+
+      <p class="body">In 1628, the Swedish warship <em>Vasa</em> sank on its maiden voyage, partly due to a design calculation error. Navigation errors sent ships onto rocks. Artillery fired with incorrect trajectory tables killed soldiers on the wrong side of the line.</p>
+
+      <p class="body">The British government commissioned <strong>Mathematical Tables</strong> projects — employing teams of human "computers," people whose job title was literally <em>computer</em> — to calculate and cross-check these values. Errors still crept in.</p>
+
+      <div class="callout callout-historical" role="note" aria-label="Historical Note">
+        <div class="callout-label"><span aria-hidden="true">⊕</span> Historical Note</div>
+        <p>The word <em>computer</em> referred to a human being long before it referred to a machine. The Oxford English Dictionary records its first use in this sense in 1613. For more than three centuries, a computer was a person — typically a mathematician or skilled arithmetician — employed to perform calculations. The shift in meaning happened gradually after World War Two, as electronic machines took over the role that humans had held.</p>
+      </div>
+
+      <div class="section-break" role="separator" aria-hidden="true">
+        <div class="sb-line"></div>
+        <div class="sb-dot"></div><div class="sb-dot"></div><div class="sb-dot"></div>
+        <div class="sb-line"></div>
+      </div>
+
+      <!-- Problem 3 -->
+      <h3 class="sub-head">Problem Three — Artillery and Wartime Calculation</h3>
+
+      <p class="body no-indent">During World War One and World War Two, artillery crews needed <strong>firing tables</strong> — books of pre-calculated values telling gunners how to aim based on distance, wind speed, shell weight, and air pressure. Each table required thousands of calculations.</p>
+
+      <p class="body">At Aberdeen Proving Ground in the United States, teams of human computers — many of them women with mathematics degrees who could not obtain professional positions in academia or industry due to discrimination — spent days computing a single ballistic trajectory by hand. During World War Two, the demand for new firing tables outpaced what any number of humans could produce in the time available.</p>
+
+      <p class="body">This bottleneck directly funded the construction of <abbr title="Electronic Numerical Integrator and Computer">ENIAC</abbr> — the first general-purpose electronic computer, completed in 1945. The machine that would change everything was built because human arithmetic had become a strategic military liability.</p>
+
+      <div class="callout callout-historical" role="note" aria-label="Historical Note">
+        <div class="callout-label"><span aria-hidden="true">⊕</span> Historical Note</div>
+        <p>Six women programmed <abbr title="Electronic Numerical Integrator and Computer">ENIAC</abbr>: Kay McNulty, Betty Jennings, Betty Snyder, Marlyn Wescoff, Fran Bilas, and Ruth Lichterman. Their work — writing the sequences of operations that ENIAC would execute — was essential to the machine's function, and was not publicly credited for decades. They were referred to as "operators," a term that obscured the intellectual nature of what they did. Programming ENIAC required understanding its architecture at a physical level and constructing complex logical sequences entirely from first principles. There was no programming language yet. There was no debugger. There was only the machine and a problem to solve.</p>
+      </div>
+
+    </section>
+
+
+    <!-- ── THE PATTERN ── -->
+    <section aria-labelledby="section-pattern">
+      <h2 class="section-head" id="section-pattern">The Pattern</h2>
+
+      <p class="body no-indent">Three problems. Three different domains — government, navigation, warfare. One underlying structure.</p>
+
+      <span class="table-label">Table 1.1</span>
+      <div class="table-wrap">
+        <table class="book-table" role="table" aria-label="Three historical computation problems and their shared structure">
+          <thead>
+            <tr>
+              <th scope="col">Problem</th>
+              <th scope="col">Scale</th>
+              <th scope="col">Bottleneck</th>
+              <th scope="col">Consequence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Census counting</td>
+              <td class="mono">50,000,000 records</td>
+              <td>500 rec / clerk / day</td>
+              <td>8-year publication delay; stale, unusable data</td>
+            </tr>
+            <tr>
+              <td>Navigation tables</td>
+              <td class="mono">Millions of ops</td>
+              <td>Multi-step hand arithmetic</td>
+              <td>Ships lost; lives and cargo destroyed</td>
+            </tr>
+            <tr class="highlight">
+              <td>Artillery trajectories</td>
+              <td class="mono">1,000s of ballistic calc per table</td>
+              <td>Days per trajectory</td>
+              <td>Military disadvantage; strategic liability</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-caption">Table 1.1 — Three historical problems that drove the development of computing. In every case, the task was well-defined and repetitive; the obstacle was human speed and reliability at scale.</p>
+
+      <div class="callout callout-insight" role="note" aria-label="Key Insight">
+        <div class="callout-label"><span aria-hidden="true">◆</span> Key Insight</div>
+        <p>These three problems look like different domains. They share one structure: a task that is perfectly well-defined and mechanically repetitive, but too large in volume for humans to perform reliably at speed. Any time you encounter that structure, you are looking at a candidate for automation. This pattern recurs at every level of computing history — from census clerks to compilers to cloud infrastructure.</p>
+      </div>
+
+    </section>
+
+
+    <!-- ── THE CONCEPT ── -->
+    <section aria-labelledby="section-concept">
+      <h2 class="section-head" id="section-concept">The Concept — What is Computation?</h2>
+
+      <p class="body no-indent">Computation, at its core, is the manipulation of symbols according to rules.</p>
+
+      <p class="body"><strong>Symbol</strong> — any representation of information: a number, a letter, a hole in a card, a voltage in a wire.</p>
+      <p class="body"><strong>Rule</strong> — a defined operation: add these two numbers, shift this value left, record a tally mark.</p>
+      <p class="body"><strong>Manipulation</strong> — applying the rule to the symbol to produce a new symbol.</p>
+
+      <p class="body">That is the entire definition. A human clerk doing long division is computing. A gear turning in a calculating machine is computing. A transistor switching in a chip is computing. The <em>what</em> is identical across all three. What changes is the medium — and with the medium, the speed, reliability, and cost.</p>
+
+      <span class="table-label">Table 1.2</span>
+      <div class="table-wrap">
+        <table class="book-table" role="table" aria-label="Comparison of computing media across history">
+          <thead>
+            <tr>
+              <th scope="col">Medium</th>
+              <th scope="col">Era</th>
+              <th scope="col">Speed</th>
+              <th scope="col">Error rate</th>
+              <th scope="col">Tireless?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Human computer</td>
+              <td class="mono">Pre-1642</td>
+              <td class="mono">~500 ops / day</td>
+              <td>2–5% (fatigue)</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>Mechanical calculator</td>
+              <td class="mono">1642–1890</td>
+              <td class="mono">~1,000 ops / day</td>
+              <td>Near-zero</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td>Electromechanical tabulator</td>
+              <td class="mono">1890–1945</td>
+              <td class="mono">31,200 ops / day</td>
+              <td>Near-zero</td>
+              <td>Yes</td>
+            </tr>
+            <tr class="highlight">
+              <td>Electronic computer (ENIAC)</td>
+              <td class="mono">1945</td>
+              <td class="mono">5,000 ops / sec</td>
+              <td>Near-zero</td>
+              <td>Yes</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-caption">Table 1.2 — The history of computing is largely the history of improving this table. Each row represents a different answer to the same underlying problem.</p>
+
+      <div class="pull-quote">
+        "The trajectory of computing history is a single unbroken line: making that table more favourable, row by row."
+      </div>
+
+      <!-- Stored instructions preview -->
+      <h3 class="sub-head">What "Stored Instructions" Means — A Preview</h3>
+
+      <p class="body no-indent">The next major leap was not just making machines faster. It was making them <strong>programmable</strong>.</p>
+
+      <p class="body">A machine that can only add is useful but limited. A machine that can follow a <em>sequence of instructions</em> — and change what it does based on previous results — is general-purpose. The idea of storing a program alongside data, rather than hardwiring operations into the machine's physical structure, is the single most important idea in computing.</p>
+
+      <p class="body">You will see it born in Module 0.3 with Jacquard's loom, formalised in Module 0.4 with Babbage's Analytical Engine, and industrialised in Module 0.5 with Hollerith's tabulating machine. For now, hold this idea lightly: <strong>the separation of instructions from mechanism</strong> is what makes a computer a computer rather than a calculator.</p>
+
+      <div class="callout callout-think" role="note" aria-label="Think About It">
+        <div class="callout-label"><span aria-hidden="true">◇</span> Think About It</div>
+        <p>The three problems in this chapter — census, navigation, artillery — share an abstract structure: a large number of identical, well-defined operations that humans perform too slowly or too unreliably at scale.</p>
+        <p>Can you identify a modern task with the same structure that is <em>not yet</em> automated? What is the obstacle to automating it — is it technical, economic, or something else?</p>
+      </div>
+
+    </section>
+
+
+    <!-- ══════════════════════════════════════════
+         SIMULATION FIGURE
+    ══════════════════════════════════════════ -->
+    <section aria-labelledby="section-simulation">
+      <h2 class="section-head" id="section-simulation">Hands-On Exercise</h2>
+
+      <p class="body no-indent">The simulation below places you in the role of a census clerk in 1880. You will process twenty record cards by hand — categorising and tallying each person — before watching the same task completed mechanically on fifty million records.</p>
+      <p class="body">Read the walkthrough below, then open the simulation. Do not skip it. Reading about the tedium of manual tallying is not the same as experiencing it.</p>
+
+      <!-- Simulation figure preview -->
+      <figure class="sim-figure" aria-labelledby="sim-fig-caption">
+
+        <span class="sim-figure-badge">Interactive</span>
+        <span class="sim-figure-label">Figure 1.1 — The 1880 Census Simulator</span>
+
+        <div class="sim-figure-frame">
+          <div class="sim-preview-header">
+            <div>
+              <div class="sim-preview-title">The 1880 Census Simulator</div>
+              <div class="sim-preview-subtitle">Human computation vs. mechanical tabulation</div>
+            </div>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" stroke="#D4D0C4" stroke-width="1"/>
+              <circle cx="12" cy="12" r="5" stroke="#D4D0C4" stroke-width="0.7"/>
+              <circle cx="12" cy="12" r="1.5" fill="#D4D0C4"/>
+            </svg>
+          </div>
+
+          <!-- Tabs preview -->
+          <div class="sim-tabs-preview" aria-hidden="true">
+            <div class="sim-tab-p active">Human Mode (1880)</div>
+            <div class="sim-tab-p">Machine Mode (1890)</div>
+            <div class="sim-tab-p">Comparison</div>
+          </div>
+
+          <!-- Stats preview -->
+          <div class="sim-stat-row" aria-hidden="true">
+            <div class="sim-stat">
+              <div class="sim-stat-val">0</div>
+              <div class="sim-stat-label">Processed</div>
+            </div>
+            <div class="sim-stat">
+              <div class="sim-stat-val">20</div>
+              <div class="sim-stat-label">Remaining</div>
+            </div>
+            <div class="sim-stat" style="color:var(--lacquer)">
+              <div class="sim-stat-val" style="color:var(--lacquer)">0</div>
+              <div class="sim-stat-label">Errors</div>
+            </div>
+            <div class="sim-stat">
+              <div class="sim-stat-val" style="font-size:18px">0:00</div>
+              <div class="sim-stat-label">Elapsed</div>
+            </div>
+          </div>
+
+          <!-- Record cards preview -->
+          <div class="sim-records-preview" aria-hidden="true">
+            <div class="sim-record">
+              <div class="sim-record-name">Thomas Hartwell</div>
+              <div class="sim-record-tags">
+                <span class="sim-tag">Age: 42</span>
+                <span class="sim-tag hi">Farmer</span>
+                <span class="sim-tag">Virginia</span>
+                <span class="sim-tag">Family: 6</span>
+              </div>
+            </div>
+            <div class="sim-record">
+              <div class="sim-record-name">Mary Kowalski</div>
+              <div class="sim-record-tags">
+                <span class="sim-tag">Age: 29</span>
+                <span class="sim-tag hi">Seamstress</span>
+                <span class="sim-tag">Poland</span>
+                <span class="sim-tag">Family: 4</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Open button -->
+          <div class="sim-link-row">
+            <a href="../../course/level-0-before-computers/module-0-1-why-compute/simulation.html"
+               class="sim-open-btn"
+               target="_blank"
+               rel="noopener noreferrer"
+               aria-label="Open the 1880 Census Simulator in a new tab">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M2 2h8v8M10 2L2 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              Open Simulation
+            </a>
+            <p class="sim-note">Opens in a new tab · No installation required · Works offline once loaded</p>
+          </div>
+        </div>
+
+        <figcaption class="sim-figure-caption" id="sim-fig-caption">
+          Figure 1.1 — The 1880 Census Simulator. Human Mode presents twenty record cards for manual processing; Machine Mode simulates fifty million records through a Hollerith tabulator; the Comparison tab shows the side-by-side metrics.
+        </figcaption>
+      </figure>
+
+      <!-- Walkthrough callout -->
+      <div class="callout callout-sim" role="note" aria-label="Hands-On Walkthrough">
+        <div class="callout-label"><span aria-hidden="true">▷</span> Step-by-Step Walkthrough</div>
+        <p><strong>Step 1.</strong> Open the simulation. You will see the <strong>Human Mode (1880)</strong> tab active.</p>
+        <p style="margin-top:8px"><strong>Step 2.</strong> Read each record card and click it to process it. This represents the act of reading, categorising, and tallying one person's census record into the tally sheet below.</p>
+        <p style="margin-top:8px"><strong>Step 3.</strong> After processing five or six records, click <strong>Inject Fatigue Error</strong>. Watch the tally sheet — one count is now wrong. This error is invisible in the records themselves.</p>
+        <p style="margin-top:8px"><strong>Step 4.</strong> Process all twenty records, then click <strong>Submit Tally</strong>. Note your elapsed time and any discrepancies.</p>
+        <p style="margin-top:8px"><strong>Step 5.</strong> Switch to <strong>Machine Mode (1890)</strong>. Click <strong>Run Machine</strong>. The machine processes fifty million records. Note the time and error count.</p>
+        <p style="margin-top:8px"><strong>Step 6.</strong> Switch to the <strong>Comparison</strong> tab. Read the 62× speedup figure and the insight box below it.</p>
+      </div>
+
+      <div class="callout callout-insight" role="note" aria-label="Key Insight">
+        <div class="callout-label"><span aria-hidden="true">◆</span> What to Observe</div>
+        <p>The simulation compresses fifty million records into a few seconds of machine time. In reality, one hundred Hollerith tabulators running simultaneously took approximately six weeks. The point is not the exact speed — it is the <em>order of magnitude</em>. Six weeks versus eight years is not an optimisation. It is a phase transition: from data that arrives too late to be useful, to data that can influence the policy decisions of the Congress that commissioned it.</p>
+      </div>
+
+    </section>
+
+
+    <!-- ── GOING DEEPER ── -->
+    <section aria-labelledby="section-deeper">
+      <h2 class="section-head" id="section-deeper">Going Deeper</h2>
+
+      <div class="callout callout-deep" role="note" aria-label="Deep Dive">
+        <div class="callout-label"><span aria-hidden="true">∇</span> The Human Computers</div>
+        <p>Between 1930 and 1945, the US government's Mathematical Tables Project employed over 450 people in New York City as human computers, calculating logarithms, trigonometric functions, and other values needed for scientific and military work. The project was specifically designed to provide employment to mathematically skilled workers during the Depression. Many were Black men and women who could not obtain professional positions in academia due to segregation.</p>
+        <p style="margin-top:var(--space-sm)">The parallel story of the Black women mathematicians employed as human computers at <abbr title="National Advisory Committee for Aeronautics">NACA</abbr> — later <abbr title="National Aeronautics and Space Administration">NASA</abbr>'s Langley Research Center — is documented in <em>Hidden Figures</em> by Margot Lee Shetterly (2016). Their calculations were essential to every major flight programme of the early space age, including John Glenn's orbital mission. Glenn himself refused to fly until Katherine Johnson, a human computer, had verified the electronic computer's trajectory by hand.</p>
+      </div>
+
+    </section>
+
+
+    <!-- ── FUTURE CONNECTION ── -->
+    <div class="callout callout-future" role="note" aria-label="Future Connection">
+      <div class="callout-label"><span aria-hidden="true">→</span> Future Connection — Level 3: Machine Architecture</div>
+      <p>The demand for faster, more reliable computation that drove the construction of <abbr title="Electronic Numerical Integrator and Computer">ENIAC</abbr> did not stop when ENIAC was finished. ENIAC was still a specialised machine — to change what it computed, engineers physically rewired it. The next unsolved problem was how to make the program itself storable and changeable without hardware modification. That idea — the <strong>stored-program computer</strong> — is the subject of Level 3: Machine Architecture, Module 3.2: The Fetch-Decode-Execute Cycle.</p>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════
+         CHALLENGE SECTION
+    ══════════════════════════════════════════ -->
+    <section aria-labelledby="challenge-heading" class="challenge-section">
+
+      <header class="challenge-header">
+        <div class="challenge-num" aria-hidden="true">0.1</div>
+        <div class="challenge-title-block">
+          <p class="challenge-overline">Challenge</p>
+          <h2 class="challenge-title" id="challenge-heading">The Cost of Human Computation</h2>
+          <div class="challenge-meta">
+            <span class="challenge-meta-item">Calculation &amp; reasoning</span>
+            <span class="challenge-meta-item">20–30 minutes</span>
+            <span class="challenge-meta-item">Pen and paper</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Setup -->
+      <div class="challenge-setup">
+        <p class="challenge-setup-label">Setup — Given Data</p>
+        <p>The 1880 US Census counted approximately <strong>50,000,000 people</strong>. Each person's record included five data fields: name, age, occupation, birthplace, and family size.</p>
+        <p>A trained human computer in 1880 could process — read, categorise, tally, and record — roughly <strong>500 records per day</strong>, working an eight-hour day.</p>
+        <p>The Hollerith tabulating machine (1890) could process roughly <strong>65 cards per minute</strong>, running eight hours a day.</p>
+      </div>
+
+      <!-- Part A -->
+      <div class="challenge-part">
+        <p class="challenge-part-label"><span>Part A</span> Human Cost</p>
+        <ol class="challenge-questions">
+          <li data-sub="1">
+            <p>How many <em>person-days</em> of work would it take to process all 50 million census records by hand?</p>
+          </li>
+          <li data-sub="2">
+            <p>If the government employed <strong>500 clerks</strong> working simultaneously, how many <em>calendar days</em> would the raw processing take?</p>
+          </li>
+          <li data-sub="3">
+            <p>Convert your answer to years. Does it match the historical eight-year figure? If not — what does the gap tell you about the problem?</p>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Part B -->
+      <div class="challenge-part">
+        <p class="challenge-part-label"><span>Part B</span> Machine Cost</p>
+        <ol class="challenge-questions" style="counter-reset: q-counter 3">
+          <li data-sub="4">
+            <p>How many <em>cards per day</em> can the Hollerith machine process?<br>
+            <em>Rate: cards/min × 60 min/hr × 8 hrs/day</em></p>
+          </li>
+          <li data-sub="5">
+            <p>How many <em>days</em> would it take to process all 50 million records with a single machine?</p>
+          </li>
+          <li data-sub="6">
+            <p>The 1890 Census used approximately <strong>100 Hollerith machines</strong> simultaneously. How many days does your calculation predict?</p>
+          </li>
+          <li data-sub="7">
+            <p>The historical record says the 1890 Census was tabulated in <strong>six weeks</strong>. Does your calculation agree? Show your working and explain any difference.</p>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Part C -->
+      <div class="challenge-part">
+        <p class="challenge-part-label"><span>Part C</span> The Leap</p>
+        <ol class="challenge-questions" style="counter-reset: q-counter 7">
+          <li data-sub="8">
+            <p>What is the <em>speedup factor</em> — how many times faster was the Hollerith approach versus the 500-clerk approach, measured in calendar days?</p>
+          </li>
+          <li data-sub="9">
+            <p>In two or three sentences: why does this speedup matter <em>beyond</em> saving time? Consider accuracy, cost, and what new possibilities it opened up that were simply not possible before.</p>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Rubric -->
+      <div class="rubric-wrap">
+        <span class="rubric-label">Marking Rubric</span>
+        <table class="rubric-table" role="table" aria-label="Challenge marking rubric">
+          <thead>
+            <tr>
+              <th scope="col">Question</th>
+              <th scope="col">Points</th>
+              <th scope="col">What we're looking for</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>A1</td><td>10</td><td>50,000,000 ÷ 500 = 100,000 person-days</td></tr>
+            <tr><td>A2</td><td>10</td><td>100,000 ÷ 500 clerks = 200 calendar days</td></tr>
+            <tr><td>A3</td><td>15</td><td>200 days ≈ 0.55 years + honest analysis of the 8-year gap</td></tr>
+            <tr><td>B4</td><td>10</td><td>65 × 60 × 8 = 31,200 cards per day</td></tr>
+            <tr><td>B5</td><td>10</td><td>50,000,000 ÷ 31,200 ≈ 1,603 days</td></tr>
+            <tr><td>B6</td><td>10</td><td>1,603 ÷ 100 ≈ 16 days</td></tr>
+            <tr><td>B7</td><td>15</td><td>~16 days vs. 6 weeks historical — explanation of the gap</td></tr>
+            <tr><td>C8</td><td>10</td><td>200 ÷ 16 ≈ 12.5× speedup on calendar time</td></tr>
+            <tr><td>C9</td><td>10</td><td>Reasoning about accuracy, timeliness, and new possibilities</td></tr>
+            <tr class="total"><td>Total</td><td>100</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Hints -->
+      <div class="hint-block">
+        <button class="hint-toggle" onclick="toggleHint(this)" aria-expanded="false" aria-controls="hint-a3">
+          Hint — Part A3: Why the Gap?
+          <span class="hint-toggle-arrow" aria-hidden="true">↓</span>
+        </button>
+        <div class="hint-content" id="hint-a3" role="region" aria-label="Hint for Part A3">
+          The eight years was not spent purely counting. It included: field data collection across the country, physical transport of the completed forms to Washington, multiple verification passes, error resolution, compilation of results by category and district, typesetting, and printing. The raw counting phase was roughly 200 days for 500 clerks. The bottleneck was the entire pipeline — not just the arithmetic at the centre of it.
+        </div>
+        <button class="hint-toggle" onclick="toggleHint(this)" aria-expanded="false" aria-controls="hint-b4" style="border-top:1px solid var(--bone)">
+          Hint — Part B4: Unit Conversion
+          <span class="hint-toggle-arrow" aria-hidden="true">↓</span>
+        </button>
+        <div class="hint-content" id="hint-b4" role="region" aria-label="Hint for Part B4">
+          The machine rate is given in cards <em>per minute</em>. To get cards per day: <code>65 cards/min × 60 min/hr × 8 hr/day</code>. Work from the smallest unit outward.
+        </div>
+        <button class="hint-toggle" onclick="toggleHint(this)" aria-expanded="false" aria-controls="hint-b7" style="border-top:1px solid var(--bone)">
+          Hint — Part B7: The Six-Week Gap
+          <span class="hint-toggle-arrow" aria-hidden="true">↓</span>
+        </button>
+        <div class="hint-content" id="hint-b7" role="region" aria-label="Hint for Part B7">
+          Your calculation gives ~16 days for the machine reading phase. The historical six-week figure includes: punching the data onto cards before the machines could read them, running multiple verification passes, and the final tabulation and compilation step. The machines did not receive pre-punched cards — operators had to punch each card from the paper census form first. That punching step alone took several weeks.
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ══════════════════════════════════════════
+         CHAPTER SUMMARY
+    ══════════════════════════════════════════ -->
+    <section aria-labelledby="summary-heading" class="chapter-summary">
+
+      <h2 class="section-head" id="summary-heading" style="border-top:none;padding-top:0;margin-top:0;">Summary</h2>
+
+      <p class="body no-indent">Three problems. One pattern.</p>
+
+      <p class="body">Every major pressure that drove the invention of computing — census tabulation, navigation tables, artillery firing tables — was a problem of <strong>scale meeting repetition</strong>. Humans are capable of any individual arithmetic step. What humans cannot do is perform that step millions of times, in sequence, without accumulating error or slowing to a stop.</p>
+
+      <p class="body">The solution was always the same direction: offload the repetition to a mechanism. That impulse — to build a machine that will do the counting so humans can do the thinking — is the seed from which every computer in history grew.</p>
+
+      <div class="section-break" role="separator" aria-hidden="true">
+        <div class="sb-line"></div>
+        <div class="sb-dot"></div><div class="sb-dot"></div><div class="sb-dot"></div>
+        <div class="sb-line"></div>
+      </div>
+
+      <!-- Chapter nav bridge -->
+      <div class="chapter-nav">
+        <div class="nav-prev">
+          <p class="nav-label">Previous</p>
+          <p class="nav-title">Front Matter</p>
+        </div>
+        <div class="nav-next">
+          <p class="nav-label">Next — Module 0.2</p>
+          <p class="nav-title">Early Mechanical Computation →</p>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ── Page footer ── -->
+  <footer class="page-footer" role="contentinfo">
+    <span class="page-footer-series">AoPS — Volume 0</span>
+    <span class="page-num">3</span>
+  </footer>
+
+</article>
+
+<script>
+  function toggleHint(btn) {
+    const contentId = btn.getAttribute('aria-controls');
+    const content   = document.getElementById(contentId);
+    const arrow     = btn.querySelector('.hint-toggle-arrow');
+    const isOpen    = content.classList.contains('open');
+
+    content.classList.toggle('open', !isOpen);
+    btn.setAttribute('aria-expanded', String(!isOpen));
+    arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
+  }
+</script>
+
+</body>
+</html>

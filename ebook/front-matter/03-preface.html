@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AoPS — Volume 0: Before Computers — Preface</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:         #1C1C1C;
+    --paper:       #F5F4EF;
+    --warm:        #EEECE4;
+    --bone:        #E8E5DC;
+    --ghost:       #D4D0C4;
+    --indigo:      #1C2D42;
+    --lacquer:     #C82A2A;
+    --gold:        #8B6914;
+    --sage:        #3D5B3F;
+    --slate:       #4A5568;
+    --sage-tint:   rgba(61,91,63,0.07);
+    --gold-tint:   rgba(139,105,20,0.08);
+    --font-display:'Noto Serif JP', Georgia, serif;
+    --font-body:   'EB Garamond', Georgia, serif;
+    --font-sans:   'Inter', system-ui, sans-serif;
+    --font-mono:   'JetBrains Mono', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: #C8C6C0; }
+  body {
+    background: #C8C6C0;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 56px 24px;
+  }
+
+  .page {
+    width: 720px;
+    min-height: 1020px;
+    background: var(--paper);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.14);
+  }
+
+  .running-header {
+    height: 36px;
+    border-bottom: 0.5px solid var(--ghost);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 64px;
+    flex-shrink: 0;
+  }
+  .running-header span {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ghost);
+  }
+
+  .page-body {
+    flex: 1;
+    padding: 64px 96px 56px;
+  }
+
+  /* ── Chapter opener ── */
+  .chapter-label {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--indigo);
+    margin-bottom: 14px;
+  }
+
+  .chapter-rule {
+    width: 100%;
+    height: 1px;
+    background: var(--ghost);
+    margin-bottom: 24px;
+  }
+
+  .chapter-title {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    margin-bottom: 40px;
+  }
+
+  /* ── Ink-wash opener band ── */
+  .opener-band {
+    width: 100%;
+    height: 80px;
+    margin-bottom: 40px;
+    overflow: hidden;
+    border-radius: 1px;
+  }
+
+  /* ── Drop cap for opening paragraph ── */
+  .lead-para::first-letter {
+    font-family: var(--font-display);
+    font-size: 4.2em;
+    font-weight: 300;
+    color: var(--indigo);
+    float: left;
+    line-height: 0.82;
+    margin-right: 6px;
+    margin-top: 4px;
+  }
+
+  .lead-para {
+    font-family: var(--font-body);
+    font-size: 18px;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+    margin-bottom: 24px;
+  }
+
+  /* ── Body paragraphs ── */
+  p.body {
+    font-family: var(--font-body);
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.75;
+    margin-bottom: 0;
+    text-indent: 1.4em;
+    max-width: 560px;
+  }
+
+  p.body:first-of-type { text-indent: 0; }
+
+  p.body + p.body { margin-top: 0; }
+
+  /* ── Pull quote ── */
+  .pull-quote {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--indigo);
+    border-left: 3px solid var(--indigo);
+    padding: 8px 0 8px 24px;
+    margin: 40px 0 40px -4px;
+    line-height: 1.5;
+    max-width: 500px;
+  }
+
+  /* ── Callout — historical note ── */
+  .callout-historical {
+    border-left: 3px solid var(--sage);
+    background: var(--sage-tint);
+    padding: 18px 22px;
+    margin: 32px 0;
+  }
+  .callout-label {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 10px;
+  }
+  .callout-body {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  /* ── Callout — key insight ── */
+  .callout-insight {
+    border-left: 3px solid var(--gold);
+    background: var(--gold-tint);
+    padding: 18px 22px;
+    margin: 32px 0;
+  }
+  .callout-insight .callout-label { color: var(--gold); }
+
+  /* ── Section break ── */
+  .section-break {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 40px 0;
+  }
+  .section-break-line {
+    flex: 1;
+    height: 1px;
+    background: var(--bone);
+  }
+  .section-break-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--ghost);
+  }
+
+  /* ── Signature block ── */
+  .signature {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--bone);
+  }
+  .signature-name {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--ink);
+    font-style: italic;
+    margin-bottom: 4px;
+  }
+  .signature-role {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    color: var(--slate);
+    text-transform: uppercase;
+  }
+  .signature-date {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--ghost);
+    margin-top: 8px;
+  }
+
+  /* Publisher footer */
+  .publisher-footer {
+    height: 48px;
+    border-top: 0.5px solid var(--ghost);
+    padding: 0 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .pub-mark-name {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ghost);
+  }
+  .page-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--ghost);
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="running-header">
+    <span>Preface</span>
+    <span>Volume 0 — Before Computers</span>
+  </div>
+
+  <div class="page-body">
+
+    <!-- Chapter opener -->
+    <p class="chapter-label">Preface</p>
+    <div class="chapter-rule"></div>
+    <h1 class="chapter-title">Why We Start Here</h1>
+
+    <!-- Ink-wash opener band: tally marks / census abstraction -->
+    <div class="opener-band" aria-hidden="true">
+      <svg viewBox="0 0 528 80" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="80" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="band-fade" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"  stop-color="#1C2D42" stop-opacity="0.08"/>
+            <stop offset="60%" stop-color="#1C2D42" stop-opacity="0.04"/>
+            <stop offset="100%" stop-color="#1C2D42" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <rect width="528" height="80" fill="url(#band-fade)"/>
+        <!-- Tally marks dissolving into order -->
+        <g stroke="#1C2D42" stroke-width="1.2" stroke-linecap="round" opacity="0.5">
+          <line x1="24" y1="20" x2="24" y2="60"/>
+          <line x1="36" y1="20" x2="36" y2="60"/>
+          <line x1="48" y1="20" x2="48" y2="60"/>
+          <line x1="60" y1="20" x2="60" y2="60"/>
+          <line x1="18" y1="40" x2="68" y2="35"/>
+          <line x1="80"  y1="20" x2="80"  y2="60"/>
+          <line x1="92"  y1="20" x2="92"  y2="60"/>
+          <line x1="104" y1="20" x2="104" y2="60"/>
+          <line x1="116" y1="20" x2="116" y2="60"/>
+          <line x1="74"  y1="40" x2="122" y2="35"/>
+        </g>
+        <!-- Transition — vertical bars becoming regular columns -->
+        <g stroke="#1C2D42" stroke-width="0.8" stroke-linecap="round" opacity="0.3">
+          <line x1="148" y1="15" x2="148" y2="65"/>
+          <line x1="164" y1="15" x2="164" y2="65"/>
+          <line x1="180" y1="15" x2="180" y2="65"/>
+          <line x1="196" y1="15" x2="196" y2="65"/>
+          <line x1="212" y1="15" x2="212" y2="65"/>
+        </g>
+        <!-- Grid emerging — ledger lines -->
+        <g stroke="#1C2D42" stroke-width="0.5" opacity="0.2">
+          <line x1="240" y1="25" x2="400" y2="25"/>
+          <line x1="240" y1="40" x2="400" y2="40"/>
+          <line x1="240" y1="55" x2="400" y2="55"/>
+          <line x1="260" y1="15" x2="260" y2="65"/>
+          <line x1="300" y1="15" x2="300" y2="65"/>
+          <line x1="340" y1="15" x2="340" y2="65"/>
+          <line x1="380" y1="15" x2="380" y2="65"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Opening paragraph with drop cap -->
+    <p class="lead-para">In 1880, the United States government faced a crisis it had not anticipated. The census — constitutionally mandated every ten years — had taken eight years to complete. By the time the results were published, the data was nearly useless. The next census, already scheduled, would be larger. At the current rate, it would never finish at all.</p>
+
+    <p class="body">This was not a bureaucratic failure. It was a mathematics problem. The country had grown faster than human hands could count it. And in that gap — between the scale of human ambition and the speed of human reckoning — the pressure that eventually produced computers began to build.</p>
+
+    <p class="body">We begin this course not with circuits, not with code, not with the binary numbers that underpin everything a computer does. We begin with people. With problems. With the specific, physical frustrations that forced new tools into existence over centuries of incremental ingenuity.</p>
+
+    <div class="pull-quote">
+      "The engine had been given its instructions. It was not performing magic. It was performing arithmetic — very fast, very reliably, and without complaint."
+    </div>
+
+    <p class="body">Most courses on computing begin with the machine. Here is a transistor. Here is a gate. Here is binary. The assumption is that understanding the mechanism is sufficient. But a mechanism without a motive is just a curiosity. Students learn the what without ever truly grasping the why — and that gap follows them forever.</p>
+
+    <p class="body">This course inverts that approach. Every concept is introduced the moment it becomes necessary, and not a moment before. You will not encounter binary numbers until you understand why analog signals fail at scale. You will not learn about memory addressing until you feel the frustration of a machine that cannot remember where it left things. You will not study algorithms until you have tried to solve a problem without one.</p>
+
+    <div class="callout-historical">
+      <p class="callout-label">⊕ &nbsp; Historical Note</p>
+      <p class="callout-body">This volume covers the period roughly from 1617 — when John Napier published his <em>Rabdologia</em>, describing the calculating rods that would bear his name — through to 1890, when Herman Hollerith's tabulating machine cut the US census count from years to weeks. That is two hundred and seventy-three years of steady, stubborn pressure on the problem of computation. Every invention in this volume was forced into existence by a real human need.</p>
+    </div>
+
+    <p class="body">Volume 0 is about the era before electricity, before logic gates, before any of the concepts that define modern computing. It is about the mathematicians, engineers, weavers, and bureaucrats who ran headlong into the limits of human calculation — and refused to accept them.</p>
+
+    <p class="body">Charles Babbage spent forty years trying to build a machine that could compute polynomial tables without error. He failed to complete it — but in the attempt, he invented the concept of a stored program, a separate memory, and a control unit that could loop and branch. Ada Lovelace, working from his notes, wrote what we now recognise as the first algorithm. Neither of them used electricity. Neither of them had the word <em>software</em>. But both of them understood that computation was not merely arithmetic — it was a process that could be specified, stored, and executed by a machine.</p>
+
+    <div class="callout-insight">
+      <p class="callout-label">◆ &nbsp; Key Insight</p>
+      <p class="callout-body">Every abstraction introduced in this course hides something real beneath it. When we say <em>abstraction</em>, we mean: a decision to stop caring about the layer below. Volume 0 exists so that you never stop caring. You will carry this history with you through every level that follows — and it will make the abstractions sharper, not blunter.</p>
+    </div>
+
+    <p class="body">Work through this volume slowly. The simulations are not decorations. When you interact with a virtual Pascaline and feel the mechanical constraint of a carry wheel, you are learning something that no diagram can teach. When you encode your name in Hollerith punch-card notation, you are doing what thousands of census clerks did by hand — and the tedium is the lesson.</p>
+
+    <div class="section-break">
+      <div class="section-break-line"></div>
+      <div class="section-break-dot"></div>
+      <div class="section-break-dot"></div>
+      <div class="section-break-dot"></div>
+      <div class="section-break-line"></div>
+    </div>
+
+    <p class="body">A final word on the structure of this course. Each level builds on the previous. We introduce no abstraction until the layer beneath it is understood. That means this volume is the foundation of everything. The census of 1880 leads to Hollerith leads to IBM leads to the stored-program computer leads to the operating system leads to the network leads to the application you are reading this on right now.</p>
+
+    <p class="body">None of it was inevitable. Each step was a choice made under pressure by people who were tired of doing things slowly. That is what computation has always been: impatience made rigorous.</p>
+
+    <!-- Signature -->
+    <div class="signature">
+      <p class="signature-name">The AoPS Authors</p>
+      <p class="signature-role">Art of Problem Solving — Computer Science Series</p>
+      <p class="signature-date">2026</p>
+    </div>
+
+  </div>
+
+  <div class="publisher-footer">
+    <span class="pub-mark-name">AoPS Press</span>
+    <span class="page-num">v</span>
+  </div>
+
+</div>
+
+</body>
+</html>

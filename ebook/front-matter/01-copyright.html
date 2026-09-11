@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AoPS — Volume 0: Before Computers — Copyright</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:         #1C1C1C;
+    --paper:       #F5F4EF;
+    --warm:        #EEECE4;
+    --bone:        #E8E5DC;
+    --ghost:       #D4D0C4;
+    --indigo:      #1C2D42;
+    --lacquer:     #C82A2A;
+    --gold:        #8B6914;
+    --sage:        #3D5B3F;
+    --slate:       #4A5568;
+    --font-display:'Noto Serif JP', Georgia, serif;
+    --font-body:   'EB Garamond', Georgia, serif;
+    --font-sans:   'Inter', system-ui, sans-serif;
+    --font-mono:   'JetBrains Mono', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: #C8C6C0; }
+  body {
+    background: #C8C6C0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 56px 24px;
+    font-family: var(--font-sans);
+  }
+
+  .page {
+    width: 720px;
+    min-height: 1020px;
+    background: var(--paper);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.14);
+  }
+
+  .running-header {
+    height: 36px;
+    border-bottom: 0.5px solid var(--ghost);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 64px;
+    flex-shrink: 0;
+  }
+  .running-header span {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ghost);
+  }
+
+  .page-body {
+    flex: 1;
+    padding: 64px 96px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* ── Title block ── */
+  .cp-title-block {
+    margin-bottom: 48px;
+  }
+  .cp-book-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    margin-bottom: 4px;
+  }
+  .cp-book-subtitle {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--slate);
+  }
+
+  .rule { width: 100%; height: 1px; background: var(--ghost); margin: 32px 0; }
+  .rule-indigo { width: 32px; height: 1px; background: var(--indigo); margin: 24px 0; }
+
+  /* ── Copyright block ── */
+  .cp-block { margin-bottom: 28px; }
+
+  .cp-label {
+    font-family: var(--font-sans);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin-bottom: 8px;
+  }
+
+  .cp-text {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--ink);
+    line-height: 1.75;
+  }
+
+  .cp-text a {
+    color: var(--indigo);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(28,45,66,0.25);
+  }
+
+  .cp-notice {
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    font-weight: 300;
+    color: var(--slate);
+    line-height: 1.8;
+  }
+
+  /* ── Edition table ── */
+  .edition-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin: 0;
+  }
+  .edition-table td {
+    padding: 7px 0;
+    border-bottom: 1px solid var(--bone);
+    vertical-align: top;
+  }
+  .edition-table td:first-child {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    color: var(--slate);
+    width: 160px;
+    padding-right: 16px;
+    letter-spacing: 0.02em;
+  }
+  .edition-table td:last-child {
+    font-family: var(--font-mono);
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+  .edition-table tr:last-child td { border-bottom: none; }
+
+  /* ── Series list ── */
+  .series-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 24px;
+    margin-top: 8px;
+  }
+  .series-list li {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--slate);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .series-list li::before {
+    content: '';
+    display: block;
+    width: 10px;
+    height: 1px;
+    background: var(--ghost);
+    flex-shrink: 0;
+  }
+  .series-list li.current {
+    color: var(--indigo);
+    font-weight: 400;
+  }
+  .series-list li.current::before { background: var(--lacquer); }
+
+  /* ── Permissions / legal notice ── */
+  .legal-box {
+    background: var(--warm);
+    border: 1px solid var(--bone);
+    border-left: 2px solid var(--ghost);
+    padding: 16px 20px;
+    margin-top: 28px;
+  }
+  .legal-box p {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--slate);
+    line-height: 1.75;
+  }
+  .legal-box p + p { margin-top: 8px; }
+
+  /* ── Colophon ── */
+  .colophon {
+    margin-top: auto;
+    padding-top: 32px;
+    border-top: 1px solid var(--bone);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .colophon-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .colophon-text {
+    font-family: var(--font-sans);
+    font-size: 10.5px;
+    font-weight: 300;
+    color: var(--ghost);
+    line-height: 1.6;
+  }
+  .colophon-text strong {
+    font-weight: 500;
+    color: var(--slate);
+  }
+  .colophon-right {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ghost);
+    text-align: right;
+  }
+
+  /* Page footer */
+  .publisher-footer {
+    height: 48px;
+    border-top: 0.5px solid var(--ghost);
+    padding: 0 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .pub-mark-name {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ghost);
+  }
+  .page-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--ghost);
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="running-header">
+    <span>Art of Problem Solving</span>
+    <span>Volume 0 — Before Computers</span>
+  </div>
+
+  <div class="page-body">
+
+    <!-- Title echo -->
+    <div class="cp-title-block">
+      <h1 class="cp-book-title">Before Computers</h1>
+      <p class="cp-book-subtitle">The Origins of Computation &nbsp;·&nbsp; Volume 0</p>
+    </div>
+
+    <div class="rule"></div>
+
+    <!-- Copyright notice -->
+    <div class="cp-block">
+      <p class="cp-label">Copyright</p>
+      <p class="cp-notice">
+        Copyright © 2026 AoPS Press. All rights reserved. <em>Art of Problem Solving</em> and the AoPS colophon are trademarks of AoPS Press. No part of this publication may be reproduced, stored in a retrieval system, or transmitted in any form or by any means — electronic, mechanical, photocopying, recording, or otherwise — without the prior written permission of the publisher.
+      </p>
+    </div>
+
+    <!-- Edition metadata table -->
+    <div class="cp-block">
+      <p class="cp-label">Publication Data</p>
+      <table class="edition-table">
+        <tr>
+          <td>Title</td>
+          <td>Before Computers: The Origins of Computation</td>
+        </tr>
+        <tr>
+          <td>Series</td>
+          <td>Art of Problem Solving — Computer Science</td>
+        </tr>
+        <tr>
+          <td>Volume</td>
+          <td>0 of 12</td>
+        </tr>
+        <tr>
+          <td>Level</td>
+          <td>LEVEL_0 — Before Computers</td>
+        </tr>
+        <tr>
+          <td>Edition</td>
+          <td>First Edition, 2026</td>
+        </tr>
+        <tr>
+          <td>Publisher</td>
+          <td>AoPS Press &nbsp;·&nbsp; aops.press/cs</td>
+        </tr>
+        <tr>
+          <td>Design</td>
+          <td>Japanese Zen Minimalist — Design System v1.0</td>
+        </tr>
+        <tr>
+          <td>Typefaces</td>
+          <td>Noto Serif JP · EB Garamond · Inter · JetBrains Mono</td>
+        </tr>
+        <tr>
+          <td>Reference</td>
+          <td>AoPS-CS-VOL-0</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="rule-indigo"></div>
+
+    <!-- Series listing -->
+    <div class="cp-block">
+      <p class="cp-label">Complete Computer Science Series</p>
+      <ul class="series-list">
+        <li class="current">Vol. 0 — Before Computers ◀</li>
+        <li>Vol. 1 — Physical Computing</li>
+        <li>Vol. 2 — Digital Foundations</li>
+        <li>Vol. 3 — Machine Architecture</li>
+        <li>Vol. 4 — Software Foundations</li>
+        <li>Vol. 5 — Programming Languages</li>
+        <li>Vol. 6 — Data Structures &amp; Algorithms</li>
+        <li>Vol. 7 — Systems Programming</li>
+        <li>Vol. 8 — Networks &amp; Protocols</li>
+        <li>Vol. 9 — Databases</li>
+        <li>Vol. 10 — Web &amp; Applications</li>
+        <li>Vol. 11 — Artificial Intelligence</li>
+        <li>Vol. 12 — Advanced AI</li>
+      </ul>
+    </div>
+
+    <!-- Permissions -->
+    <div class="legal-box">
+      <p>Educators may reproduce individual lesson pages for classroom use without prior permission, provided the AoPS copyright notice is retained on each copy.</p>
+      <p>For permissions beyond classroom use, bulk licensing, or translation rights, contact: permissions@aops.press</p>
+    </div>
+
+    <!-- Colophon -->
+    <div class="colophon">
+      <div class="colophon-left">
+        <p class="colophon-text"><strong>Printed on acid-free paper.</strong></p>
+        <p class="colophon-text">The simulations in this volume run entirely in the browser.<br>No installation required. No data is collected.</p>
+        <p class="colophon-text" style="margin-top:6px;">Typeset in Noto Serif JP and EB Garamond.<br>Code examples set in JetBrains Mono.</p>
+      </div>
+      <div class="colophon-right">
+        First Edition<br>
+        2026
+      </div>
+    </div>
+
+  </div>
+
+  <div class="publisher-footer">
+    <span class="pub-mark-name">AoPS Press</span>
+    <span class="page-num">ii</span>
+  </div>
+
+</div>
+
+</body>
+</html>

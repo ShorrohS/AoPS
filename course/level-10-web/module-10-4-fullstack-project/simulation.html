@@ -1,0 +1,474 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 10.4 — Full-Stack Project</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slide-in{from{transform:translateX(-6px);opacity:0}to{transform:translateX(0);opacity:1}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out) forwards}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast),color var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}.zen-btn.primary:hover{background:#333}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.zen-btn.gold{border-color:var(--accent-gold);color:var(--accent-gold)}.zen-btn.gold:hover{background:var(--accent-gold);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:760px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border-paper)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:110px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs);margin-top:8px}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+input[type=text],input[type=email],input[type=password],textarea,select{background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);color:var(--text-sumi);font-family:'Inter',sans-serif;font-size:13px;padding:8px 10px;width:100%}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent-indigo)}
+/* App UI */
+.app-frame{border:1px solid var(--border-paper);border-radius:var(--radius-xs);overflow:hidden;background:var(--bg-washi)}
+.app-bar{background:var(--accent-indigo);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.app-bar-title{font-family:'Noto Serif JP',serif;font-size:14px;font-weight:300;letter-spacing:.05em}
+.app-bar-user{font-size:11px;opacity:.8;font-family:'JetBrains Mono',monospace}
+.app-body{padding:16px;min-height:220px}
+.note-card{background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:12px;margin-bottom:8px;animation:slide-in var(--t-med) var(--ease-out)}
+.note-card:hover{border-color:var(--border-light)}
+.note-title{font-size:13px;font-weight:500;color:var(--text-sumi);margin-bottom:4px}
+.note-body{font-size:12px;color:var(--text-muted);line-height:1.6}
+.note-meta{font-size:10px;color:var(--text-ghost);margin-top:6px;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace}
+.note-del{color:var(--accent-red);cursor:pointer;font-size:10px;background:none;border:none;opacity:.6;transition:opacity var(--t-fast)}
+.note-del:hover{opacity:1}
+/* Architecture diagram */
+.arch-layer{padding:12px 16px;margin-bottom:6px;border-radius:var(--radius-xs);border:1px solid;cursor:pointer;transition:all var(--t-fast)}
+.arch-layer:hover{transform:translateX(2px)}
+.arch-arrow{text-align:center;color:var(--text-muted);font-size:12px;margin-bottom:6px;font-family:'JetBrains Mono',monospace}
+/* Data flow */
+.flow-step{padding:8px 12px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:4px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:8px;transition:all .3s}
+.flow-step.active{border-color:var(--accent-red);color:var(--text-sumi);background:rgba(200,42,42,0.04)}
+.flow-step.done{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04)}
+.flow-dot{width:8px;height:8px;border-radius:50%;background:var(--border-paper);flex-shrink:0;transition:background .3s}
+.flow-step.active .flow-dot{background:var(--accent-red)}
+.flow-step.done .flow-dot{background:var(--accent-gold)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 10.4 — Full-Stack Project</h1>
+  <p class="zen-subtitle">Live App · Architecture · Data Flow</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('app')">Live App</div>
+  <div class="zen-tab" onclick="switchTab('arch')">Architecture</div>
+  <div class="zen-tab" onclick="switchTab('flow')">Data Flow Trace</div>
+</div>
+
+<!-- TAB 1: LIVE APP -->
+<div id="panel-app" class="panel active">
+  <div class="zen-intro">
+    <strong>A complete full-stack Notes app — running entirely in the browser.</strong> Frontend renders notes from state. A mock backend API handles CRUD. A mock database stores records. Auth tokens gate access. Every layer is real — just simulated in-browser.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Auth</div>
+      <div id="auth-section">
+        <div style="display:grid;gap:8px;margin-bottom:10px">
+          <input type="email" id="login-email" placeholder="Email" value="alice@example.com">
+          <input type="password" id="login-pw" placeholder="Password" value="password123">
+        </div>
+        <div class="btn-row" style="margin-top:0">
+          <button class="zen-btn primary" onclick="doLogin()">Log In</button>
+          <button class="zen-btn" onclick="doRegister()">Register</button>
+        </div>
+      </div>
+      <div id="create-section" style="display:none;margin-top:16px">
+        <div class="pane-title" style="margin-top:0">New note</div>
+        <div style="display:grid;gap:8px">
+          <input type="text" id="note-title-inp" placeholder="Note title">
+          <textarea id="note-body-inp" rows="3" placeholder="Note content…" style="resize:vertical"></textarea>
+          <button class="zen-btn primary" onclick="createNote()">+ Add Note</button>
+        </div>
+      </div>
+      <div class="op-log" id="app-log"><div class="linfo">> Log in to access the notes app.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">App</div>
+      <div class="app-frame">
+        <div class="app-bar">
+          <span class="app-bar-title">NoteKeeper</span>
+          <span class="app-bar-user" id="app-user">Not logged in</span>
+        </div>
+        <div class="app-body" id="app-body">
+          <div style="color:var(--text-ghost);font-size:13px;text-align:center;padding:40px 0">Log in to see your notes</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap" id="app-actions" style="display:none">
+        <button class="zen-btn danger" onclick="doLogout()">Log Out</button>
+        <button class="zen-btn" onclick="switchUser()">Switch user</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 2: ARCHITECTURE -->
+<div id="panel-arch" class="panel">
+  <div class="zen-intro">
+    <strong>Every full-stack app has the same three layers.</strong> The frontend sends requests, the backend processes them and enforces rules, the database stores state permanently. Click each layer to see what it owns.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Stack layers</div>
+      <div class="arch-layer" onclick="showLayer('frontend')" style="border-color:var(--accent-gold);background:rgba(139,105,20,0.06)">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:var(--accent-gold)">Frontend (Browser)</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">HTML · CSS · JavaScript · fetch()</div>
+      </div>
+      <div class="arch-arrow">↕ HTTP/JSON</div>
+      <div class="arch-layer" onclick="showLayer('backend')" style="border-color:var(--accent-red);background:rgba(200,42,42,0.06)">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:var(--accent-red)">Backend (Server)</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Express/FastAPI · Auth · Routing · Validation</div>
+      </div>
+      <div class="arch-arrow">↕ SQL/ORM</div>
+      <div class="arch-layer" onclick="showLayer('database')" style="border-color:var(--accent-indigo);background:rgba(28,45,66,0.06)">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:var(--accent-indigo)">Database</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">PostgreSQL · SQLite · MongoDB · Redis</div>
+      </div>
+      <div style="margin-top:14px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:10px">
+        <div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:6px">Tech stack for this project</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2;color:var(--text-body)">
+          Frontend: Vanilla JS + HTML + CSS<br>
+          Backend:  Node.js + Express (mock)<br>
+          Database: In-memory JSON store<br>
+          Auth:     JWT (simulated)
+        </div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Layer detail</div>
+      <div id="arch-detail">
+        <div style="color:var(--text-ghost);font-size:13px;padding:20px 0">Click a layer to see its responsibilities.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3: DATA FLOW TRACE -->
+<div id="panel-flow" class="panel">
+  <div class="zen-intro">
+    <strong>Trace a single request through the entire stack.</strong> From button click to database write and back — every hop is visible. This is what happens when you press "Add Note" in the live app above.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Choose a scenario</div>
+      <div style="display:grid;gap:6px;margin-bottom:12px">
+        <button class="zen-btn" onclick="traceFlow('create')" style="text-align:left;padding:10px 14px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-indigo)">POST /api/notes</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">User creates a new note</div>
+        </button>
+        <button class="zen-btn" onclick="traceFlow('read')" style="text-align:left;padding:10px 14px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-gold)">GET /api/notes</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">Fetch all notes for logged-in user</div>
+        </button>
+        <button class="zen-btn" onclick="traceFlow('auth-fail')" style="text-align:left;padding:10px 14px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-red)">401 Unauthorized</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">Request with expired/missing token</div>
+        </button>
+        <button class="zen-btn" onclick="traceFlow('delete')" style="text-align:left;padding:10px 14px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)">DELETE /api/notes/:id</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">Delete a note by id</div>
+        </button>
+      </div>
+      <button class="zen-btn danger" onclick="resetFlow()">↺ Reset</button>
+      <div class="op-log" id="flow-log"><div class="linfo">> Choose a scenario to trace the request through the stack.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Request trace</div>
+      <div id="flow-steps" style="margin-bottom:8px"></div>
+      <div id="flow-result" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:10px;min-height:50px"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== MOCK DATA =====
+const MOCK_USERS = [
+  {id:1, email:'alice@example.com', password:'password123', name:'Alice'},
+  {id:2, email:'bob@example.com',   password:'letmein',     name:'Bob'},
+];
+let mockNotes = [
+  {id:1, userId:1, title:'Buy groceries', body:'Milk, eggs, bread, coffee', createdAt:'2026-09-01'},
+  {id:2, userId:1, title:'Meeting notes', body:'Discuss Q4 roadmap with team', createdAt:'2026-09-03'},
+  {id:3, userId:2, title:'JS resources',  body:'MDN, javascript.info, V8 blog', createdAt:'2026-09-05'},
+];
+let noteIdSeq = 4;
+let currentUser = null;
+let currentToken = null;
+
+function genToken(user) { return `jwt.${btoa(JSON.stringify({id:user.id,name:user.name}))}.sig`; }
+function verifyToken(tok) {
+  try { const p = JSON.parse(atob(tok.split('.')[1])); return MOCK_USERS.find(u=>u.id===p.id)||null; }
+  catch { return null; }
+}
+
+// ===== LIVE APP =====
+function appLog(m, cls='lmuted') {
+  const el = document.getElementById('app-log');
+  const d = document.createElement('div'); d.className=cls; d.textContent='> '+m;
+  el.appendChild(d); el.scrollTop=el.scrollHeight;
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw    = document.getElementById('login-pw').value;
+  const user  = MOCK_USERS.find(u=>u.email===email && u.password===pw);
+  if (!user) { appLog('Invalid email or password','lerr'); return; }
+  currentUser = user; currentToken = genToken(user);
+  appLog(`Logged in as ${user.name} — token issued`,'lok');
+  renderApp();
+}
+
+function doRegister() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw    = document.getElementById('login-pw').value;
+  if (!email.includes('@') || pw.length < 6) { appLog('Need valid email and password ≥ 6 chars','lerr'); return; }
+  if (MOCK_USERS.find(u=>u.email===email)) { appLog('Email already registered','lerr'); return; }
+  const newUser = {id: MOCK_USERS.length+1, email, password:pw, name: email.split('@')[0]};
+  MOCK_USERS.push(newUser);
+  currentUser=newUser; currentToken=genToken(newUser);
+  appLog(`Registered and logged in as ${newUser.name}`,'lok');
+  renderApp();
+}
+
+function doLogout() {
+  currentUser=null; currentToken=null;
+  document.getElementById('app-user').textContent='Not logged in';
+  document.getElementById('app-body').innerHTML='<div style="color:var(--text-ghost);font-size:13px;text-align:center;padding:40px 0">Log in to see your notes</div>';
+  document.getElementById('create-section').style.display='none';
+  document.getElementById('app-actions').style.display='none';
+  appLog('Logged out','lmuted');
+}
+
+function switchUser() {
+  doLogout();
+  document.getElementById('login-email').value = currentUser?.id===1?'bob@example.com':'alice@example.com';
+  document.getElementById('login-pw').value    = currentUser?.id===1?'letmein':'password123';
+}
+
+function renderApp() {
+  if (!currentUser) return;
+  document.getElementById('app-user').textContent = currentUser.name;
+  document.getElementById('create-section').style.display='block';
+  document.getElementById('app-actions').style.display='flex';
+  const userNotes = mockNotes.filter(n=>n.userId===currentUser.id);
+  const body = document.getElementById('app-body');
+  if (!userNotes.length) {
+    body.innerHTML='<div style="color:var(--text-ghost);font-size:13px;text-align:center;padding:30px 0">No notes yet. Create one above.</div>';
+    return;
+  }
+  body.innerHTML = userNotes.map(n=>`
+    <div class="note-card" id="note-${n.id}">
+      <div class="note-title">${n.title}</div>
+      <div class="note-body">${n.body}</div>
+      <div class="note-meta">
+        <span>${n.createdAt}</span>
+        <button class="note-del" onclick="deleteNote(${n.id})">✕ delete</button>
+      </div>
+    </div>`).join('');
+}
+
+function createNote() {
+  if (!currentUser) { appLog('Not logged in','lerr'); return; }
+  const title = document.getElementById('note-title-inp').value.trim();
+  const body  = document.getElementById('note-body-inp').value.trim();
+  if (!title) { appLog('Title is required','lerr'); return; }
+  const note = {id:noteIdSeq++, userId:currentUser.id, title, body, createdAt: new Date().toISOString().slice(0,10)};
+  mockNotes.push(note);
+  document.getElementById('note-title-inp').value='';
+  document.getElementById('note-body-inp').value='';
+  renderApp();
+  appLog(`Note created: "${title}"`, 'lok');
+}
+
+function deleteNote(id) {
+  if (!currentUser) return;
+  const idx = mockNotes.findIndex(n=>n.id===id && n.userId===currentUser.id);
+  if (idx===-1) { appLog('Note not found or not yours','lerr'); return; }
+  const title = mockNotes[idx].title;
+  mockNotes.splice(idx,1);
+  renderApp();
+  appLog(`Deleted note: "${title}"`, 'lmuted');
+}
+
+// ===== ARCHITECTURE =====
+const LAYER_DETAIL = {
+  frontend: {
+    title: 'Frontend (Browser)',
+    color: 'var(--accent-gold)',
+    items: [
+      'Renders HTML/CSS — what the user sees',
+      'JavaScript handles events (click, input, submit)',
+      'fetch() sends HTTP requests to the backend',
+      'Receives JSON, updates the DOM',
+      'Stores auth token in localStorage or memory',
+      'NEVER trusts its own data — server validates everything',
+    ],
+    code: `// Frontend fetch example\nconst res = await fetch('/api/notes', {\n  headers: { Authorization: 'Bearer ' + token }\n});\nconst notes = await res.json();\nrenderNotes(notes);`
+  },
+  backend: {
+    title: 'Backend (Server)',
+    color: 'var(--accent-red)',
+    items: [
+      'Receives HTTP requests, parses JSON body',
+      'Verifies JWT token on every protected route',
+      'Validates input (required fields, types, limits)',
+      'Runs business logic (e.g. user can only delete own notes)',
+      'Queries the database via SQL or ORM',
+      'Returns JSON responses with correct status codes',
+    ],
+    code: `// Express route example\napp.post('/api/notes', authenticate, async (req, res) => {\n  const { title, body } = req.body;\n  if (!title) return res.status(400).json({error:'title required'});\n  const note = await db.notes.create({ userId: req.user.id, title, body });\n  res.status(201).json(note);\n});`
+  },
+  database: {
+    title: 'Database',
+    color: 'var(--accent-indigo)',
+    items: [
+      'Stores data permanently (survives server restarts)',
+      'Tables: users, notes, sessions',
+      'Foreign keys enforce integrity (note.userId → users.id)',
+      'Indexes speed up lookups by userId, createdAt',
+      'Transactions ensure consistency (all-or-nothing)',
+      'Backups, replication for reliability',
+    ],
+    code: `-- Database schema\nCREATE TABLE users (\n  id      SERIAL PRIMARY KEY,\n  email   VARCHAR(255) UNIQUE NOT NULL,\n  pw_hash VARCHAR(60) NOT NULL\n);\nCREATE TABLE notes (\n  id         SERIAL PRIMARY KEY,\n  user_id    INT REFERENCES users(id),\n  title      TEXT NOT NULL,\n  body       TEXT,\n  created_at TIMESTAMPTZ DEFAULT NOW()\n);`
+  }
+};
+
+function showLayer(key) {
+  const l = LAYER_DETAIL[key];
+  document.getElementById('arch-detail').innerHTML = `
+    <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:${l.color};margin-bottom:10px">${l.title}</div>
+    <ul style="list-style:none;padding:0;margin-bottom:12px">
+      ${l.items.map(i=>`<li style="font-size:12px;color:var(--text-body);padding:4px 0;border-bottom:1px solid var(--border-paper);display:flex;gap:6px"><span style="color:${l.color}">→</span>${i}</li>`).join('')}
+    </ul>
+    <div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:6px">Code example</div>
+    <pre style="font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.8;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:10px;overflow-x:auto;color:var(--text-body);white-space:pre">${l.code}</pre>
+  `;
+}
+
+// ===== DATA FLOW TRACE =====
+const FLOWS = {
+  create: [
+    {label:'User clicks "Add Note" in browser',dir:'CLIENT'},
+    {label:'JS validates: title not empty',dir:'CLIENT'},
+    {label:'fetch() → POST /api/notes  {title, body}',dir:'→ SERVER'},
+    {label:'Express router matches POST /api/notes',dir:'SERVER'},
+    {label:'JWT middleware verifies Authorization header',dir:'SERVER'},
+    {label:'Validator checks: title present, length ≤ 200',dir:'SERVER'},
+    {label:'INSERT INTO notes (user_id, title, body) VALUES (...)',dir:'→ DB'},
+    {label:'DB returns new row: {id:5, userId:1, ...}',dir:'← DB'},
+    {label:'Server returns 201 Created + note JSON',dir:'← CLIENT'},
+    {label:'JS appends new note card to DOM',dir:'CLIENT'},
+  ],
+  read: [
+    {label:'Page loads, JS checks localStorage for token',dir:'CLIENT'},
+    {label:'fetch() → GET /api/notes',dir:'→ SERVER'},
+    {label:'JWT middleware decodes token → userId=1',dir:'SERVER'},
+    {label:'SELECT * FROM notes WHERE user_id=1 ORDER BY created_at DESC',dir:'→ DB'},
+    {label:'DB returns array of note rows',dir:'← DB'},
+    {label:'Server serialises to JSON, returns 200 OK',dir:'← CLIENT'},
+    {label:'JS maps JSON → renderNotes(notes)',dir:'CLIENT'},
+    {label:'DOM updated — notes appear in the app',dir:'CLIENT'},
+  ],
+  'auth-fail': [
+    {label:'fetch() → GET /api/notes  (no token)',dir:'→ SERVER'},
+    {label:'JWT middleware: Authorization header missing',dir:'SERVER'},
+    {label:'Server returns 401 Unauthorized immediately',dir:'← CLIENT'},
+    {label:'DB never queried — short-circuit on auth failure',dir:'SERVER'},
+    {label:'JS receives 401, clears token, shows login screen',dir:'CLIENT'},
+  ],
+  delete: [
+    {label:'User clicks "delete" on note id=2',dir:'CLIENT'},
+    {label:'fetch() → DELETE /api/notes/2',dir:'→ SERVER'},
+    {label:'JWT middleware verifies token → userId=1',dir:'SERVER'},
+    {label:'SELECT * FROM notes WHERE id=2',dir:'→ DB'},
+    {label:'DB: note.userId===1 matches current user ✓',dir:'← DB'},
+    {label:'DELETE FROM notes WHERE id=2 AND user_id=1',dir:'→ DB'},
+    {label:'Server returns 200 OK {message:"deleted"}',dir:'← CLIENT'},
+    {label:'JS removes note card from DOM',dir:'CLIENT'},
+  ]
+};
+
+const DIR_COLOR = {'CLIENT':'var(--text-muted)','→ SERVER':'var(--accent-indigo)','SERVER':'var(--accent-red)','→ DB':'var(--accent-gold)','← DB':'var(--accent-gold)','← CLIENT':'var(--accent-indigo)'};
+
+let flowTimer = null;
+
+async function traceFlow(key) {
+  if (flowTimer) clearInterval(flowTimer);
+  const steps = FLOWS[key];
+  const el = document.getElementById('flow-steps');
+  const result = document.getElementById('flow-result');
+  result.textContent='';
+  el.innerHTML = steps.map((_,i)=>`
+    <div class="flow-step" id="flow-step-${i}">
+      <div class="flow-dot"></div>
+      <span style="font-size:9px;font-weight:500;min-width:68px;color:var(--text-ghost)">${steps[i].dir}</span>
+      <span>${steps[i].label}</span>
+    </div>`).join('');
+
+  let i = 0;
+  flowLog(`Tracing: ${key}`, 'linfo');
+  flowTimer = setInterval(() => {
+    if (i > 0) {
+      document.getElementById('flow-step-'+(i-1))?.classList.replace('active','done');
+    }
+    if (i >= steps.length) {
+      clearInterval(flowTimer);
+      const isErr = key==='auth-fail';
+      result.textContent = isErr ? '← 401 Unauthorized — request rejected at auth layer' : '← 200/201 OK — full round-trip complete';
+      result.style.color = isErr ? 'var(--accent-red)' : 'var(--accent-gold)';
+      flowLog(`Complete — ${steps.length} hops`, isErr?'lerr':'lok');
+      return;
+    }
+    const stepEl = document.getElementById('flow-step-'+i);
+    if (stepEl) {
+      stepEl.classList.add('active');
+      stepEl.style.color = DIR_COLOR[steps[i].dir] || 'var(--text-sumi)';
+    }
+    flowLog(`${steps[i].dir}: ${steps[i].label}`, 'lmuted');
+    i++;
+  }, 420);
+}
+
+function resetFlow() {
+  if (flowTimer) clearInterval(flowTimer);
+  document.getElementById('flow-steps').innerHTML='';
+  document.getElementById('flow-result').textContent='';
+  document.getElementById('flow-log').innerHTML='<div class="linfo">> Reset.</div>';
+}
+
+function flowLog(m, cls='lmuted') {
+  const el = document.getElementById('flow-log');
+  const d = document.createElement('div'); d.className=cls; d.textContent='> '+m;
+  el.appendChild(d); el.scrollTop=el.scrollHeight;
+}
+
+// ===== TAB SWITCHING =====
+function switchTab(id) {
+  ['app','arch','flow'].forEach((t,i) => {
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active', t===id);
+    const p = document.getElementById('panel-'+t);
+    p.style.display = t===id ? 'block' : 'none';
+    p.classList.toggle('active', t===id);
+  });
+}
+document.querySelectorAll('.panel').forEach((p,i) => { if(i>0) p.style.display='none'; });
+</script>
+</body>
+</html>

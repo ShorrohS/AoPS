@@ -1,0 +1,283 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 8.6 — Building a Packet Analyzer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+/* Hex view */
+.hex-grid{display:flex;flex-wrap:wrap;gap:2px;font-family:'JetBrains Mono',monospace;font-size:11px;margin-bottom:10px}
+.hb{padding:2px 5px;border-radius:1px;cursor:pointer;transition:all var(--t-fast)}
+.hb:hover{background:var(--bg-warm)}
+.hb.eth{background:rgba(200,42,42,0.12);color:var(--accent-red)}
+.hb.ip{background:rgba(28,45,66,0.1);color:var(--accent-indigo)}
+.hb.tcp{background:rgba(139,105,20,0.12);color:var(--accent-gold)}
+.hb.payload{background:var(--bg-warm);color:var(--text-muted)}
+.hb.selected{outline:2px solid var(--accent-red);border-radius:1px}
+/* Packet list */
+.pkt-row{display:flex;align-items:center;gap:8px;padding:7px 12px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:3px;cursor:pointer;transition:all var(--t-fast);font-family:'JetBrains Mono',monospace;font-size:11px}
+.pkt-row:hover{border-color:var(--accent-indigo)}
+.pkt-row.selected{border-color:var(--accent-gold);background:rgba(139,105,20,0.05)}
+.pr-num{color:var(--text-muted);width:24px;flex-shrink:0}
+.pr-src{color:var(--accent-indigo);flex:1}
+.pr-proto{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:2px 6px;border-radius:1px;flex-shrink:0}
+.proto-tcp{background:rgba(139,105,20,0.15);color:var(--accent-gold)}
+.proto-udp{background:rgba(28,45,66,0.12);color:var(--accent-indigo)}
+.proto-icmp{background:rgba(200,42,42,0.12);color:var(--accent-red)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:130px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs)}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 8.6 — Building a Packet Analyzer</h1>
+  <p class="zen-subtitle">Hex Packet Decoder · Capture Replay · BPF Filters</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('decoder')">Hex Decoder</div>
+  <div class="zen-tab" onclick="switchTab('capture')">Capture Replay</div>
+  <div class="zen-tab" onclick="switchTab('filter')">BPF Filters</div>
+</div>
+
+<!-- HEX DECODER -->
+<div id="panel-decoder" class="panel active">
+  <div class="zen-intro"><strong>Decode a raw packet from hex bytes.</strong> Ethernet (14B) → IPv4 (20B) → TCP (20B) → Payload. Click any byte to see which field it belongs to. Red=Ethernet, Blue=IPv4, Gold=TCP, Grey=Payload.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Raw packet bytes (click any byte)</div>
+      <div class="hex-grid" id="hex-grid"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="zen-btn" onclick="loadPacket('syn')">TCP SYN</button>
+        <button class="zen-btn" onclick="loadPacket('http')">HTTP GET</button>
+        <button class="zen-btn" onclick="loadPacket('dns')">DNS Query</button>
+        <button class="zen-btn" onclick="loadPacket('icmp')">ICMP Ping</button>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Field inspector</div>
+      <div id="hex-detail" style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;border-radius:var(--radius-xs);min-height:100px;color:var(--text-muted);margin-bottom:10px">
+        Click a byte to see its field name and meaning.
+      </div>
+      <div class="op-log" id="hex-log"><div class="linfo">> Load a packet type and click bytes to inspect each field.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CAPTURE REPLAY -->
+<div id="panel-capture" class="panel">
+  <div class="zen-intro"><strong>Replay a pre-recorded packet capture.</strong> These packets represent a real HTTP GET request. Step through them one at a time to see the TCP handshake, HTTP request, and response.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Packet list</div>
+      <div id="pkt-list" style="max-height:240px;overflow-y:auto;margin-bottom:10px"></div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="captureStep()">↓ Next packet</button>
+        <button class="zen-btn" onclick="captureRunAll()">▶ All packets</button>
+        <button class="zen-btn danger" onclick="captureReset()">↺ Reset</button>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title red">Packet detail</div>
+      <div id="pkt-detail" style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;min-height:80px;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;border-radius:var(--radius-xs);margin-bottom:8px;color:var(--text-muted)">
+        Select a packet to see details.
+      </div>
+      <div class="op-log" id="capture-log"><div class="linfo">> This capture shows a complete HTTP transaction: TCP setup → request → response → teardown.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- BPF FILTERS -->
+<div id="panel-filter" class="panel">
+  <div class="zen-intro"><strong>BPF (Berkeley Packet Filter) expressions filter which packets to capture.</strong> Filters run in the kernel, before packets reach user space — efficient even at 10 Gbps. Test your filter against a sample packet stream.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Filter expression</div>
+      <input id="bpf-filter" type="text" value="tcp port 80" style="font-family:'JetBrains Mono',monospace;font-size:13px;width:100%;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:7px 10px;color:var(--text-sumi);margin-bottom:10px">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="zen-btn" style="padding:5px 10px;font-size:10px" onclick="setBPF('tcp port 443')">tcp port 443</button>
+        <button class="zen-btn" style="padding:5px 10px;font-size:10px" onclick="setBPF('udp port 53')">udp port 53</button>
+        <button class="zen-btn" style="padding:5px 10px;font-size:10px" onclick="setBPF('src host 192.168.1.5')">src host 192.168.1.5</button>
+        <button class="zen-btn" style="padding:5px 10px;font-size:10px" onclick="setBPF('icmp')">icmp</button>
+        <button class="zen-btn" style="padding:5px 10px;font-size:10px" onclick="setBPF('not port 22')">not port 22</button>
+      </div>
+      <button class="zen-btn primary" onclick="applyFilter()">Apply filter</button>
+      <div id="filter-results" style="margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)"></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Sample packet stream</div>
+      <div id="stream-vis" style="max-height:200px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;margin-bottom:10px;color:var(--text-muted)"></div>
+      <div class="op-log" id="filter-log"><div class="linfo">> Green packets match the filter. Tcpdump BPF filters are compiled to a tiny virtual machine inside the kernel.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== HEX DECODER =====
+const PACKETS={
+  syn:{bytes:[0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xAA,0xBB,0xCC,0xDD,0xEE,0xFF,0x08,0x00,0x45,0x00,0x00,0x3C,0x1A,0x2B,0x40,0x00,0x40,0x06,0x00,0x00,0xC0,0xA8,0x01,0x05,0x08,0x08,0x08,0x08,0xC3,0x50,0x01,0xBB,0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x00,0x50,0x02,0x20,0x00,0x00,0x00,0x00,0x00],desc:'TCP SYN packet — client initiating connection to 8.8.8.8:443'},
+  http:{bytes:[0xAA,0xBB,0xCC,0x11,0x22,0x33,0xDD,0xEE,0xFF,0x44,0x55,0x66,0x08,0x00,0x45,0x00,0x00,0x4F,0x3B,0x2A,0x00,0x00,0x40,0x06,0x00,0x00,0xC0,0xA8,0x01,0x0A,0x5E,0xA4,0x0A,0x0B,0xC7,0x64,0x00,0x50,0x00,0x00,0x10,0x00,0x00,0x00,0x11,0x00,0x50,0x18,0x80,0x00,0x00,0x00,0x00,0x00,0x47,0x45,0x54,0x20,0x2F,0x20,0x48,0x54,0x54,0x50,0x2F,0x31,0x2E,0x31],desc:'HTTP GET / — application data following TCP header'},
+  dns:{bytes:[0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xAA,0xBB,0xCC,0xDD,0xEE,0xFF,0x08,0x00,0x45,0x00,0x00,0x3D,0x00,0x01,0x00,0x00,0x40,0x11,0x00,0x00,0xC0,0xA8,0x01,0x05,0x08,0x08,0x08,0x08,0x9A,0x28,0x00,0x35,0x00,0x29,0x00,0x00,0xAB,0xCD,0x01,0x00,0x00,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x06,0x67,0x69,0x74,0x68,0x75,0x62,0x03,0x63,0x6F,0x6D,0x00,0x00,0x01,0x00,0x01],desc:'DNS query for github.com A record (UDP port 53)'},
+  icmp:{bytes:[0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xAA,0xBB,0xCC,0xDD,0xEE,0xFF,0x08,0x00,0x45,0x00,0x00,0x3C,0x12,0x34,0x00,0x00,0x40,0x01,0x00,0x00,0xC0,0xA8,0x01,0x05,0x01,0x01,0x01,0x01,0x08,0x00,0xF7,0xFF,0x00,0x01,0x00,0x01,0x61,0x62,0x63,0x64,0x65,0x66,0x67,0x68],desc:'ICMP Echo Request (ping) to 1.1.1.1'}
+};
+const FIELD_MAP=[
+  {start:0,end:5,name:'Ethernet Dst MAC',layer:'eth',desc:'Destination MAC: FF:FF:FF:FF:FF:FF (broadcast)'},
+  {start:6,end:11,name:'Ethernet Src MAC',layer:'eth',desc:'Source MAC: AA:BB:CC:DD:EE:FF'},
+  {start:12,end:13,name:'EtherType',layer:'eth',desc:'0x0800 = IPv4 payload'},
+  {start:14,end:14,name:'IP Version+IHL',layer:'ip',desc:'Version=4, IHL=5 (20 bytes header)'},
+  {start:15,end:15,name:'DSCP/ECN',layer:'ip',desc:'Differentiated Services / Explicit Congestion Notification'},
+  {start:16,end:17,name:'IP Total Length',layer:'ip',desc:'Total IP datagram length in bytes'},
+  {start:18,end:19,name:'IP ID',layer:'ip',desc:'Identification for fragmentation'},
+  {start:20,end:21,name:'Flags+Fragment Offset',layer:'ip',desc:'DF bit, fragment offset'},
+  {start:22,end:22,name:'TTL',layer:'ip',desc:'Time to Live — decremented by each router'},
+  {start:23,end:23,name:'Protocol',layer:'ip',desc:'6=TCP, 17=UDP, 1=ICMP'},
+  {start:24,end:25,name:'IP Checksum',layer:'ip',desc:'Header checksum (CRC16)'},
+  {start:26,end:29,name:'Source IP',layer:'ip',desc:'Sender IP address'},
+  {start:30,end:33,name:'Destination IP',layer:'ip',desc:'Recipient IP address'},
+  {start:34,end:35,name:'Src Port',layer:'tcp',desc:'Source port (ephemeral: 49152-65535)'},
+  {start:36,end:37,name:'Dst Port',layer:'tcp',desc:'Destination port (service port)'},
+  {start:38,end:41,name:'Sequence Number',layer:'tcp',desc:'Byte stream position of first byte in segment'},
+  {start:42,end:45,name:'Acknowledgement',layer:'tcp',desc:'Next expected byte from sender'},
+  {start:46,end:46,name:'Data Offset+Flags',layer:'tcp',desc:'Header length and control flags (SYN, ACK, FIN...)'},
+  {start:47,end:47,name:'TCP Flags',layer:'tcp',desc:'SYN=0x02 ACK=0x10 FIN=0x01 RST=0x04 PSH=0x08'},
+  {start:48,end:49,name:'Window Size',layer:'tcp',desc:'Receive buffer size (flow control)'},
+  {start:50,end:51,name:'TCP Checksum',layer:'tcp',desc:'Checksum over pseudo-header + segment'},
+  {start:52,end:53,name:'Urgent Pointer',layer:'tcp',desc:'Only used if URG flag set'},
+];
+let curPacket=null;
+function getFieldFor(idx){return FIELD_MAP.find(f=>idx>=f.start&&idx<=f.end);}
+function getLayerCls(layer){return layer==='eth'?'eth':layer==='ip'?'ip':layer==='tcp'?'tcp':'payload';}
+function loadPacket(type){
+  const pkt=PACKETS[type];curPacket=pkt;
+  const grid=document.getElementById('hex-grid');
+  grid.innerHTML=pkt.bytes.map((b,i)=>{
+    const f=getFieldFor(i);
+    const cls=f?getLayerCls(f.layer):'payload';
+    return `<span class="hb ${cls}" data-idx="${i}" onclick="hexClick(${i})" title="${f?f.name:'Payload'}">${b.toString(16).padStart(2,'0').toUpperCase()}</span>`;
+  }).join(' ');
+  document.getElementById('hex-log').innerHTML=`<div class="linfo">> Loaded: ${pkt.desc}</div><div class="lmuted">> ${pkt.bytes.length} bytes. Red=Ethernet, Blue=IPv4, Gold=TCP/UDP, Grey=Payload</div>`;
+}
+function hexClick(idx){
+  document.querySelectorAll('.hb').forEach(el=>el.classList.remove('selected'));
+  document.querySelector(`[data-idx="${idx}"]`)?.classList.add('selected');
+  const f=getFieldFor(idx);const b=curPacket?.bytes[idx];
+  const val=b!==undefined?`0x${b.toString(16).padStart(2,'0').toUpperCase()} (${b} decimal, ${b.toString(2).padStart(8,'0')} binary)`:'—';
+  document.getElementById('hex-detail').innerHTML=
+    `<span style="color:var(--accent-gold)">Byte ${idx}</span>\nValue: ${val}\n\n${f?`Field: ${f.name}\nLayer: ${f.layer.toUpperCase()}\nBytes: ${f.start}–${f.end}\nDescription: ${f.desc}`:'Field: Payload data'}`;
+}
+loadPacket('syn');
+
+// ===== CAPTURE REPLAY =====
+const CAPTURE=[
+  {num:1,src:'192.168.1.5:54321',dst:'93.184.216.34:80',proto:'TCP',flags:'SYN',info:'Connection initiation'},
+  {num:2,src:'93.184.216.34:80',dst:'192.168.1.5:54321',proto:'TCP',flags:'SYN-ACK',info:'Server acknowledges'},
+  {num:3,src:'192.168.1.5:54321',dst:'93.184.216.34:80',proto:'TCP',flags:'ACK',info:'Three-way handshake complete'},
+  {num:4,src:'192.168.1.5:54321',dst:'93.184.216.34:80',proto:'TCP',flags:'PSH+ACK',info:'HTTP GET / HTTP/1.1\\r\\nHost: example.com'},
+  {num:5,src:'93.184.216.34:80',dst:'192.168.1.5:54321',proto:'TCP',flags:'ACK',info:'Server ACK of HTTP request'},
+  {num:6,src:'93.184.216.34:80',dst:'192.168.1.5:54321',proto:'TCP',flags:'PSH+ACK',info:'HTTP/1.1 200 OK — response headers (214B)'},
+  {num:7,src:'93.184.216.34:80',dst:'192.168.1.5:54321',proto:'TCP',flags:'PSH+ACK',info:'HTTP response body (1200B)'},
+  {num:8,src:'192.168.1.5:54321',dst:'93.184.216.34:80',proto:'TCP',flags:'ACK',info:'Final ACK'},
+  {num:9,src:'93.184.216.34:80',dst:'192.168.1.5:54321',proto:'TCP',flags:'FIN+ACK',info:'Server initiates close'},
+  {num:10,src:'192.168.1.5:54321',dst:'93.184.216.34:80',proto:'TCP',flags:'FIN+ACK',info:'Client close acknowledgement'},
+];
+let capIdx=0, selectedPkt=-1;
+function capLog(m,cls='lmuted'){const el=document.getElementById('capture-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function renderCapture(){
+  document.getElementById('pkt-list').innerHTML=CAPTURE.slice(0,capIdx).map((p,i)=>`
+    <div class="pkt-row ${i===selectedPkt?'selected':''}" onclick="selectPkt(${i})">
+      <span class="pr-num">${p.num}</span>
+      <span class="pr-src">${p.src}</span>
+      <span style="color:var(--text-muted);font-size:10px">${p.flags}</span>
+      <span class="pr-proto proto-${p.proto.toLowerCase()}">${p.proto}</span>
+    </div>`).join('');
+}
+function selectPkt(i){
+  selectedPkt=i;
+  const p=CAPTURE[i];
+  document.getElementById('pkt-detail').textContent=
+    `Packet ${p.num}\nSrc: ${p.src}\nDst: ${p.dst}\nProtocol: ${p.proto}\nFlags: ${p.flags}\nInfo: ${p.info}`;
+  renderCapture();
+}
+function captureStep(){
+  if(capIdx>=CAPTURE.length){capLog('Capture complete (10 packets).','lok');return;}
+  const p=CAPTURE[capIdx++];
+  capLog(`Pkt ${p.num}: ${p.src} → ${p.dst} [${p.flags}]`,'linfo');
+  renderCapture();
+}
+function captureRunAll(){while(capIdx<CAPTURE.length)captureStep();}
+function captureReset(){capIdx=0;selectedPkt=-1;renderCapture();document.getElementById('pkt-detail').textContent='Select a packet.';document.getElementById('capture-log').innerHTML='<div class="linfo">> Reset.</div>';}
+renderCapture();
+
+// ===== BPF FILTERS =====
+const STREAM=[
+  {src:'192.168.1.5:54321',dst:'8.8.8.8:53',proto:'udp',port:53},
+  {src:'192.168.1.5:50234',dst:'93.184.216.34:80',proto:'tcp',port:80},
+  {src:'192.168.1.5:50235',dst:'93.184.216.34:443',proto:'tcp',port:443},
+  {src:'192.168.1.5:22222',dst:'10.0.0.1:22',proto:'tcp',port:22},
+  {src:'192.168.1.5:55123',dst:'1.1.1.1:53',proto:'udp',port:53},
+  {src:'10.0.0.1',dst:'192.168.1.5',proto:'icmp',port:0},
+  {src:'192.168.1.10:60000',dst:'172.217.14.238:443',proto:'tcp',port:443},
+  {src:'192.168.1.5:54000',dst:'192.168.1.1:80',proto:'tcp',port:80},
+];
+function setBPF(f){document.getElementById('bpf-filter').value=f;}
+function filterMatch(pkt,expr){
+  expr=expr.trim().toLowerCase();
+  if(expr==='icmp')return pkt.proto==='icmp';
+  if(expr.startsWith('tcp'))return pkt.proto==='tcp'&&(expr==='tcp'||checkPort(pkt,expr));
+  if(expr.startsWith('udp'))return pkt.proto==='udp'&&(expr==='udp'||checkPort(pkt,expr));
+  if(expr.startsWith('not port'))return !checkPort(pkt,expr.replace('not ',''));
+  if(expr.startsWith('src host'))return pkt.src.startsWith(expr.split(' ').pop());
+  return checkPort(pkt,expr);
+}
+function checkPort(pkt,expr){const m=expr.match(/port\s+(\d+)/);return m?pkt.port===parseInt(m[1]):false;}
+function applyFilter(){
+  const expr=document.getElementById('bpf-filter').value;
+  const flog=document.getElementById('filter-log');
+  const streamVis=document.getElementById('stream-vis');
+  let matched=0;
+  streamVis.innerHTML=STREAM.map((p,i)=>{
+    const m=filterMatch(p,expr);if(m)matched++;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:3px 0;border-bottom:1px solid var(--border-paper)">
+      <span style="color:${m?'var(--accent-gold)':'var(--text-ghost)'};font-size:13px">${m?'✓':'○'}</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${m?'var(--text-sumi)':'var(--text-ghost)'}">${p.src} → ${p.dst} (${p.proto}${p.port?':'+p.port:''})</span>
+    </div>`;
+  }).join('');
+  document.getElementById('filter-results').textContent=`${matched}/${STREAM.length} packets match: "${expr}"`;
+  const d=document.createElement('div');d.className='lok';d.textContent=`> Filter "${expr}": ${matched}/${STREAM.length} packets match`;flog.appendChild(d);flog.scrollTop=flog.scrollHeight;
+}
+applyFilter();
+
+function switchTab(id){
+  ['decoder','capture','filter'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);p.style.display=t===id?'block':'none';p.classList.toggle('active',t===id);
+  });
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+</script>
+</body>
+</html>

@@ -1,0 +1,380 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 10.1 — HTML, CSS & JavaScript from the Ground Up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out) forwards}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast),color var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}.zen-btn.primary:hover{background:#333}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+.bento3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:760px){.bento2,.bento3{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border-paper)}
+textarea.code-ed{width:100%;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);color:var(--text-sumi);padding:12px;resize:vertical;border-radius:var(--radius-xs);line-height:1.8}
+textarea.code-ed:focus{outline:none;border-color:var(--accent-indigo)}
+.preview-frame{width:100%;border:1px solid var(--border-paper);border-radius:var(--radius-xs);background:#fff;min-height:200px}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:100px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs);margin-top:8px}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+/* DOM explorer */
+.dom-node{padding:3px 0 3px 16px;border-left:1px solid var(--border-paper);margin-left:8px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-body);line-height:1.8}
+.dom-tag{color:var(--accent-indigo);font-weight:500}
+.dom-attr{color:var(--accent-gold)}
+.dom-text{color:var(--text-muted);font-style:italic}
+.dom-node.highlight{background:rgba(200,42,42,0.07);border-left-color:var(--accent-red)}
+/* CSS box model */
+.box-model{display:flex;flex-direction:column;align-items:center;gap:0;width:100%;font-family:'JetBrains Mono',monospace;font-size:10px}
+.bm-layer{width:100%;text-align:center;padding:6px;border:1px solid var(--border-paper);position:relative}
+.bm-margin{background:rgba(139,105,20,0.08);border-color:var(--accent-gold);color:var(--accent-gold)}
+.bm-border{background:rgba(28,45,66,0.08);border-color:var(--accent-indigo);color:var(--accent-indigo);margin:4px}
+.bm-padding{background:rgba(200,42,42,0.08);border-color:var(--accent-red);color:var(--accent-red);margin:4px}
+.bm-content{background:rgba(28,28,28,0.06);border-color:var(--text-muted);color:var(--text-sumi);margin:4px;padding:16px}
+.bm-label{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:1px;background:var(--border-light);cursor:pointer;margin:10px 0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--text-sumi);border-radius:50%;cursor:grab}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 10.1 — HTML, CSS &amp; JavaScript from the Ground Up</h1>
+  <p class="zen-subtitle">Live Editor · DOM Explorer · CSS Box Model</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('editor')">Live Editor</div>
+  <div class="zen-tab" onclick="switchTab('dom')">DOM Explorer</div>
+  <div class="zen-tab" onclick="switchTab('boxmodel')">CSS Box Model</div>
+</div>
+
+<!-- LIVE EDITOR -->
+<div id="panel-editor" class="panel active">
+  <div class="zen-intro">
+    <strong>HTML is structure. CSS is style. JavaScript is behaviour.</strong> Edit any of the three panes below and press Run to see the result instantly. The browser assembles all three into a rendered page.
+  </div>
+  <div class="bento3" style="margin-bottom:1px">
+    <div class="pane">
+      <div class="pane-title" style="color:var(--accent-indigo)">HTML</div>
+      <textarea class="code-ed" id="ed-html" rows="10">&lt;h1 id="title"&gt;Hello, Web!&lt;/h1&gt;
+&lt;p&gt;Edit these three panes and press &lt;strong&gt;Run&lt;/strong&gt;.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;HTML gives structure&lt;/li&gt;
+  &lt;li&gt;CSS adds style&lt;/li&gt;
+  &lt;li&gt;JS adds behaviour&lt;/li&gt;
+&lt;/ul&gt;
+&lt;button id="btn"&gt;Click me&lt;/button&gt;
+&lt;p id="output"&gt;&lt;/p&gt;</textarea>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title" style="color:var(--accent-red)">CSS</div>
+      <textarea class="code-ed" id="ed-css" rows="10">body { font-family: sans-serif; padding: 20px; background: #fafaf8; }
+h1 { color: #1C2D42; border-bottom: 2px solid #C82A2A; padding-bottom: 8px; }
+p { color: #555; margin: 10px 0; }
+ul { margin: 10px 0 10px 20px; }
+li { margin: 4px 0; color: #333; }
+button { padding: 8px 18px; background: #1C1C1C; color: #fff; border: none; cursor: pointer; border-radius: 2px; font-size: 13px; }
+button:hover { background: #C82A2A; }
+#output { color: #8B6914; font-weight: bold; margin-top: 12px; }</textarea>
+    </div>
+    <div class="pane">
+      <div class="pane-title" style="color:var(--accent-gold)">JavaScript</div>
+      <textarea class="code-ed" id="ed-js" rows="10">let count = 0;
+const btn = document.getElementById('btn');
+const output = document.getElementById('output');
+
+btn.addEventListener('click', function() {
+  count++;
+  output.textContent = 'Button clicked ' + count + ' time' + (count !== 1 ? 's' : '') + '!';
+  btn.style.background = count % 2 === 0 ? '#1C1C1C' : '#C82A2A';
+});</textarea>
+    </div>
+  </div>
+  <div class="bento2">
+    <div class="pane warm">
+      <div class="pane-title">Controls</div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="runCode()">▶ Run</button>
+        <button class="zen-btn danger" onclick="resetEditor()">↺ Reset</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+        <button class="zen-btn" style="padding:4px 9px;font-size:10px" onclick="loadSnippet('counter')">Counter app</button>
+        <button class="zen-btn" style="padding:4px 9px;font-size:10px" onclick="loadSnippet('todo')">To-do list</button>
+        <button class="zen-btn" style="padding:4px 9px;font-size:10px" onclick="loadSnippet('form')">Form validation</button>
+        <button class="zen-btn" style="padding:4px 9px;font-size:10px" onclick="loadSnippet('animation')">CSS animation</button>
+      </div>
+      <div class="op-log" id="ed-log"><div class="linfo">> Edit the panes and press Run. The iframe previews your code live.</div></div>
+    </div>
+    <div class="pane">
+      <div class="pane-title">Preview</div>
+      <iframe id="preview" class="preview-frame" style="height:220px" sandbox="allow-scripts"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- DOM EXPLORER -->
+<div id="panel-dom" class="panel">
+  <div class="zen-intro">
+    <strong>The DOM (Document Object Model) is how JavaScript sees your HTML.</strong> The browser parses HTML into a tree of nodes. JavaScript can walk this tree, read properties, change text, add/remove nodes, and attach events — all at runtime.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">HTML to parse</div>
+      <textarea class="code-ed" id="dom-input" rows="8">&lt;html&gt;
+  &lt;body&gt;
+    &lt;h1 class="title"&gt;Welcome&lt;/h1&gt;
+    &lt;nav&gt;
+      &lt;a href="/"&gt;Home&lt;/a&gt;
+      &lt;a href="/about"&gt;About&lt;/a&gt;
+    &lt;/nav&gt;
+    &lt;p id="intro"&gt;Hello world&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</textarea>
+      <div class="btn-row">
+        <button class="zen-btn primary" onclick="buildDOM()">▶ Build DOM Tree</button>
+        <button class="zen-btn" onclick="highlightNode()">Highlight random node</button>
+      </div>
+      <div class="op-log" id="dom-log"><div class="linfo">> Parse HTML to see its DOM tree structure.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">DOM Tree</div>
+      <div id="dom-tree" style="overflow:auto;max-height:300px;font-size:12px;line-height:1.8"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CSS BOX MODEL -->
+<div id="panel-boxmodel" class="panel">
+  <div class="zen-intro">
+    <strong>Every HTML element is a rectangular box.</strong> The CSS box model defines four layers from outside in: margin → border → padding → content. Understanding this is the key to understanding layout.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Adjust the box</div>
+      <div style="display:grid;gap:12px">
+        <div>
+          <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">
+            <span>Margin</span><span id="lbl-margin" style="font-family:'JetBrains Mono',monospace">24px</span>
+          </label>
+          <input type="range" id="sl-margin" min="0" max="48" value="24" oninput="updateBoxModel()">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">
+            <span>Border</span><span id="lbl-border" style="font-family:'JetBrains Mono',monospace">4px</span>
+          </label>
+          <input type="range" id="sl-border" min="0" max="20" value="4" oninput="updateBoxModel()">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">
+            <span>Padding</span><span id="lbl-padding" style="font-family:'JetBrains Mono',monospace">16px</span>
+          </label>
+          <input type="range" id="sl-padding" min="0" max="40" value="16" oninput="updateBoxModel()">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">
+            <span>Content width</span><span id="lbl-content" style="font-family:'JetBrains Mono',monospace">120px</span>
+          </label>
+          <input type="range" id="sl-content" min="40" max="200" value="120" oninput="updateBoxModel()">
+        </div>
+      </div>
+      <div style="margin-top:16px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:12px">
+        <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:8px">Generated CSS</div>
+        <pre id="box-css" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-body);line-height:1.9"></pre>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Visual box model</div>
+      <div id="box-vis" style="display:flex;flex-direction:column;align-items:center;padding:10px"></div>
+      <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <div style="background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:300;color:var(--accent-gold);display:block;margin-bottom:2px" id="total-width">—</span>
+          <span style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Total Width</span>
+        </div>
+        <div style="background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:300;color:var(--accent-indigo);display:block;margin-bottom:2px" id="box-sizing">content-box</span>
+          <span style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Box Sizing</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== LIVE EDITOR =====
+const snippets = {
+  counter: {
+    html: `<h2>Counter</h2>\n<div id="display" style="font-size:48px;text-align:center;margin:20px 0">0</div>\n<div style="display:flex;gap:10px;justify-content:center">\n  <button onclick="change(-1)">−</button>\n  <button onclick="reset()">Reset</button>\n  <button onclick="change(1)">+</button>\n</div>`,
+    css: `body{font-family:sans-serif;padding:30px;background:#fafaf8}\nh2{color:#1C2D42;text-align:center}\nbutton{padding:10px 24px;font-size:18px;background:#1C1C1C;color:#fff;border:none;cursor:pointer;border-radius:2px}\nbutton:hover{background:#C82A2A}\n#display{color:#1C2D42;font-weight:300;font-family:'Courier New',monospace}`,
+    js: `let n = 0;\nfunction change(d){ n += d; document.getElementById('display').textContent = n; }\nfunction reset(){ n = 0; document.getElementById('display').textContent = 0; }`
+  },
+  todo: {
+    html: `<h2>To-Do List</h2>\n<div style="display:flex;gap:8px;margin-bottom:16px">\n  <input id="inp" type="text" placeholder="Add a task..." style="flex:1;padding:8px;border:1px solid #ddd;font-size:14px">\n  <button onclick="addTask()">Add</button>\n</div>\n<ul id="list"></ul>`,
+    css: `body{font-family:sans-serif;padding:24px;background:#fafaf8;max-width:400px}\nh2{color:#1C2D42;margin-bottom:16px}\nbutton{padding:8px 16px;background:#1C1C1C;color:#fff;border:none;cursor:pointer;border-radius:2px}\nul{list-style:none;padding:0}\nli{padding:8px 12px;margin:4px 0;background:#fff;border:1px solid #e8e8e8;border-radius:2px;display:flex;justify-content:space-between;align-items:center}\nli.done{text-decoration:line-through;color:#aaa}\n.del{cursor:pointer;color:#C82A2A;font-weight:bold;background:none;border:none;font-size:14px}`,
+    js: `function addTask(){\n  const inp = document.getElementById('inp');\n  if(!inp.value.trim()) return;\n  const li = document.createElement('li');\n  li.onclick = () => li.classList.toggle('done');\n  li.innerHTML = inp.value + '<button class="del" onclick="this.parentElement.remove()">✕</button>';\n  document.getElementById('list').appendChild(li);\n  inp.value = '';\n}`
+  },
+  form: {
+    html: `<h2>Form Validation</h2>\n<form id="frm">\n  <label>Email<br><input type="text" id="email" placeholder="you@example.com"></label><br><br>\n  <label>Password (min 8 chars)<br><input type="password" id="pw" placeholder="Password"></label><br><br>\n  <button type="submit">Submit</button>\n</form>\n<p id="msg"></p>`,
+    css: `body{font-family:sans-serif;padding:24px;background:#fafaf8}\nh2{color:#1C2D42;margin-bottom:16px}\ninput{padding:8px;border:1px solid #ddd;border-radius:2px;font-size:14px;width:240px}\ninput.error{border-color:#C82A2A}\nbutton{padding:9px 20px;background:#1C1C1C;color:#fff;border:none;cursor:pointer;border-radius:2px;margin-top:4px}\n#msg{margin-top:12px;font-weight:500}\n.ok{color:#8B6914}.fail{color:#C82A2A}`,
+    js: `document.getElementById('frm').addEventListener('submit', function(e){\n  e.preventDefault();\n  const email = document.getElementById('email');\n  const pw = document.getElementById('pw');\n  const msg = document.getElementById('msg');\n  let ok = true;\n  [email, pw].forEach(i => i.classList.remove('error'));\n  if(!email.value.includes('@')){ email.classList.add('error'); ok = false; }\n  if(pw.value.length < 8){ pw.classList.add('error'); ok = false; }\n  msg.textContent = ok ? '✓ Form valid!' : '✗ Please fix errors.';\n  msg.className = ok ? 'ok' : 'fail';\n});`
+  },
+  animation: {
+    html: `<h2>CSS Animation</h2>\n<div class="box" id="box"></div>\n<div style="display:flex;gap:8px;margin-top:16px">\n  <button onclick="toggle()">Play / Pause</button>\n  <button onclick="changeColor()">Change colour</button>\n</div>`,
+    css: `body{font-family:sans-serif;padding:24px;background:#fafaf8}\nh2{color:#1C2D42;margin-bottom:20px}\n.box{width:60px;height:60px;background:#C82A2A;border-radius:2px;animation:spin 2s linear infinite}\n@keyframes spin{from{transform:rotate(0deg) translateX(80px)}to{transform:rotate(360deg) translateX(80px)}}\nbutton{padding:8px 16px;background:#1C1C1C;color:#fff;border:none;cursor:pointer;border-radius:2px}`,
+    js: `let playing = true;\nconst box = document.getElementById('box');\nconst colors = ['#C82A2A','#1C2D42','#8B6914','#3A3A3A'];\nlet ci = 0;\nfunction toggle(){ playing=!playing; box.style.animationPlayState=playing?'running':'paused'; }\nfunction changeColor(){ ci=(ci+1)%colors.length; box.style.background=colors[ci]; }`
+  }
+};
+
+function runCode() {
+  const html = document.getElementById('ed-html').value;
+  const css  = document.getElementById('ed-css').value;
+  const js   = document.getElementById('ed-js').value;
+  const doc  = `<!DOCTYPE html><html><head><style>${css}</style></head><body>${html}<script>${js}<\/script></body></html>`;
+  const frame = document.getElementById('preview');
+  frame.srcdoc = doc;
+  edLog('Code executed — preview updated', 'lok');
+}
+
+function resetEditor() {
+  document.getElementById('ed-html').value = `<h1 id="title">Hello, Web!</h1>\n<p>Edit these three panes and press <strong>Run</strong>.</p>\n<ul>\n  <li>HTML gives structure</li>\n  <li>CSS adds style</li>\n  <li>JS adds behaviour</li>\n</ul>\n<button id="btn">Click me</button>\n<p id="output"></p>`;
+  document.getElementById('ed-css').value = `body { font-family: sans-serif; padding: 20px; background: #fafaf8; }\nh1 { color: #1C2D42; border-bottom: 2px solid #C82A2A; padding-bottom: 8px; }\np { color: #555; margin: 10px 0; }\nul { margin: 10px 0 10px 20px; }\nli { margin: 4px 0; color: #333; }\nbutton { padding: 8px 18px; background: #1C1C1C; color: #fff; border: none; cursor: pointer; border-radius: 2px; font-size: 13px; }\nbutton:hover { background: #C82A2A; }\n#output { color: #8B6914; font-weight: bold; margin-top: 12px; }`;
+  document.getElementById('ed-js').value = `let count = 0;\nconst btn = document.getElementById('btn');\nconst output = document.getElementById('output');\n\nbtn.addEventListener('click', function() {\n  count++;\n  output.textContent = 'Button clicked ' + count + ' time' + (count !== 1 ? 's' : '') + '!';\n  btn.style.background = count % 2 === 0 ? '#1C1C1C' : '#C82A2A';\n});`;
+  document.getElementById('preview').srcdoc = '';
+  edLog('Reset to default', 'lmuted');
+}
+
+function loadSnippet(name) {
+  const s = snippets[name];
+  document.getElementById('ed-html').value = s.html;
+  document.getElementById('ed-css').value = s.css;
+  document.getElementById('ed-js').value = s.js;
+  runCode();
+  edLog(`Loaded "${name}" snippet`, 'linfo');
+}
+
+function edLog(m, cls='lmuted') {
+  const el = document.getElementById('ed-log');
+  const d = document.createElement('div'); d.className = cls; d.textContent = '> ' + m;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+
+// ===== DOM EXPLORER =====
+let domNodes = [];
+
+function buildDOM() {
+  const html = document.getElementById('dom-input').value;
+  domNodes = [];
+  const tree = parseHTMLToTree(html);
+  document.getElementById('dom-tree').innerHTML = renderDOMTree(tree, 0);
+  domLog(`DOM tree built — ${domNodes.length} nodes`, 'lok');
+}
+
+function parseHTMLToTree(html) {
+  const tagRx = /<\/?([a-zA-Z][a-zA-Z0-9]*)[^>]*>|([^<]+)/g;
+  const stack = [{ tag:'document', attrs:{}, children:[], text:'' }];
+  let m;
+  while ((m = tagRx.exec(html)) !== null) {
+    const full = m[0];
+    if (full.startsWith('</')) { if (stack.length > 1) stack.pop(); }
+    else if (full.startsWith('<')) {
+      const tag = m[1].toLowerCase();
+      const attrStr = full.slice(tag.length+1, -1).trim();
+      const attrs = {};
+      const ar = /(\w[\w-]*)(?:=["']?([^"'\s>]*)["']?)?/g; let am;
+      while ((am = ar.exec(attrStr)) !== null) attrs[am[1]] = am[2] || true;
+      const node = { tag, attrs, children:[], text:'' };
+      domNodes.push(node);
+      stack[stack.length-1].children.push(node);
+      if (!['br','hr','img','input','meta','link'].includes(tag)) stack.push(node);
+    } else {
+      const text = full.trim();
+      if (text) { const tnode = { tag:'#text', text, children:[], attrs:{} }; domNodes.push(tnode); stack[stack.length-1].children.push(tnode); }
+    }
+  }
+  return stack[0];
+}
+
+function renderDOMTree(node, depth) {
+  const ind = '  '.repeat(depth);
+  if (node.tag === '#text') return `<div class="dom-node" style="margin-left:${depth*12}px"><span class="dom-text">"${node.text}"</span></div>`;
+  const attrStr = Object.entries(node.attrs).map(([k,v]) => ` <span class="dom-attr">${k}${v!==true?'="'+v+'"':''}</span>`).join('');
+  let html = `<div class="dom-node" data-depth="${depth}" style="margin-left:${depth*12}px"><span class="dom-tag">&lt;${node.tag}${attrStr}&gt;</span></div>`;
+  node.children.forEach(c => { html += renderDOMTree(c, depth+1); });
+  if (node.tag !== 'document' && node.children.length) html += `<div class="dom-node" style="margin-left:${depth*12}px"><span class="dom-tag">&lt;/${node.tag}&gt;</span></div>`;
+  return html;
+}
+
+function highlightNode() {
+  const nodes = document.querySelectorAll('#dom-tree .dom-node');
+  if (!nodes.length) { domLog('Build the tree first', 'lerr'); return; }
+  nodes.forEach(n => n.classList.remove('highlight'));
+  const idx = Math.floor(Math.random() * nodes.length);
+  nodes[idx].classList.add('highlight');
+  nodes[idx].scrollIntoView({ behavior:'smooth', block:'nearest' });
+  domLog(`Highlighted node ${idx+1}/${nodes.length}`, 'linfo');
+}
+
+function domLog(m, cls='lmuted') {
+  const el = document.getElementById('dom-log');
+  const d = document.createElement('div'); d.className = cls; d.textContent = '> ' + m;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+
+// ===== BOX MODEL =====
+function updateBoxModel() {
+  const margin  = +document.getElementById('sl-margin').value;
+  const border  = +document.getElementById('sl-border').value;
+  const padding = +document.getElementById('sl-padding').value;
+  const content = +document.getElementById('sl-content').value;
+  document.getElementById('lbl-margin').textContent  = margin+'px';
+  document.getElementById('lbl-border').textContent  = border+'px';
+  document.getElementById('lbl-padding').textContent = padding+'px';
+  document.getElementById('lbl-content').textContent = content+'px';
+  const total = content + padding*2 + border*2 + margin*2;
+  document.getElementById('total-width').textContent = total+'px';
+  document.getElementById('box-css').textContent =
+`.element {\n  margin: ${margin}px;\n  border: ${border}px solid #1C2D42;\n  padding: ${padding}px;\n  width: ${content}px;\n  /* total width: ${total}px */\n  box-sizing: content-box;\n}`;
+
+  const vis = document.getElementById('box-vis');
+  vis.innerHTML = `
+    <div style="background:rgba(139,105,20,0.12);border:1px dashed var(--accent-gold);padding:${Math.max(margin,4)}px;width:100%;text-align:center;position:relative">
+      <div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--accent-gold);margin-bottom:${Math.max(margin/2,2)}px">MARGIN ${margin}px</div>
+      <div style="background:rgba(28,45,66,0.12);border:${border}px solid var(--accent-indigo);padding:${padding}px">
+        <div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--accent-indigo);margin-bottom:${Math.max(padding/2,2)}px">BORDER ${border}px — PADDING ${padding}px</div>
+        <div style="background:rgba(28,28,28,0.08);border:1px solid var(--border-paper);padding:14px;width:${Math.min(content,160)}px;margin:0 auto;text-align:center">
+          <span style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi)">CONTENT<br>${content}px</span>
+        </div>
+      </div>
+    </div>`;
+}
+updateBoxModel();
+
+// ===== TAB SWITCHING =====
+function switchTab(id) {
+  ['editor','dom','boxmodel'].forEach((t,i) => {
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active', t===id);
+    const p = document.getElementById('panel-'+t);
+    p.style.display = t===id ? 'block' : 'none';
+    p.classList.toggle('active', t===id);
+  });
+}
+document.querySelectorAll('.panel').forEach((p,i) => { if(i>0) p.style.display='none'; });
+runCode();
+</script>
+</body>
+</html>

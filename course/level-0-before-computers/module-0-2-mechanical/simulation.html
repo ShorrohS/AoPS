@@ -5,157 +5,136 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Module 0.2 — Mechanical Computation Simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root{
-  --bg-primary:#090A0F;--bg-secondary:#12141C;--bg-tertiary:#1A1D27;
-  --bg-glass:rgba(18,20,28,0.75);
-  --text-primary:#F3F4F6;--text-secondary:#9CA3AF;--text-muted:#4B5563;
-  --accent-primary:#6366F1;--accent-hover:#4F46E5;--accent-glow:rgba(99,102,241,0.15);
-  --color-success:#10B981;--color-warning:#F59E0B;--color-danger:#EF4444;
-  --color-code-bg:#0D0E15;
-  --border-subtle:rgba(255,255,255,0.08);--border-active:rgba(99,102,241,0.4);
-  --radius-sm:6px;--radius-md:10px;--radius-lg:16px;
-  --shadow-soft:0 10px 30px -10px rgba(0,0,0,0.5);
-  --shadow-glow:0 0 20px rgba(99,102,241,0.2);
-  --transition-fast:150ms cubic-bezier(0.16,1,0.3,1);
-  --transition-smooth:300ms cubic-bezier(0.16,1,0.3,1);
-  --transition-bounce:400ms cubic-bezier(0.34,1.56,0.64,1);
-  --font-mono:'JetBrains Mono',monospace;
+:root{
+  --bg-paper:#F4F3EF; --bg-washi:#FDFDFD; --bg-warm:#EEECE6; --bg-canvas:#F8F7F3;
+  --text-sumi:#1C1C1C; --text-body:#3A3A3A; --text-muted:#888880; --text-ghost:#BBBBB5;
+  --accent-red:#C82A2A; --accent-indigo:#1C2D42; --accent-gold:#8B6914; --accent-ink:#1C1C1C;
+  --border-hair:#1C1C1C; --border-light:#D8D6CE; --border-paper:#E8E6DF;
+  --radius-xs:2px; --radius-sm:4px;
+  --ease-out:cubic-bezier(0.16,1,0.3,1); --t-fast:120ms; --t-med:240ms; --t-slow:400ms;
 }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; padding: 20px; }
-  h1 { color: var(--accent-primary); font-size: 1.4rem; margin-bottom: 4px; }
-  .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
-  .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-  .tab { padding: 8px 18px; border-radius: 6px; cursor: pointer; background: var(--bg-secondary); border: 2px solid var(--border-subtle); color: var(--text-muted); font-size: 0.9rem; transition: all 0.2s; }
-  .tab.active { background: var(--bg-tertiary); border-color: var(--accent-primary); color: var(--accent-primary); }
-  .panel { display: none; }
-  .panel.active { display: block; }
-  .intro-box { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-left: 4px solid var(--color-warning); padding: 14px 18px; border-radius: 8px; margin-bottom: 18px; font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); }
-  .intro-box strong { color: var(--color-warning); }
-  .btn { padding: 9px 20px; border-radius: 7px; border: none; cursor: pointer; font-size: 0.88rem; font-weight: 600; transition: all 0.2s; }
-  .btn-primary { background: var(--accent-primary); color: var(--bg-primary); }
-  .btn-primary:hover { opacity: 0.85; }
-  .btn-secondary { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-subtle); }
-  .btn-secondary:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
-  .btn-success { background: var(--color-success); color: var(--bg-primary); }
-  .btn-success:hover { opacity: 0.85; }
-  .btn-danger { background: var(--color-danger); color: white; }
-  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes zen-fade-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes rolling{0%{transform:translateY(-20px);opacity:0}100%{transform:translateY(0);opacity:1}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-0.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast) var(--ease-out),border-color var(--t-fast) var(--ease-out);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:zen-fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:28px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:10px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;border:1px solid var(--border-hair);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast) var(--ease-out),color var(--t-fast) var(--ease-out)}
+.zen-btn:hover{background:var(--accent-ink);color:#FDFDFD}
+.zen-btn.primary{background:var(--accent-ink);color:#FDFDFD}.zen-btn.primary:hover{background:#2C2C2C}
+.zen-btn.success{border-color:var(--accent-gold);color:var(--accent-gold);background:transparent}.zen-btn.success:hover{background:var(--accent-gold);color:#FDFDFD}
+.zen-btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;align-items:center}
+.zen-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border-paper)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:1px;background:var(--border-hair);cursor:pointer;margin:14px 0;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;background:var(--accent-ink);border-radius:50%;cursor:grab}
+input[type=range]::-webkit-slider-thumb:active{background:var(--accent-red)}
+select,input[type=number],input[type=text]{background:var(--bg-washi);border:1px solid var(--border-hair);border-radius:var(--radius-xs);color:var(--text-sumi);font-family:'JetBrains Mono',monospace;font-size:13px;padding:7px 10px}
+select:focus,input:focus{outline:none;border-color:var(--accent-indigo)}
 
-  /* ========== NAPIER'S BONES ========== */
-  .napier-controls { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
-  .control-group { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 14px; }
-  .control-group h3 { color: var(--accent-primary); font-size: 0.9rem; margin-bottom: 10px; }
-  .digit-btns { display: flex; gap: 6px; flex-wrap: wrap; }
-  .dbt { width: 38px; height: 38px; border-radius: 6px; border: 2px solid var(--border-subtle); background: var(--bg-tertiary); color: var(--text-primary); font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
-  .dbt:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
-  .dbt.selected { background: var(--accent-primary); color: var(--bg-primary); border-color: var(--accent-primary); }
-  .mult-btn { width: 38px; height: 38px; border-radius: 6px; border: 2px solid var(--border-subtle); background: var(--bg-secondary); color: var(--text-primary); font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s; }
-  .mult-btn:hover { border-color: var(--color-warning); color: var(--color-warning); }
-  .mult-btn.selected { background: var(--color-warning); color: var(--bg-primary); border-color: var(--color-warning); }
+/* ── NAPIER'S BONES ── */
+.napier-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:800px){.napier-layout{grid-template-columns:1fr}}
+.control-group{background:var(--bg-washi);border:1px solid var(--border-paper);padding:20px;border-radius:var(--radius-xs)}
+.control-group h3{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;color:var(--text-sumi);margin-bottom:14px;text-transform:uppercase;letter-spacing:0.1em}
+.digit-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.dbt{width:36px;height:36px;border-radius:var(--radius-xs);border:1px solid var(--border-paper);background:var(--bg-warm);color:var(--text-muted);font-size:.9rem;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all var(--t-fast)}
+.dbt:hover{border-color:var(--border-hair);color:var(--text-sumi)}.dbt.selected{background:var(--accent-ink);color:#FDFDFD;border-color:var(--accent-ink)}
+.mult-btn{width:36px;height:36px;border-radius:var(--radius-xs);border:1px solid var(--border-paper);background:var(--bg-warm);color:var(--text-muted);font-size:.9rem;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all var(--t-fast)}
+.mult-btn:hover{border-color:var(--border-hair);color:var(--text-sumi)}.mult-btn.selected{background:var(--accent-red);color:#FDFDFD;border-color:var(--accent-red)}
+.meta-line{font-size:12px;color:var(--text-muted);margin-top:8px}
+.meta-line span{font-family:'JetBrains Mono',monospace;color:var(--text-sumi);font-weight:400}
 
-  .bones-table-wrap { overflow-x: auto; margin-bottom: 16px; }
-  .bones-table { border-collapse: collapse; min-width: 400px; }
-  .bones-table th { background: var(--wood); color: var(--ivory); padding: 8px 14px; font-size: 0.85rem; text-align: center; border: 2px solid #5a3f00; }
-  .bones-table td { border: 1px solid var(--border-subtle); padding: 0; width: 70px; height: 50px; text-align: center; vertical-align: middle; position: relative; }
-  .cell-inner { position: relative; width: 70px; height: 50px; display: flex; align-items: center; justify-content: center; }
-  .cell-diag { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-  .cell-diag line { stroke: var(--border-subtle); stroke-width: 1; }
-  .cell-top { position: absolute; top: 6px; right: 8px; font-size: 0.85rem; font-weight: 600; }
-  .cell-bot { position: absolute; bottom: 6px; left: 8px; font-size: 0.85rem; font-weight: 600; }
-  .row-highlight td { background: rgba(83,216,251,0.08); }
-  .row-highlight .cell-top, .row-highlight .cell-bot { color: var(--accent-primary); }
-  .row-label { background: var(--bg-tertiary) !important; }
-  .row-label .rl-num { font-size: 1rem; font-weight: 700; color: var(--color-warning); }
+/* Bones table */
+.bones-table-wrap{overflow-x:auto;margin:16px 0}
+.bones-table{border-collapse:collapse;min-width:400px}
+.bones-table th{background:var(--bg-warm);color:var(--text-sumi);padding:8px 14px;font-size:12px;text-align:center;border:1px solid var(--border-paper);font-family:'JetBrains Mono',monospace;font-weight:500}
+.bones-table td{border:1px solid var(--border-paper);padding:0;width:70px;height:48px;text-align:center;vertical-align:middle;position:relative;background:var(--bg-washi)}
+.cell-inner{position:relative;width:70px;height:48px;display:flex;align-items:center;justify-content:center}
+.cell-diag{position:absolute;top:0;left:0;width:100%;height:100%}
+.cell-diag line{stroke:var(--border-paper);stroke-width:1}
+.cell-top{position:absolute;top:6px;right:8px;font-size:.82rem;font-family:'JetBrains Mono',monospace;color:var(--text-body)}
+.cell-bot{position:absolute;bottom:6px;left:8px;font-size:.82rem;font-family:'JetBrains Mono',monospace;color:var(--text-body)}
+.row-highlight td{background:rgba(200,42,42,0.05)}
+.row-highlight .cell-top,.row-highlight .cell-bot{color:var(--accent-red)}
+.row-label{background:var(--bg-warm)!important}
+.rl-num{font-size:.95rem;font-weight:500;font-family:'JetBrains Mono',monospace;color:var(--text-sumi)}
 
-  .diag-steps { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 14px; margin-bottom: 14px; }
-  .diag-steps h3 { color: var(--color-warning); font-size: 0.9rem; margin-bottom: 10px; }
-  .diag-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; font-size: 0.88rem; }
-  .diag-box { width: 34px; height: 34px; border-radius: 6px; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95rem; }
-  .diag-box.active { background: var(--accent-primary); color: var(--bg-primary); }
-  .diag-box.carry { background: var(--color-warning); color: var(--bg-primary); }
-  .diag-op { color: var(--text-muted); font-size: 0.85rem; }
-  .result-display { background: var(--bg-tertiary); border: 2px solid var(--accent-primary); border-radius: 10px; padding: 14px 20px; text-align: center; margin-top: 10px; }
-  .result-display .rd-label { color: var(--text-muted); font-size: 0.8rem; }
-  .result-display .rd-val { font-size: 2.2rem; font-weight: 800; color: var(--accent-primary); font-family: monospace; }
-  .result-display .rd-eq { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
+/* Diagonal steps */
+.diag-steps{background:var(--bg-washi);border:1px solid var(--border-paper);padding:18px;margin-top:8px;border-radius:var(--radius-xs)}
+.diag-steps h3{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);margin-bottom:12px}
+.diag-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px;flex-wrap:wrap}
+.diag-box{width:32px;height:32px;border:1px solid var(--border-paper);background:var(--bg-warm);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:400;font-size:.9rem;color:var(--text-sumi);border-radius:var(--radius-xs)}
+.diag-box.active{background:var(--accent-indigo);color:#FDFDFD;border-color:var(--accent-indigo)}
+.diag-box.carry{background:var(--accent-red);color:#FDFDFD;border-color:var(--accent-red)}
+.diag-op{color:var(--text-muted);font-size:12px}
+.result-display{background:var(--bg-warm);border:1px solid var(--border-paper);padding:16px 20px;text-align:center;margin-top:14px;border-radius:var(--radius-xs)}
+.rd-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);margin-bottom:6px}
+.rd-val{font-family:'JetBrains Mono',monospace;font-size:2.4rem;font-weight:300;color:var(--text-sumi)}
+.rd-eq{font-size:12px;color:var(--text-muted);margin-top:4px;font-family:'JetBrains Mono',monospace}
 
-  /* ========== PASCALINE ========== */
-  .pascaline-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; }
-  .pascal-machine {
-    background: linear-gradient(180deg, #2a1a0a, #1a0e05);
-    border: 3px solid var(--wood); border-radius: 12px;
-    padding: 20px 24px; display: inline-flex; flex-direction: column;
-    align-items: center; gap: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-  }
-  .pascal-title { color: var(--ivory); font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; opacity: 0.7; }
-  .wheels-row { display: flex; gap: 8px; }
-  .wheel-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .wheel-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
-  .wheel {
-    width: 64px; height: 80px; border-radius: 8px;
-    background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
-    border: 2px solid var(--wood);
-    display: flex; flex-direction: column; align-items: center;
-    justify-content: center; position: relative; overflow: hidden;
-    cursor: pointer; user-select: none;
-  }
-  .wheel-window {
-    width: 44px; height: 44px; border-radius: 6px;
-    background: #111; border: 2px solid #444;
-    display: flex; align-items: center; justify-content: center;
-    position: relative; overflow: hidden;
-  }
-  .wheel-digit {
-    font-size: 1.8rem; font-weight: 900; font-family: monospace;
-    color: var(--ivory); transition: transform 0.3s, opacity 0.3s;
-    position: absolute;
-  }
-  .wheel-digit.rolling { animation: roll 0.3s ease-out; }
-  @keyframes roll { 0% { transform: translateY(-20px); opacity:0; } 100% { transform: translateY(0); opacity:1; } }
-  .wheel.carrying { border-color: var(--accent-primary); }
-  .wheel-arrows { display: flex; gap: 4px; margin-top: 4px; }
-  .w-btn { width: 24px; height: 24px; border-radius: 4px; border: 1px solid var(--border-subtle); background: var(--bg-tertiary); color: var(--text-primary); cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; }
-  .w-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
-
-  .pascal-input-row { display: flex; gap: 8px; align-items: center; }
-  .pascal-input { width: 80px; padding: 8px; border-radius: 6px; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 1rem; text-align: center; font-family: monospace; }
-  .pascal-input:focus { outline: none; border-color: var(--accent-primary); }
-
-  .pascal-steps { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 14px; width: 100%; max-width: 520px; }
-  .pascal-steps h3 { color: var(--color-warning); font-size: 0.9rem; margin-bottom: 10px; }
-  .ps-step { padding: 6px 10px; border-radius: 5px; font-size: 0.85rem; margin-bottom: 4px; border-left: 3px solid var(--border-subtle); transition: all 0.3s; }
-  .ps-step.active { border-left-color: var(--accent-primary); background: rgba(83,216,251,0.08); color: var(--text-primary); }
-  .ps-step.carry-step { border-left-color: var(--color-warning); background: rgba(249,202,36,0.08); }
-  .ps-step.done { border-left-color: var(--color-success); color: var(--text-muted); }
-  .ps-step-num { font-weight: 700; color: var(--accent-primary); margin-right: 6px; }
-
-  .overflow-badge { background: var(--color-danger); color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; display: none; margin-top: 6px; }
+/* ── PASCALINE ── */
+.pascal-wrap{display:flex;flex-direction:column;align-items:center;gap:20px}
+.pascal-machine{background:var(--bg-warm);border:1px solid var(--border-hair);padding:24px 28px;display:inline-flex;flex-direction:column;align-items:center;gap:14px}
+.pascal-title{font-family:'Noto Serif JP',serif;font-size:11px;font-weight:300;color:var(--text-muted);letter-spacing:0.2em;text-transform:uppercase}
+.wheels-row{display:flex;gap:8px}
+.wheel-col{display:flex;flex-direction:column;align-items:center;gap:6px}
+.wheel-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted)}
+.wheel{width:64px;height:80px;background:var(--bg-washi);border:1px solid var(--border-hair);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;user-select:none;position:relative;overflow:hidden;border-radius:var(--radius-xs);transition:border-color var(--t-fast)}
+.wheel.carrying{border-color:var(--accent-red)}
+.wheel-window{width:44px;height:44px;background:var(--bg-warm);border:1px solid var(--border-paper);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border-radius:var(--radius-xs)}
+.wheel-digit{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:300;color:var(--text-sumi);position:absolute;transition:transform .3s,opacity .3s}
+.wheel-digit.rolling{animation:rolling .3s ease-out}
+.pascal-input-row{display:flex;gap:10px;align-items:center}
+.pascal-input{width:80px;padding:8px;background:var(--bg-washi);border:1px solid var(--border-hair);color:var(--text-sumi);font-family:'JetBrains Mono',monospace;font-size:1rem;text-align:center;border-radius:var(--radius-xs)}
+.pascal-input:focus{outline:none;border-color:var(--accent-indigo)}
+.pascal-steps{background:var(--bg-washi);border:1px solid var(--border-paper);padding:16px;width:100%;max-width:500px;border-radius:var(--radius-xs)}
+.pascal-steps h3{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);margin-bottom:10px}
+.ps-step{padding:6px 10px;font-size:13px;margin-bottom:4px;border-left:2px solid var(--border-paper);transition:all var(--t-fast);color:var(--text-muted)}
+.ps-step.active{border-left-color:var(--accent-indigo);color:var(--text-body);background:rgba(28,45,66,0.04)}
+.ps-step.carry-step{border-left-color:var(--accent-red);background:rgba(200,42,42,0.04);color:var(--text-body)}
+.ps-step.done{border-left-color:var(--border-paper);color:var(--text-ghost)}
+.ps-step-num{font-weight:500;color:var(--accent-indigo);margin-right:6px;font-family:'JetBrains Mono',monospace}
+.overflow-badge{background:rgba(200,42,42,0.1);border:1px solid var(--accent-red);color:var(--accent-red);padding:4px 12px;font-size:11px;font-weight:500;letter-spacing:0.06em;display:none;margin-top:8px;border-radius:var(--radius-xs)}
+.accum-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+.accum-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);display:block;margin-bottom:4px}
+.accum-val{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:300;color:var(--text-sumi)}
+.accum-val.accent{color:var(--accent-red)}
+.quick-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 </style>
 </head>
 <body>
 
-<h1>⚙️ Module 0.2 — Mechanical Computation Simulator</h1>
-<p class="subtitle">Napier's Bones (1617) and the Pascaline (1642) — arithmetic as physical mechanism.</p>
-
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('napier')">🦴 Napier's Bones</div>
-  <div class="tab" onclick="switchTab('pascaline')">⚙️ Pascaline Calculator</div>
+<div class="zen-header">
+  <h1 class="zen-title">Module 0.2 — Mechanical Computation Simulator</h1>
+  <p class="zen-subtitle">Napier's Bones (1617) &amp; The Pascaline (1642)</p>
 </div>
 
-<!-- ===== NAPIER'S BONES ===== -->
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('napier')">Napier's Bones</div>
+  <div class="zen-tab" onclick="switchTab('pascaline')">Pascaline Calculator</div>
+</div>
+
+<!-- NAPIER -->
 <div id="panel-napier" class="panel active">
-  <div class="intro-box">
-    <strong>Napier's Bones (1617)</strong> — each "bone" (rod) is engraved with a digit's multiplication table.
+  <div class="zen-intro">
+    <strong>Napier's Bones (1617)</strong> — each rod is engraved with a digit's multiplication table.
     Select the digits of your multiplicand, choose a multiplier row, and read off the product by adding the diagonals.
-    The bones don't compute — they <em>encode</em> so you only need to add.
+    The bones don't compute — they encode so you only need to add.
   </div>
 
-  <div class="napier-controls">
+  <div class="napier-layout">
     <div class="control-group">
-      <h3>① Select Multiplicand Digits (up to 6)</h3>
+      <h3>① Select Multiplicand Digits</h3>
       <div class="digit-btns" id="rod-btns">
         <button class="dbt" onclick="toggleRod(1)">1</button>
         <button class="dbt" onclick="toggleRod(2)">2</button>
@@ -167,9 +146,7 @@
         <button class="dbt" onclick="toggleRod(8)">8</button>
         <button class="dbt" onclick="toggleRod(9)">9</button>
       </div>
-      <div style="margin-top:10px; color:var(--text-muted); font-size:0.8rem;">
-        Selected: <span id="selected-digits" style="color:var(--accent-primary); font-weight:700; font-family:monospace;">—</span>
-      </div>
+      <div class="meta-line">Selected: <span id="selected-digits">—</span></div>
     </div>
     <div class="control-group">
       <h3>② Select Multiplier Row</h3>
@@ -184,9 +161,7 @@
         <button class="mult-btn" onclick="selectMult(8)">8</button>
         <button class="mult-btn" onclick="selectMult(9)">9</button>
       </div>
-      <div style="margin-top:10px; color:var(--text-muted); font-size:0.8rem;">
-        Multiplier: <span id="selected-mult" style="color:var(--color-warning); font-weight:700; font-family:monospace;">—</span>
-      </div>
+      <div class="meta-line">Multiplier: <span id="selected-mult">—</span></div>
     </div>
   </div>
 
@@ -194,10 +169,10 @@
     <table class="bones-table" id="bones-table"></table>
   </div>
 
-  <div class="diag-steps" id="diag-steps" style="display:none;">
+  <div class="diag-steps" id="diag-steps" style="display:none">
     <h3>③ Diagonal Addition Steps</h3>
     <div id="diag-content"></div>
-    <div class="result-display" id="result-display" style="display:none;">
+    <div class="result-display" id="result-display" style="display:none">
       <div class="rd-label">Result</div>
       <div class="rd-val" id="result-val">—</div>
       <div class="rd-eq" id="result-eq"></div>
@@ -205,66 +180,62 @@
   </div>
 
   <div class="btn-row">
-    <button class="btn btn-success" onclick="computeNapier()">③ Compute Answer</button>
-    <button class="btn btn-secondary" onclick="resetNapier()">↺ Reset</button>
+    <button class="zen-btn success" onclick="computeNapier()">③ Compute Answer</button>
+    <button class="zen-btn" onclick="resetNapier()">Reset</button>
   </div>
 </div>
 
-<!-- ===== PASCALINE ===== -->
+<!-- PASCALINE -->
 <div id="panel-pascaline" class="panel">
-  <div class="intro-box">
+  <div class="zen-intro">
     <strong>Pascal's Pascaline (1642)</strong> — the first mechanical calculator with automatic carry propagation.
-    Dial in numbers using the wheel controls, then add them to the accumulator. Watch carries propagate through the gear chain.
-    Try adding <strong>9999 + 1</strong> to trigger overflow.
+    Dial in numbers and add them to the accumulator. Watch carries propagate through the gear chain.
+    Try <strong>9999 + 1</strong> to trigger overflow.
   </div>
 
-  <div class="pascaline-wrap">
-    <!-- The Machine -->
+  <div class="pascal-wrap">
     <div class="pascal-machine">
       <div class="pascal-title">Pascaline — B. Pascal inv. 1642</div>
       <div class="wheels-row" id="wheels-row"></div>
-      <div class="overflow-badge" id="overflow-badge">⚠️ OVERFLOW — Result exceeds machine capacity</div>
+      <div class="overflow-badge" id="overflow-badge">OVERFLOW — Result exceeds machine capacity</div>
     </div>
 
-    <!-- Input Controls -->
-    <div style="display:flex; flex-direction:column; align-items:center; gap:10px; width:100%; max-width:520px;">
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:center;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;max-width:500px">
+      <div class="accum-row">
         <div>
-          <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:4px;">Accumulator</label>
-          <div style="font-size:1.5rem; font-weight:800; font-family:monospace; color:var(--color-success); min-width:80px; text-align:center;" id="accum-display">0</div>
+          <span class="accum-label">Accumulator</span>
+          <div class="accum-val" id="accum-display">0</div>
         </div>
-        <div style="color:var(--text-muted); font-size:1.5rem;">+</div>
+        <div style="font-size:1.2rem;color:var(--text-muted);align-self:flex-end;padding-bottom:4px">+</div>
         <div>
-          <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:4px;">Add Value</label>
-          <input class="pascal-input" type="number" id="pascal-input" min="0" max="9999" value="0" placeholder="0–9999">
+          <span class="accum-label">Add Value</span>
+          <input class="pascal-input" type="number" id="pascal-input" min="0" max="9999" value="0">
         </div>
-        <div style="color:var(--text-muted); font-size:1.5rem;">=</div>
+        <div style="font-size:1.2rem;color:var(--text-muted);align-self:flex-end;padding-bottom:4px">=</div>
         <div>
-          <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:4px;">Result</label>
-          <div style="font-size:1.5rem; font-weight:800; font-family:monospace; color:var(--accent-primary); min-width:80px; text-align:center;" id="result-display-p">—</div>
+          <span class="accum-label">Result</span>
+          <div class="accum-val accent" id="result-display-p">—</div>
         </div>
       </div>
-      <div class="btn-row" style="justify-content:center; margin-top:0;">
-        <button class="btn btn-success" onclick="runAdd()">▶ Add</button>
-        <button class="btn btn-secondary" onclick="resetPascaline()">↺ Reset</button>
+      <div class="btn-row" style="justify-content:center;margin-top:0">
+        <button class="zen-btn primary" onclick="runAdd()">▶ Add</button>
+        <button class="zen-btn" onclick="resetPascaline()">Reset</button>
       </div>
     </div>
 
-    <!-- Steps log -->
     <div class="pascal-steps">
-      <h3>🔧 Carry Propagation Trace</h3>
+      <h3>Carry Propagation Trace</h3>
       <div id="pascal-steps-content">
-        <div style="color:var(--text-muted); font-size:0.85rem;">Enter a value and press Add to see the carry trace.</div>
+        <div style="color:var(--text-muted);font-size:13px">Enter a value and press Add to see the carry trace.</div>
       </div>
     </div>
 
-    <!-- Quick examples -->
-    <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
-      <span style="color:var(--text-muted); font-size:0.8rem; align-self:center;">Quick examples:</span>
-      <button class="btn btn-secondary" onclick="quickAdd(798,203)" style="padding:5px 12px; font-size:0.8rem;">798 + 203</button>
-      <button class="btn btn-secondary" onclick="quickAdd(999,1)" style="padding:5px 12px; font-size:0.8rem;">999 + 1</button>
-      <button class="btn btn-secondary" onclick="quickAdd(9999,1)" style="padding:5px 12px; font-size:0.8rem;">9999 + 1 (overflow!)</button>
-      <button class="btn btn-secondary" onclick="quickAdd(1234,5678)" style="padding:5px 12px; font-size:0.8rem;">1234 + 5678</button>
+    <div class="quick-btns">
+      <span style="font-size:11px;color:var(--text-muted);align-self:center;text-transform:uppercase;letter-spacing:0.1em">Quick examples:</span>
+      <button class="zen-btn" onclick="quickAdd(798,203)" style="padding:6px 14px;font-size:10px">798 + 203</button>
+      <button class="zen-btn" onclick="quickAdd(999,1)" style="padding:6px 14px;font-size:10px">999 + 1</button>
+      <button class="zen-btn danger" onclick="quickAdd(9999,1)" style="padding:6px 14px;font-size:10px">9999 + 1 (overflow)</button>
+      <button class="zen-btn" onclick="quickAdd(1234,5678)" style="padding:6px 14px;font-size:10px">1234 + 5678</button>
     </div>
   </div>
 </div>
@@ -282,7 +253,6 @@ function toggleRod(d) {
     if (selectedRods.length >= 6) return;
     selectedRods.push(d);
   }
-  // Update button states
   document.querySelectorAll('.dbt').forEach((b, i) => {
     b.classList.toggle('selected', selectedRods.includes(i + 1));
   });
@@ -308,10 +278,9 @@ function renderBonesTable() {
   const table = document.getElementById('bones-table');
   table.innerHTML = '';
   if (selectedRods.length === 0) {
-    table.innerHTML = '<tr><td style="padding:20px;color:var(--text-muted);font-size:0.85rem;">← Select digits to display bones</td></tr>';
+    table.innerHTML = '<tr><td style="padding:20px;color:var(--text-muted);font-size:13px;">← Select digits to display bones</td></tr>';
     return;
   }
-  // Header row
   const thead = document.createElement('thead');
   const htr = document.createElement('tr');
   const th0 = document.createElement('th');
@@ -324,17 +293,14 @@ function renderBonesTable() {
   });
   thead.appendChild(htr);
   table.appendChild(thead);
-  // Body
   const tbody = document.createElement('tbody');
   for (let row = 1; row <= 9; row++) {
     const tr = document.createElement('tr');
     if (row === selectedMultiplier) tr.className = 'row-highlight';
-    // Row label
     const tdLabel = document.createElement('td');
     tdLabel.className = 'row-label';
     tdLabel.innerHTML = `<div class="row-label"><span class="rl-num">${row}</span></div>`;
     tr.appendChild(tdLabel);
-    // Cells
     selectedRods.forEach(d => {
       const val = d * row;
       const top = Math.floor(val / 10);
@@ -361,19 +327,14 @@ function computeNapier() {
     return;
   }
   const row = selectedMultiplier;
-  // Build diagonal columns (right to left: last digit col to first, plus a leading zero column)
   const cols = selectedRods.length;
-  // For each column position (from rightmost to leftmost), get top and bottom of adjacent cells
-  // Diagonals: for position p (0=rightmost), we sum: bottom of column p + top of column (p-1)
-  // This gives us (cols+1) diagonals
   const diagonals = [];
   for (let p = 0; p <= cols; p++) {
     let sum = 0;
-    if (p < cols) sum += (selectedRods[cols - 1 - p] * row) % 10; // bottom of col cols-1-p
-    if (p > 0)   sum += Math.floor((selectedRods[cols - p] * row) / 10); // top of col cols-p
+    if (p < cols) sum += (selectedRods[cols - 1 - p] * row) % 10;
+    if (p > 0)   sum += Math.floor((selectedRods[cols - p] * row) / 10);
     diagonals.push(sum);
   }
-  // Now add diagonals right-to-left with carry
   let digits = [];
   let carry = 0;
   const stepData = [];
@@ -386,15 +347,13 @@ function computeNapier() {
   if (carry > 0) digits.push(carry);
   const result = parseInt(digits.reverse().join(''));
 
-  // Render steps
   const stepsDiv = document.getElementById('diag-steps');
   const content = document.getElementById('diag-content');
   stepsDiv.style.display = 'block';
   content.innerHTML = '';
 
-  // Show diagonals
   const diagLabel = document.createElement('div');
-  diagLabel.style.cssText = 'font-size:0.8rem;color:var(--text-muted);margin-bottom:8px;';
+  diagLabel.style.cssText = 'font-size:12px;color:var(--text-muted);margin-bottom:8px;';
   diagLabel.textContent = 'Diagonal sums (right → left):';
   content.appendChild(diagLabel);
 
@@ -404,34 +363,27 @@ function computeNapier() {
     const box = document.createElement('div');
     box.className = 'diag-box';
     box.textContent = d;
-    if (i === 0) box.style.marginLeft = '0';
     diagRow.appendChild(box);
-    if (i < diagonals.length - 1) {
-      const op = document.createElement('span');
-      op.className = 'diag-op';
-      op.textContent = '+';
-      // handled below
-    }
   });
   content.appendChild(diagRow);
 
-  // Show carry addition
   const carryLabel = document.createElement('div');
-  carryLabel.style.cssText = 'font-size:0.8rem;color:var(--text-muted);margin:10px 0 6px;';
+  carryLabel.style.cssText = 'font-size:12px;color:var(--text-muted);margin:10px 0 6px;';
   carryLabel.textContent = 'After carry propagation (right → left):';
   content.appendChild(carryLabel);
 
   stepData.forEach((s, i) => {
     const row = document.createElement('div');
     row.className = 'diag-row';
-    row.style.cssText = 'font-size:0.82rem; color:var(--text-muted);';
+    row.style.cssText = 'font-size:13px;color:var(--text-muted);';
     const pos = ['units','tens','hundreds','thousands','ten-thousands','hundred-thousands'][i] || `pos ${i}`;
-    let carry_txt = s.carry_out > 0 ? ` → write <b style="color:var(--accent-primary)">${s.digit}</b>, carry <b style="color:var(--color-warning)">${s.carry_out}</b>` : ` → write <b style="color:var(--color-success)">${s.digit}</b>`;
+    let carry_txt = s.carry_out > 0
+      ? ` → write <b style="color:var(--accent-indigo)">${s.digit}</b>, carry <b style="color:var(--accent-red)">${s.carry_out}</b>`
+      : ` → write <b style="color:var(--accent-gold)">${s.digit}</b>`;
     row.innerHTML = `<span style="width:110px;color:var(--text-muted);">${pos}:</span> ${s.diag} ${i > 0 && stepData[i-1].carry_out > 0 ? `+ carry ${stepData[i-1].carry_out}` : ''} = ${s.total}${carry_txt}`;
     content.appendChild(row);
   });
 
-  // Show result
   const rd = document.getElementById('result-display');
   rd.style.display = 'block';
   document.getElementById('result-val').textContent = result.toLocaleString();
@@ -452,7 +404,7 @@ function resetNapier() {
 }
 
 // ========== PASCALINE STATE ==========
-const WHEELS = 4; // 4-digit machine (0000-9999)
+const WHEELS = 4;
 const PLACES = ['units','tens','hundreds','thousands'];
 let accumulator = 0;
 let animating = false;
@@ -526,31 +478,24 @@ function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 async function animateAdd(value) {
   animating = true;
-  const prev = accumulator;
   const raw = accumulator + value;
   const overflow = raw >= Math.pow(10, WHEELS);
   const result = raw % Math.pow(10, WHEELS);
-
-  // Build carry trace
   const prevDigits = accumulator.toString().padStart(WHEELS, '0').split('').reverse().map(Number);
   const addDigits = value.toString().padStart(WHEELS, '0').split('').reverse().map(Number);
   const steps = [];
   let carry = 0;
-  const resultDigits = [];
   for (let i = 0; i < WHEELS; i++) {
     const sum = prevDigits[i] + addDigits[i] + carry;
     const digit = sum % 10;
     const newCarry = Math.floor(sum / 10);
     steps.push({ pos: i, prev: prevDigits[i], add: addDigits[i], carry_in: carry, sum, digit, carry_out: newCarry });
     carry = newCarry;
-    resultDigits.push(digit);
   }
   if (carry > 0) steps.push({ pos: WHEELS, prev: 0, add: 0, carry_in: carry, sum: carry, digit: carry % 10, carry_out: 0, isOverflow: true });
 
-  // Render steps in panel
   const content = document.getElementById('pascal-steps-content');
   content.innerHTML = '';
-
   steps.forEach((s, i) => {
     const el = document.createElement('div');
     el.className = 'ps-step';
@@ -559,20 +504,16 @@ async function animateAdd(value) {
     const carryIn = s.carry_in > 0 ? ` + carry ${s.carry_in}` : '';
     const carryOut = s.carry_out > 0 ? `, carry 1 →` : '';
     el.innerHTML = s.isOverflow
-      ? `<span class="ps-step-num">!</span> OVERFLOW — carry into position 4 (no wheel) → result wraps`
+      ? `<span class="ps-step-num">!</span> OVERFLOW — carry into position 4 → result wraps`
       : `<span class="ps-step-num">${i+1}.</span> <b>${place}</b>: ${s.prev} + ${s.add}${carryIn} = ${s.sum} → write <b>${s.digit}</b>${carryOut}`;
     content.appendChild(el);
   });
 
-  // Animate each step
   for (let i = 0; i < steps.length; i++) {
     const s = steps[i];
     const stepEl = document.getElementById('ps-step-' + i);
     if (stepEl) stepEl.className = s.carry_out > 0 ? 'ps-step carry-step active' : 'ps-step active';
-    if (s.pos < WHEELS) {
-      highlightWheel(s.pos, true);
-      setWheelDigit(s.pos, s.digit, true);
-    }
+    if (s.pos < WHEELS) { highlightWheel(s.pos, true); setWheelDigit(s.pos, s.digit, true); }
     await delay(500);
     if (stepEl && i < steps.length - 1) stepEl.className = s.carry_out > 0 ? 'ps-step carry-step done' : 'ps-step done';
     if (s.pos < WHEELS) highlightWheel(s.pos, false);
@@ -581,17 +522,11 @@ async function animateAdd(value) {
   accumulator = result;
   document.getElementById('accum-display').textContent = accumulator;
   document.getElementById('result-display-p').textContent = overflow ? `${raw} (OVERFLOW)` : raw;
-
-  if (overflow) {
-    document.getElementById('overflow-badge').style.display = 'block';
-  }
-
-  // Mark all steps done
+  if (overflow) document.getElementById('overflow-badge').style.display = 'block';
   steps.forEach((_, i) => {
     const el = document.getElementById('ps-step-' + i);
     if (el && !el.textContent.includes('OVERFLOW')) el.className = 'ps-step done';
   });
-
   animating = false;
 }
 
@@ -601,25 +536,20 @@ function resetPascaline() {
   document.getElementById('pascal-input').value = '0';
   document.getElementById('result-display-p').textContent = '—';
   document.getElementById('pascal-steps-content').innerHTML =
-    '<div style="color:var(--text-muted); font-size:0.85rem;">Enter a value and press Add to see the carry trace.</div>';
-  for (let i = 0; i < WHEELS; i++) {
-    setWheelDigit(i, 0, false);
-    highlightWheel(i, false);
-  }
+    '<div style="color:var(--text-muted);font-size:13px;">Enter a value and press Add to see the carry trace.</div>';
+  for (let i = 0; i < WHEELS; i++) { setWheelDigit(i, 0, false); highlightWheel(i, false); }
   document.getElementById('overflow-badge').style.display = 'none';
   document.getElementById('accum-display').textContent = '0';
 }
 
-// ========== TABS ==========
 function switchTab(id) {
-  document.querySelectorAll('.tab').forEach((t, i) => {
+  document.querySelectorAll('.zen-tab').forEach((t, i) => {
     t.classList.toggle('active', ['napier', 'pascaline'][i] === id);
   });
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + id).classList.add('active');
 }
 
-// ========== BOOT ==========
 renderBonesTable();
 initPascaline();
 </script>

@@ -1,0 +1,338 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 6.8 — Dynamic Programming</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cell-fill{0%{background:rgba(139,105,20,0.4)}100%{background:transparent}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+/* DP table */
+.dp-table{border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:12px}
+.dp-table th,.dp-table td{border:1px solid var(--border-paper);padding:6px 10px;text-align:center;min-width:36px}
+.dp-table th{background:var(--bg-warm);color:var(--text-muted);font-size:10px}
+.dp-table td{color:var(--text-sumi)}
+.dp-table td.active{background:rgba(139,105,20,0.15);color:var(--accent-gold);font-weight:500}
+.dp-table td.path{background:rgba(200,42,42,0.1);color:var(--accent-red);font-weight:500}
+.dp-table td.zero{color:var(--text-ghost)}
+/* Stat */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.stat-box{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:300;line-height:1;margin-bottom:2px;display:block;color:var(--text-sumi)}
+.sv.red{color:var(--accent-red)}.sv.gold{color:var(--accent-gold)}.sv.indigo{color:var(--accent-indigo)}
+.sl{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:110px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs)}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 6.8 — Dynamic Programming</h1>
+  <p class="zen-subtitle">Fibonacci DP · LCS Grid · Knapsack Table</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('fib')">Fibonacci DP</div>
+  <div class="zen-tab" onclick="switchTab('lcs')">LCS Grid</div>
+  <div class="zen-tab" onclick="switchTab('knapsack')">Knapsack</div>
+</div>
+
+<!-- FIBONACCI DP -->
+<div id="panel-fib" class="panel active">
+  <div class="zen-intro"><strong>Fibonacci with and without memoisation.</strong> Naive recursion recomputes the same values exponentially. DP stores each result once. Watch the dp[] table fill left to right — each value used exactly twice.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Bottom-up DP table</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text-muted)">n =</span>
+        <input id="fib-n" type="number" value="10" min="1" max="20" style="font-family:'JetBrains Mono',monospace;font-size:14px;width:60px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+        <button class="zen-btn primary" onclick="fibStep()">↓ Fill next cell</button>
+        <button class="zen-btn" onclick="fibRunAll()">▶ Fill all</button>
+        <button class="zen-btn danger" onclick="fibReset()">↺ Reset</button>
+      </div>
+      <div id="fib-dp-vis" style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:10px"></div>
+      <div class="stat-row">
+        <div class="stat-box"><span class="sv indigo" id="fib-filled">0</span><span class="sl">Cells filled</span></div>
+        <div class="stat-box"><span class="sv gold" id="fib-result">—</span><span class="sl">fib(n)</span></div>
+        <div class="stat-box"><span class="sv red" id="fib-naive">—</span><span class="sl">Naive calls</span></div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Comparison: naive vs DP</div>
+      <div id="fib-compare" style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2;color:var(--text-muted);background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;border-radius:var(--radius-xs);margin-bottom:10px">
+        Run to see comparison.
+      </div>
+      <div class="op-log" id="fib-log"><div class="linfo">> dp[i] = dp[i-1] + dp[i-2]. Each cell computed exactly once, used twice.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- LCS GRID -->
+<div id="panel-lcs" class="panel">
+  <div class="zen-intro"><strong>Longest Common Subsequence — 2D DP.</strong> dp[i][j] = length of LCS of s1[0..i-1] and s2[0..j-1]. Fill cell by cell and trace back the actual LCS from the completed table.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Two strings</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+        <div>
+          <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">s1</div>
+          <input id="lcs-s1" type="text" value="ABCBDAB" style="font-family:'JetBrains Mono',monospace;font-size:13px;width:120px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">s2</div>
+          <input id="lcs-s2" type="text" value="BDCAB" style="font-family:'JetBrains Mono',monospace;font-size:13px;width:120px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:0;margin-bottom:12px">
+        <button class="zen-btn primary" onclick="lcsStep()">↓ Fill next cell</button>
+        <button class="zen-btn" onclick="lcsRunAll()">▶ Fill all</button>
+        <button class="zen-btn" onclick="lcsTraceback()">↺ Traceback</button>
+        <button class="zen-btn danger" onclick="lcsReset()">↺ Reset</button>
+      </div>
+      <div style="overflow-x:auto"><table class="dp-table" id="lcs-table"></table></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">LCS result</div>
+      <div id="lcs-result" style="font-family:'JetBrains Mono',monospace;font-size:16px;color:var(--accent-gold);margin-bottom:10px">—</div>
+      <div style="font-size:12px;color:var(--text-muted);line-height:1.8;margin-bottom:10px">
+        Recurrence:<br>
+        if s1[i]==s2[j]: dp[i][j]=dp[i-1][j-1]+1<br>
+        else: dp[i][j]=max(dp[i-1][j],dp[i][j-1])
+      </div>
+      <div class="op-log" id="lcs-log"><div class="linfo">> Fill the table, then click Traceback to find the actual LCS string.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- KNAPSACK -->
+<div id="panel-knapsack" class="panel">
+  <div class="zen-intro"><strong>0/1 Knapsack: maximise value without exceeding capacity.</strong> dp[i][w] = max value using first i items with capacity w. Each item either included (take row i-1 with w-weight) or excluded (row i-1 same w).</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Items and capacity</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Items (name, weight, value):</div>
+      <div id="ks-items-list" style="font-family:'JetBrains Mono',monospace;font-size:12px;margin-bottom:10px;line-height:1.9"></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text-muted)">Capacity W =</span>
+        <input id="ks-capacity" type="number" value="10" min="1" max="20" style="font-family:'JetBrains Mono',monospace;font-size:13px;width:60px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+        <button class="zen-btn primary" onclick="ksStep()">↓ Fill row</button>
+        <button class="zen-btn" onclick="ksRunAll()">▶ Fill all</button>
+        <button class="zen-btn danger" onclick="ksReset()">↺ Reset</button>
+      </div>
+      <div style="overflow-x:auto"><table class="dp-table" id="ks-table"></table></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Solution</div>
+      <div class="stat-row">
+        <div class="stat-box"><span class="sv gold" id="ks-max-val">—</span><span class="sl">Max value</span></div>
+        <div class="stat-box"><span class="sv red" id="ks-used-w">—</span><span class="sl">Weight used</span></div>
+        <div class="stat-box"><span class="sv indigo" id="ks-items-used">—</span><span class="sl">Items taken</span></div>
+      </div>
+      <div id="ks-result" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent-gold);margin-bottom:8px">Complete the table to see result.</div>
+      <div class="op-log" id="ks-log"><div class="linfo">> dp[i][w] = max value using first i items with capacity w.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== FIBONACCI DP =====
+let fibN=10, fibDp=[], fibIdx=0;
+function fibLog(m,cls='lmuted'){const el=document.getElementById('fib-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function naiveFibCalls(n){if(n<=1)return 1;return 1+naiveFibCalls(n-1)+naiveFibCalls(n-2);}
+function fibReset(){
+  fibN=parseInt(document.getElementById('fib-n').value)||10;
+  fibDp=new Array(fibN+1).fill(null);fibIdx=0;
+  document.getElementById('fib-filled').textContent=0;
+  document.getElementById('fib-result').textContent='—';
+  document.getElementById('fib-naive').textContent='—';
+  document.getElementById('fib-compare').textContent='Run to see comparison.';
+  document.getElementById('fib-log').innerHTML='<div class="linfo">> dp[0]=0, dp[1]=1, dp[i]=dp[i-1]+dp[i-2].</div>';
+  renderFibDp();
+}
+function renderFibDp(){
+  const el=document.getElementById('fib-dp-vis');
+  el.innerHTML=Array.from({length:fibN+1},(_,i)=>{
+    const v=fibDp[i];const filled=v!==null;const isActive=i===fibIdx-1;
+    return `<div style="border:1px solid ${isActive?'var(--accent-gold)':filled?'var(--accent-indigo)':'var(--border-paper)'};
+      background:${isActive?'rgba(139,105,20,0.12)':filled?'rgba(28,45,66,0.05)':'transparent'};
+      border-radius:var(--radius-xs);padding:6px 8px;text-align:center;min-width:36px">
+      <div style="font-size:8px;color:var(--text-muted)">[${i}]</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:${isActive?'var(--accent-gold)':filled?'var(--accent-indigo)':'var(--text-ghost)'}">${v??''}</div>
+    </div>`;
+  }).join('');
+}
+function fibStep(){
+  if(fibIdx>fibN){fibLog('Table complete.','lok');return;}
+  if(fibIdx===0){fibDp[0]=0;fibLog('dp[0]=0 (base case)','lmuted');}
+  else if(fibIdx===1){fibDp[1]=1;fibLog('dp[1]=1 (base case)','lmuted');}
+  else{fibDp[fibIdx]=fibDp[fibIdx-1]+fibDp[fibIdx-2];fibLog(`dp[${fibIdx}]=dp[${fibIdx-1}]+dp[${fibIdx-2}]=${fibDp[fibIdx]}`,'linfo');}
+  fibIdx++;
+  document.getElementById('fib-filled').textContent=fibIdx;
+  if(fibIdx>fibN){
+    const res=fibDp[fibN];
+    document.getElementById('fib-result').textContent=res;
+    const naive=naiveFibCalls(fibN);
+    document.getElementById('fib-naive').textContent=naive.toLocaleString();
+    document.getElementById('fib-compare').textContent=
+      `fib(${fibN}) = ${res}\n\nDP approach:\n  cells filled = ${fibN+1}\n  each cell computed once\n\nNaive recursion:\n  function calls = ${naive.toLocaleString()}\n  ratio = ${(naive/(fibN+1)).toFixed(0)}× more work`;
+    fibLog(`Done! fib(${fibN})=${res}. DP: ${fibN+1} ops. Naive: ${naive.toLocaleString()} ops.`,'lok');
+  }
+  renderFibDp();
+}
+function fibRunAll(){while(fibIdx<=fibN)fibStep();}
+fibReset();
+
+// ===== LCS =====
+let lcsS1='',lcsS2='',lcsDp=[],lcsI=1,lcsJ=1,lcsDone=false;
+function lcsLog(m,cls='lmuted'){const el=document.getElementById('lcs-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function lcsReset(){
+  lcsS1=document.getElementById('lcs-s1').value.toUpperCase();
+  lcsS2=document.getElementById('lcs-s2').value.toUpperCase();
+  const m=lcsS1.length,n=lcsS2.length;
+  lcsDp=Array.from({length:m+1},()=>new Array(n+1).fill(0));
+  lcsI=1;lcsJ=1;lcsDone=false;
+  document.getElementById('lcs-result').textContent='—';
+  document.getElementById('lcs-log').innerHTML='<div class="linfo">> Table initialised with zeros. Press Fill to compute row by row.</div>';
+  renderLcsTable();
+}
+function renderLcsTable(activePath=[]){
+  const m=lcsS1.length,n=lcsS2.length;
+  const apSet=new Set(activePath.map(([r,c])=>r+','+c));
+  let html='<thead><tr><th></th><th></th>';
+  for(let j=0;j<n;j++)html+=`<th>${lcsS2[j]}</th>`;
+  html+='</tr></thead><tbody>';
+  for(let i=0;i<=m;i++){
+    html+=`<tr><th>${i===0?'':lcsS1[i-1]}</th><th style="color:var(--text-muted)">${i}</th>`;
+    for(let j=0;j<=n;j++){
+      const v=lcsDp[i][j];
+      const isActive=i===lcsI&&j===lcsJ;
+      const inPath=apSet.has(i+','+j);
+      const cls=inPath?'path':isActive?'active':v===0?'zero':'';
+      html+=`<td class="${cls}">${v}</td>`;
+    }
+    html+='</tr>';
+  }
+  html+='</tbody>';
+  document.getElementById('lcs-table').innerHTML=html;
+}
+function lcsStep(){
+  if(lcsDone){lcsLog('Table complete. Click Traceback.','lok');return;}
+  const m=lcsS1.length,n=lcsS2.length;
+  if(lcsS1[lcsI-1]===lcsS2[lcsJ-1]){lcsDp[lcsI][lcsJ]=lcsDp[lcsI-1][lcsJ-1]+1;lcsLog(`s1[${lcsI-1}]='${lcsS1[lcsI-1]}'==s2[${lcsJ-1}]='${lcsS2[lcsJ-1]}' → dp[${lcsI}][${lcsJ}]=${lcsDp[lcsI][lcsJ]}`,'linfo');}
+  else{lcsDp[lcsI][lcsJ]=Math.max(lcsDp[lcsI-1][lcsJ],lcsDp[lcsI][lcsJ-1]);lcsLog(`mismatch → dp[${lcsI}][${lcsJ}]=max(${lcsDp[lcsI-1][lcsJ]},${lcsDp[lcsI][lcsJ-1]})=${lcsDp[lcsI][lcsJ]}`,'lmuted');}
+  lcsJ++;if(lcsJ>n){lcsJ=1;lcsI++;}
+  if(lcsI>m){lcsDone=true;lcsLog(`LCS length = ${lcsDp[m][n]}`,'lok');}
+  renderLcsTable();
+}
+function lcsRunAll(){while(!lcsDone)lcsStep();}
+function lcsTraceback(){
+  if(!lcsDone){lcsLog('Fill the table first!','lerr');return;}
+  const m=lcsS1.length,n=lcsS2.length;
+  let i=m,j=n,lcs='',path=[];
+  while(i>0&&j>0){
+    path.push([i,j]);
+    if(lcsS1[i-1]===lcsS2[j-1]){lcs=lcsS1[i-1]+lcs;i--;j--;}
+    else if(lcsDp[i-1][j]>lcsDp[i][j-1])i--;else j--;
+  }
+  document.getElementById('lcs-result').textContent=lcs||'(empty)';
+  lcsLog(`LCS = "${lcs}" (length ${lcs.length})`,'lok');
+  renderLcsTable(path);
+}
+lcsReset();
+
+// ===== KNAPSACK =====
+const KS_ITEMS=[{name:'Laptop',w:4,v:10},{name:'Phone',w:1,v:5},{name:'Camera',w:3,v:7},{name:'Book',w:2,v:3},{name:'Headphones',w:2,v:6}];
+let ksW=10,ksDp=[],ksRow=1,ksDone=false;
+function ksLog(m,cls='lmuted'){const el=document.getElementById('ks-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function ksReset(){
+  ksW=parseInt(document.getElementById('ks-capacity').value)||10;
+  const n=KS_ITEMS.length;
+  ksDp=Array.from({length:n+1},()=>new Array(ksW+1).fill(0));
+  ksRow=1;ksDone=false;
+  document.getElementById('ks-max-val').textContent='—';
+  document.getElementById('ks-used-w').textContent='—';
+  document.getElementById('ks-items-used').textContent='—';
+  document.getElementById('ks-result').textContent='Complete the table to see result.';
+  document.getElementById('ks-log').innerHTML='<div class="linfo">> dp[i][w] = max value using first i items with capacity w.</div>';
+  document.getElementById('ks-items-list').innerHTML=KS_ITEMS.map((it,i)=>
+    `item ${i+1}: ${it.name.padEnd(12)} w=${it.w}  v=${it.v}`).join('\n');
+  renderKsTable();
+}
+function renderKsTable(){
+  const n=KS_ITEMS.length;
+  let html='<thead><tr><th>item\w</th>';
+  for(let w=0;w<=ksW;w++)html+=`<th>${w}</th>`;
+  html+='</tr></thead><tbody>';
+  for(let i=0;i<=n;i++){
+    html+=`<tr><th>${i===0?'∅':KS_ITEMS[i-1].name.slice(0,4)}</th>`;
+    for(let w=0;w<=ksW;w++){
+      const v=ksDp[i][w];
+      const cls=v>0?'active':'zero';
+      html+=`<td class="${v>0&&i===ksRow-1&&ksRow>1?'active':v>0?'':'zero'}">${v||0}</td>`;
+    }
+    html+='</tr>';
+  }
+  html+='</tbody>';
+  document.getElementById('ks-table').innerHTML=html;
+}
+function ksStep(){
+  if(ksRow>KS_ITEMS.length){ksDone=true;ksFinish();return;}
+  const it=KS_ITEMS[ksRow-1];
+  for(let w=0;w<=ksW;w++){
+    if(it.w>w)ksDp[ksRow][w]=ksDp[ksRow-1][w];
+    else ksDp[ksRow][w]=Math.max(ksDp[ksRow-1][w],ksDp[ksRow-1][w-it.w]+it.v);
+  }
+  ksLog(`Row ${ksRow} (${it.name}): filled. Max value so far: ${ksDp[ksRow][ksW]}`,'linfo');
+  ksRow++;if(ksRow>KS_ITEMS.length){ksDone=true;ksFinish();}
+  renderKsTable();
+}
+function ksRunAll(){while(!ksDone)ksStep();}
+function ksFinish(){
+  const n=KS_ITEMS.length;
+  const maxVal=ksDp[n][ksW];
+  document.getElementById('ks-max-val').textContent=maxVal;
+  // Traceback
+  let w=ksW,taken=[],wUsed=0;
+  for(let i=n;i>0;i--){
+    if(ksDp[i][w]!==ksDp[i-1][w]){taken.push(KS_ITEMS[i-1].name);wUsed+=KS_ITEMS[i-1].w;w-=KS_ITEMS[i-1].w;}
+  }
+  document.getElementById('ks-used-w').textContent=wUsed;
+  document.getElementById('ks-items-used').textContent=taken.length;
+  document.getElementById('ks-result').textContent=`Items: ${taken.join(', ')}\nValue: ${maxVal}  Weight: ${wUsed}/${ksW}`;
+  ksLog(`Optimal: ${taken.join(', ')} → value=${maxVal}, weight=${wUsed}`,'lok');
+}
+ksReset();
+
+function switchTab(id){
+  ['fib','lcs','knapsack'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);p.style.display=t===id?'block':'none';p.classList.toggle('active',t===id);
+  });
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+</script>
+</body>
+</html>

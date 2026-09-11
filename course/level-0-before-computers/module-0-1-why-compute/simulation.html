@@ -5,219 +5,359 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Module 0.1 — The 1880 Census Simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root{
-  --bg-primary:#090A0F;--bg-secondary:#12141C;--bg-tertiary:#1A1D27;
-  --bg-glass:rgba(18,20,28,0.75);
-  --text-primary:#F3F4F6;--text-secondary:#9CA3AF;--text-muted:#4B5563;
-  --accent-primary:#6366F1;--accent-hover:#4F46E5;--accent-glow:rgba(99,102,241,0.15);
-  --color-success:#10B981;--color-warning:#F59E0B;--color-danger:#EF4444;
-  --color-code-bg:#0D0E15;
-  --border-subtle:rgba(255,255,255,0.08);--border-active:rgba(99,102,241,0.4);
-  --radius-sm:6px;--radius-md:10px;--radius-lg:16px;
-  --shadow-soft:0 10px 30px -10px rgba(0,0,0,0.5);
-  --shadow-glow:0 0 20px rgba(99,102,241,0.2);
-  --transition-fast:150ms cubic-bezier(0.16,1,0.3,1);
-  --transition-smooth:300ms cubic-bezier(0.16,1,0.3,1);
-  --transition-bounce:400ms cubic-bezier(0.34,1.56,0.64,1);
-  --font-mono:'JetBrains Mono',monospace;
+:root {
+  --bg-paper:    #F4F3EF;
+  --bg-washi:    #FDFDFD;
+  --bg-warm:     #EEECE6;
+  --bg-canvas:   #F8F7F3;
+  --text-sumi:   #1C1C1C;
+  --text-body:   #3A3A3A;
+  --text-muted:  #888880;
+  --text-ghost:  #BBBBB5;
+  --accent-red:  #C82A2A;
+  --accent-indigo:#1C2D42;
+  --accent-gold: #8B6914;
+  --accent-ink:  #1C1C1C;
+  --border-hair: #1C1C1C;
+  --border-light:#D8D6CE;
+  --border-paper:#E8E6DF;
+  --radius-xs:   2px;
+  --radius-sm:   4px;
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --t-fast:      120ms;
+  --t-med:       240ms;
+  --t-slow:      400ms;
 }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    min-height: 100vh;
-    padding: 20px;
-  }
-  h1 { color: var(--accent-primary); font-size: 1.4rem; margin-bottom: 4px; }
-  .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
-  .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-  .tab {
-    padding: 8px 18px; border-radius: 6px; cursor: pointer;
-    background: var(--bg-secondary); border: 2px solid var(--border-subtle);
-    color: var(--text-muted); font-size: 0.9rem; transition: all 0.2s;
-  }
-  .tab.active { background: var(--bg-tertiary); border-color: var(--accent-primary); color: var(--accent-primary); }
-  .panel { display: none; }
-  .panel.active { display: block; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-weight: 300;
+  background: var(--bg-paper);
+  color: var(--text-body);
+  min-height: 100vh;
+  padding: 32px;
+  line-height: 1.6;
+}
+@keyframes zen-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes zen-count-tick {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.1); color: var(--accent-red); }
+  100% { transform: scale(1); }
+}
+@keyframes zen-pulse {
+  0%,100% { opacity:1; } 50% { opacity:0.4; }
+}
+@keyframes progress-shimmer {
+  0%   { background-position: -200px 0; }
+  100% { background-position: 200px 0; }
+}
+.animate-in { animation: zen-fade-in var(--t-med) var(--ease-out) forwards; }
+.animate-tick { animation: zen-count-tick 280ms var(--ease-out); }
 
-  /* --- HUMAN MODE --- */
-  .intro-box {
-    background: var(--bg-secondary); border: 1px solid var(--border-subtle);
-    border-left: 4px solid var(--color-warning);
-    padding: 14px 18px; border-radius: 8px; margin-bottom: 18px;
-    font-size: 0.9rem; line-height: 1.6; color: var(--text-muted);
-  }
-  .intro-box strong { color: var(--color-warning); }
-  .stats-row {
-    display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px;
-  }
-  .stat-box {
-    flex: 1; min-width: 130px;
-    background: var(--bg-secondary); border: 1px solid var(--border-subtle);
-    border-radius: 8px; padding: 12px; text-align: center;
-  }
-  .stat-box .val { font-size: 1.6rem; font-weight: 700; color: var(--accent-primary); }
-  .stat-box .lbl { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
-  .stat-box.bad .val { color: var(--color-danger); }
-  .stat-box.good .val { color: var(--color-success); }
+/* ── HEADER ── */
+.zen-header {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-light);
+  animation: zen-fade-in var(--t-med) var(--ease-out);
+}
+.zen-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 22px; font-weight: 300;
+  color: var(--text-sumi);
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+.zen-subtitle {
+  font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.14em;
+  color: var(--text-muted);
+}
 
-  .records-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 10px; margin-bottom: 18px;
-  }
-  .record-card {
-    background: var(--bg-secondary); border: 1px solid var(--border-subtle);
-    border-radius: 8px; padding: 12px; cursor: pointer;
-    transition: all 0.2s; user-select: none;
-  }
-  .record-card:hover { border-color: var(--accent-primary); }
-  .record-card.counted { border-color: var(--color-success); background: #0d2b1e; }
-  .record-card.counted .rc-name { color: var(--color-success); }
-  .record-card .rc-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
-  .record-card .rc-fields { display: flex; gap: 8px; flex-wrap: wrap; }
-  .rc-field {
-    background: var(--bg-tertiary); border-radius: 4px;
-    padding: 2px 8px; font-size: 0.75rem; color: var(--text-muted);
-  }
-  .rc-field.highlight { background: var(--color-danger); color: white; }
+/* ── TABS ── */
+.zen-tabs {
+  display: flex; border-bottom: 1px solid var(--border-light);
+  margin-bottom: 28px; gap: 0;
+}
+.zen-tab {
+  padding: 11px 22px;
+  font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--text-muted); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color var(--t-fast) var(--ease-out),
+              border-color var(--t-fast) var(--ease-out);
+  user-select: none; background: transparent; border-top: none;
+  border-left: none; border-right: none;
+}
+.zen-tab:hover { color: var(--text-sumi); }
+.zen-tab.active { color: var(--accent-red); border-bottom-color: var(--accent-red); }
+.panel { display: none; }
+.panel.active { display: block; animation: zen-fade-in var(--t-med) var(--ease-out); }
 
-  .tally-section {
-    background: var(--bg-secondary); border: 1px solid var(--border-subtle);
-    border-radius: 8px; padding: 16px; margin-bottom: 16px;
-  }
-  .tally-section h3 { color: var(--accent-primary); margin-bottom: 12px; font-size: 1rem; }
-  .tally-rows { display: flex; flex-direction: column; gap: 8px; }
-  .tally-row {
-    display: flex; align-items: center; gap: 10px;
-  }
-  .tally-row label { width: 130px; font-size: 0.85rem; color: var(--text-muted); }
-  .tally-bar-bg {
-    flex: 1; height: 22px; background: var(--bg-tertiary);
-    border-radius: 4px; overflow: hidden; position: relative;
-  }
-  .tally-bar { height: 100%; background: var(--accent-primary); transition: width 0.3s; }
-  .tally-count { width: 40px; text-align: right; font-size: 0.85rem; color: var(--text-primary); font-weight: 600; }
-  .tally-target { width: 40px; text-align: right; font-size: 0.75rem; color: var(--text-muted); }
+/* ── INTRO BOX ── */
+.zen-intro {
+  border-left: 2px solid var(--accent-red);
+  padding: 12px 18px; margin-bottom: 28px;
+  font-size: 14px; line-height: 1.75; color: var(--text-body);
+}
+.zen-intro strong { color: var(--text-sumi); font-weight: 500; }
 
-  .error-log {
-    background: #1a0a0a; border: 1px solid #5a1a1a;
-    border-radius: 8px; padding: 12px; margin-bottom: 16px;
-    font-size: 0.8rem; color: #e07070; max-height: 120px; overflow-y: auto;
-  }
-  .error-log .el-title { color: var(--color-danger); font-weight: 600; margin-bottom: 6px; }
+/* ── STATS ROW ── */
+.stats-row { display: flex; gap: 1px; flex-wrap: wrap; margin-bottom: 24px; }
+.stat-box {
+  flex: 1; min-width: 120px;
+  background: var(--bg-washi);
+  border: 1px solid var(--border-paper);
+  padding: 16px 14px; text-align: center;
+  border-radius: var(--radius-xs);
+  transition: border-color var(--t-fast) var(--ease-out);
+}
+.stat-box:hover { border-color: var(--border-hair); }
+.stat-box .val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.9rem; font-weight: 300;
+  color: var(--text-sumi); line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-box .lbl {
+  font-size: 10px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+.stat-box.bad  .val { color: var(--accent-red); }
+.stat-box.good .val { color: var(--accent-gold); }
 
-  .btn {
-    padding: 10px 22px; border-radius: 8px; border: none; cursor: pointer;
-    font-size: 0.9rem; font-weight: 600; transition: all 0.2s;
-  }
-  .btn-primary { background: var(--accent-primary); color: var(--bg-primary); }
-  .btn-primary:hover { opacity: 0.85; }
-  .btn-danger { background: var(--color-danger); color: white; }
-  .btn-danger:hover { opacity: 0.85; }
-  .btn-success { background: var(--color-success); color: var(--bg-primary); }
-  .btn-success:hover { opacity: 0.85; }
-  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+/* ── RECORDS GRID ── */
+.records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 8px; margin-bottom: 24px;
+}
+.record-card {
+  background: var(--bg-washi);
+  border: 1px solid var(--border-paper);
+  border-radius: var(--radius-xs);
+  padding: 14px; cursor: pointer; user-select: none;
+  transition: border-color var(--t-fast) var(--ease-out),
+              background var(--t-fast) var(--ease-out);
+}
+.record-card:hover { border-color: var(--accent-ink); }
+.record-card.counted {
+  border-color: var(--accent-gold);
+  background: rgba(139,105,20,0.04);
+}
+.record-card.counted .rc-name { color: var(--accent-gold); }
+.rc-name { font-weight: 500; font-size: 14px; color: var(--text-sumi); margin-bottom: 8px; }
+.rc-fields { display: flex; gap: 6px; flex-wrap: wrap; }
+.rc-field {
+  background: var(--bg-warm); border-radius: var(--radius-xs);
+  padding: 2px 8px; font-size: 11px; color: var(--text-muted);
+  font-weight: 400;
+}
+.rc-field.highlight {
+  background: var(--accent-indigo); color: #FDFDFD;
+}
 
-  /* --- MACHINE MODE --- */
-  .machine-viz {
-    background: var(--bg-secondary); border: 1px solid var(--border-subtle);
-    border-radius: 12px; padding: 20px; margin-bottom: 18px;
-  }
-  .machine-viz h3 { color: var(--color-warning); margin-bottom: 14px; }
-  .progress-outer {
-    height: 30px; background: var(--bg-tertiary); border-radius: 8px;
-    overflow: hidden; position: relative; margin-bottom: 8px;
-  }
-  .progress-inner {
-    height: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--color-success));
-    transition: width 0.05s linear; width: 0%;
-  }
-  .progress-label {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 0.85rem; font-weight: 600; color: white;
-    pointer-events: none;
-  }
-  .machine-stats {
-    display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px;
-  }
-  .machine-stat {
-    flex: 1; min-width: 120px;
-    background: var(--bg-tertiary); border-radius: 8px; padding: 12px; text-align: center;
-  }
-  .machine-stat .mv { font-size: 1.4rem; font-weight: 700; color: var(--color-success); }
-  .machine-stat .ml { font-size: 0.75rem; color: var(--text-muted); }
-  .machine-log {
-    background: #0a1a0a; border: 1px solid #1a4a1a;
-    border-radius: 8px; padding: 12px; height: 140px;
-    overflow-y: auto; font-family: monospace; font-size: 0.8rem; color: var(--color-success);
-  }
+/* ── TALLY SECTION ── */
+.tally-section {
+  background: var(--bg-washi); border: 1px solid var(--border-paper);
+  padding: 20px; margin-bottom: 20px; border-radius: var(--radius-xs);
+}
+.tally-section h3 {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 13px; font-weight: 400;
+  color: var(--text-sumi); margin-bottom: 16px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+.tally-rows { display: flex; flex-direction: column; gap: 10px; }
+.tally-row { display: flex; align-items: center; gap: 12px; }
+.tally-row label {
+  width: 120px; font-size: 12px; color: var(--text-muted);
+  font-weight: 400; flex-shrink: 0;
+}
+.tally-bar-bg {
+  flex: 1; height: 3px;
+  background: var(--border-paper);
+  overflow: hidden;
+}
+.tally-bar { height: 100%; background: var(--accent-indigo); transition: width 0.35s var(--ease-out); }
+.tally-bar.over { background: var(--accent-red); }
+.tally-count {
+  width: 36px; text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; color: var(--text-sumi);
+}
+.tally-target {
+  width: 36px; text-align: right;
+  font-size: 11px; color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+}
 
-  /* --- COMPARISON --- */
-  .compare-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;
-  }
-  @media (max-width: 600px) { .compare-grid { grid-template-columns: 1fr; } }
-  .compare-card {
-    background: var(--bg-secondary); border: 2px solid var(--border-subtle);
-    border-radius: 10px; padding: 16px;
-  }
-  .compare-card h3 { font-size: 1rem; margin-bottom: 12px; }
-  .compare-card.human h3 { color: var(--color-warning); }
-  .compare-card.machine h3 { color: var(--accent-primary); }
-  .compare-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.85rem; }
-  .compare-item:last-child { border-bottom: none; }
-  .compare-item .ci-label { color: var(--text-muted); }
-  .compare-item .ci-val { font-weight: 600; }
-  .compare-card.human .ci-val { color: var(--color-warning); }
-  .compare-card.machine .ci-val { color: var(--color-success); }
-  .speedup-box {
-    background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
-    border: 2px solid var(--accent-primary); border-radius: 10px;
-    padding: 20px; text-align: center;
-  }
-  .speedup-box .sv { font-size: 3rem; font-weight: 800; color: var(--accent-primary); }
-  .speedup-box .sl { color: var(--text-muted); margin-top: 6px; }
+/* ── ERROR LOG ── */
+.error-log {
+  background: rgba(200,42,42,0.04);
+  border: 1px solid rgba(200,42,42,0.25);
+  border-left: 2px solid var(--accent-red);
+  padding: 12px 16px; margin-bottom: 20px;
+  font-size: 12px; color: var(--accent-red);
+  max-height: 120px; overflow-y: auto;
+  border-radius: var(--radius-xs);
+}
+.error-log .el-title { font-weight: 500; margin-bottom: 6px; letter-spacing: 0.05em; }
 
-  .insight-box {
-    background: var(--bg-secondary); border-left: 4px solid var(--color-success);
-    border-radius: 0 8px 8px 0; padding: 14px 18px;
-    margin-top: 16px; font-size: 0.9rem; line-height: 1.7;
-  }
-  .insight-box .ib-title { color: var(--color-success); font-weight: 600; margin-bottom: 6px; }
+/* ── BUTTONS ── */
+.zen-btn {
+  padding: 10px 22px;
+  font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  border: 1px solid var(--border-hair);
+  background: var(--bg-washi); color: var(--text-sumi);
+  cursor: pointer; border-radius: var(--radius-xs);
+  transition: background var(--t-fast) var(--ease-out),
+              color var(--t-fast) var(--ease-out);
+}
+.zen-btn:hover { background: var(--accent-ink); color: #FDFDFD; }
+.zen-btn.primary { background: var(--accent-ink); color: #FDFDFD; }
+.zen-btn.primary:hover { background: #2C2C2C; }
+.zen-btn.danger { border-color: var(--accent-red); color: var(--accent-red); background: transparent; }
+.zen-btn.danger:hover { background: var(--accent-red); color: #FDFDFD; }
+.zen-btn.success { border-color: var(--accent-gold); color: var(--accent-gold); background: transparent; }
+.zen-btn.success:hover { background: var(--accent-gold); color: #FDFDFD; }
+.zen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
 
-  .badge {
-    display: inline-block; padding: 3px 10px; border-radius: 20px;
-    font-size: 0.75rem; font-weight: 600;
-  }
-  .badge-green { background: #0d3a20; color: var(--color-success); border: 1px solid var(--color-success); }
-  .badge-yellow { background: #3a2d0d; color: var(--color-warning); border: 1px solid var(--color-warning); }
-  .badge-red { background: #3a0d0d; color: var(--color-danger); border: 1px solid var(--color-danger); }
+/* ── MACHINE MODE ── */
+.machine-viz {
+  background: var(--bg-washi); border: 1px solid var(--border-paper);
+  padding: 24px; margin-bottom: 20px; border-radius: var(--radius-xs);
+}
+.machine-viz h3 {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 13px; font-weight: 400; color: var(--text-sumi);
+  margin-bottom: 18px; text-transform: uppercase; letter-spacing: 0.1em;
+}
+.progress-outer {
+  height: 4px; background: var(--border-paper);
+  overflow: hidden; position: relative; margin-bottom: 10px;
+}
+.progress-inner {
+  height: 100%; background: var(--accent-red);
+  transition: width 0.05s linear;
+  width: 0%;
+}
+.progress-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--text-muted);
+  margin-top: 6px; text-align: center;
+}
+.machine-stats { display: flex; gap: 1px; flex-wrap: wrap; margin-top: 16px; }
+.machine-stat {
+  flex: 1; min-width: 110px;
+  background: var(--bg-warm); border: 1px solid var(--border-paper);
+  padding: 14px; text-align: center; border-radius: var(--radius-xs);
+}
+.machine-stat .mv {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.3rem; font-weight: 300;
+  color: var(--accent-gold); line-height: 1; margin-bottom: 4px;
+}
+.machine-stat .ml {
+  font-size: 10px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted);
+}
+.machine-log {
+  background: var(--bg-warm); border: 1px solid var(--border-paper);
+  padding: 14px; height: 140px; overflow-y: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; line-height: 1.7; color: var(--text-body);
+  border-radius: var(--radius-xs);
+}
 
-  .time-display {
-    font-family: monospace; font-size: 1.2rem;
-    color: var(--accent-primary); font-weight: 700;
-  }
+/* ── COMPARISON ── */
+.compare-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+  margin-bottom: 20px;
+}
+@media(max-width:600px){ .compare-grid { grid-template-columns: 1fr; } }
+.compare-card {
+  background: var(--bg-washi); border: 1px solid var(--border-paper);
+  padding: 20px; border-radius: var(--radius-xs);
+}
+.compare-card h3 {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 13px; font-weight: 400; margin-bottom: 14px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.compare-card.human h3 { color: var(--accent-red); }
+.compare-card.machine h3 { color: var(--accent-indigo); }
+.compare-item {
+  display: flex; justify-content: space-between;
+  padding: 7px 0; border-bottom: 1px solid var(--border-paper);
+  font-size: 13px;
+}
+.compare-item:last-child { border-bottom: none; }
+.ci-label { color: var(--text-muted); }
+.ci-val { font-family: 'JetBrains Mono', monospace; font-weight: 400; }
+.compare-card.human  .ci-val { color: var(--accent-red); }
+.compare-card.machine .ci-val { color: var(--accent-indigo); }
+
+.speedup-box {
+  background: var(--bg-washi);
+  border: 1px solid var(--border-hair);
+  padding: 28px; text-align: center;
+  border-radius: var(--radius-xs);
+  margin-bottom: 16px;
+}
+.speedup-box .sv {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 4rem; font-weight: 300;
+  color: var(--accent-red); line-height: 1;
+}
+.speedup-box .sl { font-size: 12px; color: var(--text-muted); margin-top: 8px; letter-spacing: 0.06em; }
+
+.insight-box {
+  border-left: 2px solid var(--accent-gold);
+  padding: 14px 20px; margin-top: 16px;
+  font-size: 14px; line-height: 1.75; color: var(--text-body);
+  background: rgba(139,105,20,0.04);
+  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+}
+.insight-box .ib-title {
+  font-weight: 500; color: var(--accent-gold);
+  margin-bottom: 6px; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+.time-display {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.2rem; font-weight: 300; color: var(--text-sumi);
+}
+.divider {
+  height: 1px; background: var(--border-paper); margin: 6px 0;
+}
 </style>
 </head>
 <body>
 
-<h1>🏛️ Module 0.1 — The 1880 Census Simulator</h1>
-<p class="subtitle">Experience why human computation broke down at scale — and why machines had to replace it.</p>
+<div class="zen-header">
+  <h1 class="zen-title">Module 0.1 — The 1880 Census Simulator</h1>
+  <p class="zen-subtitle">Human computation vs. mechanical tabulation</p>
+</div>
 
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('human')">👤 Human Mode (1880)</div>
-  <div class="tab" onclick="switchTab('machine')">⚙️ Machine Mode (1890)</div>
-  <div class="tab" onclick="switchTab('compare')">📊 Comparison</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('human')">Human Mode (1880)</div>
+  <div class="zen-tab" onclick="switchTab('machine')">Machine Mode (1890)</div>
+  <div class="zen-tab" onclick="switchTab('compare')">Comparison</div>
 </div>
 
 <!-- HUMAN MODE -->
 <div id="panel-human" class="panel active">
-  <div class="intro-box">
+  <div class="zen-intro">
     <strong>You are a census clerk in 1880.</strong> Your job: read each record card, categorize the person,
     and tally the results. Click each record to "process" it. Watch how long it takes — and notice when you make mistakes.
     <br><br>This is a <em>tiny</em> sample of 20 records. The real census had <strong>50,000,000</strong>.
@@ -226,7 +366,7 @@
   <div class="stats-row">
     <div class="stat-box">
       <div class="val" id="h-processed">0</div>
-      <div class="lbl">Records Processed</div>
+      <div class="lbl">Processed</div>
     </div>
     <div class="stat-box">
       <div class="val" id="h-remaining">20</div>
@@ -234,47 +374,47 @@
     </div>
     <div class="stat-box bad">
       <div class="val" id="h-errors">0</div>
-      <div class="lbl">Errors Made</div>
+      <div class="lbl">Errors</div>
     </div>
     <div class="stat-box">
       <div class="val time-display" id="h-time">0:00</div>
-      <div class="lbl">Time Elapsed</div>
+      <div class="lbl">Elapsed</div>
     </div>
   </div>
 
   <div class="records-grid" id="records-grid"></div>
 
   <div class="tally-section">
-    <h3>📋 Your Tally Sheet</h3>
+    <h3>Tally Sheet</h3>
     <div class="tally-rows" id="tally-rows"></div>
   </div>
 
   <div class="error-log" id="error-log" style="display:none;">
-    <div class="el-title">⚠️ Errors Detected</div>
+    <div class="el-title">Errors Detected</div>
     <div id="error-items"></div>
   </div>
 
   <div class="btn-row">
-    <button class="btn btn-danger" onclick="injectError()">😈 Inject Fatigue Error</button>
-    <button class="btn btn-primary" onclick="resetHuman()">↺ Reset</button>
-    <button class="btn btn-success" id="finish-btn" onclick="finishHuman()" style="display:none;">✓ Submit Tally</button>
+    <button class="zen-btn danger" onclick="injectError()">Inject Fatigue Error</button>
+    <button class="zen-btn" onclick="resetHuman()">Reset</button>
+    <button class="zen-btn success" id="finish-btn" onclick="finishHuman()" style="display:none;">Submit Tally</button>
   </div>
 </div>
 
 <!-- MACHINE MODE -->
 <div id="panel-machine" class="panel">
-  <div class="intro-box">
-    <strong>This is a Hollerith tabulating machine simulation (1890).</strong>
-    Press Run to watch it process all 50 million census records.
+  <div class="zen-intro">
+    <strong>Hollerith Tabulating Machine (1890).</strong>
+    Press Run to process all 50 million census records.
     Notice the speed — and the zero errors.
   </div>
 
   <div class="machine-viz">
-    <h3>⚙️ Hollerith Tabulator — Processing 50,000,000 Records</h3>
+    <h3>Hollerith Tabulator — 50,000,000 Records</h3>
     <div class="progress-outer">
       <div class="progress-inner" id="m-bar"></div>
-      <div class="progress-label" id="m-pct">0%</div>
     </div>
+    <div class="progress-label" id="m-pct" style="display:block;margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-muted)">0%</div>
     <div class="machine-stats">
       <div class="machine-stat">
         <div class="mv" id="m-processed">0</div>
@@ -285,7 +425,7 @@
         <div class="ml">Processing Rate</div>
       </div>
       <div class="machine-stat">
-        <div class="mv" id="m-errors-val" style="color: var(--color-success)">0</div>
+        <div class="mv" id="m-errors-val" style="color:var(--accent-gold)">0</div>
         <div class="ml">Errors</div>
       </div>
       <div class="machine-stat">
@@ -300,10 +440,9 @@
     <div>[ Awaiting card feed... ]</div>
   </div>
 
-  <br>
   <div class="btn-row">
-    <button class="btn btn-success" id="m-run-btn" onclick="runMachine()">▶ Run Machine</button>
-    <button class="btn btn-primary" onclick="resetMachine()">↺ Reset</button>
+    <button class="zen-btn primary" id="m-run-btn" onclick="runMachine()">▶ Run Machine</button>
+    <button class="zen-btn" onclick="resetMachine()">Reset</button>
   </div>
 </div>
 
@@ -311,17 +450,17 @@
 <div id="panel-compare" class="panel">
   <div class="compare-grid">
     <div class="compare-card human">
-      <h3>👤 Human Clerks (1880 Method)</h3>
+      <h3>Human Clerks — 1880</h3>
       <div class="compare-item"><span class="ci-label">Workers</span><span class="ci-val">500 clerks</span></div>
       <div class="compare-item"><span class="ci-label">Speed</span><span class="ci-val">500 rec/day each</span></div>
       <div class="compare-item"><span class="ci-label">Error rate</span><span class="ci-val">~2–5%</span></div>
       <div class="compare-item"><span class="ci-label">Total records</span><span class="ci-val">50,000,000</span></div>
-      <div class="compare-item"><span class="ci-label">Processing time</span><span class="ci-val">200 days (~8 mo)</span></div>
+      <div class="compare-item"><span class="ci-label">Processing time</span><span class="ci-val">200 days</span></div>
       <div class="compare-item"><span class="ci-label">Published after</span><span class="ci-val">8 years</span></div>
       <div class="compare-item"><span class="ci-label">Cost</span><span class="ci-val">~$11.5M</span></div>
     </div>
     <div class="compare-card machine">
-      <h3>⚙️ Hollerith Machines (1890 Method)</h3>
+      <h3>Hollerith Machines — 1890</h3>
       <div class="compare-item"><span class="ci-label">Machines</span><span class="ci-val">~100 tabulators</span></div>
       <div class="compare-item"><span class="ci-label">Speed</span><span class="ci-val">31,200 rec/day each</span></div>
       <div class="compare-item"><span class="ci-label">Error rate</span><span class="ci-val">~0% (mechanical)</span></div>
@@ -338,18 +477,17 @@
   </div>
 
   <div class="insight-box">
-    <div class="ib-title">💡 The Real Insight</div>
+    <div class="ib-title">The Real Insight</div>
     The speedup wasn't just convenient — it changed what was <em>possible</em>. Results in 6 weeks meant the data could
     actually influence policy decisions in the same Congress that commissioned the census.
-    Results in 8 years were history, not intelligence.<br><br>
+    Results in 8 years were history, not intelligence.
     This is why automation matters: it doesn't just do the same thing faster.
     It makes <strong>entirely new things possible</strong>.
   </div>
 
-  <br>
-  <div class="insight-box" style="border-color: var(--color-warning);">
-    <div class="ib-title" style="color: var(--color-warning);">🧮 Your Progress</div>
-    <div id="compare-progress">Complete the Human Mode simulation and Machine Mode to see your personal comparison.</div>
+  <div class="insight-box" style="border-color:var(--accent-indigo);background:rgba(28,45,66,0.04);margin-top:12px">
+    <div class="ib-title" style="color:var(--accent-indigo)">Your Progress</div>
+    <div id="compare-progress">Complete Human Mode and Machine Mode to see your personal comparison.</div>
   </div>
 </div>
 
@@ -377,13 +515,11 @@ const RECORDS = [
   { name: "Kwame Asante", age: 36, occ: "Farmer", birth: "Ghana", family: 7 },
   { name: "Ingrid Lindqvist", age: 23, occ: "Teacher", birth: "Sweden", family: 1 }
 ];
-
 const CATEGORIES = {
   occ: { Farmer: 0, Miner: 0, Teacher: 0, Blacksmith: 0, Merchant: 0, Laborer: 0, Seamstress: 0, Laundress: 0 },
   ageGroup: { "Under 30": 0, "30–49": 0, "50+": 0 },
   familySize: { "1–2": 0, "3–5": 0, "6+": 0 }
 };
-
 function ageGroup(age) {
   if (age < 30) return "Under 30";
   if (age < 50) return "30–49";
@@ -394,8 +530,6 @@ function familySizeGroup(n) {
   if (n <= 5) return "3–5";
   return "6+";
 }
-
-// Ground truth
 const TRUTH = { occ: {}, ageGroup: {}, familySize: {} };
 RECORDS.forEach(r => {
   TRUTH.occ[r.occ] = (TRUTH.occ[r.occ] || 0) + 1;
@@ -404,40 +538,22 @@ RECORDS.forEach(r => {
   const fg = familySizeGroup(r.family);
   TRUTH.familySize[fg] = (TRUTH.familySize[fg] || 0) + 1;
 });
-
-// ---- STATE ----
 let hState = {
   processed: new Set(),
   tallies: { occ: {}, ageGroup: {}, familySize: {} },
-  errors: [],
-  startTime: null,
-  timerInterval: null,
-  elapsed: 0
+  errors: [], startTime: null, timerInterval: null, elapsed: 0
 };
+let mState = { running: false, processed: 0, interval: null, startTime: null, elapsed: 0 };
+let humanFinishTime = null, machineFinishTime = null;
 
-let mState = {
-  running: false,
-  processed: 0,
-  interval: null,
-  startTime: null,
-  elapsed: 0
-};
-
-let humanFinishTime = null;
-let machineFinishTime = null;
-
-// ---- INIT ----
 function initHuman() {
-  // Reset tallies
   hState.tallies = {
     occ: { Farmer: 0, Miner: 0, Teacher: 0, Blacksmith: 0, Merchant: 0, Laborer: 0, Seamstress: 0, Laundress: 0 },
     ageGroup: { "Under 30": 0, "30–49": 0, "50+": 0 },
     familySize: { "1–2": 0, "3–5": 0, "6+": 0 }
   };
-  hState.processed = new Set();
-  hState.errors = [];
-  hState.startTime = null;
-  hState.elapsed = 0;
+  hState.processed = new Set(); hState.errors = [];
+  hState.startTime = null; hState.elapsed = 0;
   clearInterval(hState.timerInterval);
   document.getElementById('h-time').textContent = '0:00';
   document.getElementById('h-processed').textContent = '0';
@@ -446,8 +562,7 @@ function initHuman() {
   document.getElementById('error-log').style.display = 'none';
   document.getElementById('error-items').innerHTML = '';
   document.getElementById('finish-btn').style.display = 'none';
-  renderRecords();
-  renderTallies();
+  renderRecords(); renderTallies();
 }
 
 function renderRecords() {
@@ -473,15 +588,13 @@ function renderRecords() {
 function renderTallies() {
   const container = document.getElementById('tally-rows');
   container.innerHTML = '';
-  // Occupation totals
   const occTotal = RECORDS.length;
   Object.entries(hState.tallies.occ).forEach(([k, v]) => {
     const truth = TRUTH.occ[k] || 0;
     addTallyRow(container, k, v, truth, occTotal);
   });
-  // Add divider
   const div = document.createElement('div');
-  div.style.cssText = 'height:1px;background:var(--border-subtle);margin:4px 0';
+  div.className = 'divider';
   container.appendChild(div);
   Object.entries(hState.tallies.ageGroup).forEach(([k, v]) => {
     addTallyRow(container, `Age ${k}`, v, TRUTH.ageGroup[k] || 0, RECORDS.length);
@@ -492,11 +605,10 @@ function addTallyRow(container, label, val, truth, total) {
   const row = document.createElement('div');
   row.className = 'tally-row';
   const pct = total > 0 ? (val / total * 100) : 0;
-  const correct = val <= truth;
   row.innerHTML = `
     <label>${label}</label>
     <div class="tally-bar-bg">
-      <div class="tally-bar" style="width:${pct}%;background:${val > truth ? 'var(--color-danger)' : 'var(--accent-primary)'}"></div>
+      <div class="tally-bar${val > truth ? ' over' : ''}" style="width:${pct}%"></div>
     </div>
     <span class="tally-count">${val}</span>
     <span class="tally-target">/ ${truth}</span>`;
@@ -505,120 +617,81 @@ function addTallyRow(container, label, val, truth, total) {
 
 function processRecord(i) {
   if (hState.processed.has(i)) return;
-
   if (!hState.startTime) {
     hState.startTime = Date.now();
     hState.timerInterval = setInterval(updateHumanTimer, 1000);
   }
-
   hState.processed.add(i);
   const r = RECORDS[i];
-
   hState.tallies.occ[r.occ]++;
-  const ag = ageGroup(r.age);
-  hState.tallies.ageGroup[ag]++;
-  const fg = familySizeGroup(r.family);
-  hState.tallies.familySize[fg]++;
-
+  hState.tallies.ageGroup[ageGroup(r.age)]++;
+  hState.tallies.familySize[familySizeGroup(r.family)]++;
   document.getElementById('h-processed').textContent = hState.processed.size;
   document.getElementById('h-remaining').textContent = RECORDS.length - hState.processed.size;
-
-  if (hState.processed.size === RECORDS.length) {
-    document.getElementById('finish-btn').style.display = 'inline-block';
-  }
-
-  renderRecords();
-  renderTallies();
+  if (hState.processed.size === RECORDS.length) document.getElementById('finish-btn').style.display = 'inline-block';
+  renderRecords(); renderTallies();
 }
 
 function updateHumanTimer() {
   if (!hState.startTime) return;
   hState.elapsed = Math.floor((Date.now() - hState.startTime) / 1000);
-  const m = Math.floor(hState.elapsed / 60);
-  const s = hState.elapsed % 60;
+  const m = Math.floor(hState.elapsed / 60), s = hState.elapsed % 60;
   document.getElementById('h-time').textContent = `${m}:${s.toString().padStart(2,'0')}`;
 }
 
 function injectError() {
-  // Randomly miscount an occupation
   const occs = Object.keys(hState.tallies.occ);
   const occ = occs[Math.floor(Math.random() * occs.length)];
   hState.tallies.occ[occ]++;
-  const errMsg = `Fatigue error: ${occ} count increased by 1 (miscounted)`;
+  const errMsg = `Fatigue error: ${occ} count incremented (miscounted)`;
   hState.errors.push(errMsg);
   document.getElementById('h-errors').textContent = hState.errors.length;
   const log = document.getElementById('error-log');
-  const items = document.getElementById('error-items');
+  document.getElementById('error-items').innerHTML += `<div>• ${errMsg}</div>`;
   log.style.display = 'block';
-  items.innerHTML += `<div>• ${errMsg}</div>`;
   renderTallies();
 }
 
 function finishHuman() {
   clearInterval(hState.timerInterval);
   humanFinishTime = hState.elapsed;
-  // Score it
   let wrong = 0;
-  Object.entries(hState.tallies.occ).forEach(([k, v]) => {
-    if (v !== (TRUTH.occ[k] || 0)) wrong++;
-  });
+  Object.entries(hState.tallies.occ).forEach(([k, v]) => { if (v !== (TRUTH.occ[k] || 0)) wrong++; });
   const msg = wrong === 0
-    ? '✅ Perfect tally! No errors. But remember — you only processed 20 records.'
-    : `⚠️ ${wrong} category/categories are wrong. At 50 million records, each error type affects millions of people.`;
-  alert(msg + `\n\nTime taken: ${document.getElementById('h-time').textContent}\nErrors injected: ${hState.errors.length}`);
+    ? '✓ Perfect tally. No errors. But remember — you only processed 20 records.'
+    : `${wrong} category/categories are incorrect. At 50 million records, each error type affects millions of people.`;
+  alert(msg + `\n\nTime: ${document.getElementById('h-time').textContent} | Errors injected: ${hState.errors.length}`);
   updateCompareProgress();
 }
 
-function resetHuman() {
-  clearInterval(hState.timerInterval);
-  initHuman();
-}
+function resetHuman() { clearInterval(hState.timerInterval); initHuman(); }
 
-// ---- MACHINE ----
 function runMachine() {
   if (mState.running) return;
-  mState.running = true;
-  mState.processed = 0;
-  mState.startTime = Date.now();
+  mState.running = true; mState.processed = 0; mState.startTime = Date.now();
   document.getElementById('m-run-btn').disabled = true;
-
-  const TOTAL = 50_000_000;
-  const RATE_PER_TICK = 5000; // accelerated simulation
+  const TOTAL = 50_000_000, RATE = 5000;
   const log = document.getElementById('machine-log');
-
-  function logMsg(msg) {
-    log.innerHTML += `<div>[ ${msg} ]</div>`;
-    log.scrollTop = log.scrollHeight;
-  }
-
+  function logMsg(msg) { log.innerHTML += `<div>[ ${msg} ]</div>`; log.scrollTop = log.scrollHeight; }
   logMsg('Card feed started — District 1 of 100');
-
   mState.interval = setInterval(() => {
-    mState.processed = Math.min(mState.processed + RATE_PER_TICK, TOTAL);
+    mState.processed = Math.min(mState.processed + RATE, TOTAL);
     const pct = mState.processed / TOTAL;
     document.getElementById('m-bar').style.width = (pct * 100) + '%';
     document.getElementById('m-pct').textContent = Math.floor(pct * 100) + '%';
     document.getElementById('m-processed').textContent = mState.processed.toLocaleString();
-
     mState.elapsed = Math.floor((Date.now() - mState.startTime) / 1000);
-    const m = Math.floor(mState.elapsed / 60);
-    const s = mState.elapsed % 60;
+    const m = Math.floor(mState.elapsed / 60), s = mState.elapsed % 60;
     document.getElementById('m-time').textContent = `${m}:${s.toString().padStart(2,'0')}`;
-
-    const milestones = [10, 25, 50, 75, 90];
-    milestones.forEach(mp => {
-      if (pct >= mp/100 && pct < (mp/100 + RATE_PER_TICK/TOTAL + 0.001)) {
-        logMsg(`${mp}% complete — ${mState.processed.toLocaleString()} records — errors: 0`);
-      }
+    [10, 25, 50, 75, 90].forEach(mp => {
+      if (pct >= mp/100 && pct < (mp/100 + RATE/TOTAL + 0.001))
+        logMsg(`${mp}% — ${mState.processed.toLocaleString()} records — errors: 0`);
     });
-
     if (mState.processed >= TOTAL) {
-      clearInterval(mState.interval);
-      mState.running = false;
+      clearInterval(mState.interval); mState.running = false;
       machineFinishTime = mState.elapsed;
       logMsg('Processing complete — 50,000,000 records');
       logMsg('Final error count: 0');
-      logMsg(`Total wall-clock time: ${document.getElementById('m-time').textContent} (×10,000 simulation)`);
       document.getElementById('m-run-btn').disabled = false;
       updateCompareProgress();
     }
@@ -626,50 +699,38 @@ function runMachine() {
 }
 
 function resetMachine() {
-  clearInterval(mState.interval);
-  mState.running = false;
-  mState.processed = 0;
-  mState.elapsed = 0;
+  clearInterval(mState.interval); mState.running = false; mState.processed = 0; mState.elapsed = 0;
   document.getElementById('m-bar').style.width = '0%';
   document.getElementById('m-pct').textContent = '0%';
   document.getElementById('m-processed').textContent = '0';
   document.getElementById('m-time').textContent = '0:00';
   document.getElementById('m-run-btn').disabled = false;
-  document.getElementById('machine-log').innerHTML =
-    '<div>[ Hollerith Tabulator v1890 — Ready ]</div><div>[ Awaiting card feed... ]</div>';
-  machineFinishTime = null;
-  updateCompareProgress();
+  document.getElementById('machine-log').innerHTML = '<div>[ Hollerith Tabulator v1890 — Ready ]</div><div>[ Awaiting card feed... ]</div>';
+  machineFinishTime = null; updateCompareProgress();
 }
 
-// ---- COMPARE ----
 function updateCompareProgress() {
   const el = document.getElementById('compare-progress');
   const parts = [];
   if (humanFinishTime !== null) {
     const m = Math.floor(humanFinishTime/60), s = humanFinishTime % 60;
-    parts.push(`<span style="color:var(--color-warning)">Your human time (20 records):</span> ${m}:${s.toString().padStart(2,'0')}`);
-  } else {
-    parts.push(`<span style="color:var(--text-muted)">Complete Human Mode to see your time</span>`);
-  }
+    parts.push(`<span style="color:var(--accent-red)">Your human time (20 records):</span> ${m}:${s.toString().padStart(2,'0')}`);
+  } else parts.push(`<span style="color:var(--text-muted)">Complete Human Mode to see your time</span>`);
   if (machineFinishTime !== null) {
     const m = Math.floor(machineFinishTime/60), s = machineFinishTime % 60;
-    parts.push(`<span style="color:var(--color-success)">Machine sim time (50M records):</span> ${m}:${s.toString().padStart(2,'0')} (sim speed)`);
-  } else {
-    parts.push(`<span style="color:var(--text-muted)">Run Machine Mode to see processing time</span>`);
-  }
+    parts.push(`<span style="color:var(--accent-gold)">Machine sim time (50M records):</span> ${m}:${s.toString().padStart(2,'0')} (sim speed)`);
+  } else parts.push(`<span style="color:var(--text-muted)">Run Machine Mode to see processing time</span>`);
   el.innerHTML = parts.join('<br><br>');
 }
 
-// ---- TABS ----
 function switchTab(id) {
-  document.querySelectorAll('.tab').forEach((t,i) => {
+  document.querySelectorAll('.zen-tab').forEach((t,i) => {
     t.classList.toggle('active', ['human','machine','compare'][i] === id);
   });
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + id).classList.add('active');
 }
 
-// ---- BOOT ----
 initHuman();
 </script>
 </body>

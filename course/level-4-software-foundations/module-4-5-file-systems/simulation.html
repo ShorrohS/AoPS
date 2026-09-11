@@ -1,0 +1,346 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 4.5 — File Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes zen-fade-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes hl-flash{0%{background:rgba(139,105,20,0.3)}100%{background:transparent}}
+@keyframes fault-flash{0%{background:rgba(200,42,42,0.3)}100%{background:transparent}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:zen-fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast),color var(--t-fast)}
+.zen-btn:hover{background:#1C1C1C;color:#FDFDFD}
+.zen-btn.primary{background:#1C1C1C;color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red);background:transparent}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.zen-btn.success{border-color:var(--accent-gold);color:var(--accent-gold);background:transparent}.zen-btn.success:hover{background:var(--accent-gold);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.zen-pane{background:var(--bg-washi);padding:22px}.zen-pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+/* Directory tree */
+.tree-node{padding:5px 0 5px 18px;position:relative;cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast)}
+.tree-node:hover{background:var(--bg-warm)}
+.tree-node.selected{background:rgba(139,105,20,0.08);border-left:2px solid var(--accent-gold)}
+.tree-node.highlight{animation:hl-flash .5s var(--ease-out)}
+.tree-indent{padding-left:36px}
+.tn-name{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-sumi)}
+.tn-inode{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);margin-left:8px}
+.tn-type{font-size:9px;text-transform:uppercase;letter-spacing:.08em;padding:1px 6px;border-radius:1px;margin-left:6px;flex-shrink:0}
+.tn-type.dir{background:rgba(28,45,66,0.1);color:var(--accent-indigo)}
+.tn-type.file{background:rgba(139,105,20,0.08);color:var(--accent-gold)}
+/* Inode detail */
+.inode-field{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--border-paper)}
+.inode-field:last-child{border-bottom:none}
+.if-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);width:100px;flex-shrink:0}
+.if-val{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-sumi)}
+/* Disk block grid */
+.block-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;margin-bottom:10px}
+.blk{padding:5px 2px;border:1px solid var(--border-paper);border-radius:1px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:9px;transition:all var(--t-med)}
+.blk.inode-blk{background:rgba(200,42,42,0.1);border-color:var(--accent-red);color:var(--accent-red)}
+.blk.data-blk{background:rgba(28,45,66,0.08);border-color:var(--accent-indigo);color:var(--accent-indigo)}
+.blk.dir-blk{background:rgba(139,105,20,0.1);border-color:var(--accent-gold);color:var(--accent-gold)}
+.blk.free{color:var(--text-ghost)}
+.blk.active{box-shadow:0 0 0 2px var(--accent-gold)}
+/* Journal entries */
+.journal-entry{padding:8px 12px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:4px;transition:all var(--t-med);font-family:'JetBrains Mono',monospace;font-size:11px}
+.journal-entry.committed{border-color:var(--accent-gold);background:rgba(139,105,20,0.06)}
+.journal-entry.pending{border-color:var(--accent-indigo);background:rgba(28,45,66,0.04)}
+.journal-entry.crash{border-color:var(--accent-red);background:rgba(200,42,42,0.04);animation:fault-flash .5s var(--ease-out)}
+.journal-entry.replayed{border-color:var(--accent-gold)}
+/* Op log */
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:120px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs)}
+.lhit{color:var(--accent-gold)}.lfault{color:var(--accent-red)}.lload{color:var(--accent-indigo)}.linfo{color:var(--text-muted)}.ljournal{color:var(--accent-gold)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 4.5 — File Systems</h1>
+  <p class="zen-subtitle">Inode Explorer · Directory Lookup · Journal Visualiser</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('inode')">Inode Explorer</div>
+  <div class="zen-tab" onclick="switchTab('lookup')">Directory Lookup</div>
+  <div class="zen-tab" onclick="switchTab('journal')">Journal</div>
+</div>
+
+<!-- INODE EXPLORER -->
+<div id="panel-inode" class="panel active">
+  <div class="zen-intro"><strong>Every file has an inode</strong> — a metadata record storing permissions, size, timestamps, and block pointers. The file's <em>name</em> is stored in the parent directory, not in the inode. Click a file to inspect its inode.</div>
+  <div class="bento2">
+    <div class="zen-pane">
+      <div class="pane-title gold">Directory Tree</div>
+      <div id="tree-root"></div>
+      <div class="btn-row">
+        <button class="zen-btn" onclick="createFile()">+ Create file</button>
+        <button class="zen-btn danger" onclick="deleteSelected()">Delete selected</button>
+        <button class="zen-btn danger" onclick="resetInode()">↺ Reset</button>
+      </div>
+      <div style="margin-top:10px">
+        <div class="pane-title indigo" style="margin-bottom:6px">Disk Block Map</div>
+        <div class="block-grid" id="block-map"></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <span style="font-size:9px;padding:1px 6px;background:rgba(200,42,42,0.1);color:var(--accent-red);border-radius:1px">Inode table</span>
+          <span style="font-size:9px;padding:1px 6px;background:rgba(139,105,20,0.1);color:var(--accent-gold);border-radius:1px">Directories</span>
+          <span style="font-size:9px;padding:1px 6px;background:rgba(28,45,66,0.08);color:var(--accent-indigo);border-radius:1px">File data</span>
+        </div>
+      </div>
+    </div>
+    <div class="zen-pane warm">
+      <div class="pane-title indigo" id="inode-title">Select a file</div>
+      <div id="inode-detail" style="font-size:12px;color:var(--text-muted)">Click a file in the tree to inspect its inode fields.</div>
+      <div class="op-log" id="inode-log" style="margin-top:12px"><div class="linfo">&gt; Inode = all file metadata except name. Name lives in directory.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- DIRECTORY LOOKUP -->
+<div id="panel-lookup" class="panel">
+  <div class="zen-intro"><strong>Trace the disk accesses</strong> needed to open a file by path. Each directory level requires reading an inode then a directory block. Deep paths = more disk reads.</div>
+  <div class="bento2">
+    <div class="zen-pane">
+      <div class="pane-title gold">Choose a path to open:</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
+        <button class="zen-btn" onclick="tracePath('/notes.txt',0)">/ notes.txt (shallow)</button>
+        <button class="zen-btn" onclick="tracePath('/home/alice/notes.txt',1)">/ home / alice / notes.txt (3 levels)</button>
+        <button class="zen-btn" onclick="tracePath('/home/alice/code/main.c',2)">/ home / alice / code / main.c (4 levels)</button>
+        <button class="zen-btn" onclick="tracePath('/a/b/c/d/e/f/g/data.txt',3)">/ a / b / c / d / e / f / g / data.txt (8 levels)</button>
+      </div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="runTrace()">▶ Animate trace</button>
+        <button class="zen-btn danger" onclick="resetTrace()">↺ Reset</button>
+      </div>
+    </div>
+    <div class="zen-pane warm">
+      <div class="pane-title indigo">Disk Access Trace</div>
+      <div id="trace-steps" style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2.1;color:var(--text-muted);min-height:100px">Select a path and click Animate.</div>
+      <div class="op-log" id="lookup-log" style="margin-top:10px"><div class="linfo">&gt; Each directory level = 2 disk reads (inode + data block). Deep paths are expensive — the dentrycache helps.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- JOURNAL -->
+<div id="panel-journal" class="panel">
+  <div class="zen-intro"><strong>Journaling protects metadata consistency.</strong> Before writing to the file system, the OS writes a journal entry. If the system crashes mid-write, the journal is replayed on boot — no full fsck scan needed.</div>
+  <div class="bento2">
+    <div class="zen-pane">
+      <div class="pane-title gold">Create a new file — step through</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;line-height:1.8">
+        Operations required:<br>
+        1. Allocate inode (update inode bitmap)<br>
+        2. Write file data to data blocks<br>
+        3. Update inode (block list, size, timestamps)<br>
+        4. Update directory (add name → inode entry)
+      </div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="journalStep()">→ Next operation</button>
+        <button class="zen-btn danger" onclick="simulateCrash()">⚡ Crash now!</button>
+        <button class="zen-btn" onclick="journalRecover()">↺ Recover (replay journal)</button>
+        <button class="zen-btn danger" onclick="resetJournal()">Clear</button>
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:var(--text-muted)">
+        Step: <span id="j-step" style="font-family:'JetBrains Mono',monospace;color:var(--text-sumi)">0 / 4</span>
+        &nbsp;·&nbsp; Journaled: <span id="j-count" style="font-family:'JetBrains Mono',monospace;color:var(--accent-gold)">0</span>
+      </div>
+    </div>
+    <div class="zen-pane warm">
+      <div class="pane-title indigo">Journal Log (ext4 ordered mode)</div>
+      <div id="journal-entries"></div>
+      <div class="op-log" id="journal-log" style="margin-top:10px"><div class="linfo">&gt; Journal ensures: metadata is always consistent even after a crash.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== INODE EXPLORER =====
+let nextInode=10, selectedNode=null;
+let FS={
+  type:'dir',name:'/',inode:2,children:[
+    {type:'dir',name:'home',inode:15,children:[
+      {type:'dir',name:'alice',inode:42,children:[
+        {type:'file',name:'notes.txt',inode:103,size:1843,blocks:[120,121],nlinks:1,mode:'rw-r--r--'},
+        {type:'file',name:'photo.jpg',inode:104,size:524288,blocks:[200,201,202,203],nlinks:1,mode:'rw-r--r--'},
+      ]},
+    ]},
+    {type:'file',name:'readme.txt',inode:7,size:512,blocks:[50],nlinks:1,mode:'rw-r--r--'},
+  ]
+};
+let fileCount=5, nextBlock=210;
+function renderTree(node,depth=0){
+  const indent='  '.repeat(depth);
+  const icon=node.type==='dir'?'📁':'📄';
+  return`<div class="tree-node${node===selectedNode?' selected':''}" onclick="selectNode(this,${node.inode})" id="node-${node.inode}">
+    ${indent}${icon} <span class="tn-name">${node.name}</span>
+    <span class="tn-inode">inode:${node.inode}</span>
+    <span class="tn-type ${node.type}">${node.type}</span>
+  </div>${node.children?node.children.map(c=>renderTree(c,depth+1)).join(''):''}`;
+}
+function flatNodes(n,arr=[]){arr.push(n);if(n.children)n.children.forEach(c=>flatNodes(c,arr));return arr;}
+function findNode(inode){return flatNodes(FS).find(n=>n.inode===inode);}
+function renderFS(){document.getElementById('tree-root').innerHTML=renderTree(FS);}
+function renderBlockMap(){
+  const all=flatNodes(FS);
+  let html='';
+  // Block 0 = superblock, 1-4 = inode table, 5-9 = dir data, 10+ = file data
+  for(let i=0;i<32;i++){
+    let cls='free',label=i.toString();
+    if(i===0){cls='inode-blk';label='SB';}
+    else if(i>=1&&i<=4){cls='inode-blk';label='IT';}
+    else{
+      const dirNode=all.find(n=>n.type==='dir');
+      if(i>=5&&i<=9){cls='dir-blk';label='D';}
+      else{
+        const fileNode=all.filter(n=>n.type==='file').find(n=>n.blocks&&n.blocks.includes(i));
+        if(fileNode){cls='data-blk';label=i.toString();}
+      }
+    }
+    html+=`<div class="blk ${cls}" id="blk-${i}">${label}</div>`;
+  }
+  document.getElementById('block-map').innerHTML=html;
+}
+function inodeLog(m,c='linfo'){const el=document.getElementById('inode-log');const d=document.createElement('div');d.className=c;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function selectNode(el,inode){
+  selectedNode=findNode(inode);
+  document.querySelectorAll('.tree-node').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+  const n=selectedNode;
+  document.getElementById('inode-title').textContent=`Inode ${n.inode} — ${n.name}`;
+  if(n.type==='file'){
+    document.getElementById('inode-detail').innerHTML=`
+      <div class="inode-field"><span class="if-label">inode #</span><span class="if-val">${n.inode}</span></div>
+      <div class="inode-field"><span class="if-label">type</span><span class="if-val">regular file</span></div>
+      <div class="inode-field"><span class="if-label">mode</span><span class="if-val">${n.mode||'rw-r--r--'}</span></div>
+      <div class="inode-field"><span class="if-label">size</span><span class="if-val">${n.size} bytes</span></div>
+      <div class="inode-field"><span class="if-label">blocks</span><span class="if-val">[${(n.blocks||[]).join(', ')}]</span></div>
+      <div class="inode-field"><span class="if-label">nlinks</span><span class="if-val">${n.nlinks||1}</span></div>
+      <div class="inode-field"><span class="if-label">mtime</span><span class="if-val">2026-09-10 22:41</span></div>`;
+    (n.blocks||[]).forEach(b=>{const el=document.getElementById('blk-'+b);if(el){el.classList.add('active');setTimeout(()=>el.classList.remove('active'),1000);}});
+    inodeLog(`Opened inode ${n.inode} (${n.name}): ${n.size} bytes, blocks [${(n.blocks||[]).join(',')}]`,'lhit');
+  }else{
+    const count=(n.children||[]).length;
+    document.getElementById('inode-detail').innerHTML=`
+      <div class="inode-field"><span class="if-label">inode #</span><span class="if-val">${n.inode}</span></div>
+      <div class="inode-field"><span class="if-label">type</span><span class="if-val">directory</span></div>
+      <div class="inode-field"><span class="if-label">entries</span><span class="if-val">${count+2} (incl . and ..)</span></div>
+      <div class="inode-field"><span class="if-label">nlinks</span><span class="if-val">${count+2} (subdirs)</span></div>
+      <div class="inode-field"><span class="if-label">mode</span><span class="if-val">rwxr-xr-x</span></div>`;
+    inodeLog(`Directory inode ${n.inode} (${n.name}): ${count} entries`,'lhit');
+  }
+}
+function createFile(){
+  const name='file'+fileCount+'.txt';fileCount++;
+  const newNode={type:'file',name,inode:nextInode++,size:Math.floor(Math.random()*2000+100),blocks:[nextBlock++],nlinks:1,mode:'rw-r--r--'};
+  FS.children.push(newNode);
+  renderFS();renderBlockMap();
+  inodeLog(`Created ${name} → inode ${newNode.inode}, block ${newNode.blocks[0]}`,'lload');
+}
+function deleteSelected(){
+  if(!selectedNode||selectedNode===FS){inodeLog('Select a file to delete','lfault');return;}
+  function removeFrom(parent){if(!parent.children)return false;const idx=parent.children.indexOf(selectedNode);if(idx!==-1){parent.children.splice(idx,1);return true;}return parent.children.some(c=>removeFrom(c));}
+  inodeLog(`Deleted ${selectedNode.name}: nlinks→0, inode freed, blocks freed (data NOT erased)`,'lfault');
+  removeFrom(FS);selectedNode=null;
+  document.getElementById('inode-title').textContent='Select a file';
+  document.getElementById('inode-detail').textContent='Click a file in the tree to inspect its inode.';
+  renderFS();renderBlockMap();
+}
+function resetInode(){fileCount=5;nextInode=120;nextBlock=210;selectedNode=null;FS={type:'dir',name:'/',inode:2,children:[{type:'dir',name:'home',inode:15,children:[{type:'dir',name:'alice',inode:42,children:[{type:'file',name:'notes.txt',inode:103,size:1843,blocks:[120,121],nlinks:1,mode:'rw-r--r--'},{type:'file',name:'photo.jpg',inode:104,size:524288,blocks:[200,201,202,203],nlinks:1,mode:'rw-r--r--'}]}]},{type:'file',name:'readme.txt',inode:7,size:512,blocks:[50],nlinks:1,mode:'rw-r--r--'}]};document.getElementById('inode-title').textContent='Select a file';document.getElementById('inode-detail').textContent='Click a file.';renderFS();renderBlockMap();}
+resetInode();
+
+// ===== DIRECTORY LOOKUP =====
+const PATHS=[
+  {path:'/notes.txt',steps:['Read root inode (inode 2)','Read root directory block → find "notes.txt" → inode 7','Read inode 7 → get data blocks','Read data blocks of notes.txt']},
+  {path:'/home/alice/notes.txt',steps:['Read root inode (inode 2)','Read root directory block → find "home" → inode 15','Read inode 15 (home dir)','Read home directory block → find "alice" → inode 42','Read inode 42 (alice dir)','Read alice directory block → find "notes.txt" → inode 103','Read inode 103 → get block list','Read data blocks of notes.txt']},
+  {path:'/home/alice/code/main.c',steps:['Read root inode (inode 2)','Read root directory block → find "home" → inode 15','Read inode 15','Read home directory block → find "alice" → inode 42','Read inode 42','Read alice directory block → find "code" → inode 88','Read inode 88 (code dir)','Read code directory block → find "main.c" → inode 217','Read inode 217 → get block list','Read data blocks of main.c']},
+  {path:'/a/b/c/d/e/f/g/data.txt',steps:['Read root inode','Read / dir → "a" → inode 300','Read inode 300','Read /a dir → "b" → inode 301','Read inode 301','Read /a/b → "c" → inode 302','Read inode 302','Read /a/b/c → "d" → inode 303','Read inode 303','Read /a/b/c/d → "e" → inode 304','Read inode 304','Read /a/b/c/d/e → "f" → inode 305','Read inode 305','Read /a/b/c/d/e/f → "g" → inode 306','Read inode 306','Read /a/b/c/d/e/f/g → "data.txt" → inode 400','Read inode 400','Read data blocks']},
+];
+let traceData=null,traceIdx=0,traceTimer=null;
+function tracePath(path,idx){traceData=PATHS[idx];traceIdx=0;document.getElementById('trace-steps').innerHTML=`<span style="color:var(--accent-indigo)">Path: ${path}</span><br><span style="color:var(--text-muted)">${traceData.steps.length} disk reads required (uncached).</span>`;lkLog(`Path "${path}" → ${traceData.steps.length} disk accesses required.`,'linfo');}
+function runTrace(){
+  if(!traceData)return;
+  clearTimeout(traceTimer);traceIdx=0;document.getElementById('trace-steps').innerHTML=`<span style="color:var(--accent-indigo)">Path: ${traceData.path}</span>`;
+  function nextStep(){
+    if(traceIdx>=traceData.steps.length){lkLog(`Done: ${traceData.steps.length} disk reads.`,'lhit');return;}
+    const s=traceData.steps[traceIdx];
+    document.getElementById('trace-steps').innerHTML+=`<br><span style="color:${traceIdx%2===0?'var(--accent-indigo)':'var(--accent-gold)'}">Step ${traceIdx+1}: ${s}</span>`;
+    lkLog(`[${traceIdx+1}] ${s}`,traceIdx%2===0?'lload':'lhit');
+    traceIdx++;traceTimer=setTimeout(nextStep,450);
+  }
+  nextStep();
+}
+function resetTrace(){clearTimeout(traceTimer);traceData=null;traceIdx=0;document.getElementById('trace-steps').textContent='Select a path and click Animate.';document.getElementById('lookup-log').innerHTML='<div class="linfo">&gt; Reset.</div>';}
+function lkLog(m,c='linfo'){const el=document.getElementById('lookup-log');const d=document.createElement('div');d.className=c;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+
+// ===== JOURNAL =====
+const J_OPS=[
+  {label:'1. Allocate inode',detail:'Update inode bitmap: mark inode 500 as used',type:'meta'},
+  {label:'2. Write file data',detail:'Write file bytes to data block 350',type:'data'},
+  {label:'3. Update inode',detail:'Set inode 500: size=13, blocks=[350], timestamps',type:'meta'},
+  {label:'4. Update directory',detail:'Add entry "newfile.txt → inode 500" to parent dir block',type:'meta'},
+];
+let jStep=0,jEntries=[],crashed=false;
+function jLog(m,c='linfo'){const el=document.getElementById('journal-log');const d=document.createElement('div');d.className=c;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function renderJournalEntries(){
+  document.getElementById('journal-entries').innerHTML=jEntries.map(e=>
+    `<div class="journal-entry ${e.state}">[${e.state.toUpperCase()}] ${e.label}: ${e.detail}</div>`).join('')||'<div style="color:var(--text-ghost);font-size:11px;font-family:\'JetBrains Mono\',monospace">No journal entries yet.</div>';
+  document.getElementById('j-step').textContent=`${jStep} / 4`;
+  document.getElementById('j-count').textContent=jEntries.filter(e=>e.state==='committed').length;
+}
+function journalStep(){
+  if(crashed){jLog('System crashed! Use "Recover" to replay journal.','lfault');return;}
+  if(jStep>=J_OPS.length){jLog('All operations committed successfully.','ljournal');return;}
+  const op=J_OPS[jStep];
+  // In ordered mode: journal metadata ops; data written first
+  if(op.type==='data'){
+    jEntries.push({...op,state:'committed',note:'(data written directly, not journaled in ordered mode)'});
+    jLog(`[DATA] ${op.label} — written directly (ordered mode: data first)`,'lload');
+  }else{
+    jEntries.push({...op,state:'committed'});
+    jLog(`[JOURNAL] ${op.label} — journal entry written, then applied`,'ljournal');
+  }
+  jStep++;renderJournalEntries();
+}
+function simulateCrash(){
+  if(jStep===0){jLog('Nothing to crash — start stepping first.','lfault');return;}
+  crashed=true;
+  const lastEntry=jEntries[jEntries.length-1];
+  if(lastEntry)lastEntry.state='crash';
+  jLog('⚡ POWER LOSS during operation '+jStep+'. Incomplete write!','lfault');
+  jLog('On next boot: journal replayed. Metadata stays consistent.','linfo');
+  renderJournalEntries();
+}
+function journalRecover(){
+  if(!crashed){jLog('No crash to recover from.','linfo');return;}
+  jEntries.forEach(e=>{if(e.state!=='crash')e.state='replayed';else e.state='replayed';});
+  crashed=false;
+  jLog('Recovery: journal scanned. Committed entries re-applied.','ljournal');
+  jLog('File system consistent. No fsck needed.','lhit');
+  renderJournalEntries();
+}
+function resetJournal(){jStep=0;jEntries=[];crashed=false;renderJournalEntries();document.getElementById('journal-log').innerHTML='<div class="linfo">&gt; Reset.</div>';}
+renderJournalEntries();
+
+function switchTab(id){
+  ['inode','lookup','journal'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);p.style.display=t===id?'block':'none';p.classList.toggle('active',t===id);
+  });
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+</script>
+</body>
+</html>

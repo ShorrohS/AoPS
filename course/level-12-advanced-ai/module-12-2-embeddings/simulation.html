@@ -1,0 +1,427 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 12.2 — Embeddings and Vector Databases</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out) forwards}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast),color var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}.zen-btn.primary:hover{background:#333}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:760px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border-paper)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:110px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs);margin-top:8px}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+canvas{display:block;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs)}
+.result-row{display:flex;align-items:center;gap:8px;padding:7px 10px;margin-bottom:3px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);background:var(--bg-canvas);transition:border-color .2s}
+.result-row.top{border-color:var(--accent-gold);background:rgba(139,105,20,0.05)}
+.result-row.match{border-color:var(--accent-red);background:rgba(200,42,42,0.05)}
+.sim-bar{height:6px;border-radius:2px;background:var(--accent-gold);min-width:4px;transition:width .3s}
+.word-chip{display:inline-block;padding:3px 8px;margin:2px;border-radius:var(--radius-xs);font-family:'JetBrains Mono',monospace;font-size:11px;border:1px solid var(--border-paper);background:var(--bg-canvas);color:var(--text-body);cursor:pointer;transition:all .15s}
+.word-chip:hover{border-color:var(--accent-indigo);color:var(--accent-indigo)}
+.word-chip.selected{border-color:var(--accent-red);background:rgba(200,42,42,0.1);color:var(--accent-red)}
+input[type=text]{background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);color:var(--text-sumi);font-family:'JetBrains Mono',monospace;font-size:13px;padding:8px 10px;width:100%}
+input[type=text]:focus{outline:none;border-color:var(--accent-indigo)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 12.2 — Embeddings and Vector Databases</h1>
+  <p class="zen-subtitle">Word Embeddings · Cosine Similarity · Vector Search</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('embed')">Word Embeddings</div>
+  <div class="zen-tab" onclick="switchTab('similarity')">Cosine Similarity</div>
+  <div class="zen-tab" onclick="switchTab('vecdb')">Vector Search</div>
+</div>
+
+<!-- WORD EMBEDDINGS -->
+<div id="panel-embed" class="panel active">
+  <div class="zen-intro">
+    <strong>Embeddings map discrete tokens to continuous vectors.</strong> Words with similar meanings land near each other in vector space. Famous result: <em>king − man + woman ≈ queen</em>. The geometry of the space encodes semantic relationships.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Word arithmetic</div>
+      <div style="font-size:12px;color:var(--text-body);margin-bottom:12px;line-height:1.9">
+        Try: <span style="font-family:'JetBrains Mono',monospace;color:var(--accent-indigo)">king − man + woman</span><br>
+        Each word is a point in 2D space (real embeddings are 768–1536D).
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+        <select id="wa-a" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)"></select>
+        <span style="font-family:'JetBrains Mono',monospace;color:var(--text-muted)">−</span>
+        <select id="wa-b" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)"></select>
+        <span style="font-family:'JetBrains Mono',monospace;color:var(--text-muted)">+</span>
+        <select id="wa-c" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)"></select>
+        <button class="zen-btn primary" onclick="computeAnalogy()" style="padding:6px 12px">= ?</button>
+      </div>
+      <div id="analogy-result" style="font-family:'JetBrains Mono',monospace;font-size:13px;line-height:2;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:10px;min-height:50px;color:var(--text-muted)">
+        Result will appear here.
+      </div>
+      <div class="op-log" id="embed-log"><div class="linfo">> Select words and press = to compute the analogy vector.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">2D embedding space (click word to highlight)</div>
+      <canvas id="embed-canvas" width="320" height="280" style="width:100%;max-width:320px;cursor:pointer"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- COSINE SIMILARITY -->
+<div id="panel-similarity" class="panel">
+  <div class="zen-intro">
+    <strong>Cosine similarity measures the angle between two vectors.</strong> It ignores magnitude — only direction matters. Score of 1 = identical direction. Score of 0 = orthogonal (unrelated). Score of −1 = opposite. It's the standard metric for comparing text embeddings.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Compare sentences</div>
+      <div style="display:grid;gap:8px;margin-bottom:12px">
+        <div>
+          <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:4px">Sentence A</div>
+          <input type="text" id="sim-a" value="The dog played in the park">
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:4px">Sentence B</div>
+          <input type="text" id="sim-b" value="A puppy ran through the garden">
+        </div>
+      </div>
+      <button class="zen-btn primary" onclick="computeSimilarity()">Compute similarity</button>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:8px">
+        <button class="zen-btn" style="padding:4px 8px;font-size:10px" onclick="loadPair('similar')">Similar</button>
+        <button class="zen-btn" style="padding:4px 8px;font-size:10px" onclick="loadPair('unrelated')">Unrelated</button>
+        <button class="zen-btn" style="padding:4px 8px;font-size:10px" onclick="loadPair('opposite')">Opposite</button>
+        <button class="zen-btn" style="padding:4px 8px;font-size:10px" onclick="loadPair('paraphrase')">Paraphrase</button>
+      </div>
+      <div class="op-log" id="sim-log"><div class="linfo">> Similarity is computed from shared concepts in the (simulated) embedding space.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Similarity result</div>
+      <div id="sim-result" style="margin-bottom:14px">
+        <div style="color:var(--text-ghost);font-size:13px;padding:20px 0">Press Compute to see similarity.</div>
+      </div>
+      <div class="pane-title" style="margin-top:4px">Shared concepts</div>
+      <div id="sim-concepts" style="display:flex;flex-wrap:wrap;gap:4px;min-height:30px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- VECTOR SEARCH -->
+<div id="panel-vecdb" class="panel">
+  <div class="zen-intro">
+    <strong>A vector database stores embeddings and answers nearest-neighbour queries.</strong> Instead of keyword matching, semantic search finds documents with similar <em>meaning</em>. Type a query, embed it, then retrieve the closest documents by cosine similarity.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Document store</div>
+      <div id="doc-list" style="max-height:160px;overflow-y:auto;margin-bottom:10px"></div>
+      <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:6px">Search query</div>
+      <input type="text" id="vdb-query" value="machine learning model training" style="margin-bottom:8px">
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="vectorSearch()">▶ Semantic Search</button>
+        <button class="zen-btn" onclick="keywordSearch()">Keyword Search</button>
+        <button class="zen-btn danger" onclick="vdbReset()">↺ Reset</button>
+      </div>
+      <div class="op-log" id="vdb-log"><div class="linfo">> Semantic search finds related documents even without exact keyword matches.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Search results</div>
+      <div id="vdb-results" style="margin-bottom:10px">
+        <div style="color:var(--text-ghost);font-size:13px;padding:10px 0">Run a search to see results.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== WORD EMBEDDINGS =====
+// 2D embeddings (hand-crafted to show semantic clusters)
+const WORDS = {
+  king:   {x:0.8,  y:0.8,  group:'royalty'},
+  queen:  {x:0.8,  y:0.2,  group:'royalty'},
+  prince: {x:0.6,  y:0.75, group:'royalty'},
+  princess:{x:0.6, y:0.25, group:'royalty'},
+  man:    {x:0.5,  y:0.85, group:'gender'},
+  woman:  {x:0.5,  y:0.15, group:'gender'},
+  boy:    {x:0.3,  y:0.82, group:'gender'},
+  girl:   {x:0.3,  y:0.18, group:'gender'},
+  dog:    {x:0.15, y:0.6,  group:'animal'},
+  cat:    {x:0.15, y:0.4,  group:'animal'},
+  puppy:  {x:0.1,  y:0.65, group:'animal'},
+  kitten: {x:0.1,  y:0.35, group:'animal'},
+  paris:  {x:0.85, y:0.5,  group:'city'},
+  london: {x:0.78, y:0.55, group:'city'},
+  france: {x:0.9,  y:0.45, group:'country'},
+  england:{x:0.85, y:0.55, group:'country'},
+};
+const GROUP_COLORS={royalty:'#C82A2A',gender:'#1C2D42',animal:'#8B6914',city:'#3A3A3A',country:'#888880'};
+let selectedWord=null, analogyTarget=null;
+
+function populateSelects(){
+  const words=Object.keys(WORDS);
+  ['wa-a','wa-b','wa-c'].forEach((id,i)=>{
+    const sel=document.getElementById(id);
+    words.forEach(w=>{const o=document.createElement('option');o.value=w;o.textContent=w;sel.appendChild(o);});
+    sel.value=['king','man','woman'][i];
+  });
+}
+populateSelects();
+
+function cosineSim2d(a,b){
+  const dot=a.x*b.x+a.y*b.y;
+  const ma=Math.sqrt(a.x*a.x+a.y*a.y);
+  const mb=Math.sqrt(b.x*b.x+b.y*b.y);
+  return ma&&mb?dot/(ma*mb):0;
+}
+
+function computeAnalogy(){
+  const a=WORDS[document.getElementById('wa-a').value];
+  const b=WORDS[document.getElementById('wa-b').value];
+  const c=WORDS[document.getElementById('wa-c').value];
+  if(!a||!b||!c){embedLog('Select valid words','lerr');return;}
+  const target={x:a.x-b.x+c.x, y:a.y-b.y+c.y};
+  analogyTarget=target;
+  // find nearest word (excluding a,b,c)
+  const aw=document.getElementById('wa-a').value, bw=document.getElementById('wa-b').value, cw=document.getElementById('wa-c').value;
+  const scored=Object.entries(WORDS)
+    .filter(([w])=>w!==aw&&w!==bw&&w!==cw)
+    .map(([w,v])=>({w, sim:cosineSim2d(target,v)}))
+    .sort((a,b)=>b.sim-a.sim);
+  const best=scored[0];
+  document.getElementById('analogy-result').innerHTML=
+    `<span style="color:var(--text-muted)">${aw} − ${bw} + ${cw} =</span>\n` +
+    `<span style="color:var(--accent-red);font-size:1.2rem;font-weight:500"> ${best.w}</span>\n` +
+    `<span style="color:var(--text-muted);font-size:11px">(cos sim: ${best.sim.toFixed(3)})</span>\n\n` +
+    scored.slice(0,4).map(({w,sim})=>`  ${w}: ${sim.toFixed(3)}`).join('\n');
+  drawEmbeddings(best.w, target);
+  embedLog(`${aw} − ${bw} + ${cw} ≈ ${best.w} (sim=${best.sim.toFixed(3)})`,'lok');
+}
+
+function drawEmbeddings(highlight='', target=null){
+  const canvas=document.getElementById('embed-canvas'); if(!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.clientWidth||320,H=280;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+  ctx.fillStyle='#F8F7F3'; ctx.fillRect(0,0,W,H);
+  const pad=24;
+  const tx=x=>pad+x*(W-pad*2), ty=y=>pad+(1-y)*(H-pad*2);
+
+  // grid
+  ctx.strokeStyle='#E8E6DF'; ctx.lineWidth=0.8;
+  [0.25,0.5,0.75].forEach(v=>{
+    ctx.beginPath();ctx.moveTo(tx(v),pad);ctx.lineTo(tx(v),H-pad);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pad,ty(v));ctx.lineTo(W-pad,ty(v));ctx.stroke();
+  });
+
+  // axes
+  ctx.strokeStyle='#D8D6CE'; ctx.lineWidth=1.2;
+  ctx.beginPath();ctx.moveTo(pad,H/2);ctx.lineTo(W-pad,H/2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W/2,pad);ctx.lineTo(W/2,H-pad);ctx.stroke();
+
+  // target vector
+  if(target){
+    ctx.fillStyle='rgba(200,42,42,0.15)';ctx.strokeStyle='#C82A2A';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.arc(tx(target.x),ty(target.y),14,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#C82A2A';ctx.font='9px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText('target',tx(target.x),ty(target.y)+22);
+  }
+
+  // words
+  Object.entries(WORDS).forEach(([w,{x,y,group}])=>{
+    const cx=tx(x),cy=ty(y);
+    const isHL=w===highlight||w===selectedWord;
+    const col=GROUP_COLORS[group];
+    ctx.fillStyle=isHL?col:'rgba('+hexToRgb(col)+',0.5)';
+    ctx.strokeStyle=isHL?col:'transparent'; ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(cx,cy,isHL?8:5,0,Math.PI*2);ctx.fill();if(isHL)ctx.stroke();
+    ctx.fillStyle=isHL?col:'#888880';
+    ctx.font=(isHL?'bold ':'')+'10px Inter,sans-serif';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    ctx.fillText(w,cx,cy-10);
+  });
+}
+
+function hexToRgb(hex){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `${r},${g},${b}`;
+}
+
+document.getElementById('embed-canvas').addEventListener('click',function(e){
+  const rect=this.getBoundingClientRect();
+  const pad=24,pw=rect.width-pad*2,ph=280-pad*2;
+  const mx=(e.clientX-rect.left-pad)/pw;
+  const my=1-(e.clientY-rect.top-pad)/ph;
+  let closest=null,minD=Infinity;
+  Object.entries(WORDS).forEach(([w,{x,y}])=>{const d=Math.hypot(x-mx,y-my);if(d<minD){minD=d;closest=w;}});
+  if(minD<0.08){selectedWord=closest;drawEmbeddings(closest);embedLog(`Selected "${closest}" (group: ${WORDS[closest].group})`,'linfo');}
+});
+
+function embedLog(m,cls='lmuted'){const el=document.getElementById('embed-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+drawEmbeddings();
+
+// ===== COSINE SIMILARITY =====
+const CONCEPT_WORDS={
+  'dog':['pet','animal','puppy','bark','run','play'],
+  'cat':['pet','animal','kitten','meow'],
+  'park':['garden','outdoor','green','play','run','walk'],
+  'played':['run','play','game','fun','active'],
+  'machine':['computer','AI','model','train','learn','data'],
+  'learning':['train','model','data','AI','neural','deep'],
+  'neural':['network','model','layer','deep','AI','weights'],
+  'deep':['learning','neural','model','layer','AI'],
+  'paris':['france','city','europe','capital','culture'],
+  'london':['england','city','europe','capital','uk'],
+  'king':['queen','royal','power','throne','crown'],
+  'queen':['king','royal','power','throne','crown'],
+};
+
+const PAIRS={
+  similar:['The dog played in the park','A puppy ran through the garden'],
+  unrelated:['Quantum physics describes subatomic particles','The restaurant served delicious pasta tonight'],
+  opposite:['The sun rose in the morning','The moon appeared at midnight'],
+  paraphrase:['Machine learning models require training data','AI systems learn from datasets'],
+};
+
+function loadPair(k){const p=PAIRS[k];document.getElementById('sim-a').value=p[0];document.getElementById('sim-b').value=p[1];}
+
+function extractConcepts(text){
+  const words=text.toLowerCase().split(/\W+/).filter(w=>w.length>3);
+  const concepts=new Set();
+  words.forEach(w=>{
+    concepts.add(w);
+    if(CONCEPT_WORDS[w]) CONCEPT_WORDS[w].forEach(c=>concepts.add(c));
+  });
+  return [...concepts];
+}
+
+function computeSimilarity(){
+  const a=document.getElementById('sim-a').value;
+  const b=document.getElementById('sim-b').value;
+  const ca=new Set(extractConcepts(a));
+  const cb=new Set(extractConcepts(b));
+  const shared=[...ca].filter(c=>cb.has(c));
+  const union=new Set([...ca,...cb]);
+  const jaccard=union.size?shared.length/union.size:0;
+  // scale to cosine-like range 0–1
+  const sim=Math.min(0.98,jaccard*1.8+0.05*(1-jaccard));
+  const simFinal=parseFloat(sim.toFixed(3));
+  const label=simFinal>0.75?'Very similar':simFinal>0.5?'Somewhat similar':simFinal>0.3?'Loosely related':'Unrelated';
+  const col=simFinal>0.75?'var(--accent-gold)':simFinal>0.5?'var(--accent-indigo)':simFinal>0.3?'var(--text-muted)':'var(--accent-red)';
+
+  document.getElementById('sim-result').innerHTML=`
+    <div style="font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:300;color:${col};margin-bottom:6px">${simFinal}</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">${label}</div>
+    <div style="height:6px;background:var(--border-paper);border-radius:2px;overflow:hidden">
+      <div style="height:100%;width:${simFinal*100}%;background:${col};transition:width .4s;border-radius:2px"></div>
+    </div>
+    <div style="font-size:10px;color:var(--text-ghost);margin-top:4px">Shared concepts: ${shared.length} / Union: ${union.size}</div>`;
+  document.getElementById('sim-concepts').innerHTML=shared.map(c=>`<span style="padding:3px 8px;border-radius:var(--radius-xs);background:rgba(139,105,20,0.1);border:1px solid rgba(139,105,20,0.3);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent-gold)">${c}</span>`).join('');
+  simLog(`Cosine similarity: ${simFinal} (${label}) — ${shared.length} shared concepts`,'lok');
+}
+
+function simLog(m,cls='lmuted'){const el=document.getElementById('sim-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+
+// ===== VECTOR DATABASE =====
+const DOCS=[
+  {id:1,text:'Neural networks are trained using backpropagation and gradient descent.',topics:['neural','network','train','gradient','backprop','deep','learning','model']},
+  {id:2,text:'The Eiffel Tower is a famous landmark in Paris, France.',topics:['paris','france','tower','landmark','europe','city','tourism']},
+  {id:3,text:'Python is a popular programming language for data science and AI.',topics:['python','programming','data','science','AI','language','machine','learning']},
+  {id:4,text:'Deep learning models require large datasets and significant compute.',topics:['deep','learning','model','data','compute','GPU','train','neural']},
+  {id:5,text:'The Amazon rainforest is the world\'s largest tropical forest.',topics:['amazon','rainforest','forest','tropical','nature','environment','biodiversity']},
+  {id:6,text:'Transformers use self-attention to process sequences in parallel.',topics:['transformer','attention','sequence','model','neural','AI','deep','parallel']},
+  {id:7,text:'Vector databases enable fast semantic search over millions of documents.',topics:['vector','database','search','semantic','embedding','AI','retrieval']},
+  {id:8,text:'Climate change is causing rising sea levels and extreme weather events.',topics:['climate','environment','weather','global','temperature','ocean','change']},
+  {id:9,text:'GPT models generate text by predicting the next token iteratively.',topics:['GPT','model','generate','text','token','language','AI','predict']},
+  {id:10,text:'Rome was the capital of the Roman Empire for over 500 years.',topics:['rome','italy','history','empire','capital','ancient','europe','city']},
+];
+
+function docScore(doc, queryTopics){
+  const shared=queryTopics.filter(t=>doc.topics.includes(t));
+  return shared.length/Math.max(queryTopics.length,doc.topics.length);
+}
+
+function renderDocs(){
+  document.getElementById('doc-list').innerHTML=DOCS.map(d=>
+    `<div style="padding:6px 8px;margin-bottom:3px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);font-size:11px;color:var(--text-muted);background:var(--bg-canvas)">
+      <span style="font-family:'JetBrains Mono',monospace;color:var(--accent-indigo);font-size:10px">[${d.id}]</span> ${d.text.slice(0,60)}…
+    </div>`
+  ).join('');
+}
+
+function vectorSearch(){
+  const query=document.getElementById('vdb-query').value.toLowerCase();
+  const queryTopics=extractConcepts(query);
+  const scored=DOCS.map(d=>({...d,score:docScore(d,queryTopics)})).sort((a,b)=>b.score-a.score);
+  renderResults(scored,'semantic');
+  vdbLog(`Semantic search for "${query}" — top match: "${scored[0].text.slice(0,40)}…" (score ${scored[0].score.toFixed(2)})`,'lok');
+}
+
+function keywordSearch(){
+  const query=document.getElementById('vdb-query').value.toLowerCase();
+  const words=query.split(/\W+/).filter(w=>w.length>2);
+  const scored=DOCS.map(d=>{
+    const text=d.text.toLowerCase();
+    const hits=words.filter(w=>text.includes(w)).length;
+    return {...d,score:hits/words.length};
+  }).sort((a,b)=>b.score-a.score);
+  renderResults(scored,'keyword');
+  const hasResults=scored.some(d=>d.score>0);
+  vdbLog(`Keyword search: ${hasResults?scored.filter(d=>d.score>0).length+' matches':'no exact matches'}. Semantic finds ${scored.filter(d=>docScore(d,extractConcepts(query))>0.1).length}.`,'linfo');
+}
+
+function renderResults(scored, mode){
+  const el=document.getElementById('vdb-results');
+  const title=mode==='semantic'?'Semantic results (by meaning)':'Keyword results (exact matches)';
+  el.innerHTML=`<div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:8px">${title}</div>`+
+    scored.slice(0,5).map((d,i)=>{
+      const col=d.score>0.4?'var(--accent-gold)':d.score>0.2?'var(--accent-indigo)':'var(--text-ghost)';
+      return `<div class="result-row ${i===0&&d.score>0.2?'top':''}">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${col};min-width:36px">${(d.score*100).toFixed(0)}%</span>
+        <div style="flex:1">
+          <div style="height:3px;background:var(--border-paper);border-radius:2px;overflow:hidden;margin-bottom:4px">
+            <div style="height:100%;width:${d.score*100}%;background:${col};border-radius:2px"></div>
+          </div>
+          <div style="font-size:11px;color:${d.score>0?'var(--text-body)':'var(--text-ghost)'}">${d.text}</div>
+        </div>
+      </div>`;
+    }).join('');
+}
+
+function vdbReset(){document.getElementById('vdb-query').value='machine learning model training';document.getElementById('vdb-results').innerHTML='<div style="color:var(--text-ghost);font-size:13px;padding:10px 0">Run a search to see results.</div>';document.getElementById('vdb-log').innerHTML='<div class="linfo">> Reset.</div>';}
+function vdbLog(m,cls='lmuted'){const el=document.getElementById('vdb-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+renderDocs();
+
+// ===== TAB SWITCHING =====
+function switchTab(id){
+  ['embed','similarity','vecdb'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);
+    p.style.display=t===id?'block':'none';
+    p.classList.toggle('active',t===id);
+  });
+  if(id==='embed') setTimeout(drawEmbeddings,50);
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+window.addEventListener('resize',()=>drawEmbeddings());
+</script>
+</body>
+</html>

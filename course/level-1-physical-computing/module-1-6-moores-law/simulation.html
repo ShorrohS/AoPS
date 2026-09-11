@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 1.6 — Moore's Law Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-paper:#F4F3EF; --bg-washi:#FDFDFD; --bg-warm:#EEECE6; --bg-canvas:#F8F7F3;
+  --text-sumi:#1C1C1C; --text-body:#3A3A3A; --text-muted:#888880; --text-ghost:#BBBBB5;
+  --accent-red:#C82A2A; --accent-indigo:#1C2D42; --accent-gold:#8B6914; --accent-ink:#1C1C1C;
+  --border-hair:#1C1C1C; --border-light:#D8D6CE; --border-paper:#E8E6DF;
+  --radius-xs:2px; --ease-out:cubic-bezier(0.16,1,0.3,1); --t-fast:120ms; --t-med:240ms;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes zen-fade-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes zen-pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast) var(--ease-out),border-color var(--t-fast) var(--ease-out);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:zen-fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 20px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-hair);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast) var(--ease-out),color var(--t-fast) var(--ease-out)}
+.zen-btn:hover{background:var(--accent-ink);color:#FDFDFD}
+.zen-btn.primary{background:var(--accent-ink);color:#FDFDFD}.zen-btn.primary:hover{background:#2C2C2C}
+.zen-btn.active-toggle{background:var(--accent-indigo);color:#FDFDFD;border-color:var(--accent-indigo)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:1px;background:var(--border-hair);cursor:pointer;margin:14px 0;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;background:var(--accent-ink);border-radius:50%;cursor:grab}
+input[type=range]::-webkit-slider-thumb:active{background:var(--accent-red)}
+input[type=number]{background:var(--bg-washi);border:1px solid var(--border-hair);border-radius:var(--radius-xs);color:var(--text-sumi);font-family:'JetBrains Mono',monospace;font-size:14px;padding:8px 12px;width:140px}
+input[type=number]:focus{outline:none;border-color:var(--accent-indigo)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.gold{color:var(--accent-gold)}.pane-title.red{color:var(--accent-red)}.pane-title.indigo{color:var(--accent-indigo)}
+
+/* TIMELINE */
+.timeline-layout{display:grid;grid-template-columns:1fr 260px;gap:1px;background:var(--border-light)}
+@media(max-width:800px){.timeline-layout{grid-template-columns:1fr}}
+.chart-pane{background:var(--bg-canvas);padding:20px;position:relative}
+canvas.timeline-canvas{display:block;width:100%;border:1px solid var(--border-paper)}
+.chip-tooltip{
+  position:absolute;background:var(--bg-washi);border:1px solid var(--border-hair);
+  padding:10px 14px;font-size:12px;pointer-events:none;display:none;
+  border-radius:var(--radius-xs);box-shadow:0 4px 16px rgba(0,0,0,0.08);
+  min-width:160px;z-index:10;
+}
+.chip-tooltip .ct-name{font-family:'Noto Serif JP',serif;font-size:13px;color:var(--text-sumi);margin-bottom:4px}
+.chip-tooltip .ct-year{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)}
+.chip-tooltip .ct-count{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:300;color:var(--accent-red);margin-top:4px}
+.info-pane{background:var(--bg-washi);padding:20px}
+.chip-list{display:flex;flex-direction:column;gap:1px}
+.chip-item{background:var(--bg-warm);padding:8px 12px;cursor:pointer;transition:background var(--t-fast)}
+.chip-item:hover,.chip-item.highlighted{background:var(--bg-washi);border-left:2px solid var(--accent-red);padding-left:10px}
+.ci-year{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)}
+.ci-name{font-size:12px;color:var(--text-sumi);margin:1px 0}
+.ci-count{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-indigo)}
+.toggle-row{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+
+/* DOUBLING CALCULATOR */
+.calc-layout{display:grid;grid-template-columns:280px 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.calc-layout{grid-template-columns:1fr}}
+.ctrl-pane{background:var(--bg-warm);padding:22px}
+.field-group{margin-bottom:20px}
+.field-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);display:block;margin-bottom:8px}
+.result-row{background:var(--bg-washi);border:1px solid var(--border-paper);padding:14px 16px;border-radius:var(--radius-xs);margin-top:8px}
+.result-row .rv{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:300;color:var(--text-sumi)}
+.result-row .rl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-top:2px}
+.result-row.highlight .rv{color:var(--accent-red)}
+.doubling-chart-pane{background:var(--bg-canvas);padding:20px}
+canvas.doubling-canvas{display:block;width:100%;border:1px solid var(--border-paper);border-radius:var(--radius-xs)}
+.presets-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.preset-btn{padding:5px 12px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;border:1px solid var(--border-paper);background:var(--bg-washi);color:var(--text-muted);cursor:pointer;border-radius:var(--radius-xs);transition:all var(--t-fast)}
+.preset-btn:hover{border-color:var(--border-hair);color:var(--text-sumi)}
+
+/* PHOTOLITHOGRAPHY */
+.photo-layout{display:grid;grid-template-columns:1fr 280px;gap:1px;background:var(--border-light)}
+@media(max-width:800px){.photo-layout{grid-template-columns:1fr}}
+.wafer-pane{background:var(--bg-canvas);padding:20px}
+canvas.wafer-canvas{display:block;width:100%;border:1px solid var(--border-paper);border-radius:var(--radius-xs)}
+.photo-ctrl{background:var(--bg-warm);padding:22px}
+.node-display{font-family:'JetBrains Mono',monospace;font-size:2.8rem;font-weight:300;color:var(--accent-red);line-height:1;margin-bottom:4px;text-align:center}
+.node-label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);text-align:center;margin-bottom:16px}
+.density-stat{background:var(--bg-washi);border:1px solid var(--border-paper);padding:12px;margin-bottom:8px;border-radius:var(--radius-xs)}
+.density-stat .dv{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:300;color:var(--text-sumi)}
+.density-stat .dl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-top:2px}
+.era-badge{display:inline-block;padding:3px 10px;border:1px solid var(--border-paper);font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);border-radius:var(--radius-xs);margin-top:8px}
+@keyframes expose-anim{0%{opacity:0}100%{opacity:1}}
+</style>
+</head>
+<body>
+
+<div class="zen-header">
+  <h1 class="zen-title">Module 1.6 — Moore's Law</h1>
+  <p class="zen-subtitle">From 2,300 transistors to 28 billion in 53 years</p>
+</div>
+
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('timeline')">Transistor Timeline</div>
+  <div class="zen-tab" onclick="switchTab('doubling')">Doubling Calculator</div>
+  <div class="zen-tab" onclick="switchTab('photo')">Photolithography Scale</div>
+</div>
+
+<!-- ===== TIMELINE ===== -->
+<div id="panel-timeline" class="panel active">
+  <div class="zen-intro">
+    <strong>Interactive timeline 1971–2024.</strong> Hover any dot to see chip details. Toggle ideal vs actual to see where Moore's Law bent. The Y-axis is logarithmic — each gridline is 10× more transistors.
+  </div>
+  <div class="timeline-layout">
+    <div class="chart-pane">
+      <div class="toggle-row">
+        <button class="zen-btn active-toggle" id="btn-actual" onclick="toggleLine('actual')">Actual Data</button>
+        <button class="zen-btn active-toggle" id="btn-ideal" onclick="toggleLine('ideal')">Ideal Moore's Law</button>
+        <button class="zen-btn active-toggle" id="btn-slowed" onclick="toggleLine('slowed')">Slowed (post-2015)</button>
+      </div>
+      <canvas class="timeline-canvas" id="timelineCanvas" width="640" height="380"></canvas>
+      <div class="chip-tooltip" id="chip-tooltip">
+        <div class="ct-year" id="tt-year">—</div>
+        <div class="ct-name" id="tt-name">—</div>
+        <div class="ct-count" id="tt-count">—</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px" id="tt-node">—</div>
+      </div>
+    </div>
+    <div class="info-pane">
+      <div class="pane-title indigo">Chip Index</div>
+      <div class="chip-list" id="chip-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DOUBLING CALCULATOR ===== -->
+<div id="panel-doubling" class="panel">
+  <div class="zen-intro">
+    <strong>Exponential growth calculator.</strong> Enter a starting value, doubling period, and number of years. See how quickly doubling compounds. Compare Moore's Law to other doubling processes.
+  </div>
+  <div class="calc-layout">
+    <div class="ctrl-pane">
+      <div class="pane-title gold">Parameters</div>
+      <div class="presets-row">
+        <span style="font-size:10px;color:var(--text-muted);align-self:center;text-transform:uppercase;letter-spacing:.08em">Presets:</span>
+        <button class="preset-btn" onclick="loadPreset('moores')">Moore's Law</button>
+        <button class="preset-btn" onclick="loadPreset('slowed')">Slowed (3yr)</button>
+        <button class="preset-btn" onclick="loadPreset('rice')">Rice / chessboard</button>
+        <button class="preset-btn" onclick="loadPreset('covid')">Epidemic (weekly)</button>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Starting value</label>
+        <input type="number" id="start-val" value="2300" min="1">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Doubling period (years)</label>
+        <input type="range" id="period-slider" min="1" max="10" step="0.5" value="2">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted)">
+          <span>1 yr (fast)</span>
+          <span id="period-val" style="font-family:'JetBrains Mono',monospace;color:var(--text-sumi);font-weight:400">2 yrs</span>
+          <span>10 yrs (slow)</span>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Years elapsed</label>
+        <input type="range" id="years-slider" min="5" max="60" step="1" value="52">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted)">
+          <span>5</span>
+          <span id="years-val" style="font-family:'JetBrains Mono',monospace;color:var(--text-sumi);font-weight:400">52 yrs</span>
+          <span>60</span>
+        </div>
+      </div>
+      <div class="result-row highlight">
+        <div class="rv" id="result-val">154,000,000,000</div>
+        <div class="rl">Final value</div>
+      </div>
+      <div class="result-row" style="margin-top:6px">
+        <div class="rv" id="doublings-val">26</div>
+        <div class="rl">Doublings</div>
+      </div>
+      <div class="result-row" style="margin-top:6px">
+        <div class="rv" id="growth-factor">67,000,000×</div>
+        <div class="rl">Growth factor</div>
+      </div>
+    </div>
+    <div class="doubling-chart-pane">
+      <canvas class="doubling-canvas" id="doublingCanvas" width="540" height="400"></canvas>
+      <div style="margin-top:12px;font-size:12px;color:var(--text-muted);line-height:1.6" id="doubling-insight">
+        Intel 4004 (1971): 2,300 transistors → Apple M3 (2023): 25 billion.
+        Moore's Law predicts <span id="ml-prediction" style="font-family:'JetBrains Mono',monospace;color:var(--accent-red)">154 billion</span>.
+        Actual is ~6× below prediction — reflecting the post-2015 slowdown.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PHOTOLITHOGRAPHY ===== -->
+<div id="panel-photo" class="panel">
+  <div class="zen-intro">
+    <strong>Photolithography scale simulator.</strong> Drag the slider to change the process node. Watch how many transistors fit on a 1cm × 1cm chip area as the feature size shrinks.
+  </div>
+  <div class="photo-layout">
+    <div class="wafer-pane">
+      <canvas class="wafer-canvas" id="waferCanvas" width="520" height="400"></canvas>
+      <div style="margin-top:10px;font-size:12px;color:var(--text-muted);line-height:1.6;background:var(--bg-washi);border:1px solid var(--border-paper);padding:12px;border-radius:var(--radius-xs)">
+        Each coloured square = one transistor footprint at current node. The chip area is fixed (1cm²). Only the transistors change size.
+      </div>
+    </div>
+    <div class="photo-ctrl">
+      <div class="pane-title red">Process Node</div>
+      <div class="node-display" id="node-display">10 µm</div>
+      <div class="node-label">Feature size</div>
+      <input type="range" id="node-slider" min="0" max="9" step="1" value="0">
+      <div class="density-stat">
+        <div class="dv" id="transistors-per-cm2">1,000,000</div>
+        <div class="dl">Transistors per cm²</div>
+      </div>
+      <div class="density-stat">
+        <div class="dv" id="density-increase">1×</div>
+        <div class="dl">Density vs 10µm baseline</div>
+      </div>
+      <div class="density-stat">
+        <div class="dv" id="node-era">Early 1970s</div>
+        <div class="dl">Approximate era</div>
+      </div>
+      <div class="era-badge" id="era-chip">Intel 4004</div>
+
+      <div style="margin-top:20px">
+        <div class="pane-title gold" style="margin-bottom:10px">Key Milestones</div>
+        <div id="node-milestones" style="font-size:12px;color:var(--text-muted);line-height:1.8"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== CHIP DATA ====================
+const CHIPS = [
+  {year:1971, name:'Intel 4004',     count:2300,          node:'10µm',  company:'Intel'},
+  {year:1974, name:'Intel 8080',     count:4500,          node:'6µm',   company:'Intel'},
+  {year:1978, name:'Intel 8086',     count:29000,         node:'3µm',   company:'Intel'},
+  {year:1982, name:'Intel 286',      count:134000,        node:'1.5µm', company:'Intel'},
+  {year:1985, name:'Intel 386',      count:275000,        node:'1.5µm', company:'Intel'},
+  {year:1989, name:'Intel 486',      count:1200000,       node:'1µm',   company:'Intel'},
+  {year:1993, name:'Pentium',        count:3100000,       node:'800nm', company:'Intel'},
+  {year:1997, name:'Pentium II',     count:7500000,       node:'350nm', company:'Intel'},
+  {year:2000, name:'Pentium 4',      count:42000000,      node:'180nm', company:'Intel'},
+  {year:2003, name:'Pentium M',      count:77000000,      node:'130nm', company:'Intel'},
+  {year:2006, name:'Core 2 Duo',     count:291000000,     node:'65nm',  company:'Intel'},
+  {year:2008, name:'Core i7 (Nehalem)',count:731000000,   node:'45nm',  company:'Intel'},
+  {year:2012, name:'Ivy Bridge',     count:1400000000,    node:'22nm',  company:'Intel'},
+  {year:2014, name:'Broadwell',      count:1900000000,    node:'14nm',  company:'Intel'},
+  {year:2017, name:'Kaby Lake',      count:3000000000,    node:'14nm+', company:'Intel'},
+  {year:2020, name:'Apple M1',       count:16000000000,   node:'5nm',   company:'Apple/TSMC'},
+  {year:2022, name:'Apple M2',       count:20000000000,   node:'5nm',   company:'Apple/TSMC'},
+  {year:2023, name:'Apple M3',       count:25000000000,   node:'3nm',   company:'Apple/TSMC'},
+  {year:2024, name:'Apple M4',       count:28000000000,   node:'3nm',   company:'Apple/TSMC'},
+];
+
+// ==================== TIMELINE ====================
+const tCanvas = document.getElementById('timelineCanvas');
+const tCtx = tCanvas.getContext('2d');
+let showActual = true, showIdeal = true, showSlowed = true;
+let highlightedChip = null;
+
+const MARGIN = {top:24, right:24, bottom:48, left:72};
+
+function logY(count, minLog, maxLog, h) {
+  const norm = (Math.log10(count) - minLog) / (maxLog - minLog);
+  return MARGIN.top + (h - MARGIN.top - MARGIN.bottom) * (1 - norm);
+}
+
+function yearX(year, w) {
+  const minY = 1970, maxY = 2025;
+  return MARGIN.left + (year - minY) / (maxY - minY) * (w - MARGIN.left - MARGIN.right);
+}
+
+function formatCount(n) {
+  if (n >= 1e12) return (n/1e12).toFixed(1) + 'T';
+  if (n >= 1e9) return (n/1e9).toFixed(1) + 'B';
+  if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(0) + 'K';
+  return n.toString();
+}
+
+function drawTimeline() {
+  const W = tCanvas.width, H = tCanvas.height;
+  tCtx.clearRect(0,0,W,H);
+  tCtx.fillStyle = '#F8F7F3'; tCtx.fillRect(0,0,W,H);
+
+  const minLog = 3, maxLog = 11; // 10^3 to 10^11
+
+  // Grid lines
+  for (let log = minLog; log <= maxLog; log++) {
+    const y = logY(Math.pow(10, log), minLog, maxLog, H);
+    tCtx.strokeStyle = '#E8E6DF'; tCtx.lineWidth = 1;
+    tCtx.beginPath(); tCtx.moveTo(MARGIN.left, y); tCtx.lineTo(W - MARGIN.right, y); tCtx.stroke();
+    // Y axis label
+    tCtx.fillStyle = '#888880'; tCtx.font = '9px JetBrains Mono, monospace'; tCtx.textAlign = 'right';
+    const labels = {3:'1K', 4:'10K', 5:'100K', 6:'1M', 7:'10M', 8:'100M', 9:'1B', 10:'10B', 11:'100B'};
+    tCtx.fillText(labels[log] || '', MARGIN.left - 6, y + 3);
+  }
+
+  // X axis decade ticks
+  for (let yr = 1975; yr <= 2025; yr += 5) {
+    const x = yearX(yr, W);
+    tCtx.strokeStyle = '#E8E6DF'; tCtx.lineWidth = 1;
+    tCtx.beginPath(); tCtx.moveTo(x, MARGIN.top); tCtx.lineTo(x, H - MARGIN.bottom); tCtx.stroke();
+    tCtx.fillStyle = '#888880'; tCtx.font = '9px JetBrains Mono, monospace'; tCtx.textAlign = 'center';
+    tCtx.fillText(yr, x, H - MARGIN.bottom + 14);
+  }
+
+  // Axes
+  tCtx.strokeStyle = '#D8D6CE'; tCtx.lineWidth = 1;
+  tCtx.beginPath(); tCtx.moveTo(MARGIN.left, MARGIN.top); tCtx.lineTo(MARGIN.left, H - MARGIN.bottom); tCtx.stroke();
+  tCtx.beginPath(); tCtx.moveTo(MARGIN.left, H - MARGIN.bottom); tCtx.lineTo(W - MARGIN.right, H - MARGIN.bottom); tCtx.stroke();
+
+  // Ideal Moore's Law line (2× every 2 years from 1971 baseline of 2300)
+  if (showIdeal) {
+    tCtx.beginPath(); tCtx.strokeStyle = 'rgba(28,45,66,0.25)'; tCtx.lineWidth = 1.5; tCtx.setLineDash([5,4]);
+    const base = 2300, baseYear = 1971;
+    for (let yr = 1971; yr <= 2025; yr += 0.5) {
+      const pred = base * Math.pow(2, (yr - baseYear) / 2);
+      if (pred > Math.pow(10, maxLog)) break;
+      const x = yearX(yr, W), y = logY(pred, minLog, maxLog, H);
+      yr === 1971 ? tCtx.moveTo(x, y) : tCtx.lineTo(x, y);
+    }
+    tCtx.stroke(); tCtx.setLineDash([]);
+    tCtx.fillStyle = 'rgba(28,45,66,0.5)'; tCtx.font = '9px Inter, sans-serif'; tCtx.textAlign = 'left';
+    tCtx.fillText('Ideal Moore (×2 / 2yr)', MARGIN.left + 4, logY(base * Math.pow(2, 10), minLog, maxLog, H) - 6);
+  }
+
+  // Slowed line (post-2015 at 3yr doubling)
+  if (showSlowed) {
+    tCtx.beginPath(); tCtx.strokeStyle = 'rgba(200,42,42,0.3)'; tCtx.lineWidth = 1.5; tCtx.setLineDash([3,3]);
+    const pivot = CHIPS.find(c => c.year === 2014);
+    if (pivot) {
+      for (let yr = 2014; yr <= 2030; yr += 0.5) {
+        const pred = pivot.count * Math.pow(2, (yr - 2014) / 3);
+        if (pred > Math.pow(10, maxLog)) break;
+        const x = yearX(yr, W), y = logY(pred, minLog, maxLog, H);
+        yr === 2014 ? tCtx.moveTo(x, y) : tCtx.lineTo(x, y);
+      }
+    }
+    tCtx.stroke(); tCtx.setLineDash([]);
+    tCtx.fillStyle = 'rgba(200,42,42,0.5)'; tCtx.font = '9px Inter, sans-serif'; tCtx.textAlign = 'left';
+    const px = yearX(2019, W);
+    const slowed2019 = pivot ? pivot.count * Math.pow(2, 5/3) : 0;
+    if (slowed2019) tCtx.fillText('Slowed (×2 / 3yr)', px + 4, logY(slowed2019, minLog, maxLog, H) + 12);
+  }
+
+  // Actual data line
+  if (showActual) {
+    tCtx.beginPath(); tCtx.strokeStyle = '#1C2D42'; tCtx.lineWidth = 2;
+    CHIPS.forEach((chip, i) => {
+      const x = yearX(chip.year, W), y = logY(chip.count, minLog, maxLog, H);
+      i === 0 ? tCtx.moveTo(x, y) : tCtx.lineTo(x, y);
+    });
+    tCtx.stroke();
+
+    // Data points
+    CHIPS.forEach(chip => {
+      const x = yearX(chip.year, W), y = logY(chip.count, minLog, maxLog, H);
+      const isHL = highlightedChip === chip;
+      tCtx.beginPath();
+      tCtx.arc(x, y, isHL ? 6 : 4, 0, Math.PI*2);
+      tCtx.fillStyle = isHL ? '#C82A2A' : '#1C2D42';
+      tCtx.fill();
+      if (isHL) {
+        tCtx.strokeStyle = '#C82A2A'; tCtx.lineWidth = 1.5;
+        tCtx.beginPath(); tCtx.arc(x, y, 9, 0, Math.PI*2); tCtx.stroke();
+      }
+    });
+  }
+
+  // Axis titles
+  tCtx.save(); tCtx.translate(14, H/2); tCtx.rotate(-Math.PI/2);
+  tCtx.fillStyle = '#888880'; tCtx.font = '9px Inter, sans-serif'; tCtx.textAlign = 'center';
+  tCtx.fillText('Transistors (log scale)', 0, 0); tCtx.restore();
+  tCtx.fillStyle = '#888880'; tCtx.font = '9px Inter, sans-serif'; tCtx.textAlign = 'center';
+  tCtx.fillText('Year', W/2, H - 4);
+}
+
+function toggleLine(which) {
+  if (which === 'actual') showActual = !showActual;
+  else if (which === 'ideal') showIdeal = !showIdeal;
+  else showSlowed = !showSlowed;
+  const map = {actual:'btn-actual', ideal:'btn-ideal', slowed:'btn-slowed'};
+  const state = {actual:showActual, ideal:showIdeal, slowed:showSlowed};
+  document.getElementById(map[which]).className = 'zen-btn ' + (state[which] ? 'active-toggle' : '');
+  drawTimeline();
+}
+
+// Chip list
+function buildChipList() {
+  const el = document.getElementById('chip-list');
+  el.innerHTML = '';
+  [...CHIPS].reverse().forEach(chip => {
+    const div = document.createElement('div');
+    div.className = 'chip-item';
+    div.innerHTML = `<div class="ci-year">${chip.year}</div><div class="ci-name">${chip.name}</div><div class="ci-count">${formatCount(chip.count)}</div>`;
+    div.onmouseenter = () => { highlightedChip = chip; drawTimeline(); showTooltip(chip); div.classList.add('highlighted'); };
+    div.onmouseleave = () => { highlightedChip = null; drawTimeline(); hideTooltip(); div.classList.remove('highlighted'); };
+    el.appendChild(div);
+  });
+}
+
+function showTooltip(chip) {
+  const tt = document.getElementById('chip-tooltip');
+  document.getElementById('tt-year').textContent = chip.year;
+  document.getElementById('tt-name').textContent = chip.name;
+  document.getElementById('tt-count').textContent = formatCount(chip.count) + ' transistors';
+  document.getElementById('tt-node').textContent = chip.node + ' · ' + chip.company;
+  tt.style.display = 'block';
+}
+function hideTooltip() {
+  document.getElementById('chip-tooltip').style.display = 'none';
+}
+
+// Canvas hover
+tCanvas.addEventListener('mousemove', e => {
+  const rect = tCanvas.getBoundingClientRect();
+  const scaleX = tCanvas.width / rect.width, scaleY = tCanvas.height / rect.height;
+  const mx = (e.clientX - rect.left) * scaleX, my = (e.clientY - rect.top) * scaleY;
+  const W = tCanvas.width, H = tCanvas.height;
+  const minLog = 3, maxLog = 11;
+  let closest = null, minDist = 20;
+  CHIPS.forEach(chip => {
+    const x = yearX(chip.year, W), y = logY(chip.count, minLog, maxLog, H);
+    const d = Math.sqrt((mx-x)**2 + (my-y)**2);
+    if (d < minDist) { minDist = d; closest = chip; }
+  });
+  if (closest !== highlightedChip) {
+    highlightedChip = closest;
+    drawTimeline();
+    if (closest) {
+      const tt = document.getElementById('chip-tooltip');
+      showTooltip(closest);
+      tt.style.left = Math.min(e.clientX - rect.left + 15, rect.width - 190) + 'px';
+      tt.style.top = Math.max(e.clientY - rect.top - 60, 10) + 'px';
+    } else hideTooltip();
+  }
+});
+tCanvas.addEventListener('mouseleave', () => { highlightedChip = null; drawTimeline(); hideTooltip(); });
+
+// ==================== DOUBLING CALCULATOR ====================
+const dCanvas = document.getElementById('doublingCanvas');
+const dCtx = dCanvas.getContext('2d');
+const periodSlider = document.getElementById('period-slider');
+const yearsSlider = document.getElementById('years-slider');
+const startInput = document.getElementById('start-val');
+
+function calcDoubling() {
+  const start = parseFloat(startInput.value) || 2300;
+  const period = parseFloat(periodSlider.value);
+  const years = parseInt(yearsSlider.value);
+  const doublings = years / period;
+  const final = start * Math.pow(2, doublings);
+
+  document.getElementById('period-val').textContent = period + ' yr' + (period !== 1 ? 's' : '');
+  document.getElementById('years-val').textContent = years + ' yrs';
+  document.getElementById('doublings-val').textContent = doublings.toFixed(1);
+  document.getElementById('result-val').textContent = formatLargeNum(final);
+  document.getElementById('growth-factor').textContent = formatLargeNum(final/start) + '×';
+
+  // Update Moore's Law insight
+  const mlPred = 2300 * Math.pow(2, 52/2);
+  document.getElementById('ml-prediction').textContent = formatLargeNum(mlPred);
+
+  drawDoublingChart(start, period, years);
+}
+
+function formatLargeNum(n) {
+  if (n >= 1e15) return (n/1e15).toFixed(1) + ' quadrillion';
+  if (n >= 1e12) return (n/1e12).toFixed(1) + ' trillion';
+  if (n >= 1e9)  return (n/1e9).toFixed(1) + ' billion';
+  if (n >= 1e6)  return (n/1e6).toFixed(1) + ' million';
+  if (n >= 1e3)  return (n/1e3).toFixed(1) + 'K';
+  return n.toFixed(0);
+}
+
+function drawDoublingChart(start, period, years) {
+  const W = dCanvas.width, H = dCanvas.height;
+  dCtx.clearRect(0,0,W,H);
+  dCtx.fillStyle = '#F8F7F3'; dCtx.fillRect(0,0,W,H);
+
+  const m = {top:20, right:20, bottom:40, left:64};
+  const vals = [];
+  for (let y = 0; y <= years; y++) vals.push(start * Math.pow(2, y/period));
+  const maxVal = vals[vals.length-1];
+  const logMax = Math.log10(maxVal);
+  const logMin = Math.log10(start) - 0.2;
+
+  // Grid
+  for (let log = Math.floor(logMin); log <= Math.ceil(logMax); log++) {
+    const y = m.top + (H - m.top - m.bottom) * (1 - (log - logMin)/(logMax - logMin));
+    dCtx.strokeStyle = '#E8E6DF'; dCtx.lineWidth = 1;
+    dCtx.beginPath(); dCtx.moveTo(m.left, y); dCtx.lineTo(W - m.right, y); dCtx.stroke();
+    const labels = {0:'1', 1:'10', 2:'100', 3:'1K', 4:'10K', 5:'100K', 6:'1M', 7:'10M', 8:'100M', 9:'1B', 10:'10B', 11:'100B', 12:'1T', 13:'10T', 14:'100T'};
+    dCtx.fillStyle = '#888880'; dCtx.font = '9px JetBrains Mono, monospace'; dCtx.textAlign = 'right';
+    dCtx.fillText(labels[log] || '1e'+log, m.left - 4, y + 3);
+  }
+
+  // Plot line
+  dCtx.beginPath(); dCtx.strokeStyle = '#C82A2A'; dCtx.lineWidth = 2;
+  vals.forEach((v, i) => {
+    const x = m.left + (i/years) * (W - m.left - m.right);
+    const y = m.top + (H - m.top - m.bottom) * (1 - (Math.log10(v) - logMin)/(logMax - logMin));
+    i === 0 ? dCtx.moveTo(x, y) : dCtx.lineTo(x, y);
+  });
+  dCtx.stroke();
+
+  // Fill area
+  dCtx.beginPath();
+  vals.forEach((v, i) => {
+    const x = m.left + (i/years) * (W - m.left - m.right);
+    const y = m.top + (H - m.top - m.bottom) * (1 - (Math.log10(v) - logMin)/(logMax - logMin));
+    i === 0 ? dCtx.moveTo(x, y) : dCtx.lineTo(x, y);
+  });
+  dCtx.lineTo(m.left + (W - m.left - m.right), H - m.bottom);
+  dCtx.lineTo(m.left, H - m.bottom);
+  dCtx.closePath();
+  dCtx.fillStyle = 'rgba(200,42,42,0.06)'; dCtx.fill();
+
+  // Mark doublings
+  for (let d = 1; d <= years/period; d++) {
+    const yr = d * period;
+    const v = start * Math.pow(2, d);
+    const x = m.left + (yr/years) * (W - m.left - m.right);
+    const y = m.top + (H - m.top - m.bottom) * (1 - (Math.log10(v) - logMin)/(logMax - logMin));
+    dCtx.beginPath(); dCtx.arc(x, y, 3, 0, Math.PI*2);
+    dCtx.fillStyle = '#1C2D42'; dCtx.fill();
+  }
+
+  // X axis labels
+  for (let y = 0; y <= years; y += Math.ceil(years/8)) {
+    const x = m.left + (y/years) * (W - m.left - m.right);
+    dCtx.fillStyle = '#888880'; dCtx.font = '9px JetBrains Mono, monospace'; dCtx.textAlign = 'center';
+    dCtx.fillText('+' + y + 'yr', x, H - m.bottom + 14);
+  }
+}
+
+function loadPreset(name) {
+  const presets = {
+    moores:   {start:2300,    period:2, years:52},
+    slowed:   {start:1900000000, period:3, years:10},
+    rice:     {start:1,       period:1, years:64},
+    covid:    {start:100,     period:0.14, years:3},
+  };
+  const p = presets[name];
+  if (!p) return;
+  startInput.value = p.start;
+  periodSlider.value = p.period;
+  yearsSlider.value = p.years;
+  calcDoubling();
+}
+
+periodSlider.addEventListener('input', calcDoubling);
+yearsSlider.addEventListener('input', calcDoubling);
+startInput.addEventListener('input', calcDoubling);
+
+// ==================== PHOTOLITHOGRAPHY ====================
+const wCanvas = document.getElementById('waferCanvas');
+const wCtx = wCanvas.getContext('2d');
+
+const NODES = [
+  {nm:10000, label:'10 µm',  era:'Early 1970s',  chip:'Intel 4004',       color:'rgba(28,45,66,0.7)'},
+  {nm:3000,  label:'3 µm',   era:'Late 1970s',   chip:'Intel 8086',       color:'rgba(28,45,66,0.65)'},
+  {nm:1000,  label:'1 µm',   era:'Late 1980s',   chip:'Intel 486',        color:'rgba(28,45,66,0.6)'},
+  {nm:350,   label:'350 nm', era:'Mid 1990s',     chip:'Pentium II',       color:'rgba(139,105,20,0.55)'},
+  {nm:130,   label:'130 nm', era:'Early 2000s',   chip:'Pentium M',        color:'rgba(139,105,20,0.6)'},
+  {nm:65,    label:'65 nm',  era:'Mid 2000s',     chip:'Core 2 Duo',       color:'rgba(139,105,20,0.65)'},
+  {nm:22,    label:'22 nm',  era:'2012',          chip:'Ivy Bridge',       color:'rgba(200,42,42,0.5)'},
+  {nm:7,     label:'7 nm',   era:'2018–2020',     chip:'Apple A12',        color:'rgba(200,42,42,0.6)'},
+  {nm:5,     label:'5 nm',   era:'2020–2022',     chip:'Apple M1',         color:'rgba(200,42,42,0.65)'},
+  {nm:3,     label:'3 nm',   era:'2022–2024',     chip:'Apple M3',         color:'rgba(200,42,42,0.75)'},
+];
+
+function getTransistorsPerCm2(nm) {
+  // Approximate: transistor area ≈ (4nm)² for modern, scaled
+  // Base: 10µm → ~1M/cm² historically; scale by (10000/nm)^2
+  const base = 1e6; // 1M at 10µm
+  return Math.round(base * Math.pow(10000/nm, 2));
+}
+
+function drawWafer(nodeIdx) {
+  const W = wCanvas.width, H = wCanvas.height;
+  wCtx.clearRect(0,0,W,H);
+  wCtx.fillStyle = '#F8F7F3'; wCtx.fillRect(0,0,W,H);
+
+  const node = NODES[nodeIdx];
+  const chipW = 520, chipH = 360; // 1cm² chip display area (scaled)
+  const cx = 10, cy = 20;
+
+  // Chip background
+  wCtx.fillStyle = '#EEECE6'; wCtx.fillRect(cx, cy, chipW, chipH);
+  wCtx.strokeStyle = '#D8D6CE'; wCtx.lineWidth = 1; wCtx.strokeRect(cx, cy, chipW, chipH);
+
+  // Calculate how many transistors to show (limited for display)
+  const transistorsTotal = getTransistorsPerCm2(node.nm);
+  const displaySize = Math.max(4, Math.min(40, node.nm / 100));
+  const cols = Math.floor(chipW / (displaySize + 1));
+  const rows = Math.floor(chipH / (displaySize + 1));
+  const shown = Math.min(cols * rows, 8000);
+  const totalShown = cols * rows;
+
+  wCtx.fillStyle = node.color;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const x = cx + c * (displaySize + 1) + 1;
+      const y = cy + r * (displaySize + 1) + 1;
+      wCtx.fillRect(x, y, displaySize, displaySize);
+    }
+  }
+
+  // Label
+  wCtx.fillStyle = '#1C1C1C'; wCtx.font = 'bold 11px Inter, sans-serif'; wCtx.textAlign = 'left';
+  wCtx.fillText(`1 cm²  chip area — ${node.label} process`, cx, cy + chipH + 16);
+
+  const density = getTransistorsPerCm2(node.nm);
+  wCtx.font = '10px JetBrains Mono, monospace'; wCtx.fillStyle = '#888880';
+  wCtx.fillText(`≈ ${formatLargeNum(density)} transistors/cm²  (displayed: ${totalShown.toLocaleString()})`, cx, cy + chipH + 32);
+}
+
+const nodeSlider = document.getElementById('node-slider');
+function updateNode() {
+  const idx = parseInt(nodeSlider.value);
+  const node = NODES[idx];
+  const density = getTransistorsPerCm2(node.nm);
+  const baseDensity = getTransistorsPerCm2(10000);
+
+  document.getElementById('node-display').textContent = node.label;
+  document.getElementById('transistors-per-cm2').textContent = formatLargeNum(density);
+  document.getElementById('density-increase').textContent = Math.round(density/baseDensity).toLocaleString() + '×';
+  document.getElementById('node-era').textContent = node.era;
+  document.getElementById('era-chip').textContent = node.chip;
+
+  const milestones = [
+    `Feature width: ${node.nm >= 1000 ? (node.nm/1000)+'µm' : node.nm+'nm'}`,
+    `Transistor area: ~${Math.round(node.nm * node.nm / 1e6 * 10)/10} µm²`,
+    `vs 10µm: ${Math.round(density/baseDensity).toLocaleString()}× more dense`,
+  ];
+  document.getElementById('node-milestones').innerHTML = milestones.map(m => `<div>· ${m}</div>`).join('');
+  drawWafer(idx);
+}
+
+nodeSlider.addEventListener('input', updateNode);
+
+// ==================== TABS ====================
+function switchTab(id) {
+  document.querySelectorAll('.zen-tab').forEach((t,i) => t.classList.toggle('active', ['timeline','doubling','photo'][i] === id));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+}
+
+// ==================== BOOT ====================
+buildChipList();
+drawTimeline();
+calcDoubling();
+updateNode();
+</script>
+</body>
+</html>

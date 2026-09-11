@@ -1,0 +1,383 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 12.4 — AI Agents: Planning, Tool Use, Memory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes think{0%,100%{opacity:1}50%{opacity:.3}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out) forwards}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast),color var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}.zen-btn.primary:hover{background:#333}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.zen-btn.gold{border-color:var(--accent-gold);color:var(--accent-gold)}.zen-btn.gold:hover{background:var(--accent-gold);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:760px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border-paper)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:130px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs);margin-top:8px}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+/* Agent trace messages */
+.msg{padding:8px 12px;margin-bottom:4px;border-radius:var(--radius-xs);font-size:12px;line-height:1.6;animation:fade-in .2s var(--ease-out)}
+.msg-thought{background:rgba(28,45,66,0.07);border-left:3px solid var(--accent-indigo);color:var(--accent-indigo)}
+.msg-action{background:rgba(139,105,20,0.07);border-left:3px solid var(--accent-gold);color:var(--accent-gold)}
+.msg-obs{background:rgba(28,28,28,0.05);border-left:3px solid var(--border-light);color:var(--text-body)}
+.msg-final{background:rgba(200,42,42,0.07);border-left:3px solid var(--accent-red);color:var(--accent-red);font-weight:500}
+/* Tools */
+.tool-card{padding:10px 14px;margin-bottom:5px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);background:var(--bg-canvas);cursor:pointer;transition:all .2s}
+.tool-card:hover{border-color:var(--accent-indigo)}
+.tool-card.active{border-color:var(--accent-gold);background:rgba(139,105,20,0.06)}
+.tool-name{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:var(--text-sumi);margin-bottom:2px}
+.tool-desc{font-size:11px;color:var(--text-muted)}
+.tool-badge{display:inline-block;padding:2px 6px;border-radius:var(--radius-xs);font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;margin-right:4px}
+/* Memory */
+.mem-item{padding:8px 12px;margin-bottom:4px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);background:var(--bg-canvas);font-size:11px;display:flex;gap:8px;align-items:flex-start}
+.mem-type{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;padding:2px 6px;border-radius:var(--radius-xs);flex-shrink:0;margin-top:1px}
+.mem-episodic{background:rgba(28,45,66,0.1);color:var(--accent-indigo)}
+.mem-semantic{background:rgba(139,105,20,0.1);color:var(--accent-gold)}
+.mem-working{background:rgba(200,42,42,0.1);color:var(--accent-red)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 12.4 — AI Agents: Planning, Tool Use, Memory</h1>
+  <p class="zen-subtitle">ReAct Agent · Tool Calls · Memory Systems</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('react')">ReAct Agent</div>
+  <div class="zen-tab" onclick="switchTab('tools')">Tool Use</div>
+  <div class="zen-tab" onclick="switchTab('memory')">Memory Systems</div>
+</div>
+
+<!-- REACT AGENT -->
+<div id="panel-react" class="panel active">
+  <div class="zen-intro">
+    <strong>ReAct = Reasoning + Acting.</strong> The agent loops: Think (what do I need to do?) → Act (call a tool) → Observe (process the result) → repeat until done. This interleaving of reasoning and action lets LLMs solve multi-step problems that require external information.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Task for the agent</div>
+      <div style="display:grid;gap:5px;margin-bottom:10px">
+        <button class="zen-btn" style="text-align:left;padding:8px 12px" onclick="setTask('What is the current weather in Tokyo and should I bring an umbrella?')">
+          <div style="font-size:11px;color:var(--text-sumi)">Weather query</div>
+          <div style="font-size:10px;color:var(--text-muted)">Requires: weather tool, reasoning</div>
+        </button>
+        <button class="zen-btn" style="text-align:left;padding:8px 12px" onclick="setTask('Calculate 15% tip on a $47.50 restaurant bill, then search for nearby restaurants.')">
+          <div style="font-size:11px;color:var(--text-sumi)">Multi-tool task</div>
+          <div style="font-size:10px;color:var(--text-muted)">Requires: calculator + search</div>
+        </button>
+        <button class="zen-btn" style="text-align:left;padding:8px 12px" onclick="setTask('Find the population of Japan and compare it to the population of the UK.')">
+          <div style="font-size:11px;color:var(--text-sumi)">Research & compare</div>
+          <div style="font-size:10px;color:var(--text-muted)">Requires: search, reasoning</div>
+        </button>
+      </div>
+      <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:6px">Current task</div>
+      <div id="task-display" style="font-size:12px;color:var(--text-body);background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:10px;min-height:36px;margin-bottom:10px">Select a task above.</div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="reactStep()">↓ Think/Act</button>
+        <button class="zen-btn" onclick="reactRunAll()">▶ Run to end</button>
+        <button class="zen-btn danger" onclick="reactReset()">↺ Reset</button>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Agent trace (Thought → Action → Observation)</div>
+      <div id="react-trace" style="max-height:320px;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOOLS -->
+<div id="panel-tools" class="panel">
+  <div class="zen-intro">
+    <strong>Tools extend what an agent can do.</strong> The LLM outputs a structured tool call; the framework executes it and returns the result. Common tools: web search, calculator, code executor, file reader, API caller, database query. Click a tool to try it.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Available tools</div>
+      <div id="tool-list"></div>
+      <div class="pane-title" style="margin-top:14px">Tool input</div>
+      <input type="text" id="tool-input" value="population of Japan" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:7px 10px;color:var(--text-sumi);width:100%;margin-bottom:8px">
+      <button class="zen-btn primary" onclick="callSelectedTool()">▶ Call Tool</button>
+      <div class="op-log" id="tools-log"><div class="linfo">> Click a tool card to select it, then press Call Tool.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Tool call &amp; result</div>
+      <div id="tool-call-display" style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:10px;min-height:50px;margin-bottom:8px;color:var(--text-muted)">Call a tool to see the request/response.</div>
+      <div class="pane-title">Result</div>
+      <div id="tool-result-display" style="font-size:12px;line-height:1.8;color:var(--text-body);background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:10px;min-height:50px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MEMORY -->
+<div id="panel-memory" class="panel">
+  <div class="zen-intro">
+    <strong>Agents need memory to operate across turns and sessions.</strong> Working memory = the current context window. Episodic memory = past interactions stored and retrieved by embedding similarity. Semantic memory = learned facts. Procedural memory = learned skills/tool use patterns.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Interact with the agent</div>
+      <div style="margin-bottom:10px">
+        <input type="text" id="mem-input" placeholder="Say something to the agent…" value="My name is Alice and I prefer metric units." style="font-family:'Inter',sans-serif;font-size:13px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:8px 10px;color:var(--text-sumi);width:100%;margin-bottom:6px">
+        <div class="btn-row" style="margin-top:0">
+          <button class="zen-btn primary" onclick="memSend()">Send</button>
+          <button class="zen-btn" onclick="memRecall()">↑ Recall relevant memories</button>
+          <button class="zen-btn danger" onclick="memReset()">↺ Clear memory</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px">
+        <button class="zen-btn" style="padding:4px 8px;font-size:10px" onclick="setMemInput('What is my name?')">What is my name?</button>
+        <button class="zen-btn" style="padding:4px 8px;font-size:10px" onclick="setMemInput('Convert 5 miles to km')">Convert miles</button>
+        <button class="zen-btn" style="padding:4px 8px;font-size:10px" onclick="setMemInput('I moved to Tokyo last year')">Store new fact</button>
+        <button class="zen-btn" style="padding:4px 8px;font-size:10px" onclick="setMemInput('Where do I live?')">Where do I live?</button>
+      </div>
+      <div class="op-log" id="mem-log"><div class="linfo">> Agent remembers facts across turns using episodic + semantic memory.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Memory store</div>
+      <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;padding:2px 7px;border-radius:var(--radius-xs);background:rgba(28,45,66,0.1);color:var(--accent-indigo)">Episodic</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;padding:2px 7px;border-radius:var(--radius-xs);background:rgba(139,105,20,0.1);color:var(--accent-gold)">Semantic</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;padding:2px 7px;border-radius:var(--radius-xs);background:rgba(200,42,42,0.1);color:var(--accent-red)">Working</span>
+      </div>
+      <div id="mem-store" style="max-height:300px;overflow-y:auto"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== REACT AGENT =====
+const TASKS = {
+  weather: {
+    text:'What is the current weather in Tokyo and should I bring an umbrella?',
+    steps:[
+      {type:'thought', text:'I need to check the current weather in Tokyo. I\'ll use the weather tool.'},
+      {type:'action',  text:'TOOL CALL: weather(location="Tokyo")'},
+      {type:'obs',     text:'RESULT: Tokyo, Japan — 18°C, Overcast, 70% chance of rain. Humidity: 85%.'},
+      {type:'thought', text:'The forecast shows 70% chance of rain. That\'s quite likely, so I should recommend an umbrella.'},
+      {type:'final',   text:'The current weather in Tokyo is 18°C with overcast skies and a 70% chance of rain. Yes, you should bring an umbrella — rain is likely today.'},
+    ]
+  },
+  multitool: {
+    text:'Calculate 15% tip on a $47.50 restaurant bill, then search for nearby restaurants.',
+    steps:[
+      {type:'thought', text:'Two tasks: (1) calculate 15% of $47.50, (2) search for nearby restaurants. I\'ll start with the calculation.'},
+      {type:'action',  text:'TOOL CALL: calculator(expression="47.50 * 0.15")'},
+      {type:'obs',     text:'RESULT: 7.125 → rounded to $7.13'},
+      {type:'thought', text:'Tip is $7.13, total would be $54.63. Now I\'ll search for nearby restaurants.'},
+      {type:'action',  text:'TOOL CALL: search(query="restaurants near me")'},
+      {type:'obs',     text:'RESULT: [1] Sakura Bistro — 0.3km, 4.5★ [2] The Garden Café — 0.5km, 4.2★ [3] Noodle House — 0.8km, 4.7★'},
+      {type:'final',   text:'A 15% tip on $47.50 is $7.13 (total: $54.63). Nearby restaurants: Sakura Bistro (0.3km, 4.5★), The Garden Café (0.5km, 4.2★), Noodle House (0.8km, 4.7★).'},
+    ]
+  },
+  research: {
+    text:'Find the population of Japan and compare it to the population of the UK.',
+    steps:[
+      {type:'thought', text:'I need population data for Japan and the UK. I\'ll search for each.'},
+      {type:'action',  text:'TOOL CALL: search(query="population of Japan 2024")'},
+      {type:'obs',     text:'RESULT: Japan population (2024): approximately 123.3 million. Declining due to low birth rate.'},
+      {type:'thought', text:'Got Japan. Now searching for UK population.'},
+      {type:'action',  text:'TOOL CALL: search(query="population of United Kingdom 2024")'},
+      {type:'obs',     text:'RESULT: UK population (2024): approximately 67.7 million.'},
+      {type:'thought', text:'Now I can compare: Japan (123.3M) is about 1.82× larger than the UK (67.7M).'},
+      {type:'final',   text:'Japan\'s population (~123.3M) is about 1.8× larger than the UK (~67.7M). Japan is declining while the UK\'s population is slowly growing.'},
+    ]
+  }
+};
+
+let currentTask=null, reactStepIdx=0;
+
+function setTask(text){
+  const key=text.includes('weather')?'weather':text.includes('tip')?'multitool':'research';
+  currentTask=TASKS[key];
+  document.getElementById('task-display').textContent=text;
+  reactReset(false);
+  reactLog(`Task set: "${text.slice(0,50)}…"`,'linfo');
+}
+
+function reactReset(clearTask=true){
+  reactStepIdx=0;
+  document.getElementById('react-trace').innerHTML='';
+  if(clearTask){currentTask=null;document.getElementById('task-display').textContent='Select a task above.';}
+}
+
+function addMsg(type,text){
+  const el=document.getElementById('react-trace');
+  const cls={thought:'msg-thought',action:'msg-action',obs:'msg-obs',final:'msg-final'}[type];
+  const prefix={thought:'🤔 Thought','action':'⚡ Action','obs':'👁 Observation','final':'✅ Final Answer'}[type];
+  const d=document.createElement('div');
+  d.className=`msg ${cls}`;
+  d.innerHTML=`<strong>${prefix}:</strong> ${text}`;
+  el.appendChild(d);el.scrollTop=el.scrollHeight;
+}
+
+function reactStep(){
+  if(!currentTask){reactLog('Select a task first','lerr');return;}
+  if(reactStepIdx>=currentTask.steps.length){reactLog('Task complete — reset to run again','lmuted');return;}
+  const step=currentTask.steps[reactStepIdx++];
+  addMsg(step.type,step.text);
+  reactLog(`Step ${reactStepIdx}: ${step.type}`,'linfo');
+}
+
+function reactRunAll(){if(!currentTask){reactLog('Select a task first','lerr');return;}reactReset(false);while(reactStepIdx<currentTask.steps.length)reactStep();}
+
+function reactLog(m,cls='lmuted'){const el=document.getElementById('react-trace');} // log inside trace is enough
+
+// ===== TOOLS =====
+const TOOLS=[
+  {name:'search',       icon:'🔍', badge:'Web',        color:'var(--accent-indigo)', desc:'Searches the web for real-time information.',
+   call:(q)=>{const db={'population of japan':'Japan population (2024): ~123.3 million.','population of uk':'UK population (2024): ~67.7 million.','weather tokyo':'Tokyo: 18°C, 70% rain chance.','restaurants near me':'Sakura Bistro 0.3km ★4.5, The Garden Café 0.5km ★4.2, Noodle House 0.8km ★4.7','backpropagation':'Backpropagation: algorithm for computing gradients in neural networks via chain rule.','transformer':'Transformer: deep learning architecture using self-attention, introduced in 2017.'};const k=q.toLowerCase();return Object.entries(db).find(([key])=>k.includes(key.split(' ')[0]))?.[1]||`Search results for "${q}": [No cached result — in production this would hit a live search API]`;}},
+  {name:'calculator',   icon:'🔢', badge:'Math',       color:'var(--accent-gold)',   desc:'Evaluates mathematical expressions safely.',
+   call:(expr)=>{try{const r=Function('"use strict";return ('+expr.replace(/[^0-9+\-*/().\s%]/g,'')+')');return `${expr} = ${r()}`;}catch{return 'Error: invalid expression';}}},
+  {name:'weather',      icon:'🌤', badge:'API',        color:'var(--accent-red)',    desc:'Fetches current weather for a location.',
+   call:(loc)=>{const db={tokyo:'18°C, Overcast, 70% rain, Humidity 85%',london:'12°C, Partly cloudy, 20% rain',paris:'22°C, Sunny, 5% rain',berlin:'15°C, Cloudy, 40% rain'};const k=loc.toLowerCase();return db[Object.keys(db).find(c=>k.includes(c))]||`${loc}: 20°C, Partly cloudy (simulated)`;}},
+  {name:'code_exec',    icon:'⚙', badge:'Exec',       color:'var(--text-muted)',    desc:'Executes Python code in a sandbox.',
+   call:(code)=>{try{if(code.includes('print')){const m=code.match(/print\((.+)\)/);if(m)return 'Output: '+(Function('"use strict";return '+m[1].replace(/"/g,"'"))());}return 'Code executed. (Sandboxed execution)';}catch{return 'Execution error (sandbox simulation)';}}},
+  {name:'read_file',    icon:'📄', badge:'FS',         color:'var(--accent-gold)',   desc:'Reads a file from the agent\'s workspace.',
+   call:(path)=>`File "${path}" contents:\n# Sample document\nThis is simulated file content for path: ${path}`},
+  {name:'wikipedia',   icon:'📚', badge:'Knowledge',  color:'var(--accent-indigo)', desc:'Looks up a topic on Wikipedia.',
+   call:(q)=>{const db={backpropagation:'Backpropagation is a widely used algorithm for training artificial neural networks.',transformer:'The transformer is a deep learning architecture based on the self-attention mechanism.',python:'Python is a high-level, general-purpose programming language.',japan:'Japan is an island country in East Asia with a population of ~123 million.'};const k=q.toLowerCase();return db[Object.keys(db).find(key=>k.includes(key))]||`Wikipedia summary for "${q}": [Article content would appear here in production]`;}},
+];
+
+let selectedTool=null;
+
+function renderTools(){
+  document.getElementById('tool-list').innerHTML=TOOLS.map(t=>`
+    <div class="tool-card" id="tc-${t.name}" onclick="selectTool('${t.name}')">
+      <div class="tool-name">${t.icon} ${t.name}
+        <span class="tool-badge" style="background:${t.color}18;color:${t.color};border:1px solid ${t.color}40">${t.badge}</span>
+      </div>
+      <div class="tool-desc">${t.desc}</div>
+    </div>`).join('');
+}
+
+function selectTool(name){
+  selectedTool=TOOLS.find(t=>t.name===name);
+  document.querySelectorAll('.tool-card').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tc-'+name)?.classList.add('active');
+  toolsLog(`Selected tool: ${name}`,'linfo');
+}
+
+function callSelectedTool(){
+  if(!selectedTool){toolsLog('Select a tool first','lerr');return;}
+  const input=document.getElementById('tool-input').value.trim();
+  const callJson=`{\n  "tool": "${selectedTool.name}",\n  "input": "${input}"\n}`;
+  document.getElementById('tool-call-display').textContent=callJson;
+  const result=selectedTool.call(input);
+  document.getElementById('tool-result-display').textContent=result;
+  toolsLog(`${selectedTool.name}("${input.slice(0,30)}") → ${result.slice(0,60)}…`,'lok');
+}
+
+function toolsLog(m,cls='lmuted'){const el=document.getElementById('tools-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+renderTools();
+
+// ===== MEMORY =====
+let memStore=[];
+let turnCount=0;
+
+function memReset(){memStore=[];turnCount=0;renderMemory();document.getElementById('mem-log').innerHTML='<div class="linfo">> Memory cleared.</div>';}
+function setMemInput(v){document.getElementById('mem-input').value=v;}
+function memLog(m,cls='lmuted'){const el=document.getElementById('mem-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+
+function memSend(){
+  const text=document.getElementById('mem-input').value.trim();
+  if(!text){memLog('Enter a message','lerr');return;}
+  turnCount++;
+
+  // Extract facts to store
+  const lower=text.toLowerCase();
+  let agentReply='';
+
+  // Name extraction
+  if(lower.includes('name is ')){
+    const m=text.match(/name is (\w+)/i);
+    if(m){memStore.push({type:'semantic',text:`User name: ${m[1]}`,turn:turnCount});agentReply=`Nice to meet you, ${m[1]}! I'll remember your name.`;}
+  }
+  // Preference
+  else if(lower.includes('prefer ')||lower.includes('like ')){
+    memStore.push({type:'semantic',text:`User preference: "${text}"`,turn:turnCount});
+    agentReply=`Got it, I'll keep that preference in mind.`;
+  }
+  // Location
+  else if(lower.includes('moved to ')||lower.includes('live in ')||lower.includes('i\'m in ')){
+    const m=text.match(/(?:moved to|live in|i'm in) (\w[\w\s]*)/i);
+    if(m){memStore.push({type:'semantic',text:`User location: ${m[1].trim()}`,turn:turnCount});agentReply=`I've noted that you're in ${m[1].trim()}.`;}
+  }
+  // Recall name
+  else if(lower.includes('my name')||lower.includes('who am i')){
+    const nameMem=memStore.find(m=>m.text.startsWith('User name:'));
+    agentReply=nameMem?`Your name is ${nameMem.text.replace('User name: ','')} — I remembered that from turn ${nameMem.turn}.`:`I don't know your name yet. Please tell me!`;
+  }
+  // Recall location
+  else if(lower.includes('where do i live')||lower.includes('my location')){
+    const locMem=memStore.find(m=>m.text.startsWith('User location:'));
+    agentReply=locMem?`You live in ${locMem.text.replace('User location: ','')} (stored turn ${locMem.turn}).`:`I don't have your location stored yet.`;
+  }
+  // Calculator
+  else if(lower.includes('convert')||lower.includes('miles to km')){
+    const pref=memStore.find(m=>m.text.toLowerCase().includes('metric'));
+    agentReply=`5 miles = 8.047 km.${pref?' (Using metric units as per your preference.)':''}`;
+  }
+  // General
+  else {
+    agentReply=`Understood. I've recorded this turn in episodic memory.`;
+  }
+
+  // Always store episodic
+  memStore.push({type:'episodic',text:`Turn ${turnCount}: "${text}" → "${agentReply}"`,turn:turnCount});
+  // Working memory = current context
+  memStore=memStore.filter(m=>m.type!=='working');
+  memStore.push({type:'working',text:`Current turn: ${text}`,turn:turnCount});
+
+  renderMemory();
+  memLog(`Agent: ${agentReply}`,'lok');
+  document.getElementById('mem-input').value='';
+}
+
+function memRecall(){
+  const query=document.getElementById('mem-input').value.trim()||'recent context';
+  const relevant=memStore.filter(m=>m.text.toLowerCase().split(' ').some(w=>query.toLowerCase().includes(w)&&w.length>3));
+  memLog(`Recall for "${query}": ${relevant.length} relevant memories`,'linfo');
+  relevant.forEach(m=>memLog(`  [${m.type}] ${m.text.slice(0,60)}…`,'lmuted'));
+}
+
+function renderMemory(){
+  const el=document.getElementById('mem-store');
+  if(!memStore.length){el.innerHTML='<div style="color:var(--text-ghost);font-size:12px;padding:10px 0">No memories stored yet.</div>';return;}
+  el.innerHTML=[...memStore].reverse().map(m=>`
+    <div class="mem-item">
+      <span class="mem-type mem-${m.type}">${m.type}</span>
+      <span style="color:var(--text-body)">${m.text}</span>
+    </div>`).join('');
+}
+renderMemory();
+
+// ===== TAB SWITCHING =====
+function switchTab(id){
+  ['react','tools','memory'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);
+    p.style.display=t===id?'block':'none';
+    p.classList.toggle('active',t===id);
+  });
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+</script>
+</body>
+</html>

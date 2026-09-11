@@ -1,0 +1,427 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 11.3 — Regression and Classification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out) forwards}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast),color var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}.zen-btn.primary:hover{background:#333}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:760px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border-paper)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:100px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs);margin-top:8px}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+canvas{display:block;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);cursor:crosshair}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.stat-box{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:300;color:var(--text-sumi);display:block;line-height:1;margin-bottom:2px}
+.sv.red{color:var(--accent-red)}.sv.gold{color:var(--accent-gold)}.sv.indigo{color:var(--accent-indigo)}
+.sl{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:1px;background:var(--border-light);cursor:pointer;margin:8px 0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--text-sumi);border-radius:50%;cursor:grab}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 11.3 — Regression and Classification</h1>
+  <p class="zen-subtitle">Linear Regression · Logistic Regression · Decision Boundary</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('linreg')">Linear Regression</div>
+  <div class="zen-tab" onclick="switchTab('logreg')">Logistic Regression</div>
+  <div class="zen-tab" onclick="switchTab('boundary')">Decision Boundary</div>
+</div>
+
+<!-- LINEAR REGRESSION -->
+<div id="panel-linreg" class="panel active">
+  <div class="zen-intro">
+    <strong>Linear regression finds the line of best fit.</strong> It minimises the Mean Squared Error (MSE) — the average squared distance between predictions and actual values. Gradient descent adjusts slope (m) and intercept (b) iteratively until the loss is minimised.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Controls</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Click the canvas to add data points.</div>
+      <div style="display:grid;gap:8px;margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">Learning rate <span id="lbl-lr" style="font-family:'JetBrains Mono',monospace">0.01</span></label>
+        <input type="range" id="sl-lr" min="0.001" max="0.1" value="0.01" step="0.001" oninput="document.getElementById('lbl-lr').textContent=parseFloat(this.value).toFixed(3)">
+      </div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="linStep()">↓ Step</button>
+        <button class="zen-btn" onclick="linRun()">▶ Train (100)</button>
+        <button class="zen-btn danger" onclick="linReset()">↺ Reset</button>
+        <button class="zen-btn" onclick="linSample()">Load sample</button>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><span class="sv indigo" id="lin-m">0.00</span><span class="sl">Slope m</span></div>
+        <div class="stat-box"><span class="sv gold" id="lin-b">0.00</span><span class="sl">Intercept b</span></div>
+        <div class="stat-box"><span class="sv red" id="lin-mse">—</span><span class="sl">MSE</span></div>
+      </div>
+      <div class="op-log" id="lin-log"><div class="linfo">> Click canvas to add points, then train. y = mx + b minimises MSE.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Plot (click to add points)</div>
+      <canvas id="lin-canvas" width="300" height="260" style="width:100%;max-width:300px"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- LOGISTIC REGRESSION -->
+<div id="panel-logreg" class="panel">
+  <div class="zen-intro">
+    <strong>Logistic regression predicts probability of class membership.</strong> It applies a sigmoid function to a linear combination of features: σ(wx + b). The output is always between 0 and 1. The decision boundary is where the output equals 0.5.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Sigmoid function</div>
+      <div style="display:grid;gap:8px;margin-bottom:10px">
+        <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">Weight w <span id="lbl-w" style="font-family:'JetBrains Mono',monospace">1.5</span></label>
+        <input type="range" id="sl-w" min="-4" max="4" value="1.5" step="0.1" oninput="updateLogistic()">
+        <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">Bias b <span id="lbl-logb" style="font-family:'JetBrains Mono',monospace">0.0</span></label>
+        <input type="range" id="sl-logb" min="-4" max="4" value="0" step="0.1" oninput="updateLogistic()">
+      </div>
+      <div style="background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:12px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2">
+        <div>σ(x) = 1 / (1 + e<sup>-(wx+b)</sup>)</div>
+        <div>Decision boundary: x = <span id="db-x" style="color:var(--accent-red)">—</span></div>
+        <div>σ(0) = <span id="sig-0" style="color:var(--accent-gold)">—</span></div>
+        <div>σ(2) = <span id="sig-2" style="color:var(--accent-indigo)">—</span></div>
+        <div>σ(-2) = <span id="sig-n2" style="color:var(--text-muted)">—</span></div>
+      </div>
+      <div class="op-log" id="log-log"><div class="linfo">> Adjust w and b. Boundary is where σ = 0.5, i.e. wx+b = 0 → x = -b/w.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Sigmoid curve</div>
+      <canvas id="log-canvas" width="300" height="260" style="width:100%;max-width:300px;cursor:default"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- DECISION BOUNDARY -->
+<div id="panel-boundary" class="panel">
+  <div class="zen-intro">
+    <strong>A decision boundary separates classes in feature space.</strong> Click to place class A (●) and class B (◆) points. The classifier finds a linear boundary that best separates them. Points on the wrong side are misclassified.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Controls</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:11px;color:var(--text-muted)">Place:</span>
+        <button class="zen-btn" id="mode-a" onclick="setMode('A')" style="padding:5px 12px;font-size:10px">Class A ●</button>
+        <button class="zen-btn" id="mode-b" onclick="setMode('B')" style="padding:5px 12px;font-size:10px">Class B ◆</button>
+      </div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="fitBoundary()">▶ Fit boundary</button>
+        <button class="zen-btn danger" onclick="bdReset()">↺ Reset</button>
+        <button class="zen-btn" onclick="bdSample()">Load sample</button>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><span class="sv gold" id="bd-a">0</span><span class="sl">Class A</span></div>
+        <div class="stat-box"><span class="sv indigo" id="bd-b">0</span><span class="sl">Class B</span></div>
+        <div class="stat-box"><span class="sv red" id="bd-acc">—</span><span class="sl">Accuracy</span></div>
+      </div>
+      <div class="op-log" id="bd-log"><div class="linfo">> Click canvas to add points. Press Fit to find the linear decision boundary.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Feature space (click to add points)</div>
+      <canvas id="bd-canvas" width="300" height="280" style="width:100%;max-width:300px"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== LINEAR REGRESSION =====
+let linPoints=[], linM=0, linB=0, linEpoch=0;
+
+function linLog(m,cls='lmuted'){const el=document.getElementById('lin-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+
+function linReset(){linPoints=[];linM=0;linB=0;linEpoch=0;drawLin();document.getElementById('lin-m').textContent='0.00';document.getElementById('lin-b').textContent='0.00';document.getElementById('lin-mse').textContent='—';document.getElementById('lin-log').innerHTML='<div class="linfo">> Reset. Click canvas to add points.</div>';}
+
+function linSample(){
+  linReset();
+  const pts=[[0.1,0.2],[0.2,0.35],[0.3,0.45],[0.4,0.5],[0.5,0.65],[0.6,0.7],[0.7,0.8],[0.8,0.9]];
+  pts.forEach(([x,y])=>linPoints.push({x,y}));
+  drawLin();linLog(`Loaded ${pts.length} sample points`,'linfo');
+}
+
+function linStep(){
+  if(linPoints.length<2){linLog('Add at least 2 points','lerr');return;}
+  const lr=+document.getElementById('sl-lr').value;
+  const n=linPoints.length;
+  let dM=0,dB=0,mse=0;
+  linPoints.forEach(({x,y})=>{const pred=linM*x+linB;const err=pred-y;dM+=err*x;dB+=err;mse+=err*err;});
+  linM-=lr*(2/n)*dM; linB-=lr*(2/n)*dB; linEpoch++;
+  const mseFinal=mse/n;
+  document.getElementById('lin-m').textContent=linM.toFixed(3);
+  document.getElementById('lin-b').textContent=linB.toFixed(3);
+  document.getElementById('lin-mse').textContent=mseFinal.toFixed(4);
+  drawLin();
+  if(linEpoch%10===0) linLog(`Epoch ${linEpoch}: m=${linM.toFixed(3)}, b=${linB.toFixed(3)}, MSE=${mseFinal.toFixed(4)}`,'linfo');
+}
+
+function linRun(){for(let i=0;i<100;i++)linStep();linLog(`Training done (epoch ${linEpoch})`,'lok');}
+
+function drawLin(){
+  const canvas=document.getElementById('lin-canvas'); if(!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.clientWidth||300,H=260;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+  ctx.fillStyle='#F8F7F3'; ctx.fillRect(0,0,W,H);
+  const pad=30, pw=W-pad*2, ph=H-pad*2;
+  // axes
+  ctx.strokeStyle='#D8D6CE'; ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad,pad);ctx.lineTo(pad,H-pad);ctx.lineTo(W-pad,H-pad);ctx.stroke();
+  // axis labels
+  ctx.fillStyle='#888880';ctx.font='9px Inter,sans-serif';ctx.textAlign='center';
+  ctx.fillText('0',pad,H-pad+12);ctx.fillText('1',W-pad,H-pad+12);
+  ctx.fillText('1',pad-12,pad+4);ctx.fillText('0',pad-12,H-pad+4);
+  // regression line
+  if(linPoints.length>=2){
+    const x0=0,x1=1;
+    const y0=linM*x0+linB, y1=linM*x1+linB;
+    ctx.strokeStyle='#C82A2A'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(pad+x0*pw,H-pad-y0*ph); ctx.lineTo(pad+x1*pw,H-pad-y1*ph); ctx.stroke();
+    // residuals
+    linPoints.forEach(({x,y})=>{
+      const px=pad+x*pw, py=H-pad-y*ph;
+      const predY=linM*x+linB, ppY=H-pad-predY*ph;
+      ctx.strokeStyle='rgba(200,42,42,0.3)'; ctx.lineWidth=1; ctx.setLineDash([2,2]);
+      ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(px,ppY); ctx.stroke(); ctx.setLineDash([]);
+    });
+  }
+  // points
+  linPoints.forEach(({x,y})=>{
+    ctx.fillStyle='#1C2D42'; ctx.beginPath(); ctx.arc(pad+x*pw,H-pad-y*ph,4,0,Math.PI*2); ctx.fill();
+  });
+}
+
+document.getElementById('lin-canvas').addEventListener('click',function(e){
+  const rect=this.getBoundingClientRect();
+  const pad=30,pw=rect.width-pad*2,ph=260-pad*2;
+  const x=(e.clientX-rect.left-pad)/pw, y=1-(e.clientY-rect.top-pad)/ph;
+  if(x<0||x>1||y<0||y>1) return;
+  linPoints.push({x,y}); drawLin();
+  linLog(`Added point (${x.toFixed(2)}, ${y.toFixed(2)})`,'lmuted');
+});
+
+// ===== LOGISTIC REGRESSION =====
+function sigmoid(z){return 1/(1+Math.exp(-z));}
+
+function updateLogistic(){
+  const w=+document.getElementById('sl-w').value;
+  const b=+document.getElementById('sl-logb').value;
+  document.getElementById('lbl-w').textContent=w.toFixed(1);
+  document.getElementById('lbl-logb').textContent=b.toFixed(1);
+  const db=w!==0?(-b/w).toFixed(2):'∞';
+  document.getElementById('db-x').textContent=db;
+  document.getElementById('sig-0').textContent=sigmoid(w*0+b).toFixed(3);
+  document.getElementById('sig-2').textContent=sigmoid(w*2+b).toFixed(3);
+  document.getElementById('sig-n2').textContent=sigmoid(w*-2+b).toFixed(3);
+  drawLogistic(w,b);
+}
+
+function drawLogistic(w,b){
+  const canvas=document.getElementById('log-canvas'); if(!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.clientWidth||300,H=260;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+  ctx.fillStyle='#F8F7F3'; ctx.fillRect(0,0,W,H);
+  const pad=30,pw=W-pad*2,ph=H-pad*2;
+  // grid
+  ctx.strokeStyle='#E8E6DF'; ctx.lineWidth=0.8;
+  [0,0.25,0.5,0.75,1].forEach(v=>{
+    ctx.beginPath();ctx.moveTo(pad,H-pad-v*ph);ctx.lineTo(W-pad,H-pad-v*ph);ctx.stroke();
+    ctx.fillStyle='#BBBBB5';ctx.font='9px JetBrains Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(v.toFixed(2),pad-4,H-pad-v*ph+4);
+  });
+  // axes
+  ctx.strokeStyle='#D8D6CE'; ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(pad,pad);ctx.lineTo(pad,H-pad);ctx.lineTo(W-pad,H-pad);ctx.stroke();
+  // x-axis labels (-5 to 5)
+  ctx.fillStyle='#888880';ctx.font='9px JetBrains Mono,monospace';ctx.textAlign='center';
+  [-4,-2,0,2,4].forEach(v=>{
+    const px=pad+(v+5)/10*pw;
+    ctx.fillText(v,px,H-pad+12);
+  });
+  // 0.5 line
+  ctx.strokeStyle='rgba(139,105,20,0.4)'; ctx.lineWidth=1; ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(pad,H-pad-0.5*ph);ctx.lineTo(W-pad,H-pad-0.5*ph);ctx.stroke();
+  ctx.setLineDash([]);
+  // sigmoid curve
+  ctx.strokeStyle='#C82A2A'; ctx.lineWidth=2.5;
+  ctx.beginPath();
+  let first=true;
+  for(let px=0;px<=pw;px++){
+    const xv=(px/pw)*10-5; // -5 to 5
+    const yv=sigmoid(w*xv+b);
+    const cx=pad+px, cy=H-pad-yv*ph;
+    first?(ctx.moveTo(cx,cy),first=false):ctx.lineTo(cx,cy);
+  }
+  ctx.stroke();
+  // decision boundary marker
+  if(w!==0){
+    const dbX=-b/w;
+    if(dbX>=-5&&dbX<=5){
+      const px=pad+(dbX+5)/10*pw;
+      ctx.strokeStyle='#8B6914'; ctx.lineWidth=1.5; ctx.setLineDash([3,3]);
+      ctx.beginPath();ctx.moveTo(px,pad);ctx.lineTo(px,H-pad);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='#8B6914';ctx.font='10px JetBrains Mono,monospace';ctx.textAlign='center';
+      ctx.fillText(`x=${dbX.toFixed(1)}`,px,pad-4);
+    }
+  }
+}
+updateLogistic();
+
+// ===== DECISION BOUNDARY =====
+let bdPoints=[], bdMode='A', bdW=0, bdBias=0, bdFitted=false;
+
+function setMode(m){
+  bdMode=m;
+  document.getElementById('mode-a').className='zen-btn'+(m==='A'?' primary':'');
+  document.getElementById('mode-b').className='zen-btn'+(m==='B'?' primary':'');
+}
+setMode('A');
+
+function bdLog(m,cls='lmuted'){const el=document.getElementById('bd-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+
+function bdReset(){bdPoints=[];bdW=0;bdBias=0;bdFitted=false;drawBoundary();document.getElementById('bd-a').textContent=0;document.getElementById('bd-b').textContent=0;document.getElementById('bd-acc').textContent='—';document.getElementById('bd-log').innerHTML='<div class="linfo">> Reset. Click canvas to add points.</div>';}
+
+function bdSample(){
+  bdReset();
+  const a=[[0.2,0.3],[0.15,0.5],[0.3,0.4],[0.25,0.6],[0.1,0.45],[0.35,0.25]];
+  const b=[[0.6,0.6],[0.7,0.4],[0.75,0.7],[0.55,0.8],[0.8,0.5],[0.65,0.3]];
+  a.forEach(([x,y])=>bdPoints.push({x,y,cls:'A'}));
+  b.forEach(([x,y])=>bdPoints.push({x,y,cls:'B'}));
+  document.getElementById('bd-a').textContent=a.length;
+  document.getElementById('bd-b').textContent=b.length;
+  drawBoundary();bdLog('Sample loaded — press Fit','linfo');
+}
+
+function fitBoundary(){
+  if(bdPoints.length<4){bdLog('Add at least 4 points (2 per class)','lerr');return;}
+  const apts=bdPoints.filter(p=>p.cls==='A'), bpts=bdPoints.filter(p=>p.cls==='B');
+  if(!apts.length||!bpts.length){bdLog('Need both classes','lerr');return;}
+  // Simple: find midpoint between class centroids, normal direction
+  const ac={x:apts.reduce((s,p)=>s+p.x,0)/apts.length,y:apts.reduce((s,p)=>s+p.y,0)/apts.length};
+  const bc={x:bpts.reduce((s,p)=>s+p.x,0)/bpts.length,y:bpts.reduce((s,p)=>s+p.y,0)/bpts.length};
+  // weight vector = direction from A to B centroid
+  bdW={x:bc.x-ac.x,y:bc.y-ac.y};
+  // bias = negative dot of midpoint with weight
+  const mid={x:(ac.x+bc.x)/2,y:(ac.y+bc.y)/2};
+  bdBias=-(bdW.x*mid.x+bdW.y*mid.y);
+  bdFitted=true;
+  // compute accuracy
+  let correct=0;
+  bdPoints.forEach(p=>{
+    const score=bdW.x*p.x+bdW.y*p.y+bdBias;
+    const pred=score>0?'B':'A';
+    if(pred===p.cls) correct++;
+  });
+  const acc=(correct/bdPoints.length*100).toFixed(0);
+  document.getElementById('bd-acc').textContent=acc+'%';
+  drawBoundary();
+  bdLog(`Fitted. Accuracy: ${acc}% (${correct}/${bdPoints.length})`,'lok');
+}
+
+function drawBoundary(){
+  const canvas=document.getElementById('bd-canvas'); if(!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.clientWidth||300,H=280;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+  ctx.fillStyle='#F8F7F3'; ctx.fillRect(0,0,W,H);
+  const pad=20, pw=W-pad*2, ph=H-pad*2;
+
+  // decision region background
+  if(bdFitted){
+    for(let px=0;px<pw;px+=3){
+      for(let py=0;py<ph;py+=3){
+        const x=px/pw, y=1-py/ph;
+        const score=bdW.x*x+bdW.y*y+bdBias;
+        ctx.fillStyle=score>0?'rgba(28,45,66,0.04)':'rgba(139,105,20,0.04)';
+        ctx.fillRect(pad+px,pad+py,3,3);
+      }
+    }
+    // decision boundary line
+    // line where w·x + bias = 0
+    // parametrize: find two x values on canvas, compute y
+    if(Math.abs(bdW.y)>0.001){
+      const x1=0, y1=(-bdW.x*x1-bdBias)/bdW.y;
+      const x2=1, y2=(-bdW.x*x2-bdBias)/bdW.y;
+      ctx.strokeStyle='#C82A2A'; ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.moveTo(pad+x1*pw,pad+(1-y1)*ph);
+      ctx.lineTo(pad+x2*pw,pad+(1-y2)*ph);
+      ctx.stroke();
+    }
+  }
+
+  // axes
+  ctx.strokeStyle='#D8D6CE'; ctx.lineWidth=1;
+  ctx.strokeRect(pad,pad,pw,ph);
+
+  // points
+  bdPoints.forEach(p=>{
+    const px=pad+p.x*pw, py=pad+(1-p.y)*ph;
+    const isA=p.cls==='A';
+    // check misclassified
+    let misclass=false;
+    if(bdFitted){const score=bdW.x*p.x+bdW.y*p.y+bdBias;const pred=score>0?'B':'A';misclass=pred!==p.cls;}
+    ctx.fillStyle=misclass?'#C82A2A':isA?'#8B6914':'#1C2D42';
+    ctx.strokeStyle=misclass?'#C82A2A':'transparent';ctx.lineWidth=2;
+    if(isA){ctx.beginPath();ctx.arc(px,py,6,0,Math.PI*2);ctx.fill();}
+    else{ctx.save();ctx.translate(px,py);ctx.rotate(Math.PI/4);ctx.fillRect(-5,-5,10,10);ctx.restore();}
+    if(misclass){ctx.strokeStyle='#C82A2A';ctx.lineWidth=2;ctx.beginPath();ctx.arc(px,py,9,0,Math.PI*2);ctx.stroke();}
+  });
+}
+
+document.getElementById('bd-canvas').addEventListener('click',function(e){
+  const rect=this.getBoundingClientRect();
+  const pad=20,pw=rect.width-pad*2,ph=280-pad*2;
+  const x=(e.clientX-rect.left-pad)/pw, y=1-(e.clientY-rect.top-pad)/ph;
+  if(x<0||x>1||y<0||y>1)return;
+  bdPoints.push({x,y,cls:bdMode});
+  document.getElementById('bd-a').textContent=bdPoints.filter(p=>p.cls==='A').length;
+  document.getElementById('bd-b').textContent=bdPoints.filter(p=>p.cls==='B').length;
+  drawBoundary();
+  bdLog(`Added ${bdMode} at (${x.toFixed(2)}, ${y.toFixed(2)})`,'lmuted');
+});
+
+// ===== TAB SWITCHING =====
+function switchTab(id){
+  ['linreg','logreg','boundary'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);
+    p.style.display=t===id?'block':'none';
+    p.classList.toggle('active',t===id);
+  });
+  if(id==='linreg')   setTimeout(drawLin,50);
+  if(id==='logreg')   setTimeout(updateLogistic,50);
+  if(id==='boundary') setTimeout(drawBoundary,50);
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+window.addEventListener('resize',()=>{drawLin();updateLogistic();drawBoundary();});
+linSample();
+</script>
+</body>
+</html>

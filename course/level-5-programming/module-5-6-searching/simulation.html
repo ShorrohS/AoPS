@@ -1,0 +1,369 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 5.6 — Searching: Finding What You Need</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+/* Search array cells */
+.srch-strip{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:10px}
+.sc{width:36px;height:36px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;transition:all var(--t-fast)}
+.sc.active{border-color:var(--accent-red);background:rgba(200,42,42,0.1);color:var(--accent-red)}
+.sc.found{border-color:var(--accent-gold);background:rgba(139,105,20,0.12);color:var(--accent-gold)}
+.sc.eliminated{opacity:.25}
+.sc.mid-cell{border-color:var(--accent-indigo);background:rgba(28,45,66,0.08);color:var(--accent-indigo)}
+.sc-i{font-size:8px;color:var(--text-muted)}
+/* Stats */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.stat-box{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:300;color:var(--text-sumi);line-height:1;margin-bottom:2px;display:block}
+.sv.red{color:var(--accent-red)}.sv.gold{color:var(--accent-gold)}.sv.indigo{color:var(--accent-indigo)}
+.sl{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:120px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs)}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+/* Trie */
+.trie-node{display:inline-flex;flex-direction:column;align-items:center;gap:2px;margin:2px}
+.trie-char{width:32px;height:32px;border:1px solid var(--border-paper);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text-sumi);transition:all var(--t-fast)}
+.trie-char.word-end{border-color:var(--accent-gold);background:rgba(139,105,20,0.1);color:var(--accent-gold)}
+.trie-char.highlighted{border-color:var(--accent-red);background:rgba(200,42,42,0.1);color:var(--accent-red)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 5.6 — Searching: Finding What You Need</h1>
+  <p class="zen-subtitle">Linear vs Binary Search · Binary Search Variants · Trie Builder</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('search')">Search Race</div>
+  <div class="zen-tab" onclick="switchTab('variants')">BS Variants</div>
+  <div class="zen-tab" onclick="switchTab('trie')">Trie Builder</div>
+</div>
+
+<!-- LINEAR VS BINARY -->
+<div id="panel-search" class="panel active">
+  <div class="zen-intro"><strong>Same array, two search strategies.</strong> Linear scan checks every element. Binary search halves the range each step. For 1,000 elements, worst case: linear=1,000 steps, binary=10 steps.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Sorted array (16 elements)</div>
+      <div class="srch-strip" id="srch-main"></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text-muted)">Target:</span>
+        <select id="srch-target" style="font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)"></select>
+        <button class="zen-btn primary" onclick="srchBothStep()">↓ Step both</button>
+        <button class="zen-btn" onclick="srchRunAll()">Run to end</button>
+        <button class="zen-btn danger" onclick="srchInit()">↺ Reset</button>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><span class="sv red" id="lin-steps">0</span><span class="sl">Linear steps</span></div>
+        <div class="stat-box"><span class="sv indigo" id="bin-steps">0</span><span class="sl">Binary steps</span></div>
+        <div class="stat-box"><span class="sv gold" id="srch-result">—</span><span class="sl">Found at</span></div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title red" style="margin-bottom:4px">Linear search</div>
+      <div class="srch-strip" id="lin-strip" style="margin-bottom:14px"></div>
+      <div class="pane-title indigo" style="margin-bottom:4px">Binary search</div>
+      <div class="srch-strip" id="bin-strip" style="margin-bottom:10px"></div>
+      <div class="op-log" id="srch-log"><div class="linfo">> Select a target and step through both searches.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- BINARY SEARCH VARIANTS -->
+<div id="panel-variants" class="panel">
+  <div class="zen-intro"><strong>Binary search has many useful variants.</strong> Find first occurrence, last occurrence, or the insertion point — all in O(log n). The key difference: what you do when you find a match.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Array with duplicates</div>
+      <div class="srch-strip" id="var-strip"></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text-muted)">Target:</span>
+        <input id="var-target" type="number" value="3" style="font-family:'JetBrains Mono',monospace;font-size:13px;width:60px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+        <button class="zen-btn primary" onclick="varRun()">Run all variants</button>
+        <button class="zen-btn danger" onclick="varInit()">↺ Reset</button>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><span class="sv red" id="var-first">—</span><span class="sl">First occ.</span></div>
+        <div class="stat-box"><span class="sv gold" id="var-last">—</span><span class="sl">Last occ.</span></div>
+        <div class="stat-box"><span class="sv indigo" id="var-count">—</span><span class="sl">Count</span></div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Insertion point (bisect_left)</div>
+      <div style="margin-bottom:12px">
+        <input id="ins-target" type="number" value="4" style="font-family:'JetBrains Mono',monospace;font-size:13px;width:60px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi);margin-right:8px">
+        <button class="zen-btn primary" onclick="runInsert()">Find insertion point</button>
+      </div>
+      <div id="ins-result" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent-indigo);margin-bottom:10px">—</div>
+      <div class="op-log" id="var-log"><div class="linfo">> Enter a target and run all variants to see first/last/count and insertion point.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TRIE BUILDER -->
+<div id="panel-trie" class="panel">
+  <div class="zen-intro"><strong>A trie stores strings as paths.</strong> Insert words and type a prefix to find all words starting with it in O(prefix_length). Watch the shared prefix structure emerge as you add more words.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Words in trie</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+        <input id="trie-word" type="text" placeholder="Enter word" style="font-family:'JetBrains Mono',monospace;font-size:13px;flex:1;min-width:100px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:6px 10px;color:var(--text-sumi)">
+        <button class="zen-btn primary" onclick="trieInsert()">Insert</button>
+        <button class="zen-btn danger" onclick="trieClear()">↺ Clear</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px" id="trie-word-chips"></div>
+      <div class="pane-title indigo" style="margin-bottom:6px">Prefix search</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input id="trie-prefix" type="text" placeholder="Type prefix..." style="font-family:'JetBrains Mono',monospace;font-size:13px;flex:1;min-width:100px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:6px 10px;color:var(--text-sumi)">
+        <button class="zen-btn primary" onclick="trieSearch()">Search</button>
+      </div>
+      <div id="trie-matches" style="margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent-gold)"></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title red" style="margin-bottom:8px">Trie structure (text view)</div>
+      <div id="trie-display" style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;color:var(--text-muted);background:var(--bg-canvas);border:1px solid var(--border-paper);padding:12px;border-radius:var(--radius-xs);min-height:100px;max-height:200px;overflow-y:auto">
+        (empty trie — insert words)
+      </div>
+      <div class="stat-row" style="margin-top:10px">
+        <div class="stat-box"><span class="sv indigo" id="trie-nodes">0</span><span class="sl">Nodes</span></div>
+        <div class="stat-box"><span class="sv gold" id="trie-words">0</span><span class="sl">Words</span></div>
+        <div class="stat-box"><span class="sv red" id="trie-prefix-nodes">0</span><span class="sl">Shared prefix</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== LINEAR VS BINARY SEARCH =====
+const SRCH_DATA = [2,5,8,12,16,21,25,30,37,41,47,52,58,64,70,75];
+let linIdx=0, binLow=0, binHigh=SRCH_DATA.length-1, linDone=false, binDone=false, linSteps=0, binSteps=0, srchTarget=37;
+
+function srchLog(m,cls='lmuted'){const el=document.getElementById('srch-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+
+function srchInit() {
+  linIdx=0; binLow=0; binHigh=SRCH_DATA.length-1; linDone=false; binDone=false; linSteps=0; binSteps=0;
+  document.getElementById('lin-steps').textContent=0; document.getElementById('bin-steps').textContent=0; document.getElementById('srch-result').textContent='—';
+  document.getElementById('srch-log').innerHTML='<div class="linfo">> Select a target and step through both searches.</div>';
+  // Target dropdown
+  const sel = document.getElementById('srch-target');
+  sel.innerHTML = SRCH_DATA.map(v=>`<option value="${v}">${v}</option>`).join('') + '<option value="99">99 (not found)</option>';
+  sel.value = 37;
+  renderSrchMain(); renderLinStrip(-1,-1); renderBinStrip(-1,0,SRCH_DATA.length-1,-1);
+}
+
+function renderSrchMain() {
+  document.getElementById('srch-main').innerHTML = SRCH_DATA.map((v,i)=>`<div class="sc"><span class="sc-i">${i}</span>${v}</div>`).join('');
+}
+function renderLinStrip(found, current) {
+  document.getElementById('lin-strip').innerHTML = SRCH_DATA.map((v,i)=>{
+    let cls='sc';
+    if(i===found) cls+=' found';
+    else if(i===current) cls+=' active';
+    else if(i<current) cls+=' eliminated';
+    return `<div class="${cls}"><span class="sc-i">${i}</span>${v}</div>`;
+  }).join('');
+}
+function renderBinStrip(found,low,high,mid) {
+  document.getElementById('bin-strip').innerHTML = SRCH_DATA.map((v,i)=>{
+    let cls='sc';
+    if(i===found) cls+=' found';
+    else if(i===mid) cls+=' mid-cell';
+    else if(i<low||i>high) cls+=' eliminated';
+    return `<div class="${cls}"><span class="sc-i">${i}</span>${v}</div>`;
+  }).join('');
+}
+
+function srchBothStep() {
+  srchTarget = parseInt(document.getElementById('srch-target').value);
+  // Linear step
+  if(!linDone) {
+    linSteps++;
+    if(SRCH_DATA[linIdx]===srchTarget) {
+      srchLog(`Linear: FOUND ${srchTarget} at index ${linIdx} after ${linSteps} steps`,'lok');
+      renderLinStrip(linIdx,linIdx); linDone=true;
+    } else {
+      renderLinStrip(-1,linIdx);
+      srchLog(`Linear: arr[${linIdx}]=${SRCH_DATA[linIdx]} ≠ ${srchTarget}`,'lmuted');
+      linIdx++;
+      if(linIdx>=SRCH_DATA.length){srchLog(`Linear: NOT FOUND (${linSteps} steps)`,'lerr'); linDone=true; renderLinStrip(-1,SRCH_DATA.length);}
+    }
+    document.getElementById('lin-steps').textContent=linSteps;
+  }
+  // Binary step
+  if(!binDone) {
+    if(binLow>binHigh){srchLog(`Binary: NOT FOUND (${binSteps} steps)`,'lerr');binDone=true;return;}
+    const mid=Math.floor((binLow+binHigh)/2); binSteps++;
+    renderBinStrip(-1,binLow,binHigh,mid);
+    if(SRCH_DATA[mid]===srchTarget){
+      srchLog(`Binary: FOUND ${srchTarget} at index ${mid} after ${binSteps} steps`,'lok');
+      renderBinStrip(mid,binLow,binHigh,mid); binDone=true;
+      document.getElementById('srch-result').textContent='idx '+mid;
+    } else if(SRCH_DATA[mid]<srchTarget){srchLog(`Binary: arr[${mid}]=${SRCH_DATA[mid]} < ${srchTarget} → go right`,'linfo');binLow=mid+1;}
+    else{srchLog(`Binary: arr[${mid}]=${SRCH_DATA[mid]} > ${srchTarget} → go left`,'linfo');binHigh=mid-1;}
+    document.getElementById('bin-steps').textContent=binSteps;
+  }
+}
+function srchRunAll(){let g=50;while((!linDone||!binDone)&&g-->0)srchBothStep();}
+
+srchInit();
+
+// ===== BINARY SEARCH VARIANTS =====
+const VAR_DATA = [1,2,2,3,3,3,4,4,5,6,6,7];
+
+function varInit() {
+  document.getElementById('var-first').textContent='—';
+  document.getElementById('var-last').textContent='—';
+  document.getElementById('var-count').textContent='—';
+  document.getElementById('ins-result').textContent='—';
+  document.getElementById('var-log').innerHTML='<div class="linfo">> Run variants to see results.</div>';
+  document.getElementById('var-strip').innerHTML = VAR_DATA.map((v,i)=>`<div class="sc"><span class="sc-i">${i}</span>${v}</div>`).join('');
+}
+
+function findFirst(arr,t){let lo=0,hi=arr.length-1,res=-1;while(lo<=hi){const m=lo+hi>>1;if(arr[m]===t){res=m;hi=m-1;}else if(arr[m]<t)lo=m+1;else hi=m-1;}return res;}
+function findLast(arr,t){let lo=0,hi=arr.length-1,res=-1;while(lo<=hi){const m=lo+hi>>1;if(arr[m]===t){res=m;lo=m+1;}else if(arr[m]<t)lo=m+1;else hi=m-1;}return res;}
+function bisectLeft(arr,t){let lo=0,hi=arr.length;while(lo<hi){const m=lo+hi>>1;if(arr[m]<t)lo=m+1;else hi=m;}return lo;}
+
+function varRun() {
+  const t = parseInt(document.getElementById('var-target').value)||3;
+  const first=findFirst(VAR_DATA,t), last=findLast(VAR_DATA,t);
+  document.getElementById('var-first').textContent=first>=0?first:'not found';
+  document.getElementById('var-last').textContent=last>=0?last:'not found';
+  document.getElementById('var-count').textContent=first>=0?last-first+1:0;
+  // Highlight
+  document.getElementById('var-strip').innerHTML = VAR_DATA.map((v,i)=>{
+    let cls='sc';
+    if(v===t) cls+=' found';
+    if(i===first||i===last) cls+=' active';
+    return `<div class="${cls}"><span class="sc-i">${i}</span>${v}</div>`;
+  }).join('');
+  const vlog=document.getElementById('var-log');
+  vlog.innerHTML='';
+  const d1=document.createElement('div');d1.className='linfo';d1.textContent=`> find_first(${t}) → index ${first} [keep going left on match]`;vlog.appendChild(d1);
+  const d2=document.createElement('div');d2.className='lok';d2.textContent=`> find_last(${t})  → index ${last} [keep going right on match]`;vlog.appendChild(d2);
+  const d3=document.createElement('div');d3.className='lmuted';d3.textContent=`> count = last - first + 1 = ${first>=0?last-first+1:0}`;vlog.appendChild(d3);
+}
+
+function runInsert() {
+  const t=parseInt(document.getElementById('ins-target').value)||4;
+  const pos=bisectLeft(VAR_DATA,t);
+  document.getElementById('ins-result').textContent=`Insert ${t} at index ${pos} → [${[...VAR_DATA.slice(0,pos),t,...VAR_DATA.slice(pos)].join(',')}]`;
+}
+
+varInit();
+
+// ===== TRIE =====
+let trie = {children:{}, isEnd:false};
+let trieWords = [];
+
+function trieInsertWord(word) {
+  let node = trie;
+  for(const ch of word.toLowerCase()) {
+    if(!node.children[ch]) node.children[ch]={children:{},isEnd:false};
+    node = node.children[ch];
+  }
+  node.isEnd = true;
+}
+
+function trieCollect(node, prefix, results) {
+  if(node.isEnd) results.push(prefix);
+  for(const [ch, child] of Object.entries(node.children)) trieCollect(child, prefix+ch, results);
+}
+
+function trieStartsWith(prefix) {
+  let node = trie;
+  for(const ch of prefix.toLowerCase()) {
+    if(!node.children[ch]) return [];
+    node = node.children[ch];
+  }
+  const res=[];
+  trieCollect(node, prefix.toLowerCase(), res);
+  return res;
+}
+
+function countNodes(node) {
+  return 1 + Object.values(node.children).reduce((s,c)=>s+countNodes(c),0);
+}
+
+function trieToText(node, prefix='', indent='') {
+  let out='';
+  for(const [ch, child] of Object.entries(node.children)) {
+    out += indent + ch + (child.isEnd?' [*]':'') + '\n' + trieToText(child, prefix+ch, indent+'  ');
+  }
+  return out;
+}
+
+function renderTrie() {
+  const nodes = countNodes(trie) - 1; // -1 for root
+  document.getElementById('trie-nodes').textContent = nodes;
+  document.getElementById('trie-words').textContent = trieWords.length;
+  document.getElementById('trie-display').textContent = nodes===0 ? '(empty trie — insert words)' : 'root\n' + trieToText(trie,'','  ');
+  document.getElementById('trie-word-chips').innerHTML = trieWords.map(w =>
+    `<span style="background:var(--bg-washi);border:1px solid var(--accent-indigo);padding:2px 8px;border-radius:var(--radius-xs);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-indigo)">${w}</span>`
+  ).join('');
+}
+
+function trieInsert() {
+  const w = document.getElementById('trie-word').value.trim();
+  if(!w || !/^[a-zA-Z]+$/.test(w)) return;
+  if(!trieWords.includes(w.toLowerCase())) { trieWords.push(w.toLowerCase()); trieInsertWord(w); }
+  document.getElementById('trie-word').value='';
+  renderTrie();
+}
+
+function trieSearch() {
+  const prefix = document.getElementById('trie-prefix').value.trim().toLowerCase();
+  if(!prefix) { document.getElementById('trie-matches').textContent=''; document.getElementById('trie-prefix-nodes').textContent=0; return; }
+  const matches = trieStartsWith(prefix);
+  document.getElementById('trie-matches').textContent = matches.length ? 'Matches: ' + matches.join(', ') : 'No words start with "' + prefix + '"';
+  // count shared prefix nodes
+  let node=trie, shared=0;
+  for(const ch of prefix) { if(!node.children[ch]) break; node=node.children[ch]; shared++; }
+  document.getElementById('trie-prefix-nodes').textContent = shared;
+}
+
+function trieClear() {
+  trie={children:{},isEnd:false}; trieWords=[];
+  document.getElementById('trie-matches').textContent='';
+  document.getElementById('trie-prefix-nodes').textContent=0;
+  renderTrie();
+}
+
+// Pre-load some words
+['cat','car','card','care','bat','ball','banana'].forEach(w=>{trieWords.push(w);trieInsertWord(w);});
+renderTrie();
+
+function switchTab(id) {
+  ['search','variants','trie'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);p.style.display=t===id?'block':'none';p.classList.toggle('active',t===id);
+  });
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+</script>
+</body>
+</html>

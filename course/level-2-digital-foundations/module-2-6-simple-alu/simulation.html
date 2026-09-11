@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 2.6 — Simple ALU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;
+  --text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;
+  --accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--accent-ink:#1C1C1C;
+  --border-hair:#1C1C1C;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;
+  --ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes zen-fade-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes flag-fire{0%{transform:scale(1.2);background:rgba(200,42,42,0.3)}100%{transform:scale(1)}}
+@keyframes result-pop{0%{transform:scale(1.1)}100%{transform:scale(1)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast),border-color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:zen-fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 20px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-hair);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast),color var(--t-fast)}
+.zen-btn:hover{background:var(--accent-ink);color:#FDFDFD}
+.zen-btn.primary{background:var(--accent-ink);color:#FDFDFD}
+.zen-btn.active-op{background:var(--accent-indigo);color:#FDFDFD;border-color:var(--accent-indigo)}
+.zen-btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+.bento3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:750px){.bento2,.bento3{grid-template-columns:1fr}}
+.zen-pane{background:var(--bg-washi);padding:20px}
+.zen-pane.warm{background:var(--bg-warm)}
+/* Bit toggles */
+.bit-toggle{width:42px;height:42px;border:1px solid var(--border-paper);background:var(--bg-canvas);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--text-muted);border-radius:var(--radius-xs);transition:all var(--t-fast);display:flex;align-items:center;justify-content:center}
+.bit-toggle.on{background:var(--accent-indigo);border-color:var(--accent-indigo);color:#FDFDFD}
+.bit-row{display:flex;gap:4px;align-items:center}
+/* Result bits */
+.res-bit{width:42px;height:42px;border:1px solid var(--border-paper);background:var(--bg-canvas);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:1.1rem;border-radius:var(--radius-xs);transition:all var(--t-med)}
+.res-bit.one{background:var(--accent-red);border-color:var(--accent-red);color:#FDFDFD;animation:result-pop .3s}
+/* Flags */
+.flag-box{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:12px 14px;border-radius:var(--radius-xs);text-align:center;transition:all var(--t-med)}
+.flag-box.fired{background:rgba(200,42,42,0.1);border-color:rgba(200,42,42,0.4);animation:flag-fire .4s}
+.flag-val{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:300;color:var(--text-ghost);margin-bottom:2px;transition:color var(--t-med)}
+.flag-box.fired .flag-val{color:var(--accent-red)}
+.flag-name{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted)}
+.flag-desc{font-size:10px;color:var(--text-muted);margin-top:4px;line-height:1.4}
+/* Op selector */
+.op-btn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px}
+/* Stats */
+.stat-big{font-family:'JetBrains Mono',monospace;font-size:2.2rem;font-weight:300;color:var(--text-sumi);display:block;margin-bottom:2px;transition:all var(--t-med)}
+.stat-big.accent{color:var(--accent-red)}
+.stat-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted)}
+/* Program editor */
+.prog-row{display:flex;gap:6px;align-items:center;padding:8px 10px;border:1px solid var(--border-paper);background:var(--bg-warm);border-radius:var(--radius-xs);margin-bottom:4px;font-family:'JetBrains Mono',monospace;font-size:12px;transition:all var(--t-fast)}
+.prog-row.executing{border-color:var(--accent-indigo);background:rgba(28,45,66,0.07)}
+.prog-row.done{border-color:var(--accent-gold);background:rgba(139,105,20,0.05);opacity:.75}
+.prog-row .pc{width:20px;color:var(--text-muted);font-size:10px}
+.prog-row .op{min-width:50px;color:var(--accent-indigo);font-weight:500}
+.prog-row .operands{flex:1;color:var(--text-sumi)}
+.prog-row .result{color:var(--accent-red);font-size:11px;min-width:60px;text-align:right}
+/* Log */
+.alu-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:12px;height:140px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;color:var(--text-body);border-radius:var(--radius-xs)}
+.log-arith{color:var(--accent-indigo)}.log-logic{color:var(--accent-gold)}.log-flag{color:var(--accent-red)}.log-info{color:var(--text-muted)}
+</style>
+</head>
+<body>
+
+<div class="zen-header">
+  <h1 class="zen-title">Module 2.6 — Simple 4-Bit ALU</h1>
+  <p class="zen-subtitle">Arithmetic + Logic Unit · Flags · ALU Program</p>
+</div>
+
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('alu')">4-Bit ALU</div>
+  <div class="zen-tab" onclick="switchTab('flags')">Flag Explorer</div>
+  <div class="zen-tab" onclick="switchTab('prog')">ALU Program</div>
+</div>
+
+<!-- ===== 4-BIT ALU ===== -->
+<div id="panel-alu" class="panel active">
+  <div class="zen-intro">
+    <strong>4-Bit ALU.</strong> Set operands A and B using the bit toggles. Select an operation. The result, flags, and internal datapath all update instantly. This is the computational heart of every CPU.
+  </div>
+
+  <!-- Operation selector -->
+  <div style="background:var(--bg-washi);border:1px solid var(--border-paper);padding:16px;margin-bottom:1px">
+    <div class="pane-title indigo" style="margin-bottom:10px">Operation Select</div>
+    <div class="op-btn-grid" id="op-buttons">
+      <button class="zen-btn active-op" data-op="ADD"  onclick="selectOp('ADD')" >ADD  (A+B)</button>
+      <button class="zen-btn"           data-op="SUB"  onclick="selectOp('SUB')" >SUB  (A−B)</button>
+      <button class="zen-btn"           data-op="AND"  onclick="selectOp('AND')" >AND</button>
+      <button class="zen-btn"           data-op="OR"   onclick="selectOp('OR')"  >OR</button>
+      <button class="zen-btn"           data-op="XOR"  onclick="selectOp('XOR')" >XOR</button>
+      <button class="zen-btn"           data-op="NOT"  onclick="selectOp('NOT')" >NOT A</button>
+    </div>
+    <div style="font-size:12px;color:var(--text-muted)" id="op-desc">A + B using 4-bit ripple carry adder. Carry-out → C flag.</div>
+  </div>
+
+  <div class="bento3" style="margin-bottom:1px">
+    <!-- Input A -->
+    <div class="zen-pane">
+      <div class="pane-title gold">Input A</div>
+      <div class="bit-row" style="margin-bottom:10px">
+        <button class="bit-toggle off" id="a-3" onclick="toggleA(3)">0</button>
+        <button class="bit-toggle off" id="a-2" onclick="toggleA(2)">0</button>
+        <button class="bit-toggle off" id="a-1" onclick="toggleA(1)">0</button>
+        <button class="bit-toggle off" id="a-0" onclick="toggleA(0)">0</button>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:300;color:var(--text-sumi)">
+        = <span id="a-dec">0</span> <span style="font-size:12px;color:var(--text-muted)">(dec)</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px">
+        0x<span id="a-hex" style="font-family:'JetBrains Mono',monospace">0</span>
+      </div>
+      <div class="btn-row">
+        <button class="zen-btn" style="font-size:10px;padding:5px 10px" onclick="setA(5)">5</button>
+        <button class="zen-btn" style="font-size:10px;padding:5px 10px" onclick="setA(9)">9</button>
+        <button class="zen-btn" style="font-size:10px;padding:5px 10px" onclick="setA(15)">15</button>
+        <button class="zen-btn" style="font-size:10px;padding:5px 10px" onclick="setA(0)">0</button>
+      </div>
+    </div>
+    <!-- Input B -->
+    <div class="zen-pane warm">
+      <div class="pane-title gold">Input B</div>
+      <div class="bit-row" style="margin-bottom:10px">
+        <button class="bit-toggle off" id="b-3" onclick="toggleB(3)">0</button>
+        <button class="bit-toggle off" id="b-2" onclick="toggleB(2)">0</button>
+        <button class="bit-toggle off" id="b-1" onclick="toggleB(1)">0</button>
+        <button class="bit-toggle off" id="b-0" onclick="toggleB(0)">0</button>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:300;color:var(--text-sumi)">
+        = <span id="b-dec">0</span> <span style="font-size:12px;color:var(--text-muted)">(dec)</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px">
+        0x<span id="b-hex" style="font-family:'JetBrains Mono',monospace">0</span>
+      </div>
+      <div class="btn-row">
+        <button class="zen-btn" style="font-size:10px;padding:5px 10px" onclick="setB(3)">3</button>
+        <button class="zen-btn" style="font-size:10px;padding:5px 10px" onclick="setB(6)">6</button>
+        <button class="zen-btn" style="font-size:10px;padding:5px 10px" onclick="setB(7)">7</button>
+        <button class="zen-btn" style="font-size:10px;padding:5px 10px" onclick="setB(0)">0</button>
+      </div>
+    </div>
+    <!-- Result -->
+    <div class="zen-pane">
+      <div class="pane-title red">Result</div>
+      <div class="bit-row" style="margin-bottom:10px">
+        <div class="res-bit" id="r-3">—</div>
+        <div class="res-bit" id="r-2">—</div>
+        <div class="res-bit" id="r-1">—</div>
+        <div class="res-bit" id="r-0">—</div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:300">
+        = <span id="r-dec" style="color:var(--accent-red)">—</span>
+        <span style="font-size:12px;color:var(--text-muted)">(dec)</span>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px">
+        0x<span id="r-hex" style="font-family:'JetBrains Mono',monospace">—</span>
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:var(--text-muted)" id="r-equation">—</div>
+    </div>
+  </div>
+
+  <!-- Flags -->
+  <div class="bento3" style="margin-bottom:1px">
+    <div class="flag-box" id="flag-Z">
+      <div class="flag-val" id="fv-Z">0</div>
+      <div class="flag-name">Z — Zero</div>
+      <div class="flag-desc">1 when result = 0</div>
+    </div>
+    <div class="flag-box" id="flag-C">
+      <div class="flag-val" id="fv-C">0</div>
+      <div class="flag-name">C — Carry</div>
+      <div class="flag-desc">Unsigned overflow</div>
+    </div>
+    <div class="flag-box" id="flag-N">
+      <div class="flag-val" id="fv-N">0</div>
+      <div class="flag-name">N — Negative</div>
+      <div class="flag-desc">MSB of result = 1</div>
+    </div>
+  </div>
+  <div class="bento2" style="margin-bottom:16px">
+    <div class="flag-box" id="flag-V" style="border-radius:0">
+      <div class="flag-val" id="fv-V">0</div>
+      <div class="flag-name">V — Overflow</div>
+      <div class="flag-desc">Signed overflow (wrong sign in result)</div>
+    </div>
+    <div style="background:var(--bg-warm);padding:14px;border:1px solid var(--border-paper)">
+      <div class="pane-title gold" style="margin-bottom:6px">Operation log</div>
+      <div class="alu-log" id="alu-log"><div class="log-info">&gt; Set A, B, select operation.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FLAG EXPLORER ===== -->
+<div id="panel-flags" class="panel">
+  <div class="zen-intro">
+    <strong>Flag Explorer.</strong> Understand exactly when each flag fires. Set specific A and B values and observe. The key insight: Z fires when result=0, C fires on unsigned overflow, N fires when MSB=1, V fires on signed overflow. C and V are different!
+  </div>
+
+  <div class="bento2">
+    <div class="zen-pane">
+      <div class="pane-title indigo">Preset scenarios</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="zen-btn" onclick="flagPreset(7,1,'ADD')"  style="text-align:left;padding:10px 14px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px">7 + 7 → signed overflow</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">A=0111 B=0111: two positives → negative result → V fires</div>
+        </button>
+        <button class="zen-btn" onclick="flagPreset(9,9,'ADD')"  style="text-align:left;padding:10px 14px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px">9 + 9 → unsigned overflow</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">A=1001 B=1001: result 18 > 15 → C fires, wraps to 2</div>
+        </button>
+        <button class="zen-btn" onclick="flagPreset(5,5,'SUB')" style="text-align:left;padding:10px 14px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px">5 − 5 → zero result</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">A=0101 B=0101: result=0 → Z fires</div>
+        </button>
+        <button class="zen-btn" onclick="flagPreset(0,1,'SUB')" style="text-align:left;padding:10px 14px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px">0 − 1 → negative result</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">A=0000 B=0001: result=−1 (1111) → N fires</div>
+        </button>
+        <button class="zen-btn" onclick="flagPreset(15,1,'ADD')" style="text-align:left;padding:10px 14px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px">15 + 1 → all carry</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">A=1111 B=0001: result=16, keep 4 bits=0000 → Z + C fire</div>
+        </button>
+        <button class="zen-btn" onclick="flagPreset(10,10,'XOR')" style="text-align:left;padding:10px 14px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px">A XOR A → always zero</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">Same operand XOR'd with itself = 0 → Z fires</div>
+        </button>
+      </div>
+    </div>
+    <div class="zen-pane warm">
+      <div class="pane-title red">Current flags</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+        <div class="flag-box" id="fe-Z"><div class="flag-val" id="fe-fZ">0</div><div class="flag-name">Z Zero</div></div>
+        <div class="flag-box" id="fe-C"><div class="flag-val" id="fe-fC">0</div><div class="flag-name">C Carry</div></div>
+        <div class="flag-box" id="fe-N"><div class="flag-val" id="fe-fN">0</div><div class="flag-name">N Negative</div></div>
+        <div class="flag-box" id="fe-V"><div class="flag-val" id="fe-fV">0</div><div class="flag-name">V Overflow</div></div>
+      </div>
+      <div style="background:var(--bg-canvas);border:1px solid var(--border-paper);padding:14px;border-radius:var(--radius-xs)">
+        <div class="pane-title gold" style="margin-bottom:8px">Result</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:300;color:var(--text-sumi)" id="fe-result">—</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px" id="fe-explain">Select a preset to see flags fire.</div>
+      </div>
+      <div style="margin-top:12px">
+        <div class="pane-title indigo" style="margin-bottom:8px">C vs V — the key distinction</div>
+        <div style="font-size:12px;color:var(--text-muted);line-height:1.7;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;border-radius:var(--radius-xs)">
+          <strong style="color:var(--text-sumi)">C (Carry)</strong> = unsigned overflow. Result exceeded 15 (for 4 bits). Detected as carry-out of MSB adder.<br><br>
+          <strong style="color:var(--text-sumi)">V (Overflow)</strong> = signed overflow. Two positives summed to negative, or two negatives summed to positive. Detected as: Cout XOR Cin of MSB.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ALU PROGRAM ===== -->
+<div id="panel-prog" class="panel">
+  <div class="zen-intro">
+    <strong>ALU Program.</strong> Write a sequence of ALU operations. Each step uses the result of the previous step as the accumulator. This previews the fetch-decode-execute cycle of Level 3.
+  </div>
+
+  <div class="bento2">
+    <div class="zen-pane">
+      <div class="pane-title gold">Program editor</div>
+      <div id="prog-editor">
+        <!-- Generated dynamically -->
+      </div>
+      <div class="btn-row">
+        <button class="zen-btn primary" id="prog-run-btn" onclick="runProgStep()">▶ Step</button>
+        <button class="zen-btn" id="prog-auto-btn" onclick="runProgAuto()">⏩ Run All</button>
+        <button class="zen-btn" onclick="resetProg()">↺ Reset</button>
+      </div>
+      <div style="margin-top:14px">
+        <div class="pane-title indigo" style="margin-bottom:8px">Preloaded programs</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="zen-btn" onclick="loadProgram('basic')" style="text-align:left;padding:8px 12px;font-size:10px">Basic: ADD, SUB, AND chain</button>
+          <button class="zen-btn" onclick="loadProgram('area')" style="text-align:left;padding:8px 12px;font-size:10px">Rectangle: area = AND(6,11) + 3</button>
+          <button class="zen-btn" onclick="loadProgram('flags')" style="text-align:left;padding:8px 12px;font-size:10px">Flag demo: overflow, zero, carry</button>
+        </div>
+      </div>
+    </div>
+    <div class="zen-pane warm">
+      <div class="pane-title indigo">Accumulator</div>
+      <div style="text-align:center;background:var(--bg-washi);border:1px solid var(--border-paper);padding:20px;border-radius:var(--radius-xs);margin-bottom:14px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:3rem;font-weight:300;color:var(--accent-red)" id="prog-acc">0</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Current accumulator value</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--accent-indigo);margin-top:6px" id="prog-acc-bin">0000</div>
+      </div>
+      <div class="pane-title red" style="margin-bottom:6px">Execution log</div>
+      <div class="alu-log" id="prog-log"><div class="log-info">&gt; Load a program and press Step.</div></div>
+      <div style="margin-top:14px">
+        <div class="pane-title gold" style="margin-bottom:6px">Flags after last op</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+          <div style="text-align:center;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:8px;border-radius:var(--radius-xs)">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--text-muted)" id="pf-Z">0</div>
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted)">Z</div>
+          </div>
+          <div style="text-align:center;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:8px;border-radius:var(--radius-xs)">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--text-muted)" id="pf-C">0</div>
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted)">C</div>
+          </div>
+          <div style="text-align:center;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:8px;border-radius:var(--radius-xs)">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--text-muted)" id="pf-N">0</div>
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted)">N</div>
+          </div>
+          <div style="text-align:center;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:8px;border-radius:var(--radius-xs)">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--text-muted)" id="pf-V">0</div>
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted)">V</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========================= ALU CORE =========================
+let aluA = [0,0,0,0]; // bit 0=LSB
+let aluB = [0,0,0,0];
+let currentOp = 'ADD';
+
+const OP_DESCS = {
+  ADD:'A + B using 4-bit ripple carry adder. Carry-out → C flag.',
+  SUB:'A − B = A + (NOT B) + 1 via two\'s complement. Uses same adder.',
+  AND:'Bitwise AND: each output bit = A[i] AND B[i].',
+  OR: 'Bitwise OR: each output bit = A[i] OR B[i].',
+  XOR:'Bitwise XOR: each output bit = A[i] XOR B[i]. Key for detecting differences.',
+  NOT:'Bitwise NOT A: inverts every bit. B input ignored.'
+};
+
+function getVal(bits) { return bits[3]*8+bits[2]*4+bits[1]*2+bits[0]; }
+function toBits(n, w=4) { const b=[]; for(let i=0;i<w;i++) b.push((n>>i)&1); return b; }
+
+function computeALU(a4, b4, op) {
+  const A=getVal(a4), B=getVal(b4); let result4, carryOut=0, overflow=0;
+  if(op==='ADD') {
+    const raw=A+B; result4=raw&15; carryOut=raw>15?1:0;
+    // Overflow: carry into MSB XOR carry out of MSB
+    const cm3=(((A&7)+(B&7))>>3)&1; overflow=(carryOut^cm3);
+  } else if(op==='SUB') {
+    const Bneg=((~B)&15)+1; const raw=A+Bneg; result4=raw&15;
+    carryOut=raw>15?1:0;
+    const cm3=(((A&7)+((Bneg)&7))>>3)&1; overflow=(carryOut^cm3);
+  } else if(op==='AND') { result4=A&B; }
+  else if(op==='OR')  { result4=A|B; }
+  else if(op==='XOR') { result4=A^B; }
+  else if(op==='NOT') { result4=(~A)&15; }
+  else { result4=0; }
+  const Z=result4===0?1:0, N=(result4>>3)&1, C=carryOut, V=overflow||0;
+  return {result4, bits:toBits(result4), Z,C,N,V};
+}
+
+function toggleA(bit) { aluA[bit]^=1; updateALUDisplay(); }
+function toggleB(bit) { aluB[bit]^=1; updateALUDisplay(); }
+function setA(n) { aluA=toBits(n); updateALUDisplay(); }
+function setB(n) { aluB=toBits(n); updateALUDisplay(); }
+
+function selectOp(op) {
+  currentOp=op;
+  document.querySelectorAll('[data-op]').forEach(b=>b.classList.toggle('active-op',b.dataset.op===op));
+  document.getElementById('op-desc').textContent=OP_DESCS[op];
+  updateALUDisplay();
+}
+
+function updateALUDisplay() {
+  // Input displays
+  for(let i=0;i<4;i++){
+    const ab=document.getElementById('a-'+i); ab.textContent=aluA[i]; ab.className='bit-toggle '+(aluA[i]?'on':'off');
+    const bb=document.getElementById('b-'+i); bb.textContent=aluB[i]; bb.className='bit-toggle '+(aluB[i]?'on':'off');
+  }
+  const A=getVal(aluA), B=getVal(aluB);
+  document.getElementById('a-dec').textContent=A;
+  document.getElementById('a-hex').textContent=A.toString(16).toUpperCase();
+  document.getElementById('b-dec').textContent=B;
+  document.getElementById('b-hex').textContent=B.toString(16).toUpperCase();
+
+  const {result4,bits,Z,C,N,V}=computeALU(aluA,aluB,currentOp);
+
+  // Result display
+  for(let i=0;i<4;i++){
+    const rb=document.getElementById('r-'+i); rb.textContent=bits[3-i]; rb.className='res-bit '+(bits[3-i]?'one':'');
+  }
+  document.getElementById('r-dec').textContent=result4;
+  document.getElementById('r-hex').textContent=result4.toString(16).toUpperCase();
+
+  // Equation
+  const eqs={ADD:`${A} + ${B} = ${result4}${C?' (+carry)':''}`,SUB:`${A} − ${B} = ${result4}`,AND:`${A.toString(2).padStart(4,'0')} AND ${B.toString(2).padStart(4,'0')} = ${result4.toString(2).padStart(4,'0')}`,OR:`${A.toString(2).padStart(4,'0')} OR ${B.toString(2).padStart(4,'0')} = ${result4.toString(2).padStart(4,'0')}`,XOR:`${A.toString(2).padStart(4,'0')} XOR ${B.toString(2).padStart(4,'0')} = ${result4.toString(2).padStart(4,'0')}`,NOT:`NOT ${A.toString(2).padStart(4,'0')} = ${result4.toString(2).padStart(4,'0')}`};
+  document.getElementById('r-equation').textContent=eqs[currentOp]||'';
+
+  // Flags
+  [{id:'Z',v:Z},{id:'C',v:C},{id:'N',v:N},{id:'V',v:V}].forEach(({id,v})=>{
+    const box=document.getElementById('flag-'+id); const val=document.getElementById('fv-'+id);
+    val.textContent=v;
+    box.classList.toggle('fired',v===1);
+  });
+
+  // Log
+  const logEl=document.getElementById('alu-log');
+  const entry=document.createElement('div');
+  entry.className=(['ADD','SUB'].includes(currentOp)?'log-arith':'log-logic');
+  entry.textContent=`> ${currentOp}(${A},${B}) = ${result4}  Z=${Z} C=${C} N=${N} V=${V}`;
+  logEl.appendChild(entry); logEl.scrollTop=logEl.scrollHeight;
+}
+
+// Init
+updateALUDisplay();
+
+// ========================= FLAG EXPLORER =========================
+function flagPreset(a, b, op) {
+  const aB=toBits(a), bB=toBits(b);
+  const {result4,bits,Z,C,N,V}=computeALU(aB,bB,op);
+  [{id:'Z',v:Z},{id:'C',v:C},{id:'N',v:N},{id:'V',v:V}].forEach(({id,v})=>{
+    const box=document.getElementById('fe-'+id); const val=document.getElementById('fe-f'+id);
+    val.textContent=v; box.classList.toggle('fired',v===1);
+  });
+  document.getElementById('fe-result').textContent=`${op}(${a},${b}) = ${result4} (${result4.toString(2).padStart(4,'0')})`;
+  const explains=[];
+  if(Z) explains.push('Z=1: result is zero');
+  if(C) explains.push('C=1: unsigned overflow (result > 15)');
+  if(N) explains.push('N=1: MSB is 1 (negative in signed)');
+  if(V) explains.push('V=1: signed overflow (wrong sign)');
+  if(!explains.length) explains.push('No flags fired — result fits in 4-bit signed and unsigned');
+  document.getElementById('fe-explain').textContent=explains.join(' · ');
+}
+
+// ========================= ALU PROGRAM =========================
+const PROGRAMS = {
+  basic:[
+    {op:'ADD',b:5,  desc:'ACC = 0 + 5'},
+    {op:'ADD',b:3,  desc:'ACC = 5 + 3'},
+    {op:'SUB',b:2,  desc:'ACC = 8 - 2'},
+    {op:'AND',b:6,  desc:'ACC = 6 AND 6'},
+    {op:'XOR',b:6,  desc:'ACC = 6 XOR 6 (should be 0 → Z)'},
+    {op:'NOT',b:0,  desc:'ACC = NOT 0 (= 15)'},
+  ],
+  area:[
+    {op:'ADD',b:0,  desc:'ACC = 0 (clear)'},
+    {op:'ADD',b:6,  desc:'ACC = 0 + 6 (width)'},
+    {op:'AND',b:11, desc:'ACC = 6 AND 11 = 2 (bitwise AND)'},
+    {op:'ADD',b:3,  desc:'ACC = 2 + 3 = 5 (add C)'},
+  ],
+  flags:[
+    {op:'ADD',b:7,  desc:'7+7: expect V (signed overflow)'},
+    {op:'ADD',b:7,  desc:'14+7=21>15: expect C (unsigned overflow)'},
+    {op:'SUB',b:5,  desc:'5-5=0: expect Z (zero)'},
+    {op:'ADD',b:0,  desc:'0+0=0: Z stays'},
+    {op:'SUB',b:1,  desc:'0-1=-1: expect N (negative)'},
+  ]
+};
+
+let progSteps=[], progPC=0, progAcc=0, progAutoTimer=null;
+
+function loadProgram(name){
+  resetProg();
+  progSteps=PROGRAMS[name];
+  renderProgEditor();
+  progLog('Program loaded: '+name+' ('+progSteps.length+' steps)','log-info');
+}
+
+function renderProgEditor(){
+  const el=document.getElementById('prog-editor');
+  el.innerHTML='';
+  progSteps.forEach((s,i)=>{
+    const row=document.createElement('div');
+    row.className='prog-row'+(i<progPC?' done':i===progPC?' executing':'');
+    row.id='prog-row-'+i;
+    const accBefore=i>0?'ACC':'0';
+    row.innerHTML=`<span class="pc">${i+1}</span><span class="op">${s.op}</span><span class="operands">${s.desc}</span><span class="result" id="prog-res-${i}"></span>`;
+    el.appendChild(row);
+  });
+}
+
+function progLog(msg,cls='log-arith'){
+  const el=document.getElementById('prog-log');
+  const d=document.createElement('div'); d.className=cls; d.textContent='> '+msg;
+  el.appendChild(d); el.scrollTop=el.scrollHeight;
+}
+
+function runProgStep(){
+  if(progSteps.length===0){progLog('Load a program first','log-info');return;}
+  if(progPC>=progSteps.length){progLog('Program complete','log-info');return;}
+  const step=progSteps[progPC];
+  const accBits=toBits(progAcc), bBits=toBits(step.b);
+  const {result4,Z,C,N,V}=computeALU(accBits,bBits,step.op);
+  const prevAcc=progAcc; progAcc=result4;
+
+  // Update display
+  document.getElementById('prog-acc').textContent=progAcc;
+  document.getElementById('prog-acc').style.color=progAcc===0?'var(--accent-gold)':'var(--accent-red)';
+  document.getElementById('prog-acc-bin').textContent=progAcc.toString(2).padStart(4,'0');
+  ['Z','C','N','V'].forEach(f=>{
+    const v={Z,C,N,V}[f];
+    const el=document.getElementById('pf-'+f);
+    el.textContent=v; el.style.color=v?'var(--accent-red)':'var(--text-muted)';
+  });
+
+  // Row result
+  const resEl=document.getElementById('prog-res-'+progPC);
+  if(resEl) resEl.textContent='→ '+result4+(Z?' Z':'')+(C?' C':'')+(N?' N':'')+(V?' V':'');
+
+  progLog(`Step ${progPC+1}: ${step.op}(${prevAcc}, ${step.b}) = ${result4}  flags: Z${Z}C${C}N${N}V${V}`,
+    ['ADD','SUB'].includes(step.op)?'log-arith':'log-logic');
+
+  progPC++;
+  renderProgEditor();
+  if(progPC>=progSteps.length){
+    progLog('=== Program complete ===','log-info');
+    document.getElementById('prog-run-btn').disabled=true;
+  }
+}
+
+function runProgAuto(){
+  if(progSteps.length===0){loadProgram('basic');}
+  clearInterval(progAutoTimer);
+  progAutoTimer=setInterval(()=>{
+    if(progPC>=progSteps.length){clearInterval(progAutoTimer);return;}
+    runProgStep();
+  },700);
+}
+
+function resetProg(){
+  clearInterval(progAutoTimer); progPC=0; progAcc=0;
+  document.getElementById('prog-acc').textContent='0';
+  document.getElementById('prog-acc').style.color='var(--accent-red)';
+  document.getElementById('prog-acc-bin').textContent='0000';
+  document.getElementById('prog-run-btn').disabled=false;
+  document.getElementById('prog-log').innerHTML='<div class="log-info">&gt; Reset. Load a program and press Step.</div>';
+  ['Z','C','N','V'].forEach(f=>{ const el=document.getElementById('pf-'+f); el.textContent='0'; el.style.color='var(--text-muted)'; });
+  if(progSteps.length>0) renderProgEditor();
+}
+
+loadProgram('basic');
+
+// ========================= TABS =========================
+function switchTab(id){
+  document.querySelectorAll('.zen-tab').forEach((t,i)=>t.classList.toggle('active',['alu','flags','prog'][i]===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+}
+</script>
+</body>
+</html>

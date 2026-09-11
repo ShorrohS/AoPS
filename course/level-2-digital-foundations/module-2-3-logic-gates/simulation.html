@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 2.3 — Logic Gates</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;
+  --text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;
+  --accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--accent-ink:#1C1C1C;
+  --border-hair:#1C1C1C;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;
+  --ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes zen-fade-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px;overflow-x:auto}
+.zen-tab{padding:11px 20px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast),border-color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:zen-fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-hair);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast),color var(--t-fast)}
+.zen-btn:hover{background:var(--accent-ink);color:#FDFDFD}
+.zen-btn.active-btn{background:var(--accent-indigo);color:#FDFDFD;border-color:var(--accent-indigo)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+/* Toggle inputs */
+.toggle-btn{padding:10px 22px;border:1px solid var(--border-paper);background:var(--bg-warm);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:1rem;transition:all var(--t-fast);border-radius:var(--radius-xs);color:var(--text-sumi);min-width:80px;text-align:center}
+.toggle-btn.on{background:var(--accent-ink);color:#FDFDFD;border-color:var(--accent-ink)}
+/* Output light */
+.out-light{width:48px;height:48px;border-radius:50%;border:2px solid var(--border-light);transition:all var(--t-med);display:flex;align-items:center;justify-content:center;font-size:1.2rem}
+.out-light.on{border-color:var(--accent-red);background:rgba(200,42,42,0.15);box-shadow:0 0 14px rgba(200,42,42,0.3)}
+/* Truth table */
+.truth-table{border-collapse:collapse;font-size:13px;width:100%}
+.truth-table th{background:var(--bg-warm);color:var(--text-muted);padding:7px 12px;border:1px solid var(--border-paper);font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;text-align:center}
+.truth-table td{padding:7px 12px;border:1px solid var(--border-paper);text-align:center;font-family:'JetBrains Mono',monospace;font-size:13px}
+.truth-table tr.active-row td{background:rgba(200,42,42,0.07);color:var(--text-sumi)}
+.val-1{color:var(--accent-indigo);font-weight:500}.val-0{color:var(--text-muted)}
+/* Gate grid */
+.gate-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;background:var(--border-light);margin-bottom:16px}
+.gate-cell{background:var(--bg-washi);padding:18px}
+.gate-cell h3{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.gate-cell h3.and{color:var(--accent-gold)}.gate-cell h3.or{color:var(--accent-indigo)}.gate-cell h3.not{color:var(--accent-red)}.gate-cell h3.nand{color:var(--accent-gold)}.gate-cell h3.nor{color:var(--accent-indigo)}.gate-cell h3.xor{color:var(--accent-red)}.gate-cell h3.xnor{color:var(--accent-gold)}
+.gate-meta{font-size:11px;color:var(--text-muted);margin-bottom:10px;line-height:1.5}
+.gate-canvas{display:block;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin:8px 0}
+.input-toggles{display:flex;gap:8px;margin-bottom:10px}
+.output-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg-warm);border-radius:var(--radius-xs);margin-bottom:8px}
+.output-label{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text-sumi)}
+/* Expression evaluator */
+.expr-input{width:100%;font-family:'JetBrains Mono',monospace;font-size:1rem;padding:10px 14px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);color:var(--text-sumi);margin-bottom:10px}
+.expr-input:focus{outline:none;border-color:var(--accent-indigo)}
+.example-btn{padding:5px 12px;border:1px solid var(--border-paper);background:var(--bg-canvas);color:var(--text-muted);font-size:10px;font-family:'JetBrains Mono',monospace;cursor:pointer;border-radius:var(--radius-xs);transition:all var(--t-fast)}
+.example-btn:hover{border-color:var(--border-hair);color:var(--text-sumi)}
+/* NAND universal */
+.nand-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.nand-grid{grid-template-columns:1fr}}
+.nand-cell{background:var(--bg-washi);padding:18px}
+.nand-count{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:300;color:var(--accent-red);margin-bottom:4px}
+</style>
+</head>
+<body>
+
+<div class="zen-header">
+  <h1 class="zen-title">Module 2.3 — Boolean Algebra &amp; Logic Gates</h1>
+  <p class="zen-subtitle">AND · OR · NOT · NAND · NOR · XOR · XNOR</p>
+</div>
+
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('gates')">All 7 Gates</div>
+  <div class="zen-tab" onclick="switchTab('expr')">Expression Evaluator</div>
+  <div class="zen-tab" onclick="switchTab('nand')">NAND Universal</div>
+</div>
+
+<!-- ===== ALL 7 GATES ===== -->
+<div id="panel-gates" class="panel active">
+  <div class="zen-intro">
+    <strong>All seven logic gates.</strong> Toggle inputs — outputs and truth tables update instantly. The gate diagram is drawn live. Click any row in the truth table to set those input values.
+  </div>
+  <div class="gate-grid" id="gate-grid"></div>
+</div>
+
+<!-- ===== EXPRESSION EVALUATOR ===== -->
+<div id="panel-expr" class="panel">
+  <div class="zen-intro">
+    <strong>Boolean expression evaluator.</strong> Type any expression using AND, OR, NOT, XOR, NAND, NOR. Variables: A–F. The full truth table is generated automatically.
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)">
+    <div style="background:var(--bg-washi);padding:22px">
+      <div class="pane-title indigo">Expression</div>
+      <input class="expr-input" id="expr-input" type="text" value="(A AND B) OR (NOT A AND NOT B)">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+        <span style="font-size:10px;color:var(--text-muted);align-self:center;text-transform:uppercase;letter-spacing:.1em">Examples:</span>
+        <button class="example-btn" onclick="loadExpr('A AND B')">A AND B</button>
+        <button class="example-btn" onclick="loadExpr('A OR B')">A OR B</button>
+        <button class="example-btn" onclick="loadExpr('NOT A')">NOT A</button>
+        <button class="example-btn" onclick="loadExpr('A XOR B')">A XOR B</button>
+        <button class="example-btn" onclick="loadExpr('NOT(A AND B)')">NAND</button>
+        <button class="example-btn" onclick="loadExpr('NOT(A OR B)')">NOR</button>
+        <button class="example-btn" onclick="loadExpr('(A OR B) AND NOT(A AND B)')">XOR from primitives</button>
+        <button class="example-btn" onclick="loadExpr('(A AND B) OR (NOT A AND NOT B)')">XNOR</button>
+        <button class="example-btn" onclick="loadExpr('A AND (NOT A)')">Contradiction</button>
+        <button class="example-btn" onclick="loadExpr('A OR (NOT A)')">Tautology</button>
+        <button class="example-btn" onclick="loadExpr('(A AND B AND C) OR (NOT A AND NOT B)')">3-var</button>
+      </div>
+      <div id="eval-var-toggles" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px"></div>
+      <button class="zen-btn" style="background:var(--accent-ink);color:#FDFDFD;width:100%;margin-bottom:10px" onclick="evalExpr()">▶ Evaluate</button>
+      <div style="font-size:12px;color:var(--text-muted)" id="eval-info"></div>
+    </div>
+    <div style="background:var(--bg-warm);padding:22px">
+      <div class="pane-title red">Truth Table</div>
+      <div id="eval-tt-wrap"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NAND UNIVERSAL ===== -->
+<div id="panel-nand" class="panel">
+  <div class="zen-intro">
+    <strong>NAND is the universal gate.</strong> Every logic function can be built from NAND gates alone. This is why real chips use NAND-based standard cell libraries.
+  </div>
+  <div class="nand-grid">
+    <div class="nand-cell">
+      <div class="pane-title gold">NOT from NAND</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;color:var(--text-body);background:var(--bg-canvas);border:1px solid var(--border-paper);padding:12px;border-radius:var(--radius-xs);margin-bottom:10px">
+        NOT A = NAND(A, A)<br>
+        1 NAND gate
+      </div>
+      <canvas id="nand-not-canvas" width="260" height="100" style="display:block;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:8px;width:100%"></canvas>
+      <div class="input-toggles"><button class="toggle-btn off" id="nn-a" onclick="toggleNN('a')">A = 0</button></div>
+      <div class="output-row"><div class="out-light off" id="nn-out"></div><span class="output-label" id="nn-lbl">NOT A = 1</span></div>
+    </div>
+    <div class="nand-cell" style="background:var(--bg-warm)">
+      <div class="pane-title red">AND from NAND</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;color:var(--text-body);background:var(--bg-canvas);border:1px solid var(--border-paper);padding:12px;border-radius:var(--radius-xs);margin-bottom:10px">
+        A AND B = NAND(NAND(A,B), NAND(A,B))<br>
+        2 NAND gates
+      </div>
+      <canvas id="nand-and-canvas" width="260" height="100" style="display:block;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:8px;width:100%"></canvas>
+      <div class="input-toggles">
+        <button class="toggle-btn off" id="na-a" onclick="toggleNA('a')">A = 0</button>
+        <button class="toggle-btn off" id="na-b" onclick="toggleNA('b')">B = 0</button>
+      </div>
+      <div class="output-row"><div class="out-light off" id="na-out"></div><span class="output-label" id="na-lbl">A AND B = 0</span></div>
+    </div>
+    <div class="nand-cell">
+      <div class="pane-title indigo">OR from NAND</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;color:var(--text-body);background:var(--bg-canvas);border:1px solid var(--border-paper);padding:12px;border-radius:var(--radius-xs);margin-bottom:10px">
+        A OR B = NAND(NAND(A,A), NAND(B,B))<br>
+        3 NAND gates (De Morgan's law)
+      </div>
+      <canvas id="nand-or-canvas" width="260" height="100" style="display:block;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:8px;width:100%"></canvas>
+      <div class="input-toggles">
+        <button class="toggle-btn off" id="no-a" onclick="toggleNO('a')">A = 0</button>
+        <button class="toggle-btn off" id="no-b" onclick="toggleNO('b')">B = 0</button>
+      </div>
+      <div class="output-row"><div class="out-light off" id="no-out"></div><span class="output-label" id="no-lbl">A OR B = 0</span></div>
+    </div>
+    <div class="nand-cell" style="background:var(--bg-warm)">
+      <div class="pane-title gold">XOR from NAND (4 gates)</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;color:var(--text-body);background:var(--bg-canvas);border:1px solid var(--border-paper);padding:12px;border-radius:var(--radius-xs);margin-bottom:10px">
+        G1=NAND(A,B)<br>
+        G2=NAND(A,G1)<br>
+        G3=NAND(B,G1)<br>
+        XOR=NAND(G2,G3)
+      </div>
+      <canvas id="nand-xor-canvas" width="260" height="100" style="display:block;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:8px;width:100%"></canvas>
+      <div class="input-toggles">
+        <button class="toggle-btn off" id="nx-a" onclick="toggleNX('a')">A = 0</button>
+        <button class="toggle-btn off" id="nx-b" onclick="toggleNX('b')">B = 0</button>
+      </div>
+      <div class="output-row"><div class="out-light off" id="nx-out"></div><span class="output-label" id="nx-lbl">A XOR B = 0</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========================= GATE DEFINITIONS =========================
+const GATES = [
+  { id:'not',  name:'NOT',  inputs:['A'],     fn:s=>s.A^1,        desc:'Output is opposite of input. Inverts the signal.',         expr:'Y = Ā' },
+  { id:'and',  name:'AND',  inputs:['A','B'], fn:s=>s.A&s.B,      desc:'Output 1 only when ALL inputs are 1.',                    expr:'Y = A · B' },
+  { id:'or',   name:'OR',   inputs:['A','B'], fn:s=>s.A|s.B,      desc:'Output 1 when ANY input is 1.',                          expr:'Y = A + B' },
+  { id:'nand', name:'NAND', inputs:['A','B'], fn:s=>(s.A&s.B)^1,  desc:'NOT-AND. Output 0 only when ALL inputs are 1. Universal.', expr:'Y = A̅·̅B̅' },
+  { id:'nor',  name:'NOR',  inputs:['A','B'], fn:s=>(s.A|s.B)^1,  desc:'NOT-OR. Output 1 only when ALL inputs are 0. Universal.',  expr:'Y = A̅+̅B̅' },
+  { id:'xor',  name:'XOR',  inputs:['A','B'], fn:s=>s.A^s.B,      desc:'Exclusive OR. Output 1 when inputs DIFFER. Key for addition.', expr:'Y = A ⊕ B' },
+  { id:'xnor', name:'XNOR', inputs:['A','B'], fn:s=>(s.A^s.B)^1,  desc:'Exclusive NOR. Output 1 when inputs are EQUAL. Comparator.', expr:'Y = A ⊙ B' },
+];
+
+const gateStates = {};
+GATES.forEach(g => { gateStates[g.id] = {}; g.inputs.forEach(v => gateStates[g.id][v] = 0); });
+
+function buildGateGrid() {
+  const grid = document.getElementById('gate-grid');
+  grid.innerHTML = '';
+  GATES.forEach(g => {
+    const cell = document.createElement('div');
+    cell.className = 'gate-cell';
+    const cols = g.inputs.length === 1 ? 2 : g.inputs.length;
+    const ttRows = Math.pow(2, g.inputs.length);
+    let ttHTML = `<table class="truth-table"><thead><tr>${g.inputs.map(v=>`<th>${v}</th>`).join('')}<th>Y</th></tr></thead><tbody>`;
+    for (let i=0;i<ttRows;i++) {
+      const state = {};
+      g.inputs.forEach((v,j)=>state[v]=(i>>(g.inputs.length-1-j))&1);
+      const out = g.fn(state);
+      ttHTML += `<tr id="tt-${g.id}-${i}" onclick="setGateFromTT('${g.id}',${i})" style="cursor:pointer">${g.inputs.map(v=>`<td class="val-${state[v]}">${state[v]}</td>`).join('')}<td class="val-${out}">${out}</td></tr>`;
+    }
+    ttHTML += '</tbody></table>';
+
+    cell.innerHTML = `
+      <h3 class="${g.id}">${g.name}</h3>
+      <div class="gate-meta">${g.desc}<br><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-indigo)">${g.expr}</span></div>
+      <canvas class="gate-canvas" id="canvas-${g.id}" width="240" height="100" style="width:100%"></canvas>
+      <div class="input-toggles" id="toggles-${g.id}">
+        ${g.inputs.map(v=>`<button class="toggle-btn off" id="tog-${g.id}-${v}" onclick="toggleGate('${g.id}','${v}')">${v} = 0</button>`).join('')}
+      </div>
+      <div class="output-row">
+        <div class="out-light off" id="light-${g.id}">💡</div>
+        <span class="output-label" id="label-${g.id}">Y = 0</span>
+      </div>
+      ${ttHTML}`;
+    grid.appendChild(cell);
+    drawGate(g.id);
+    updateGate(g.id);
+  });
+}
+
+function toggleGate(gateId, input) {
+  gateStates[gateId][input] ^= 1;
+  const btn = document.getElementById(`tog-${gateId}-${input}`);
+  btn.textContent = `${input} = ${gateStates[gateId][input]}`;
+  btn.className = 'toggle-btn ' + (gateStates[gateId][input] ? 'on' : 'off');
+  updateGate(gateId); drawGate(gateId);
+}
+
+function setGateFromTT(gateId, rowIdx) {
+  const g = GATES.find(x=>x.id===gateId);
+  g.inputs.forEach((v,j)=>{
+    gateStates[gateId][v] = (rowIdx>>(g.inputs.length-1-j))&1;
+    const btn = document.getElementById(`tog-${gateId}-${v}`);
+    if(btn){btn.textContent=`${v} = ${gateStates[gateId][v]}`;btn.className='toggle-btn '+(gateStates[gateId][v]?'on':'off');}
+  });
+  updateGate(gateId); drawGate(gateId);
+}
+
+function updateGate(gateId) {
+  const g = GATES.find(x=>x.id===gateId);
+  const out = g.fn(gateStates[gateId]);
+  const light = document.getElementById(`light-${gateId}`);
+  const label = document.getElementById(`label-${gateId}`);
+  light.className = 'out-light ' + (out ? 'on' : 'off');
+  label.textContent = `Y = ${out}`;
+  label.style.color = out ? 'var(--accent-red)' : 'var(--text-muted)';
+  // Highlight truth table row
+  const ttRows = Math.pow(2, g.inputs.length);
+  for (let i=0;i<ttRows;i++) {
+    const state = {};
+    g.inputs.forEach((v,j)=>state[v]=(i>>(g.inputs.length-1-j))&1);
+    const matches = g.inputs.every(v=>state[v]===gateStates[gateId][v]);
+    const row = document.getElementById(`tt-${gateId}-${i}`);
+    if(row) row.classList.toggle('active-row', matches);
+  }
+}
+
+function drawGate(gateId) {
+  const canvas = document.getElementById('canvas-' + gateId);
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#F8F7F3'; ctx.fillRect(0,0,W,H);
+
+  const g = GATES.find(x=>x.id===gateId);
+  const s = gateStates[gateId];
+  const out = g.fn(s);
+  const onC = '#8B6914', offC = '#D8D6CE', wireOn = '#1C2D42', wireOff = '#E8E6DF';
+  const outC = out ? '#C82A2A' : '#D8D6CE';
+
+  ctx.font = '9px JetBrains Mono, monospace';
+
+  if (gateId === 'not') {
+    const A = s.A;
+    ctx.strokeStyle=A?onC:offC; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(20,H/2); ctx.lineTo(80,H/2); ctx.stroke();
+    ctx.fillStyle=A?onC:offC; ctx.textAlign='right'; ctx.fillText('A='+A, 18,H/2+3);
+    // Triangle
+    ctx.strokeStyle='#888880'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(80,20); ctx.lineTo(80,H-20); ctx.lineTo(150,H/2); ctx.closePath(); ctx.stroke();
+    // Bubble
+    ctx.strokeStyle=out?'#C82A2A':'#888880'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.arc(155,H/2,5,0,Math.PI*2); ctx.stroke();
+    if(out){ctx.fillStyle='rgba(200,42,42,0.2)';ctx.fill();}
+    ctx.strokeStyle=outC; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(160,H/2); ctx.lineTo(220,H/2); ctx.stroke();
+    ctx.fillStyle=outC; ctx.textAlign='left'; ctx.fillText('Y='+out, 183,H/2-6);
+  } else if (gateId==='and'||gateId==='nand') {
+    const A=s.A, B=s.B;
+    [A,B].forEach((v,i)=>{
+      const y = i===0?30:H-30;
+      ctx.strokeStyle=v?onC:offC; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(20,y); ctx.lineTo(80,y); ctx.stroke();
+      ctx.fillStyle=v?onC:offC; ctx.textAlign='right'; ctx.fillText((i===0?'A':'B')+'='+v,18,y+3);
+    });
+    // D-shape AND body
+    ctx.strokeStyle='#888880'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(80,20); ctx.lineTo(80,H-20); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(80,20); ctx.bezierCurveTo(160,20,160,H-20,80,H-20);
+    ctx.stroke();
+    // Wire from gates to body
+    ctx.strokeStyle=A?onC:offC; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(80,30); ctx.lineTo(80,30); ctx.stroke();
+    if(gateId==='nand'){
+      ctx.strokeStyle=out?'#C82A2A':'#888880'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.arc(165,H/2,5,0,Math.PI*2); ctx.stroke();
+      if(out){ctx.fillStyle='rgba(200,42,42,0.2)';ctx.fill();}
+    }
+    ctx.strokeStyle=outC; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(gateId==='nand'?170:160,H/2); ctx.lineTo(220,H/2); ctx.stroke();
+    ctx.fillStyle=outC; ctx.textAlign='left'; ctx.fillText('Y='+out,183,H/2-6);
+  } else if (gateId==='or'||gateId==='nor') {
+    const A=s.A, B=s.B;
+    [A,B].forEach((v,i)=>{
+      const y = i===0?30:H-30;
+      ctx.strokeStyle=v?onC:offC; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(20,y); ctx.lineTo(75,y); ctx.stroke();
+      ctx.fillStyle=v?onC:offC; ctx.textAlign='right'; ctx.fillText((i===0?'A':'B')+'='+v,18,y+3);
+    });
+    // OR curved body
+    ctx.strokeStyle='#888880'; ctx.lineWidth=1.5;
+    ctx.beginPath();
+    ctx.moveTo(70,18); ctx.bezierCurveTo(90,H/2,90,H/2,70,H-18);
+    ctx.moveTo(70,18); ctx.bezierCurveTo(140,18,160,H/2,140,H-18);
+    ctx.bezierCurveTo(90,H/2,90,H/2,70,H-18);
+    ctx.stroke();
+    if(gateId==='nor'){
+      ctx.strokeStyle=out?'#C82A2A':'#888880'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.arc(165,H/2,5,0,Math.PI*2); ctx.stroke();
+      if(out){ctx.fillStyle='rgba(200,42,42,0.2)';ctx.fill();}
+    }
+    ctx.strokeStyle=outC; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(gateId==='nor'?170:160,H/2); ctx.lineTo(220,H/2); ctx.stroke();
+    ctx.fillStyle=outC; ctx.textAlign='left'; ctx.fillText('Y='+out,183,H/2-6);
+  } else if (gateId==='xor'||gateId==='xnor') {
+    const A=s.A, B=s.B;
+    [A,B].forEach((v,i)=>{
+      const y = i===0?30:H-30;
+      ctx.strokeStyle=v?onC:offC; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(20,y); ctx.lineTo(75,y); ctx.stroke();
+      ctx.fillStyle=v?onC:offC; ctx.textAlign='right'; ctx.fillText((i===0?'A':'B')+'='+v,18,y+3);
+    });
+    // Extra XOR curve
+    ctx.strokeStyle='#888880'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(62,18); ctx.bezierCurveTo(82,H/2,82,H/2,62,H-18); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(70,18); ctx.bezierCurveTo(90,H/2,90,H/2,70,H-18);
+    ctx.moveTo(70,18); ctx.bezierCurveTo(140,18,160,H/2,140,H-18);
+    ctx.bezierCurveTo(90,H/2,90,H/2,70,H-18);
+    ctx.stroke();
+    if(gateId==='xnor'){
+      ctx.strokeStyle=out?'#C82A2A':'#888880'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.arc(165,H/2,5,0,Math.PI*2); ctx.stroke();
+      if(out){ctx.fillStyle='rgba(200,42,42,0.2)';ctx.fill();}
+    }
+    ctx.strokeStyle=outC; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(gateId==='xnor'?170:160,H/2); ctx.lineTo(220,H/2); ctx.stroke();
+    ctx.fillStyle=outC; ctx.textAlign='left'; ctx.fillText('Y='+out,183,H/2-6);
+  }
+}
+
+buildGateGrid();
+
+// ========================= EXPRESSION EVALUATOR =========================
+function loadExpr(e) { document.getElementById('expr-input').value = e; evalExpr(); }
+
+function evalExpr() {
+  const raw = document.getElementById('expr-input').value.trim();
+  let expr = raw.toUpperCase()
+    .replace(/\bAND\b/g,'&').replace(/\bOR\b/g,'|').replace(/\bXOR\b/g,'^')
+    .replace(/\bNAND\b/g,'NAND').replace(/\bNOR\b/g,'NOR')
+    .replace(/\bNOT\s+/g,'!').replace(/NOT\(/g,'!(').replace(/\s+/g,'');
+
+  const vars = [...new Set(raw.toUpperCase().match(/\b[A-F]\b/g)||[])].sort();
+  const varVals = {}; vars.forEach(v=>varVals[v]=0);
+
+  const varRow = document.getElementById('eval-var-row');
+  if(!varRow) { const d=document.createElement('div'); d.id='eval-var-row'; document.getElementById('eval-var-toggles').after(d); }
+  const togglesEl = document.getElementById('eval-var-toggles');
+  togglesEl.innerHTML = '';
+  vars.forEach(v=>{
+    const b=document.createElement('button');
+    b.className='toggle-btn '+(varVals[v]?'on':'off');
+    b.id='ev-'+v; b.textContent=`${v}=${varVals[v]}`;
+    b.onclick=()=>{varVals[v]^=1;b.textContent=`${v}=${varVals[v]}`;b.className='toggle-btn '+(varVals[v]?'on':'off');renderTT();};
+    togglesEl.appendChild(b);
+  });
+
+  function evaluate(state) {
+    let e2 = expr;
+    Object.keys(state).forEach(v=>{ e2=e2.replace(new RegExp('\\b'+v+'\\b','g'),state[v]); });
+    // Handle NAND and NOR
+    e2 = e2.replace(/NAND\((\d),(\d)\)/g,(m,a,b)=>((parseInt(a)&parseInt(b))^1));
+    e2 = e2.replace(/NOR\((\d),(\d)\)/g,(m,a,b)=>((parseInt(a)|parseInt(b))^1));
+    try { return Function('"use strict";return ('+e2+')')()?1:0; }
+    catch{ return null; }
+  }
+
+  function renderTT() {
+    const rows = Math.pow(2,vars.length);
+    let html=`<table class="truth-table"><thead><tr>${vars.map(v=>`<th>${v}</th>`).join('')}<th>Y</th></tr></thead><tbody>`;
+    let ones=0;
+    for(let i=0;i<rows;i++){
+      const state={}; vars.forEach((v,j)=>state[v]=(i>>(vars.length-1-j))&1);
+      const o=evaluate(state); if(o===1)ones++;
+      const active=vars.every(v=>state[v]===varVals[v]);
+      html+=`<tr${active?' class="active-row"':''}>${vars.map(v=>`<td class="val-${state[v]}">${state[v]}</td>`).join('')}<td class="val-${o}">${o===null?'?':o}</td></tr>`;
+    }
+    html+='</tbody></table>';
+    document.getElementById('eval-tt-wrap').innerHTML=html;
+    document.getElementById('eval-info').textContent=`${vars.length} variable${vars.length!==1?'s':''} · ${rows} rows · ${ones} ones · ${rows-ones} zeros`;
+  }
+  renderTT();
+}
+
+evalExpr();
+
+// ========================= NAND UNIVERSAL =========================
+const nnS={a:0}; const naS={a:0,b:0}; const noS={a:0,b:0}; const nxS={a:0,b:0};
+
+function drawNandCanvas(id, labels, wires, nodes) {
+  const canvas=document.getElementById(id); if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#F8F7F3'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.font='8px JetBrains Mono,monospace';
+  wires.forEach(w=>{
+    ctx.strokeStyle=w.on?'#8B6914':'#D8D6CE'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(w.x1,w.y1); ctx.lineTo(w.x2,w.y2); ctx.stroke();
+  });
+  nodes.forEach(n=>{
+    ctx.fillStyle=n.on?'#C82A2A':'#888880';
+    ctx.strokeStyle=n.on?'#C82A2A':'#888880'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.arc(n.x,n.y,4,0,Math.PI*2);
+    if(n.fill){ctx.fill();}else{ctx.stroke();}
+    if(n.label){ctx.fillStyle=n.on?'#C82A2A':'#888880';ctx.textAlign=n.align||'center';ctx.fillText(n.label,n.lx||n.x,n.ly||n.y-7);}
+  });
+  labels.forEach(l=>{
+    ctx.fillStyle=l.color||'#888880'; ctx.textAlign=l.align||'left';
+    ctx.fillText(l.text,l.x,l.y);
+  });
+}
+
+function toggleNN(v){nnS[v]^=1;document.getElementById('nn-'+v).textContent=`A = ${nnS[v]}`;document.getElementById('nn-'+v).className='toggle-btn '+(nnS[v]?'on':'off');updateNandNot();}
+function toggleNA(v){naS[v]^=1;document.getElementById('na-'+v).textContent=`${v.toUpperCase()} = ${naS[v]}`;document.getElementById('na-'+v).className='toggle-btn '+(naS[v]?'on':'off');updateNandAnd();}
+function toggleNO(v){noS[v]^=1;document.getElementById('no-'+v).textContent=`${v.toUpperCase()} = ${noS[v]}`;document.getElementById('no-'+v).className='toggle-btn '+(noS[v]?'on':'off');updateNandOr();}
+function toggleNX(v){nxS[v]^=1;document.getElementById('nx-'+v).textContent=`${v.toUpperCase()} = ${nxS[v]}`;document.getElementById('nx-'+v).className='toggle-btn '+(nxS[v]?'on':'off');updateNandXor();}
+
+function nand(a,b){return (a&b)^1;}
+
+function updateNandNot(){
+  const A=nnS.a; const out=nand(A,A);
+  document.getElementById('nn-out').className='out-light '+(out?'on':'off');
+  document.getElementById('nn-lbl').textContent=`NOT A = ${out}`;
+  drawNandCanvas('nand-not-canvas',
+    [{text:`A=${A}`,x:5,y:50,color:A?'#8B6914':'#888880'},{text:`Y=${out}`,x:210,y:50,color:out?'#C82A2A':'#888880',align:'right'}],
+    [{x1:20,y1:45,x2:80,y2:38,on:A},{x1:20,y1:45,x2:80,y2:55,on:A},{x1:160,y1:50,x2:215,y2:50,on:!!out}],
+    [{x:120,y:50,fill:true,on:!!(nand(A,A)===0),label:'NAND',ly:43,align:'center',color:'#888880'}]
+  );
+}
+function updateNandAnd(){
+  const A=naS.a,B=naS.b; const g1=nand(A,B); const out=nand(g1,g1);
+  document.getElementById('na-out').className='out-light '+(out?'on':'off');
+  document.getElementById('na-lbl').textContent=`A AND B = ${out}`;
+}
+function updateNandOr(){
+  const A=noS.a,B=noS.b; const notA=nand(A,A),notB=nand(B,B); const out=nand(notA,notB);
+  document.getElementById('no-out').className='out-light '+(out?'on':'off');
+  document.getElementById('no-lbl').textContent=`A OR B = ${out}`;
+}
+function updateNandXor(){
+  const A=nxS.a,B=nxS.b; const g1=nand(A,B),g2=nand(A,g1),g3=nand(B,g1),out=nand(g2,g3);
+  document.getElementById('nx-out').className='out-light '+(out?'on':'off');
+  document.getElementById('nx-lbl').textContent=`A XOR B = ${out}`;
+}
+
+updateNandNot(); updateNandAnd(); updateNandOr(); updateNandXor();
+
+// ========================= TABS =========================
+function switchTab(id) {
+  document.querySelectorAll('.zen-tab').forEach((t,i)=>t.classList.toggle('active',['gates','expr','nand'][i]===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+}
+</script>
+</body>
+</html>

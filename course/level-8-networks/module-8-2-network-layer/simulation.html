@@ -1,0 +1,237 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 8.2 — Network Layer: IP and Routing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+/* Route table */
+.rt-row{display:flex;align-items:center;gap:8px;padding:7px 12px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:3px;transition:all var(--t-fast);font-family:'JetBrains Mono',monospace;font-size:11px}
+.rt-row.matched{border-color:var(--accent-gold);background:rgba(139,105,20,0.06)}
+.rt-net{color:var(--accent-indigo);width:140px;flex-shrink:0}
+.rt-gw{color:var(--text-muted);flex:1}
+.rt-iface{color:var(--accent-gold);width:60px;text-align:right}
+/* Stats */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.stat-box{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:300;line-height:1;margin-bottom:2px;display:block;color:var(--text-sumi)}
+.sv.red{color:var(--accent-red)}.sv.gold{color:var(--accent-gold)}.sv.indigo{color:var(--accent-indigo)}
+.sl{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:120px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs)}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 8.2 — Network Layer: IP and Routing</h1>
+  <p class="zen-subtitle">Subnet Calculator · Routing Table · Packet Routing</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('subnet')">Subnet Calculator</div>
+  <div class="zen-tab" onclick="switchTab('routing')">Routing Table</div>
+  <div class="zen-tab" onclick="switchTab('nat')">NAT Simulator</div>
+</div>
+
+<!-- SUBNET CALCULATOR -->
+<div id="panel-subnet" class="panel active">
+  <div class="zen-intro"><strong>CIDR notation: address/prefix_length.</strong> The prefix length (e.g. /24) specifies how many bits are the network part. The remaining bits identify individual hosts. Calculate all subnet properties from any CIDR address.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Enter CIDR address</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+        <input id="cidr-input" type="text" value="192.168.10.50/24" style="font-family:'JetBrains Mono',monospace;font-size:14px;flex:1;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:7px 10px;color:var(--text-sumi)">
+        <button class="zen-btn primary" onclick="calcSubnet()">Calculate</button>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="zen-btn" style="padding:5px 10px;font-size:10px" onclick="setSubnet('192.168.10.50/24')">192.168.10.50/24</button>
+        <button class="zen-btn" style="padding:5px 10px;font-size:10px" onclick="setSubnet('10.0.5.130/25')">10.0.5.130/25</button>
+        <button class="zen-btn" style="padding:5px 10px;font-size:10px" onclick="setSubnet('172.16.0.200/20')">172.16.0.200/20</button>
+        <button class="zen-btn" style="padding:5px 10px;font-size:10px" onclick="setSubnet('10.10.0.0/22')">10.10.0.0/22</button>
+      </div>
+      <div id="subnet-result" style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:12px;border-radius:var(--radius-xs);color:var(--text-muted);min-height:100px">
+        Enter a CIDR address and press Calculate.
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Binary breakdown</div>
+      <div id="subnet-binary" style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2.2;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:12px;border-radius:var(--radius-xs);min-height:80px;color:var(--text-muted);margin-bottom:10px">
+        Binary view appears here.
+      </div>
+      <div class="op-log" id="subnet-log"><div class="linfo">> /24 = 254 hosts. /25 = 126 hosts. /30 = 2 hosts (point-to-point link). /32 = one host.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ROUTING TABLE -->
+<div id="panel-routing" class="panel">
+  <div class="zen-intro"><strong>Longest prefix match: the most specific route wins.</strong> When multiple routes match a destination IP, the one with the longest prefix (most bits matched) takes precedence over shorter, more general routes.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Route table (router R1)</div>
+      <div id="route-table-vis" style="margin-bottom:12px">
+        <div style="display:flex;gap:8px;padding:5px 12px;background:var(--bg-warm);border-radius:var(--radius-xs);margin-bottom:4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)">
+          <span style="width:140px">Network</span><span style="flex:1">Gateway</span><span style="width:60px">Iface</span>
+        </div>
+        <div class="rt-row" data-net="192.168.1.0/24"><span class="rt-net">192.168.1.0/24</span><span class="rt-gw">→ directly connected</span><span class="rt-iface">eth0</span></div>
+        <div class="rt-row" data-net="192.168.1.128/25"><span class="rt-net">192.168.1.128/25</span><span class="rt-gw">→ 192.168.1.254</span><span class="rt-iface">eth0</span></div>
+        <div class="rt-row" data-net="192.168.0.0/16"><span class="rt-net">192.168.0.0/16</span><span class="rt-gw">→ 10.0.0.1</span><span class="rt-iface">eth1</span></div>
+        <div class="rt-row" data-net="10.0.0.0/8"><span class="rt-net">10.0.0.0/8</span><span class="rt-gw">→ 10.0.0.1</span><span class="rt-iface">eth1</span></div>
+        <div class="rt-row" data-net="0.0.0.0/0"><span class="rt-net">0.0.0.0/0</span><span class="rt-gw">→ 203.0.113.1 (ISP)</span><span class="rt-iface">eth2</span></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text-muted)">Destination:</span>
+        <input id="rt-dest" type="text" value="192.168.1.200" style="font-family:'JetBrains Mono',monospace;font-size:13px;flex:1;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:6px 10px;color:var(--text-sumi)">
+        <button class="zen-btn primary" onclick="routeLookup()">Route lookup</button>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title red">Longest prefix match result</div>
+      <div id="rt-result" style="font-family:'JetBrains Mono',monospace;font-size:12px;min-height:80px;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:12px;border-radius:var(--radius-xs);margin-bottom:10px;line-height:1.9;color:var(--text-muted)">
+        Enter a destination IP and click Route lookup.
+      </div>
+      <div class="op-log" id="rt-log"><div class="linfo">> Try: 192.168.1.200 (matches /25), 192.168.1.100 (matches /24), 8.8.8.8 (default route)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAT SIMULATOR -->
+<div id="panel-nat" class="panel">
+  <div class="zen-intro"><strong>NAT translates private IP:port → public IP:port.</strong> Multiple private hosts share one public IP. The NAT table maps each outbound connection. Return packets are translated back using this table.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Home network (192.168.1.0/24)</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+        <button class="zen-btn" onclick="natConnect('192.168.1.5','google.com','443')">PC (192.168.1.5) → Google:443</button>
+        <button class="zen-btn" onclick="natConnect('192.168.1.10','youtube.com','443')">Phone (.10) → YouTube:443</button>
+        <button class="zen-btn" onclick="natConnect('192.168.1.5','github.com','443')">PC → GitHub:443</button>
+        <button class="zen-btn danger" onclick="natClear()">↺ Clear NAT table</button>
+      </div>
+      <div class="pane-title indigo" style="margin-bottom:6px">NAT Translation Table</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;display:flex;gap:6px;padding:5px 8px;background:var(--bg-warm);border-radius:var(--radius-xs);margin-bottom:4px;color:var(--text-muted)">
+        <span style="flex:1">Private src</span><span style="flex:1">Public src</span><span style="flex:1">Destination</span><span style="width:48px">Proto</span>
+      </div>
+      <div id="nat-table" style="max-height:180px;overflow-y:auto"></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title red">NAT translation log</div>
+      <div class="op-log" id="nat-log"><div class="linfo">> NAT router (public IP: 203.0.113.1) translates outbound packets and matches inbound replies.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== SUBNET CALCULATOR =====
+function ipToInt(ip){return ip.split('.').reduce((n,o)=>(n<<8)|parseInt(o),0)>>>0;}
+function intToIp(n){return [(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255].join('.');}
+function toBin(n,bits=8){return (n>>>0).toString(2).padStart(bits,'0');}
+function ipToBin(ip){return ip.split('.').map(o=>toBin(parseInt(o),8)).join('.');}
+
+function setSubnet(v){document.getElementById('cidr-input').value=v;calcSubnet();}
+function calcSubnet(){
+  const raw=document.getElementById('cidr-input').value.trim();
+  const [ip,prefix]=raw.split('/');
+  const pl=parseInt(prefix);
+  if(!ip||isNaN(pl)||pl<0||pl>32){document.getElementById('subnet-result').textContent='Invalid CIDR';return;}
+  const mask=pl?((0xFFFFFFFF<<(32-pl))>>>0):0;
+  const ipInt=ipToInt(ip);
+  const netAddr=intToIp(ipInt&mask);
+  const bcAddr=intToIp(ipInt|~mask>>>0);
+  const firstHost=intToIp((ipInt&mask)+1);
+  const lastHost=intToIp((ipInt|(~mask>>>0))-1);
+  const hosts=Math.max(0,Math.pow(2,32-pl)-2);
+  document.getElementById('subnet-result').innerHTML=
+    `<span style="color:var(--accent-indigo)">Network:    ${netAddr}/${pl}</span>\n<span style="color:var(--text-muted)">Broadcast:  ${bcAddr}\nFirst host: ${firstHost}\nLast host:  ${lastHost}\nUsable hosts: ${hosts.toLocaleString()}\nSubnet mask: ${intToIp(mask)}</span>`;
+  const ipBin=ipToBin(ip);const maskBin=ipToBin(intToIp(mask));
+  const netBin=ipBin.replace(/ /g,'');
+  const netPart=`<span style="color:var(--accent-indigo)">${netBin.slice(0,pl)}</span>`;
+  const hostPart=`<span style="color:var(--accent-gold)">${netBin.slice(pl)}</span>`;
+  document.getElementById('subnet-binary').innerHTML=`IP:   ${netBin.match(/.{1,8}/g)?.join('.').slice(0,pl).split('').map((c,i)=>`<span style="color:var(--accent-indigo)">${c}</span>`).join('')||netBin}\n\nNetwork (indigo) | Host (gold):\n${netBin.split('').map((c,i)=>`<span style="color:${i<pl?'var(--accent-indigo)':'var(--accent-gold)'}">${c}</span>`).join('')}`;
+  const log=document.getElementById('subnet-log');log.innerHTML=`<div class="linfo">> ${raw} → ${hosts.toLocaleString()} usable hosts in ${netAddr}/${pl}</div>`;
+}
+calcSubnet();
+
+// ===== ROUTING TABLE =====
+function rtLog(m,cls='lmuted'){const el=document.getElementById('rt-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+const ROUTES=[
+  {net:'192.168.1.0',pl:24,gw:'directly connected',iface:'eth0'},
+  {net:'192.168.1.128',pl:25,gw:'192.168.1.254',iface:'eth0'},
+  {net:'192.168.0.0',pl:16,gw:'10.0.0.1',iface:'eth1'},
+  {net:'10.0.0.0',pl:8,gw:'10.0.0.1',iface:'eth1'},
+  {net:'0.0.0.0',pl:0,gw:'203.0.113.1 (ISP)',iface:'eth2'},
+];
+function matchesRoute(ipInt,route){const mask=route.pl?((0xFFFFFFFF<<(32-route.pl))>>>0):0;return(ipInt&mask)===(ipToInt(route.net)&mask);}
+function routeLookup(){
+  const dest=document.getElementById('rt-dest').value.trim();
+  try{ipToInt(dest);}catch{rtLog('Invalid IP','lerr');return;}
+  const ipInt=ipToInt(dest);
+  document.querySelectorAll('.rt-row').forEach(r=>r.classList.remove('matched'));
+  const matches=ROUTES.filter(r=>matchesRoute(ipInt,r)).sort((a,b)=>b.pl-a.pl);
+  if(!matches.length){document.getElementById('rt-result').textContent='No route found.';rtLog(`No route for ${dest}`,'lerr');return;}
+  const best=matches[0];
+  document.querySelectorAll('.rt-row').forEach(r=>{if(r.dataset.net===best.net+'/'+best.pl)r.classList.add('matched');});
+  document.getElementById('rt-result').innerHTML=
+    `<span style="color:var(--accent-gold)">✓ Best match: ${best.net}/${best.pl}</span>\nInterface: ${best.iface}\nNext hop: ${best.gw}\nPrefix length: /${best.pl} (longer = more specific)\n\n${matches.length>1?'Also matched: '+matches.slice(1).map(r=>r.net+'/'+r.pl).join(', '):'Only one match.'}`;
+  rtLog(`${dest} → ${best.net}/${best.pl} via ${best.iface} (longest prefix wins)`,best.pl>0?'lok':'lmuted');
+}
+
+// ===== NAT =====
+const NAT_PUBLIC_IP='203.0.113.1';
+let natTable=[], natNextPort=50000;
+function natLog(m,cls='lmuted'){const el=document.getElementById('nat-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function renderNatTable(){
+  const el=document.getElementById('nat-table');
+  if(!natTable.length){el.innerHTML='<div style="color:var(--text-ghost);font-size:12px;padding:8px">Empty</div>';return;}
+  el.innerHTML=natTable.map(entry=>`
+    <div style="display:flex;gap:6px;padding:6px 8px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:2px;font-family:'JetBrains Mono',monospace;font-size:10px">
+      <span style="flex:1;color:var(--accent-indigo)">${entry.src}</span>
+      <span style="flex:1;color:var(--accent-gold)">${NAT_PUBLIC_IP}:${entry.publicPort}</span>
+      <span style="flex:1;color:var(--text-muted)">${entry.dst}</span>
+      <span style="width:48px;color:var(--text-muted)">TCP</span>
+    </div>`).join('');
+}
+function natConnect(privateIp,dst,dstPort){
+  const srcPort=40000+Math.floor(Math.random()*1000);
+  const pubPort=natNextPort++;
+  natTable.push({src:`${privateIp}:${srcPort}`,publicPort:pubPort,dst:`${dst}:${dstPort}`});
+  natLog(`${privateIp}:${srcPort} → ${NAT_PUBLIC_IP}:${pubPort} → ${dst}:${dstPort}`,'linfo');
+  natLog(`Return: ${dst}:${dstPort} → ${NAT_PUBLIC_IP}:${pubPort} → ${privateIp}:${srcPort}`,'lmuted');
+  renderNatTable();
+}
+function natClear(){natTable=[];natNextPort=50000;renderNatTable();document.getElementById('nat-log').innerHTML='<div class="linfo">> NAT table cleared.</div>';}
+renderNatTable();
+
+function switchTab(id){
+  ['subnet','routing','nat'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);p.style.display=t===id?'block':'none';p.classList.toggle('active',t===id);
+  });
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+</script>
+</body>
+</html>

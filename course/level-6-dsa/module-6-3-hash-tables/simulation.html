@@ -1,0 +1,339 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 6.3 — Hash Tables</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes insert-flash{0%{background:rgba(139,105,20,0.3)}100%{background:transparent}}
+@keyframes probe-flash{0%{background:rgba(200,42,42,0.2)}100%{background:transparent}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+/* Hash table cells */
+.ht-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:3px;margin-bottom:10px}
+.ht-cell{background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:7px 8px;min-height:54px;transition:all var(--t-fast);position:relative}
+.ht-cell.occupied{border-color:var(--accent-indigo);background:rgba(28,45,66,0.05)}
+.ht-cell.probing{animation:probe-flash .3s var(--ease-out)}
+.ht-cell.inserted{animation:insert-flash .4s var(--ease-out)}
+.ht-cell.tombstone{border-color:var(--accent-red);opacity:.5}
+.hc-idx{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)}
+.hc-key{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-indigo);margin-top:3px;word-break:break-all}
+.hc-val{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted)}
+/* Chain buckets */
+.chain-bucket{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.cb-idx{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);width:22px;flex-shrink:0}
+.cb-items{display:flex;gap:4px;align-items:center;flex-wrap:wrap;flex:1}
+.cb-item{background:var(--bg-washi);border:1px solid var(--accent-indigo);border-radius:var(--radius-xs);padding:4px 8px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-indigo)}
+/* Stats */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.stat-box{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:300;line-height:1;margin-bottom:2px;display:block;color:var(--text-sumi)}
+.sv.red{color:var(--accent-red)}.sv.gold{color:var(--accent-gold)}.sv.indigo{color:var(--accent-indigo)}
+.sl{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:110px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs)}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 6.3 — Hash Tables</h1>
+  <p class="zen-subtitle">Open Addressing (Linear Probing) · Separate Chaining · Hash Quality</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('open')">Open Addressing</div>
+  <div class="zen-tab" onclick="switchTab('chain')">Separate Chaining</div>
+  <div class="zen-tab" onclick="switchTab('quality')">Hash Quality</div>
+</div>
+
+<!-- OPEN ADDRESSING -->
+<div id="panel-open" class="panel active">
+  <div class="zen-intro"><strong>Linear probing: on collision, probe the next slot.</strong> When searching, follow the same probe sequence until you find the key or an empty slot. Deletion uses tombstones to avoid breaking probe chains.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Hash table (size 7, linear probing)</div>
+      <div class="ht-grid" id="ht-grid"></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+        <input id="ht-key" type="text" value="hello" style="font-family:'JetBrains Mono',monospace;font-size:13px;width:80px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+        <input id="ht-val" type="text" value="42" style="font-family:'JetBrains Mono',monospace;font-size:13px;width:60px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+        <button class="zen-btn primary" onclick="htInsert()">insert</button>
+        <button class="zen-btn" onclick="htLookup()">lookup</button>
+        <button class="zen-btn danger" onclick="htDelete()">delete</button>
+        <button class="zen-btn danger" onclick="htClear()">↺</button>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><span class="sv indigo" id="ht-entries">0</span><span class="sl">Entries</span></div>
+        <div class="stat-box"><span class="sv gold" id="ht-load">0.00</span><span class="sl">Load α</span></div>
+        <div class="stat-box"><span class="sv red" id="ht-probes">0</span><span class="sl">Probes</span></div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Hash function: h(k) = sum(ord(c)) % 7</div>
+      <div id="ht-hash-trace" style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;border-radius:var(--radius-xs);min-height:60px;margin-bottom:10px;color:var(--text-muted);line-height:2">
+        Enter a key to see its hash computed step by step.
+      </div>
+      <div class="op-log" id="ht-log"><div class="linfo">> Insert key-value pairs and watch linear probing resolve collisions.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SEPARATE CHAINING -->
+<div id="panel-chain" class="panel">
+  <div class="zen-intro"><strong>Separate chaining: each bucket holds a linked list.</strong> All keys that hash to the same slot form a chain. Lookup scans the chain at the hash index. Works well even at high load factors (unlike open addressing).</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Hash table with chaining (M=7)</div>
+      <div id="chain-buckets" style="margin-bottom:12px;max-height:220px;overflow-y:auto"></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+        <input id="ch-key" type="text" value="cat" style="font-family:'JetBrains Mono',monospace;font-size:13px;width:80px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+        <button class="zen-btn primary" onclick="chainInsert()">insert</button>
+        <button class="zen-btn" onclick="chainLookup()">lookup</button>
+        <button class="zen-btn danger" onclick="chainClear()">↺ clear</button>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><span class="sv indigo" id="ch-entries">0</span><span class="sl">Entries</span></div>
+        <div class="stat-box"><span class="sv gold" id="ch-load">0.00</span><span class="sl">Load α</span></div>
+        <div class="stat-box"><span class="sv red" id="ch-max-chain">0</span><span class="sl">Max chain</span></div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Load factor vs lookup cost</div>
+      <div style="padding:10px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);font-size:12px;color:var(--text-muted);line-height:1.9;margin-bottom:10px">
+        <strong style="color:var(--text-sumi)">Expected probes (chaining):</strong><br>
+        α=0.5 → ~1.25 probes<br>
+        α=1.0 → ~1.5 probes<br>
+        α=2.0 → ~2.0 probes<br><br>
+        <strong style="color:var(--text-sumi)">With uniform hashing:</strong><br>
+        O(1 + α) expected per lookup.
+      </div>
+      <div class="op-log" id="ch-log"><div class="linfo">> Chaining never runs out of space — chains just get longer at high load.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- HASH QUALITY -->
+<div id="panel-quality" class="panel">
+  <div class="zen-intro"><strong>A good hash function distributes keys uniformly.</strong> Enter a set of keys and compare how two hash functions distribute them across 8 buckets. Clustering leads to O(n) worst-case lookups.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Enter keys (comma-separated)</div>
+      <input id="hq-keys" type="text" value="a,b,c,d,e,f,g,h,i,j,k,l" style="font-family:'JetBrains Mono',monospace;font-size:13px;width:100%;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:6px 10px;color:var(--text-sumi);margin-bottom:12px">
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="runHQuality()">Compare hash functions</button>
+        <button class="zen-btn" onclick="hqPreset('nums')">Use 1–12</button>
+        <button class="zen-btn" onclick="hqPreset('cluster')">Clustered keys</button>
+      </div>
+      <div class="pane-title gold" style="margin-top:18px;margin-bottom:8px">Hash A: sum(chars) % 8</div>
+      <div id="hq-a-bars"></div>
+      <div class="pane-title indigo" style="margin-top:14px;margin-bottom:8px">Hash B: DJB2 (better) % 8</div>
+      <div id="hq-b-bars"></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title red">Distribution analysis</div>
+      <div id="hq-analysis" style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:12px;border-radius:var(--radius-xs);min-height:100px;line-height:2;color:var(--text-muted)">
+        Run the comparison to see results.
+      </div>
+      <div style="margin-top:12px;padding:10px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);font-size:12px;color:var(--text-muted);line-height:1.8">
+        <strong style="color:var(--text-sumi)">Why DJB2?</strong> The multiplier 33 (prime-like) and XOR combine bytes in a way that makes similar strings produce very different hashes. Sum-only functions are vulnerable: "abc" and "bca" hash the same.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== OPEN ADDRESSING =====
+const HT_SIZE=7;
+let htTable=Array(HT_SIZE).fill(null); // {key,val} or 'TOMBSTONE'
+let htEntries=0, htTotalProbes=0;
+
+function hashKey(k,M=HT_SIZE){let h=0;for(const c of k)h=(h+c.charCodeAt(0))%M;return h;}
+function hashTrace(k){
+  const chars=k.split('').map(c=>c.charCodeAt(0));
+  const sum=chars.reduce((a,b)=>a+b,0);
+  return `"${k}" → chars: [${chars.join('+')}] = ${sum}\n${sum} % ${HT_SIZE} = ${sum%HT_SIZE}`;
+}
+
+function htLog(m,cls='lmuted'){const el=document.getElementById('ht-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+
+function renderHT(probing=[],inserted=-1){
+  const g=document.getElementById('ht-grid');
+  g.innerHTML=htTable.map((slot,i)=>{
+    let cls='ht-cell';
+    if(slot&&slot!=='TOMBSTONE')cls+=' occupied';
+    if(slot==='TOMBSTONE')cls+=' tombstone';
+    if(probing.includes(i))cls+=' probing';
+    if(i===inserted)cls+=' inserted';
+    const content=slot&&slot!=='TOMBSTONE'?
+      `<div class="hc-key">${slot.key}</div><div class="hc-val">${slot.val}</div>`:
+      slot==='TOMBSTONE'?'<div class="hc-key" style="color:var(--accent-red)">✗</div>':'';
+    return `<div class="${cls}" id="htc-${i}"><div class="hc-idx">${i}</div>${content}</div>`;
+  }).join('');
+  document.getElementById('ht-entries').textContent=htEntries;
+  document.getElementById('ht-load').textContent=(htEntries/HT_SIZE).toFixed(2);
+  document.getElementById('ht-probes').textContent=htTotalProbes;
+}
+
+function htInsert(){
+  const key=document.getElementById('ht-key').value.trim(); if(!key)return;
+  const val=document.getElementById('ht-val').value.trim()||'?';
+  document.getElementById('ht-hash-trace').textContent=hashTrace(key);
+  let idx=hashKey(key), probed=[]; let probes=0;
+  while(probes<HT_SIZE){
+    const slot=(idx+probes)%HT_SIZE;
+    probed.push(slot);
+    if(!htTable[slot]||htTable[slot]==='TOMBSTONE'||htTable[slot].key===key){
+      const isNew=!htTable[slot]||htTable[slot]==='TOMBSTONE';
+      htTable[slot]={key,val};
+      if(isNew) htEntries++;
+      htTotalProbes+=probes+1;
+      renderHT(probed,slot);
+      htLog(`insert "${key}" → hash=${hashKey(key)}, ${probes} probes, placed at slot ${slot}`,'linfo');
+      return;
+    }
+    probes++;
+  }
+  htLog('Table full!','lerr');
+}
+
+function htLookup(){
+  const key=document.getElementById('ht-key').value.trim(); if(!key)return;
+  let idx=hashKey(key); let probed=[]; let probes=0;
+  while(probes<HT_SIZE){
+    const slot=(idx+probes)%HT_SIZE;
+    probed.push(slot);
+    if(!htTable[slot]){renderHT(probed);htLog(`lookup "${key}" → not found after ${probes+1} probes`,'lerr');return;}
+    if(htTable[slot]!=='TOMBSTONE'&&htTable[slot].key===key){renderHT(probed,slot);htLog(`lookup "${key}" → found at slot ${slot} (${probes+1} probes): ${htTable[slot].val}`,'lok');return;}
+    probes++;
+  }
+  htLog(`lookup "${key}" → not found`,'lerr');
+}
+
+function htDelete(){
+  const key=document.getElementById('ht-key').value.trim(); if(!key)return;
+  let idx=hashKey(key); let probes=0;
+  while(probes<HT_SIZE){
+    const slot=(idx+probes)%HT_SIZE;
+    if(!htTable[slot]){htLog(`delete "${key}" → not found`,'lerr');return;}
+    if(htTable[slot]!=='TOMBSTONE'&&htTable[slot].key===key){htTable[slot]='TOMBSTONE';htEntries--;renderHT();htLog(`delete "${key}" at slot ${slot} → tombstone placed`,'lok');return;}
+    probes++;
+  }
+}
+
+function htClear(){htTable=Array(HT_SIZE).fill(null);htEntries=0;htTotalProbes=0;renderHT();htLog('Table cleared.','lmuted');}
+
+renderHT();
+
+// ===== SEPARATE CHAINING =====
+const CH_SIZE=7;
+let chBuckets=Array.from({length:CH_SIZE},()=>[]);
+let chEntries=0;
+
+function chLog(m,cls='lmuted'){const el=document.getElementById('ch-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+
+function renderChain(){
+  const el=document.getElementById('chain-buckets');
+  el.innerHTML=chBuckets.map((b,i)=>{
+    const items=b.length?b.map(k=>`<div class="cb-item">${k}</div>`).join('<span style="color:var(--text-muted);font-size:10px">→</span>')+' <span class="cb-item" style="opacity:.3;font-size:9px">∅</span>':'<span style="color:var(--text-ghost);font-size:11px">—</span>';
+    return `<div class="chain-bucket"><span class="cb-idx">[${i}]</span><div class="cb-items">${items}</div><span style="font-family:\'JetBrains Mono\',monospace;font-size:9px;color:var(--text-muted);margin-left:4px">${b.length?b.length+' keys':''}</span></div>`;
+  }).join('');
+  chEntries=chBuckets.reduce((s,b)=>s+b.length,0);
+  const maxChain=Math.max(...chBuckets.map(b=>b.length));
+  document.getElementById('ch-entries').textContent=chEntries;
+  document.getElementById('ch-load').textContent=(chEntries/CH_SIZE).toFixed(2);
+  document.getElementById('ch-max-chain').textContent=maxChain;
+}
+
+function chainInsert(){
+  const k=document.getElementById('ch-key').value.trim();if(!k)return;
+  const h=hashKey(k,CH_SIZE);
+  if(chBuckets[h].includes(k)){chLog(`"${k}" already in bucket ${h}`,'lmuted');return;}
+  chBuckets[h].push(k);
+  chLog(`insert "${k}" → h=${h}, chain length now ${chBuckets[h].length}`,'linfo');
+  renderChain();
+}
+
+function chainLookup(){
+  const k=document.getElementById('ch-key').value.trim();if(!k)return;
+  const h=hashKey(k,CH_SIZE);
+  const idx=chBuckets[h].indexOf(k);
+  if(idx>=0){chLog(`lookup "${k}" → bucket ${h}, found at position ${idx} (${idx+1} comparisons)`,'lok');}
+  else{chLog(`lookup "${k}" → bucket ${h}, not found (${chBuckets[h].length} comparisons)`,'lerr');}
+}
+
+function chainClear(){chBuckets=Array.from({length:CH_SIZE},()=>[]);chLog('Cleared.','lmuted');renderChain();}
+
+['cat','dog','bat','car','can','cup','can'].forEach(w=>{const h=hashKey(w,CH_SIZE);if(!chBuckets[h].includes(w))chBuckets[h].push(w);});
+renderChain();
+
+// ===== HASH QUALITY =====
+function hashA(k,M=8){let h=0;for(const c of k)h=(h+c.charCodeAt(0))%M;return h;}
+function hashB(k,M=8){let h=5381;for(const c of k)h=((h<<5)+h+c.charCodeAt(0))>>>0;return h%M;}
+
+function hqPreset(t){
+  if(t==='nums') document.getElementById('hq-keys').value='1,2,3,4,5,6,7,8,9,10,11,12';
+  else document.getElementById('hq-keys').value='aa,ba,ca,da,ea,fa,ga,ha,ia,ja,ka,la';
+}
+
+function runHQuality(){
+  const keys=document.getElementById('hq-keys').value.split(',').map(k=>k.trim()).filter(k=>k);
+  const M=8;
+  const bucksA=Array(M).fill(0), bucksB=Array(M).fill(0);
+  keys.forEach(k=>{bucksA[hashA(k,M)]++;bucksB[hashB(k,M)]++;});
+
+  function renderBars(id,buckets){
+    const max=Math.max(...buckets,1);
+    document.getElementById(id).innerHTML=buckets.map((v,i)=>`
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);width:16px">[${i}]</span>
+        <div style="flex:1;height:16px;background:var(--border-paper);border-radius:2px;overflow:hidden">
+          <div style="height:100%;background:${id.includes('a')?'var(--accent-red)':'var(--accent-indigo)'};width:${v/max*100}%;border-radius:2px;transition:width .4s"></div>
+        </div>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);width:24px">${v}</span>
+      </div>`).join('');
+  }
+  renderBars('hq-a-bars',bucksA);
+  renderBars('hq-b-bars',bucksB);
+
+  const stdA=Math.sqrt(bucksA.reduce((s,v)=>s+(v-keys.length/M)**2,0)/M).toFixed(2);
+  const stdB=Math.sqrt(bucksB.reduce((s,v)=>s+(v-keys.length/M)**2,0)/M).toFixed(2);
+  const maxA=Math.max(...bucksA), maxB=Math.max(...bucksB);
+  document.getElementById('hq-analysis').innerHTML=
+    `<span style="color:var(--text-sumi)">Keys: ${keys.length}, buckets: ${M}</span>\n\n` +
+    `<span style="color:var(--accent-red)">Hash A (sum % 8):</span>\n  Max bucket: ${maxA}  Std dev: ${stdA}\n  ${maxA>keys.length/M*2?'⚠ clustering detected':'✓ fairly distributed'}\n\n` +
+    `<span style="color:var(--accent-indigo)">Hash B (DJB2 % 8):</span>\n  Max bucket: ${maxB}  Std dev: ${stdB}\n  ${maxB>keys.length/M*2?'⚠ clustering detected':'✓ fairly distributed'}`;
+}
+
+runHQuality();
+
+function switchTab(id){
+  ['open','chain','quality'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);p.style.display=t===id?'block':'none';p.classList.toggle('active',t===id);
+  });
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+</script>
+</body>
+</html>

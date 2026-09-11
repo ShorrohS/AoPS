@@ -5,120 +5,124 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Module 1.1 — Electricity Simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg-primary:#090A0F;--bg-secondary:#12141C;--bg-tertiary:#1A1D27;
-  --bg-glass:rgba(18,20,28,0.75);
-  --text-primary:#F3F4F6;--text-secondary:#9CA3AF;--text-muted:#4B5563;
-  --accent-primary:#6366F1;--accent-hover:#4F46E5;--accent-glow:rgba(99,102,241,0.15);
-  --color-success:#10B981;--color-warning:#F59E0B;--color-danger:#EF4444;
-  --color-code-bg:#0D0E15;
-  --border-subtle:rgba(255,255,255,0.08);--border-active:rgba(99,102,241,0.4);
-  --radius-sm:6px;--radius-md:10px;--radius-lg:16px;
-  --shadow-soft:0 10px 30px -10px rgba(0,0,0,0.5);
-  --shadow-glow:0 0 20px rgba(99,102,241,0.2);
-  --transition-fast:150ms cubic-bezier(0.16,1,0.3,1);
-  --transition-smooth:300ms cubic-bezier(0.16,1,0.3,1);
-  --transition-bounce:400ms cubic-bezier(0.34,1.56,0.64,1);
+  --bg-paper:#F4F3EF; --bg-washi:#FDFDFD; --bg-warm:#EEECE6; --bg-canvas:#F8F7F3;
+  --text-sumi:#1C1C1C; --text-body:#3A3A3A; --text-muted:#888880; --text-ghost:#BBBBB5;
+  --accent-red:#C82A2A; --accent-indigo:#1C2D42; --accent-gold:#8B6914; --accent-ink:#1C1C1C;
+  --border-hair:#1C1C1C; --border-light:#D8D6CE; --border-paper:#E8E6DF;
+  --radius-xs:2px; --radius-sm:4px;
+  --ease-out:cubic-bezier(0.16,1,0.3,1); --t-fast:120ms; --t-med:240ms;
+  /* Legacy refs for JS that uses var() strings */
+  --color-success:#8B6914; --color-warning:#C82A2A; --color-danger:#C82A2A;
+  --text-muted-legacy:#888880;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;padding:20px}
-h1{color:var(--text-primary);font-size:1.5rem;font-weight:700;margin-bottom:4px}
-.subtitle{color:var(--text-secondary);font-size:.9rem;margin-bottom:20px}
-.tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;border-bottom:1px solid var(--border-subtle);padding-bottom:12px}
-.tab{padding:8px 16px;border-radius:var(--radius-sm);cursor:pointer;background:transparent;border:1px solid transparent;color:var(--text-muted);font-size:.85rem;font-weight:500;transition:all var(--transition-fast)}
-.tab:hover{color:var(--text-secondary);border-color:var(--border-subtle)}
-.tab.active{background:var(--accent-glow);border-bottom:2px solid var(--accent-primary);color:var(--accent-primary);border-color:var(--border-active)}
-.panel{display:none}.panel.active{display:block}
-.intro-box{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-left:3px solid var(--accent-primary);padding:14px 18px;border-radius:var(--radius-md);margin-bottom:18px;font-size:.88rem;line-height:1.6;color:var(--text-secondary)}
-.intro-box strong{color:var(--color-warning)}
-.btn{padding:8px 18px;border-radius:var(--radius-md);border:none;cursor:pointer;font-size:.85rem;font-weight:600;transition:all var(--transition-fast)}
-.btn-primary{background:var(--accent-primary);color:white}.btn-primary:hover{background:var(--accent-hover);box-shadow:var(--shadow-glow)}
-.btn-secondary{background:transparent;color:var(--text-secondary);border:1px solid var(--border-subtle)}.btn-secondary:hover{border-color:var(--border-active);color:var(--accent-primary)}
-.btn-success{background:var(--color-success);color:#000}.btn-success:hover{filter:brightness(1.1)}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes zen-fade-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast) var(--ease-out),border-color var(--t-fast) var(--ease-out);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.tab{display:none} /* legacy compat — zen-tab handles switching */
+.panel{display:none}.panel.active{display:block;animation:zen-fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 20px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-hair);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast) var(--ease-out),color var(--t-fast) var(--ease-out)}
+.zen-btn:hover{background:var(--accent-ink);color:#FDFDFD}
+.zen-btn.primary{background:var(--accent-ink);color:#FDFDFD}.zen-btn.primary:hover{background:#2C2C2C}
+.zen-btn.success{border-color:var(--accent-gold);color:var(--accent-gold);background:transparent}.zen-btn.success:hover{background:var(--accent-gold);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;align-items:center}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:1px;background:var(--border-hair);cursor:pointer;margin:14px 0;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;background:var(--accent-ink);border-radius:50%;cursor:grab}
+input[type=range]::-webkit-slider-thumb:active{background:var(--accent-red)}
 
-/* ===== OHM'S LAW ===== */
-.ohm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+/* OHM'S LAW */
+.ohm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border-light);margin-bottom:20px}
 @media(max-width:700px){.ohm-grid{grid-template-columns:1fr}}
-.ohm-card{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:16px;text-align:center;transition:all var(--transition-smooth)}
-.ohm-card:hover{border-color:var(--border-active);transform:translateY(-2px);box-shadow:var(--shadow-glow)}
-.ohm-card h3{font-size:.9rem;margin-bottom:12px;font-weight:600}
-.ohm-card.voltage h3{color:var(--color-warning)}
-.ohm-card.current h3{color:var(--color-success)}
-.ohm-card.resist h3{color:var(--accent-primary)}
-.ohm-val{font-size:2rem;font-weight:800;font-family:'JetBrains Mono',monospace;margin-bottom:8px}
-.ohm-card.voltage .ohm-val{color:var(--color-warning)}
-.ohm-card.current .ohm-val{color:var(--color-success)}
-.ohm-card.resist .ohm-val{color:var(--accent-primary)}
-.ohm-unit{font-size:.8rem;color:var(--text-muted)}
-input[type=range]{width:100%;accent-color:var(--accent-primary);margin:8px 0}
-.ohm-formula{background:var(--bg-tertiary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:14px;text-align:center;margin-bottom:16px}
-.ohm-formula .formula{font-size:1.4rem;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text-primary);margin-bottom:6px}
-.ohm-formula .breakdown{font-size:.85rem;color:var(--text-secondary)}
-.water-analogy{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:16px}
+.ohm-card{background:var(--bg-washi);padding:20px;text-align:center}
+.ohm-card h3{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px}
+.ohm-card.voltage h3{color:var(--accent-red)}
+.ohm-card.current h3{color:var(--accent-gold)}
+.ohm-card.resist h3{color:var(--accent-indigo)}
+.ohm-val{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:300;line-height:1;margin-bottom:6px;color:var(--text-sumi)}
+.ohm-unit{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em}
+.ohm-formula{background:var(--bg-washi);border:1px solid var(--border-paper);padding:16px;text-align:center;margin-bottom:20px}
+.ohm-formula .formula{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:300;color:var(--text-sumi);margin-bottom:6px}
+.ohm-formula .breakdown{font-size:13px;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+.water-analogy{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border-light);margin-top:16px}
 @media(max-width:600px){.water-analogy{grid-template-columns:1fr}}
-.analogy-box{background:var(--bg-tertiary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px;text-align:center}
-.analogy-icon{font-size:1.6rem;margin-bottom:6px}
-.analogy-name{font-size:.8rem;font-weight:600;color:var(--accent-primary)}
-.analogy-desc{font-size:.75rem;color:var(--text-muted);margin-top:4px}
+.analogy-box{background:var(--bg-washi);padding:16px;text-align:center}
+.analogy-icon{font-size:1.4rem;margin-bottom:8px}
+.analogy-name{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text-sumi);margin-bottom:6px}
+.analogy-desc{font-size:12px;color:var(--text-muted);line-height:1.5}
 
-/* ===== CIRCUIT SANDBOX ===== */
-.sandbox-layout{display:grid;grid-template-columns:200px 1fr;gap:16px}
+/* CIRCUIT SANDBOX */
+.sandbox-layout{display:grid;grid-template-columns:180px 1fr;gap:1px;background:var(--border-light)}
 @media(max-width:700px){.sandbox-layout{grid-template-columns:1fr}}
-.component-palette{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px}
-.component-palette h3{color:var(--accent-primary);font-size:.85rem;margin-bottom:10px;font-weight:600}
-.comp-btn{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius-sm);border:1px solid var(--border-subtle);background:var(--bg-tertiary);color:var(--text-secondary);font-size:.8rem;cursor:pointer;margin-bottom:6px;width:100%;transition:all var(--transition-fast)}
-.comp-btn:hover{border-color:var(--border-active);color:var(--accent-primary)}
-.comp-btn.selected{border-color:var(--color-warning);color:var(--color-warning);background:rgba(245,158,11,.1)}
-.canvas-wrap{background:var(--color-code-bg);border:1px solid var(--border-subtle);border-radius:var(--radius-lg);overflow:hidden}
+.component-palette{background:var(--bg-warm);padding:16px}
+.component-palette h3{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted);margin-bottom:10px}
+.comp-btn{display:flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid var(--border-paper);background:var(--bg-washi);color:var(--text-muted);font-size:12px;cursor:pointer;margin-bottom:5px;width:100%;transition:all var(--t-fast);border-radius:var(--radius-xs)}
+.comp-btn:hover{border-color:var(--border-hair);color:var(--text-sumi)}
+.comp-btn.selected{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(28,45,66,.06)}
+hr.palette-divider{border:none;border-top:1px solid var(--border-paper);margin:8px 0}
+.canvas-wrap{background:var(--bg-canvas);overflow:hidden}
 canvas#circuitCanvas{display:block;cursor:crosshair}
-.circuit-info{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:12px;margin-top:10px;font-size:.82rem}
-.circuit-info .ci-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border-subtle)}
-.circuit-info .ci-row:last-child{border:none}
+.circuit-info{background:var(--bg-washi);border-top:1px solid var(--border-paper);padding:12px;font-size:12px}
+.ci-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border-paper)}
+.ci-row:last-child{border:none}
 .ci-label{color:var(--text-muted)}
-.ci-val{color:var(--accent-primary);font-family:'JetBrains Mono',monospace;font-weight:700}
+.ci-val{font-family:'JetBrains Mono',monospace;color:var(--text-sumi)}
 
-/* ===== SERIES vs PARALLEL ===== */
-.sp-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+/* SERIES vs PARALLEL */
+.sp-layout{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
 @media(max-width:700px){.sp-layout{grid-template-columns:1fr}}
-.sp-panel{background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:16px}
-.sp-panel h3{font-size:.9rem;margin-bottom:12px;font-weight:600}
-.sp-panel.series h3{color:var(--color-warning)}
-.sp-panel.parallel h3{color:var(--color-success)}
+.sp-panel{background:var(--bg-washi);padding:20px}
+.sp-panel h3{font-family:'Noto Serif JP',serif;font-size:13px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.sp-panel.series h3{color:var(--accent-red)}
+.sp-panel.parallel h3{color:var(--accent-indigo)}
 .bulb-row{display:flex;gap:16px;justify-content:center;align-items:center;flex-wrap:wrap;margin:14px 0}
 .bulb-wrap{display:flex;flex-direction:column;align-items:center;gap:6px}
-.bulb{width:50px;height:50px;border-radius:50%;border:3px solid #333;cursor:pointer;transition:all var(--transition-smooth);display:flex;align-items:center;justify-content:center;font-size:1.2rem}
-.bulb.on{box-shadow:0 0 20px currentColor}
-.bulb.broken{border-color:var(--color-danger)!important;opacity:.5}
-.bulb-label{font-size:.72rem;color:var(--text-muted)}
-.bulb-brightness{font-size:.7rem;font-family:'JetBrains Mono',monospace}
-.wire-svg{width:100%;height:60px}
-.sp-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.circuit-stats{background:var(--bg-tertiary);border-radius:var(--radius-md);padding:10px;margin-top:10px;font-size:.8rem}
-.stat-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border-subtle)}
+.bulb{width:48px;height:48px;border-radius:50%;border:2px solid var(--border-hair);cursor:pointer;transition:all var(--t-med);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.bulb.broken{border-color:var(--accent-red)!important;opacity:.5}
+.bulb-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em}
+.bulb-brightness{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text-muted)}
+.sp-controls{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.circuit-stats{background:var(--bg-warm);padding:12px;margin-top:10px;font-size:12px;border-radius:var(--radius-xs)}
+.stat-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border-paper)}
 .stat-row:last-child{border:none}
 .stat-label{color:var(--text-muted)}
-.stat-val{color:var(--accent-primary);font-family:'JetBrains Mono',monospace}
+.stat-val{font-family:'JetBrains Mono',monospace;color:var(--text-sumi)}
+.insight-note{border-left:2px solid var(--accent-gold);padding:12px 16px;margin-top:16px;font-size:13px;color:var(--text-body);line-height:1.7;background:rgba(139,105,20,.04)}
+
+/* Power display */
+.power-row{display:flex;gap:1px;background:var(--border-light);margin-bottom:20px}
+.power-cell{flex:1;background:var(--bg-washi);padding:16px;text-align:center}
+.power-val{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:300;color:var(--accent-red);line-height:1;margin-bottom:4px}
+.power-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted)}
 </style>
 </head>
 <body>
 
-<h1>⚡ Module 1.1 — Electricity Simulator</h1>
-<p class="subtitle">Voltage, current, resistance — and the switch that connects them all to computing.</p>
-
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('ohm')">📐 Ohm's Law</div>
-  <div class="tab" onclick="switchTab('sandbox')">🔌 Circuit Sandbox</div>
-  <div class="tab" onclick="switchTab('sp')">💡 Series vs Parallel</div>
+<div class="zen-header">
+  <h1 class="zen-title">Module 1.1 — Electricity Simulator</h1>
+  <p class="zen-subtitle">Voltage · Current · Resistance — the switch that connects them to computing</p>
 </div>
 
-<!-- ===== OHM'S LAW ===== -->
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('ohm')">Ohm's Law</div>
+  <div class="zen-tab" onclick="switchTab('sandbox')">Circuit Sandbox</div>
+  <div class="zen-tab" onclick="switchTab('sp')">Series vs Parallel</div>
+</div>
+
+<!-- OHM'S LAW -->
 <div id="panel-ohm" class="panel active">
-  <div class="intro-box">
+  <div class="zen-intro">
     <strong>V = I × R</strong> — the single most important equation in electronics.
-    Drag any slider; the other values update instantly. Lock a value to keep it fixed while changing the others.
+    Adjust any slider; the other values update instantly. Lock a value to keep it fixed.
   </div>
   <div class="ohm-formula">
     <div class="formula" id="ohm-formula-text">V = I × R</div>
@@ -126,74 +130,59 @@ canvas#circuitCanvas{display:block;cursor:crosshair}
   </div>
   <div class="ohm-grid">
     <div class="ohm-card voltage">
-      <h3>⚡ Voltage (V)</h3>
+      <h3>⚡ Voltage</h3>
       <div class="ohm-val" id="v-display">5.00</div>
       <div class="ohm-unit">Volts</div>
       <input type="range" id="v-slider" min="1" max="24" step="0.5" value="5">
-      <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text-muted)"><span>1V</span><span>24V</span></div>
-      <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--text-muted);cursor:pointer">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-ghost)"><span>1V</span><span>24V</span></div>
+      <label style="margin-top:10px;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);cursor:pointer;justify-content:center">
         <input type="checkbox" id="v-lock"> Lock V
       </label>
     </div>
     <div class="ohm-card current">
-      <h3>🌊 Current (I)</h3>
+      <h3>🌊 Current</h3>
       <div class="ohm-val" id="i-display">50.0</div>
       <div class="ohm-unit">milliAmperes (mA)</div>
       <input type="range" id="i-slider" min="1" max="500" step="1" value="50">
-      <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text-muted)"><span>1mA</span><span>500mA</span></div>
-      <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--text-muted);cursor:pointer">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-ghost)"><span>1mA</span><span>500mA</span></div>
+      <label style="margin-top:10px;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);cursor:pointer;justify-content:center">
         <input type="checkbox" id="i-lock"> Lock I
       </label>
     </div>
     <div class="ohm-card resist">
-      <h3>🚧 Resistance (R)</h3>
+      <h3>🚧 Resistance</h3>
       <div class="ohm-val" id="r-display">100</div>
       <div class="ohm-unit">Ohms (Ω)</div>
       <input type="range" id="r-slider" min="10" max="2000" step="10" value="100">
-      <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text-muted)"><span>10Ω</span><span>2kΩ</span></div>
-      <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--text-muted);cursor:pointer">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-ghost)"><span>10Ω</span><span>2kΩ</span></div>
+      <label style="margin-top:10px;display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);cursor:pointer;justify-content:center">
         <input type="checkbox" id="r-lock"> Lock R
       </label>
     </div>
   </div>
-  <!-- Power display -->
-  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">
-    <div style="flex:1;min-width:200px;background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:8px;padding:14px;text-align:center">
-      <div style="font-size:.8rem;color:var(--text-muted)">Power (P = V × I)</div>
-      <div style="font-size:1.8rem;font-weight:800;font-family:monospace;color:var(--accent)" id="p-display">250</div>
-      <div style="font-size:.75rem;color:var(--text-muted)">milliWatts</div>
+  <div class="power-row">
+    <div class="power-cell">
+      <div class="power-label">Power (P = V × I)</div>
+      <div class="power-val" id="p-display">250</div>
+      <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em">milliWatts</div>
     </div>
-    <div style="flex:1;min-width:200px;background:var(--bg-secondary);border:1px solid var(--border-subtle);border-radius:8px;padding:14px">
-      <div style="font-size:.8rem;color:var(--text-muted);margin-bottom:8px">Real-world comparisons:</div>
-      <div id="comparisons" style="font-size:.78rem;line-height:1.8;color:var(--text-muted)"></div>
+    <div class="power-cell" style="text-align:left;padding:16px 20px">
+      <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:8px">Real-world context</div>
+      <div id="comparisons" style="font-size:12px;line-height:1.8;color:var(--text-body)"></div>
     </div>
   </div>
-  <!-- Water analogy -->
-  <div style="font-size:.85rem;color:var(--text-muted);margin-bottom:10px">💧 Water analogy:</div>
+  <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);margin-bottom:10px">Water analogy</div>
   <div class="water-analogy">
-    <div class="analogy-box">
-      <div class="analogy-icon">🔋</div>
-      <div class="analogy-name">Voltage = Water Pressure</div>
-      <div class="analogy-desc">The pump that pushes water (electrons) through the pipe. Higher pressure → more flow.</div>
-    </div>
-    <div class="analogy-box">
-      <div class="analogy-icon">🌊</div>
-      <div class="analogy-name">Current = Flow Rate</div>
-      <div class="analogy-desc">How many litres (electrons) pass per second. Determined by pressure ÷ resistance.</div>
-    </div>
-    <div class="analogy-box">
-      <div class="analogy-icon">🚧</div>
-      <div class="analogy-name">Resistance = Pipe Narrowness</div>
-      <div class="analogy-desc">A narrow pipe (high resistance) reduces flow for the same pressure.</div>
-    </div>
+    <div class="analogy-box"><div class="analogy-icon">🔋</div><div class="analogy-name">Voltage = Pressure</div><div class="analogy-desc">The pump pushing electrons through the pipe. Higher pressure → more flow.</div></div>
+    <div class="analogy-box"><div class="analogy-icon">🌊</div><div class="analogy-name">Current = Flow Rate</div><div class="analogy-desc">Electrons passing per second. Determined by pressure ÷ resistance.</div></div>
+    <div class="analogy-box"><div class="analogy-icon">🚧</div><div class="analogy-name">Resistance = Pipe Width</div><div class="analogy-desc">A narrow pipe reduces flow for the same pressure.</div></div>
   </div>
 </div>
 
-<!-- ===== CIRCUIT SANDBOX ===== -->
+<!-- CIRCUIT SANDBOX -->
 <div id="panel-sandbox" class="panel">
-  <div class="intro-box">
-    <strong>Circuit Sandbox</strong> — click components to place them, click wires to connect.
-    Watch current (moving dots) animate through closed circuits. The bulb glows based on current.
+  <div class="zen-intro">
+    <strong>Circuit Sandbox</strong> — load a preset, click components to interact, watch current animate as moving particles. The bulb brightness reflects actual power.
   </div>
   <div class="sandbox-layout">
     <div class="component-palette">
@@ -203,11 +192,11 @@ canvas#circuitCanvas{display:block;cursor:crosshair}
       <button class="comp-btn" id="tool-bulb" onclick="setTool('bulb')">💡 Bulb</button>
       <button class="comp-btn" id="tool-resistor" onclick="setTool('resistor')">⬛ Resistor (100Ω)</button>
       <button class="comp-btn" id="tool-switch" onclick="setTool('switch')">🔀 Switch</button>
-      <hr style="border-color:var(--border-subtle);margin:10px 0">
-      <button class="comp-btn" onclick="clearCanvas()">🗑 Clear All</button>
-      <button class="comp-btn" onclick="loadPresetCircuit('simple')">📋 Simple Circuit</button>
-      <button class="comp-btn" onclick="loadPresetCircuit('series')">📋 Series Bulbs</button>
-      <button class="comp-btn" onclick="loadPresetCircuit('parallel')">📋 Parallel Bulbs</button>
+      <hr class="palette-divider">
+      <button class="comp-btn" onclick="clearCanvas()">🗑 Clear</button>
+      <button class="comp-btn" onclick="loadPresetCircuit('simple')">Simple Circuit</button>
+      <button class="comp-btn" onclick="loadPresetCircuit('series')">Series Bulbs</button>
+      <button class="comp-btn" onclick="loadPresetCircuit('parallel')">Parallel Bulbs</button>
     </div>
     <div>
       <div class="canvas-wrap">
@@ -215,8 +204,8 @@ canvas#circuitCanvas{display:block;cursor:crosshair}
       </div>
       <div class="circuit-info" id="circuit-info">
         <div class="ci-row"><span class="ci-label">Circuit Status</span><span class="ci-val" id="ci-status">Open (no path)</span></div>
-        <div class="ci-row"><span class="ci-label">Voltage Source</span><span class="ci-val" id="ci-voltage">—</span></div>
-        <div class="ci-row"><span class="ci-label">Total Resistance</span><span class="ci-val" id="ci-resist">—</span></div>
+        <div class="ci-row"><span class="ci-label">Voltage</span><span class="ci-val" id="ci-voltage">—</span></div>
+        <div class="ci-row"><span class="ci-label">Resistance</span><span class="ci-val" id="ci-resist">—</span></div>
         <div class="ci-row"><span class="ci-label">Current</span><span class="ci-val" id="ci-current">—</span></div>
         <div class="ci-row"><span class="ci-label">Power</span><span class="ci-val" id="ci-power">—</span></div>
       </div>
@@ -224,42 +213,37 @@ canvas#circuitCanvas{display:block;cursor:crosshair}
   </div>
 </div>
 
-<!-- ===== SERIES vs PARALLEL ===== -->
+<!-- SERIES vs PARALLEL -->
 <div id="panel-sp" class="panel">
-  <div class="intro-box">
-    <strong>Series vs Parallel</strong> — add bulbs, remove them, break one. Watch how each topology behaves differently.
-    Click a bulb to toggle it broken/working.
+  <div class="zen-intro">
+    <strong>Series vs Parallel</strong> — add bulbs, remove them, break one. Watch how each topology behaves differently. Click any bulb to toggle it broken/working.
   </div>
   <div class="sp-layout">
-    <!-- SERIES -->
     <div class="sp-panel series">
       <h3>Series Circuit</h3>
-      <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:10px">Same current through all. Voltage shared equally.</div>
-      <svg class="wire-svg" id="series-svg"></svg>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">Same current through all. Voltage shared equally.</p>
       <div class="bulb-row" id="series-bulbs"></div>
       <div class="circuit-stats" id="series-stats"></div>
       <div class="sp-controls">
-        <button class="btn btn-secondary" onclick="addBulb('series')" style="font-size:.8rem;padding:6px 12px">+ Add Bulb</button>
-        <button class="btn btn-secondary" onclick="removeBulb('series')" style="font-size:.8rem;padding:6px 12px">− Remove</button>
-        <button class="btn btn-secondary" onclick="resetBulbs('series')" style="font-size:.8rem;padding:6px 12px">↺ Reset</button>
+        <button class="zen-btn" onclick="addBulb('series')" style="padding:6px 12px;font-size:10px">+ Add</button>
+        <button class="zen-btn" onclick="removeBulb('series')" style="padding:6px 12px;font-size:10px">− Remove</button>
+        <button class="zen-btn" onclick="resetBulbs('series')" style="padding:6px 12px;font-size:10px">Reset</button>
       </div>
     </div>
-    <!-- PARALLEL -->
     <div class="sp-panel parallel">
       <h3>Parallel Circuit</h3>
-      <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:10px">Full voltage across each. Currents add.</div>
-      <svg class="wire-svg" id="parallel-svg"></svg>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px">Full voltage across each. Currents add.</p>
       <div class="bulb-row" id="parallel-bulbs"></div>
       <div class="circuit-stats" id="parallel-stats"></div>
       <div class="sp-controls">
-        <button class="btn btn-secondary" onclick="addBulb('parallel')" style="font-size:.8rem;padding:6px 12px">+ Add Bulb</button>
-        <button class="btn btn-secondary" onclick="removeBulb('parallel')" style="font-size:.8rem;padding:6px 12px">− Remove</button>
-        <button class="btn btn-secondary" onclick="resetBulbs('parallel')" style="font-size:.8rem;padding:6px 12px">↺ Reset</button>
+        <button class="zen-btn" onclick="addBulb('parallel')" style="padding:6px 12px;font-size:10px">+ Add</button>
+        <button class="zen-btn" onclick="removeBulb('parallel')" style="padding:6px 12px;font-size:10px">− Remove</button>
+        <button class="zen-btn" onclick="resetBulbs('parallel')" style="padding:6px 12px;font-size:10px">Reset</button>
       </div>
     </div>
   </div>
-  <div style="margin-top:14px;background:var(--bg-secondary);border:1px solid var(--border-subtle);border-left:4px solid var(--color-success);border-radius:0 8px 8px 0;padding:12px 16px;font-size:.85rem;color:var(--text-muted)">
-    <strong style="color:var(--color-success)">💡 Click any bulb</strong> to break it (simulate a failed component). Observe the difference in circuit behaviour between series and parallel.
+  <div class="insight-note">
+    <strong style="font-weight:500">Click any bulb</strong> to break it. Observe: in series, one failure cuts all. In parallel, others keep working. This is why houses use parallel wiring.
   </div>
 </div>
 
@@ -327,7 +311,6 @@ let wires=[];
 let particlePhase=0;
 let animFrame=null;
 
-// Pre-built preset circuits
 const PRESETS = {
   simple: {
     components: [
@@ -336,13 +319,13 @@ const PRESETS = {
       {type:'bulb',x:450,y:180,brightness:1},
     ],
     wires:[
-      {x1:80,y1:140,x2:80,y2:60,color:'#F59E0B'},
-      {x1:80,y1:60,x2:280,y2:60,color:'#F59E0B'},
-      {x1:280,y1:60,x2:450,y2:60,color:'#F59E0B'},
-      {x1:450,y1:60,x2:450,y2:160,color:'#F59E0B'},
-      {x1:450,y1:200,x2:450,y2:300,color:'#818CF8'},
-      {x1:80,y1:300,x2:450,y2:300,color:'#818CF8'},
-      {x1:80,y1:220,x2:80,y2:300,color:'#818CF8'},
+      {x1:80,y1:140,x2:80,y2:60,color:'#8B6914'},
+      {x1:80,y1:60,x2:280,y2:60,color:'#8B6914'},
+      {x1:280,y1:60,x2:450,y2:60,color:'#8B6914'},
+      {x1:450,y1:60,x2:450,y2:160,color:'#8B6914'},
+      {x1:450,y1:200,x2:450,y2:300,color:'#1C2D42'},
+      {x1:80,y1:300,x2:450,y2:300,color:'#1C2D42'},
+      {x1:80,y1:220,x2:80,y2:300,color:'#1C2D42'},
     ],
     closed:true
   },
@@ -380,7 +363,7 @@ function loadPresetCircuit(name){
   const p=PRESETS[name];
   if(!p)return;
   components=p.components.map(c=>({...c}));
-  wires=p.wires.map(w=>({...w,color:w.color||'#818CF8'}));
+  wires=p.wires.map(w=>({...w,color:w.color||'#1C2D42'}));
   updateCircuitInfo(p.closed);
   drawAll();
 }
@@ -389,7 +372,7 @@ function clearCanvas(){
   components=[];wires=[];
   updateCircuitInfo(false);
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle='#090A0F';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#F8F7F3';ctx.fillRect(0,0,canvas.width,canvas.height);
 }
 
 function setTool(t){
@@ -403,49 +386,47 @@ function drawComponent(c,phase){
   const {type,x,y}=c;
   ctx.save();ctx.translate(x,y);
   if(type==='battery'){
-    ctx.strokeStyle=c.open?'#555':'#F59E0B';ctx.lineWidth=2;
+    ctx.strokeStyle=c.open?'#D8D6CE':'#8B6914';ctx.lineWidth=2;
     ctx.beginPath();ctx.moveTo(0,-40);ctx.lineTo(0,40);ctx.stroke();
-    ctx.strokeStyle='#F59E0B';ctx.lineWidth=3;
+    ctx.strokeStyle='#8B6914';ctx.lineWidth=3;
     ctx.beginPath();ctx.moveTo(-15,-10);ctx.lineTo(15,-10);ctx.stroke();
     ctx.lineWidth=2;
     ctx.beginPath();ctx.moveTo(-8,10);ctx.lineTo(8,10);ctx.stroke();
-    ctx.fillStyle='#F59E0B';ctx.font='bold 11px monospace';ctx.textAlign='center';
+    ctx.fillStyle='#8B6914';ctx.font='bold 11px monospace';ctx.textAlign='center';
     ctx.fillText(c.label||'9V',0,-50);
-    ctx.fillStyle='#EF4444';ctx.fillText('+',20,-10);
-    ctx.fillStyle='#818CF8';ctx.fillText('−',20,12);
+    ctx.fillStyle='#C82A2A';ctx.fillText('+',20,-10);
+    ctx.fillStyle='#1C2D42';ctx.fillText('−',20,12);
   } else if(type==='bulb'){
     const bright=c.broken?0:(c.brightness||1);
-    const hue=bright>0?`rgba(249,202,36,${bright})`:'rgba(100,100,100,0.3)';
-    if(bright>0){
-      ctx.shadowBlur=20*bright;ctx.shadowColor=`rgba(249,202,36,${bright})`;
-    }
-    ctx.strokeStyle=c.broken?'#EF4444':'#aaa';ctx.lineWidth=2;
+    const hue=bright>0?`rgba(200,42,42,${bright*0.6})`:'rgba(180,180,180,0.2)';
+    if(bright>0){ctx.shadowBlur=18*bright;ctx.shadowColor=`rgba(200,42,42,${bright})`;}
+    ctx.strokeStyle=c.broken?'#C82A2A':'#D8D6CE';ctx.lineWidth=2;
     ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.stroke();
     ctx.fillStyle=hue;ctx.fill();
-    ctx.fillStyle=c.broken?'#EF4444':'#fff';ctx.font='18px serif';ctx.textAlign='center';
+    ctx.fillStyle=c.broken?'#C82A2A':'#3A3A3A';ctx.font='18px serif';ctx.textAlign='center';
     ctx.fillText(c.broken?'✕':'💡',0,6);
     ctx.shadowBlur=0;
-    ctx.strokeStyle='#555';ctx.lineWidth=1.5;
+    ctx.strokeStyle='#D8D6CE';ctx.lineWidth=1.5;
     ctx.beginPath();ctx.moveTo(0,-20);ctx.lineTo(0,-35);ctx.stroke();
     ctx.beginPath();ctx.moveTo(0,20);ctx.lineTo(0,35);ctx.stroke();
   } else if(type==='resistor'){
-    ctx.strokeStyle='#818CF8';ctx.lineWidth=2;
+    ctx.strokeStyle='#1C2D42';ctx.lineWidth=2;
     ctx.strokeRect(-20,-8,40,16);
-    ctx.strokeStyle='#555';
+    ctx.strokeStyle='#D8D6CE';
     ctx.beginPath();ctx.moveTo(0,-8);ctx.lineTo(0,-28);ctx.stroke();
     ctx.beginPath();ctx.moveTo(0,8);ctx.lineTo(0,28);ctx.stroke();
-    ctx.fillStyle='#818CF8';ctx.font='9px monospace';ctx.textAlign='center';
+    ctx.fillStyle='#1C2D42';ctx.font='9px monospace';ctx.textAlign='center';
     ctx.fillText('100Ω',0,-32);
   } else if(type==='switch'){
     const open=c.open!==false;
-    ctx.strokeStyle=open?'#888':'#10B981';ctx.lineWidth=2.5;
+    ctx.strokeStyle=open?'#D8D6CE':'#8B6914';ctx.lineWidth=2.5;
     ctx.beginPath();ctx.moveTo(0,-30);ctx.lineTo(0,-10);ctx.stroke();
     ctx.beginPath();
-    if(open){ ctx.moveTo(0,-10);ctx.lineTo(18,10);}
-    else { ctx.moveTo(0,-10);ctx.lineTo(0,10);}
+    if(open){ctx.moveTo(0,-10);ctx.lineTo(18,10);}
+    else{ctx.moveTo(0,-10);ctx.lineTo(0,10);}
     ctx.stroke();
     ctx.beginPath();ctx.moveTo(0,10);ctx.lineTo(0,30);ctx.stroke();
-    ctx.fillStyle=open?'#888':'#10B981';ctx.font='9px monospace';ctx.textAlign='center';
+    ctx.fillStyle=open?'#888880':'#8B6914';ctx.font='9px monospace';ctx.textAlign='center';
     ctx.fillText(open?'OPEN':'CLOSED',0,-38);
   }
   ctx.restore();
@@ -461,10 +442,9 @@ function drawParticles(phase){
     const nx=dx/len,ny=dy/len;
     for(let i=0;i<3;i++){
       const t=((phase*0.6+(i/3))%1);
-      const px=w.x1+nx*len*t;
-      const py=w.y1+ny*len*t;
-      ctx.beginPath();ctx.arc(px,py,3,0,Math.PI*2);
-      ctx.fillStyle='rgba(249,202,36,0.8)';ctx.fill();
+      const px=w.x1+nx*len*t,py=w.y1+ny*len*t;
+      ctx.beginPath();ctx.arc(px,py,2.5,0,Math.PI*2);
+      ctx.fillStyle='rgba(200,42,42,0.7)';ctx.fill();
     }
   });
   ctx.restore();
@@ -472,10 +452,10 @@ function drawParticles(phase){
 
 function drawAll(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle='#090A0F';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#F8F7F3';ctx.fillRect(0,0,canvas.width,canvas.height);
   wires.forEach(w=>{
     ctx.beginPath();ctx.moveTo(w.x1,w.y1);ctx.lineTo(w.x2,w.y2);
-    ctx.strokeStyle=w.color||'#818CF8';ctx.lineWidth=2.5;ctx.stroke();
+    ctx.strokeStyle=w.color||'#1C2D42';ctx.lineWidth=2;ctx.stroke();
   });
   components.forEach(c=>drawComponent(c,particlePhase));
   drawParticles(particlePhase);
@@ -489,7 +469,7 @@ function animate(){
 
 function updateCircuitInfo(closed){
   document.getElementById('ci-status').textContent=closed?'Closed ✓ (current flowing)':'Open (no path)';
-  document.getElementById('ci-status').style.color=closed?'var(--color-success)':'var(--color-danger)';
+  document.getElementById('ci-status').style.color=closed?'var(--accent-gold)':'var(--accent-red)';
   if(closed){
     const V=9;
     const bulbs=components.filter(c=>c.type==='bulb'&&!c.broken).length;
@@ -511,9 +491,7 @@ function updateCircuitInfo(closed){
 canvas.addEventListener('click',e=>{
   const rect=canvas.getBoundingClientRect();
   const scaleX=canvas.width/rect.width,scaleY=canvas.height/rect.height;
-  const mx=(e.clientX-rect.left)*scaleX;
-  const my=(e.clientY-rect.top)*scaleY;
-  // Check if clicking on a switch
+  const mx=(e.clientX-rect.left)*scaleX,my=(e.clientY-rect.top)*scaleY;
   for(const c of components){
     if(c.type==='switch'){
       const dx=mx-c.x,dy=my-c.y;
@@ -545,9 +523,7 @@ function calcParallel(bulbs){
   return{I_each,V_each:BATTERY_V,P_each,closed:true,I_total:I_each*working};
 }
 
-function getBrightness(P_mW, maxP_mW){
-  return Math.min(1, P_mW/maxP_mW);
-}
+function getBrightness(P_mW, maxP_mW){ return Math.min(1, P_mW/maxP_mW); }
 
 function renderBulbs(type){
   const bulbs=type==='series'?seriesBulbs:parallelBulbs;
@@ -555,88 +531,61 @@ function renderBulbs(type){
   container.innerHTML='';
   const stats=type==='series'?calcSeries(bulbs):calcParallel(bulbs);
   const maxP=BATTERY_V*(BATTERY_V/BULB_R)*1000;
-
   bulbs.forEach((b,i)=>{
     const wrap=document.createElement('div');
     wrap.className='bulb-wrap';
     let P_mW=0;
-    if(!b.broken&&stats.closed){
-      P_mW=type==='series'?stats.P_each:stats.P_each;
-    }
+    if(!b.broken&&stats.closed) P_mW=stats.P_each;
     const bright=b.broken?0:getBrightness(P_mW,maxP);
     const pct=Math.round(bright*100);
-    const hue=`rgba(249,202,36,${bright})`;
-    const glow=bright>0?`0 0 ${Math.round(bright*25)}px rgba(249,202,36,${bright})`:'none';
+    const col=`rgba(200,42,42,${bright*0.8})`;
+    const glow=bright>0?`0 0 ${Math.round(bright*20)}px rgba(200,42,42,${bright})`:'none';
     const bulbEl=document.createElement('div');
     bulbEl.className='bulb'+(b.broken?' broken':'');
-    bulbEl.style.cssText=`color:${hue};background:${hue};box-shadow:${glow};border-color:${b.broken?'var(--color-danger)':bright>0?'#F59E0B':'#555'}`;
+    bulbEl.style.cssText=`background:${col};box-shadow:${glow};border-color:${b.broken?'var(--accent-red)':bright>0?'#C82A2A':'var(--border-light)'}`;
     bulbEl.innerHTML=b.broken?'✕':'💡';
     bulbEl.title='Click to break/fix';
-    bulbEl.onclick=()=>{
-      b.broken=!b.broken;
-      renderBulbs(type);
-      renderBulbs(type);
-    };
+    bulbEl.onclick=()=>{b.broken=!b.broken;renderBulbs(type);};
     const labelEl=document.createElement('div');
     labelEl.className='bulb-label';
     labelEl.textContent=`Bulb ${i+1}`;
     const brightEl=document.createElement('div');
     brightEl.className='bulb-brightness';
-    brightEl.style.color=b.broken?'var(--color-danger)':bright>0?'var(--color-warning)':'var(--text-muted)';
+    brightEl.style.color=b.broken?'var(--accent-red)':bright>0?'var(--accent-red)':'var(--text-ghost)';
     brightEl.textContent=b.broken?'BROKEN':`${pct}%`;
     wrap.appendChild(bulbEl);wrap.appendChild(labelEl);wrap.appendChild(brightEl);
     container.appendChild(wrap);
   });
-
-  // Stats
   const statsEl=document.getElementById(type+'-stats');
   if(type==='series'){
     const working=bulbs.filter(b=>!b.broken).length;
     statsEl.innerHTML=`
-      <div class="stat-row"><span class="stat-label">Working bulbs</span><span class="stat-val">${working}/${bulbs.length}</span></div>
-      <div class="stat-row"><span class="stat-label">Total resistance</span><span class="stat-val">${working*BULB_R}Ω</span></div>
-      <div class="stat-row"><span class="stat-label">Current (all)</span><span class="stat-val">${stats.closed?(stats.I*1000).toFixed(1):'0.0'}mA</span></div>
+      <div class="stat-row"><span class="stat-label">Working</span><span class="stat-val">${working}/${bulbs.length}</span></div>
+      <div class="stat-row"><span class="stat-label">Resistance</span><span class="stat-val">${working*BULB_R}Ω</span></div>
+      <div class="stat-row"><span class="stat-label">Current</span><span class="stat-val">${stats.closed?(stats.I*1000).toFixed(1):'0.0'}mA</span></div>
       <div class="stat-row"><span class="stat-label">Voltage each</span><span class="stat-val">${stats.closed?stats.V_each.toFixed(1):'0.0'}V</span></div>
-      <div class="stat-row"><span class="stat-label">Power each</span><span class="stat-val">${stats.closed?stats.P_each.toFixed(1):'0.0'}mW</span></div>
-      <div class="stat-row"><span class="stat-label" style="color:${stats.closed?'var(--color-success)':'var(--color-danger)'}">${stats.closed?'Circuit: CLOSED ✓':'Circuit: OPEN ✗'}</span></div>`;
+      <div class="stat-row"><span class="stat-label">Circuit</span><span class="stat-val" style="color:${stats.closed?'var(--accent-gold)':'var(--accent-red)'}">${stats.closed?'CLOSED':'OPEN'}</span></div>`;
   } else {
     const working=bulbs.filter(b=>!b.broken).length;
     statsEl.innerHTML=`
-      <div class="stat-row"><span class="stat-label">Working bulbs</span><span class="stat-val">${working}/${bulbs.length}</span></div>
-      <div class="stat-row"><span class="stat-label">Voltage each</span><span class="stat-val">${working>0?BATTERY_V:'0'}V (full!)</span></div>
+      <div class="stat-row"><span class="stat-label">Working</span><span class="stat-val">${working}/${bulbs.length}</span></div>
+      <div class="stat-row"><span class="stat-label">Voltage each</span><span class="stat-val">${working>0?BATTERY_V:'0'}V (full)</span></div>
       <div class="stat-row"><span class="stat-label">Current each</span><span class="stat-val">${working>0?(BATTERY_V/BULB_R*1000).toFixed(1):'0.0'}mA</span></div>
       <div class="stat-row"><span class="stat-label">Total current</span><span class="stat-val">${stats.I_total?(stats.I_total*1000).toFixed(1):'0.0'}mA</span></div>
-      <div class="stat-row"><span class="stat-label">Power each</span><span class="stat-val">${working>0?stats.P_each.toFixed(1):'0.0'}mW</span></div>
-      <div class="stat-row"><span class="stat-label" style="color:${working>0?'var(--color-success)':'var(--color-danger)'}">${working>0?'Circuit: CLOSED ✓':'Circuit: OPEN ✗'}</span></div>`;
+      <div class="stat-row"><span class="stat-label">Circuit</span><span class="stat-val" style="color:${working>0?'var(--accent-gold)':'var(--accent-red)'}">${working>0?'CLOSED':'OPEN'}</span></div>`;
   }
 }
 
-function addBulb(type){
-  const arr=type==='series'?seriesBulbs:parallelBulbs;
-  if(arr.length>=5)return;
-  arr.push({broken:false});
-  renderBulbs(type);
-}
-function removeBulb(type){
-  const arr=type==='series'?seriesBulbs:parallelBulbs;
-  if(arr.length<=1)return;
-  arr.pop();
-  renderBulbs(type);
-}
-function resetBulbs(type){
-  if(type==='series') seriesBulbs=[{broken:false},{broken:false}];
-  else parallelBulbs=[{broken:false},{broken:false}];
-  renderBulbs(type);
-}
+function addBulb(type){const arr=type==='series'?seriesBulbs:parallelBulbs;if(arr.length>=5)return;arr.push({broken:false});renderBulbs(type);}
+function removeBulb(type){const arr=type==='series'?seriesBulbs:parallelBulbs;if(arr.length<=1)return;arr.pop();renderBulbs(type);}
+function resetBulbs(type){if(type==='series')seriesBulbs=[{broken:false},{broken:false}];else parallelBulbs=[{broken:false},{broken:false}];renderBulbs(type);}
 
 // ========================= TABS =========================
 function switchTab(id){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['ohm','sandbox','sp'][i]===id));
+  document.querySelectorAll('.zen-tab').forEach((t,i)=>t.classList.toggle('active',['ohm','sandbox','sp'][i]===id));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
-  if(id==='sandbox'){
-    if(!animFrame){loadPresetCircuit('simple');animate();}
-  }
+  if(id==='sandbox'){if(!animFrame){loadPresetCircuit('simple');animate();}}
 }
 
 // ========================= BOOT =========================

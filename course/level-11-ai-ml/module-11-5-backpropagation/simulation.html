@@ -1,0 +1,444 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 11.5 — Backpropagation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out) forwards}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast),color var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}.zen-btn.primary:hover{background:#333}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:760px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border-paper)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:110px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs);margin-top:8px}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+canvas{display:block;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs)}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.stat-box{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:300;color:var(--text-sumi);display:block;line-height:1;margin-bottom:2px}
+.sv.red{color:var(--accent-red)}.sv.gold{color:var(--accent-gold)}.sv.indigo{color:var(--accent-indigo)}
+.sl{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)}
+/* Computation graph nodes */
+.cg-node{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;border:2px solid var(--border-paper);background:var(--bg-canvas);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:var(--text-body);cursor:pointer;transition:all .2s;position:relative}
+.cg-node:hover{border-color:var(--accent-indigo)}
+.cg-node.fwd{border-color:var(--accent-gold);background:rgba(139,105,20,0.1);color:var(--accent-gold)}
+.cg-node.bwd{border-color:var(--accent-red);background:rgba(200,42,42,0.1);color:var(--accent-red)}
+.cg-node.param{border-color:var(--accent-indigo);background:rgba(28,45,66,0.08);color:var(--accent-indigo)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:1px;background:var(--border-light);cursor:pointer;margin:8px 0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--text-sumi);border-radius:50%;cursor:grab}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 11.5 — Backpropagation</h1>
+  <p class="zen-subtitle">Chain Rule · Computation Graph · Gradient Descent</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('chainrule')">Chain Rule</div>
+  <div class="zen-tab" onclick="switchTab('compgraph')">Computation Graph</div>
+  <div class="zen-tab" onclick="switchTab('gradesc')">Gradient Descent</div>
+</div>
+
+<!-- CHAIN RULE -->
+<div id="panel-chainrule" class="panel active">
+  <div class="zen-intro">
+    <strong>Backpropagation is the chain rule applied to computation graphs.</strong> If L = f(g(x)), then dL/dx = (dL/df)·(df/dg)·(dg/dx). The gradient flows backward through every operation, multiplying local derivatives at each step. This is how every modern neural network learns.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Scalar chain rule demo</div>
+      <div style="font-size:12px;color:var(--text-body);margin-bottom:14px;line-height:1.9">
+        Network: <span style="font-family:'JetBrains Mono',monospace;color:var(--accent-indigo)">y = σ(w·x + b)</span><br>
+        Loss: <span style="font-family:'JetBrains Mono',monospace;color:var(--accent-red)">L = (y - t)²</span>
+      </div>
+      <div style="display:grid;gap:8px;margin-bottom:12px">
+        <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">x (input) <span id="lbl-cr-x" style="font-family:'JetBrains Mono',monospace">1.0</span></label>
+        <input type="range" id="sl-cr-x" min="-3" max="3" value="1" step="0.1" oninput="updateChainRule()">
+        <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">w (weight) <span id="lbl-cr-w" style="font-family:'JetBrains Mono',monospace">0.5</span></label>
+        <input type="range" id="sl-cr-w" min="-3" max="3" value="0.5" step="0.1" oninput="updateChainRule()">
+        <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">b (bias) <span id="lbl-cr-b" style="font-family:'JetBrains Mono',monospace">0.0</span></label>
+        <input type="range" id="sl-cr-b" min="-3" max="3" value="0" step="0.1" oninput="updateChainRule()">
+        <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">t (target) <span id="lbl-cr-t" style="font-family:'JetBrains Mono',monospace">1.0</span></label>
+        <input type="range" id="sl-cr-t" min="0" max="1" value="1" step="0.1" oninput="updateChainRule()">
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Forward & backward pass</div>
+      <div id="cr-steps" style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2.2;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:12px;margin-bottom:10px;min-height:80px"></div>
+      <div class="stat-row" style="margin-top:0">
+        <div class="stat-box"><span class="sv red" id="cr-dw">—</span><span class="sl">∂L/∂w</span></div>
+        <div class="stat-box"><span class="sv gold" id="cr-db">—</span><span class="sl">∂L/∂b</span></div>
+        <div class="stat-box"><span class="sv indigo" id="cr-loss">—</span><span class="sl">Loss</span></div>
+      </div>
+      <div class="op-log" id="cr-log"><div class="linfo">> Adjust values. Gradients show which direction to nudge w and b to reduce loss.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPUTATION GRAPH -->
+<div id="panel-compgraph" class="panel">
+  <div class="zen-intro">
+    <strong>Every neural network operation builds a computation graph.</strong> During the forward pass, values flow left to right. During backpropagation, gradients flow right to left, multiplied by the local derivative at each node. Click Step Backward to watch gradients propagate.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Expression: L = (σ(w·x + b) − t)²</div>
+      <div style="margin-bottom:12px">
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:8px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)">x=</span>
+          <input type="number" id="cg-x" value="1.0" step="0.5" style="width:60px;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:4px 8px;color:var(--text-sumi)">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)">w=</span>
+          <input type="number" id="cg-w" value="0.5" step="0.5" style="width:60px;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:4px 8px;color:var(--text-sumi)">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)">b=</span>
+          <input type="number" id="cg-b" value="0.0" step="0.5" style="width:60px;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:4px 8px;color:var(--text-sumi)">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)">t=</span>
+          <input type="number" id="cg-t" value="1.0" step="0.5" style="width:60px;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:4px 8px;color:var(--text-sumi)">
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="cgForward()">→ Forward</button>
+        <button class="zen-btn" onclick="cgBackward()">← Backward step</button>
+        <button class="zen-btn danger" onclick="cgReset()">↺ Reset</button>
+      </div>
+      <div id="cg-node-detail" style="margin-top:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:10px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;color:var(--text-muted);min-height:60px">
+        Press Forward to compute values, then Backward to propagate gradients.
+      </div>
+      <div class="op-log" id="cg-log"><div class="linfo">> Forward: computes values. Backward: propagates ∂L/∂node using chain rule.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Computation graph</div>
+      <canvas id="cg-canvas" width="320" height="280" style="width:100%;max-width:320px"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- GRADIENT DESCENT -->
+<div id="panel-gradesc" class="panel">
+  <div class="zen-intro">
+    <strong>Gradient descent uses the gradient to minimise loss.</strong> At each step: w ← w − η·(∂L/∂w). The learning rate η controls step size. Too large: overshoot and diverge. Too small: slow convergence. Watch gradient descent navigate a 2D loss surface.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Controls</div>
+      <div style="display:grid;gap:8px;margin-bottom:12px">
+        <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">Learning rate η <span id="lbl-eta" style="font-family:'JetBrains Mono',monospace">0.1</span></label>
+        <input type="range" id="sl-eta" min="0.01" max="1.0" value="0.1" step="0.01" oninput="document.getElementById('lbl-eta').textContent=parseFloat(this.value).toFixed(2);gdReset()">
+        <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">Loss function <span id="lbl-lossfn" style="font-family:'JetBrains Mono',monospace">bowl</span></label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="zen-btn" style="padding:4px 9px;font-size:10px" onclick="setLossFn('bowl')">Bowl</button>
+          <button class="zen-btn" style="padding:4px 9px;font-size:10px" onclick="setLossFn('valley')">Valley</button>
+          <button class="zen-btn" style="padding:4px 9px;font-size:10px" onclick="setLossFn('saddle')">Saddle</button>
+          <button class="zen-btn" style="padding:4px 9px;font-size:10px" onclick="setLossFn('bumpy')">Local minima</button>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="gdStep()">↓ Step</button>
+        <button class="zen-btn" onclick="gdRun(50)">▶ 50 Steps</button>
+        <button class="zen-btn danger" onclick="gdReset()">↺ Reset</button>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><span class="sv red" id="gd-step">0</span><span class="sl">Step</span></div>
+        <div class="stat-box"><span class="sv gold" id="gd-loss">—</span><span class="sl">Loss</span></div>
+        <div class="stat-box"><span class="sv indigo" id="gd-grad">—</span><span class="sl">|∇L|</span></div>
+      </div>
+      <div class="op-log" id="gd-log"><div class="linfo">> Watch the ball roll down the loss surface. η too large = overshoot.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Loss surface (2D slice)</div>
+      <canvas id="gd-canvas" width="320" height="280" style="width:100%;max-width:320px"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== CHAIN RULE =====
+function sigmoid(x){return 1/(1+Math.exp(-x));}
+function sigGrad(x){const s=sigmoid(x);return s*(1-s);}
+
+function updateChainRule(){
+  const x=+document.getElementById('sl-cr-x').value;
+  const w=+document.getElementById('sl-cr-w').value;
+  const b=+document.getElementById('sl-cr-b').value;
+  const t=+document.getElementById('sl-cr-t').value;
+  ['cr-x','cr-w','cr-b','cr-t'].forEach(id=>{
+    document.getElementById('lbl-'+id).textContent=parseFloat(document.getElementById('sl-'+id).value).toFixed(1);
+  });
+  // forward
+  const z=w*x+b;
+  const y=sigmoid(z);
+  const L=(y-t)**2;
+  // backward (chain rule)
+  const dL_dy=2*(y-t);
+  const dy_dz=sigGrad(z);
+  const dL_dz=dL_dy*dy_dz;
+  const dL_dw=dL_dz*x;
+  const dL_db=dL_dz*1;
+  document.getElementById('cr-dw').textContent=dL_dw.toFixed(4);
+  document.getElementById('cr-db').textContent=dL_db.toFixed(4);
+  document.getElementById('cr-loss').textContent=L.toFixed(4);
+  document.getElementById('cr-steps').innerHTML=`
+<span style="color:var(--accent-gold)">FORWARD:</span>
+z = w·x + b = ${w.toFixed(1)}·${x.toFixed(1)}+${b.toFixed(1)} = ${z.toFixed(4)}
+y = σ(z) = ${y.toFixed(4)}
+L = (y−t)² = (${y.toFixed(3)}−${t.toFixed(1)})² = ${L.toFixed(4)}
+
+<span style="color:var(--accent-red)">BACKWARD (chain rule):</span>
+∂L/∂y = 2(y−t) = ${dL_dy.toFixed(4)}
+∂y/∂z = σ(z)·(1−σ(z)) = ${dy_dz.toFixed(4)}
+∂L/∂z = ${dL_dy.toFixed(3)}·${dy_dz.toFixed(3)} = ${dL_dz.toFixed(4)}
+∂L/∂w = ∂L/∂z · x = ${dL_dz.toFixed(3)}·${x.toFixed(1)} = <span style="color:var(--accent-red);font-weight:500">${dL_dw.toFixed(4)}</span>
+∂L/∂b = ∂L/∂z · 1 = <span style="color:var(--accent-gold);font-weight:500">${dL_db.toFixed(4)}</span>`;
+  crLog(`L=${L.toFixed(4)}, ∂L/∂w=${dL_dw.toFixed(4)}, ∂L/∂b=${dL_db.toFixed(4)}`,'linfo');
+}
+
+function crLog(m,cls='lmuted'){const el=document.getElementById('cr-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+updateChainRule();
+
+// ===== COMPUTATION GRAPH =====
+let cgState = {fwdDone:false, bwdStep:0, vals:{}, grads:{}};
+const CG_NODES = [
+  {id:'x',  label:'x',  x:0.05, y:0.2, type:'input'},
+  {id:'w',  label:'w',  x:0.05, y:0.5, type:'param'},
+  {id:'b',  label:'b',  x:0.05, y:0.8, type:'param'},
+  {id:'mul',label:'×',  x:0.3,  y:0.35,type:'op'},
+  {id:'add',label:'+',  x:0.5,  y:0.5, type:'op'},
+  {id:'sig',label:'σ',  x:0.7,  y:0.5, type:'op'},
+  {id:'sub',label:'−t', x:0.85, y:0.5, type:'op'},
+  {id:'sq', label:'²',  x:0.95, y:0.5, type:'op'},
+];
+const CG_EDGES=[['x','mul'],['w','mul'],['mul','add'],['b','add'],['add','sig'],['sig','sub'],['sub','sq']];
+const BWD_ORDER=['sq','sub','sig','add','mul'];
+
+function cgCompute(){
+  const x=+document.getElementById('cg-x').value;
+  const w=+document.getElementById('cg-w').value;
+  const b=+document.getElementById('cg-b').value;
+  const t=+document.getElementById('cg-t').value;
+  const mul=w*x, add=mul+b, s=sigmoid(add), sub=s-t, sq=sub**2;
+  return {x,w,b,t,mul,add,sig:s,sub,sq};
+}
+
+function cgForward(){
+  const v=cgCompute();
+  cgState.vals=v; cgState.fwdDone=true; cgState.bwdStep=0; cgState.grads={sq:1};
+  drawCG(v,{},-1);
+  document.getElementById('cg-node-detail').textContent=`Forward pass complete:\nz = w·x+b = ${v.mul.toFixed(3)}+${v.b}=${v.add.toFixed(3)}\ny = σ(z) = ${v.sig.toFixed(4)}\nL = (y-t)² = ${v.sq.toFixed(4)}`;
+  cgLog(`Forward: L=${v.sq.toFixed(4)}`,'lok');
+}
+
+function cgBackward(){
+  if(!cgState.fwdDone){cgLog('Run forward pass first','lerr');return;}
+  if(cgState.bwdStep>=BWD_ORDER.length){cgLog('Backprop complete','lok');return;}
+  const v=cgState.vals;
+  const g=cgState.grads;
+  const node=BWD_ORDER[cgState.bwdStep];
+
+  if(node==='sq')  {g.sub=g.sq*2*v.sub;}
+  if(node==='sub') {g.sig=g.sub*1;}
+  if(node==='sig') {const ds=sigGrad(v.add);g.add=g.sig*ds;}
+  if(node==='add') {g.mul=g.add*1;g.b=g.add*1;}
+  if(node==='mul') {g.w=g.mul*v.x;g.x=g.mul*v.w;}
+
+  const details={
+    sq:  `∂L/∂sub = 2·(y−t) = ${(g.sub||0).toFixed(4)}`,
+    sub: `∂L/∂sig = ∂L/∂sub·1 = ${(g.sig||0).toFixed(4)}`,
+    sig: `∂L/∂add = ∂L/∂sig·σ'(z) = ${(g.add||0).toFixed(4)}`,
+    add: `∂L/∂mul = ${(g.mul||0).toFixed(4)}, ∂L/∂b = ${(g.b||0).toFixed(4)}`,
+    mul: `∂L/∂w = ${(g.w||0).toFixed(4)}, ∂L/∂x = ${(g.x||0).toFixed(4)}`,
+  };
+  document.getElementById('cg-node-detail').textContent=details[node];
+  cgLog(`Backprop through ${node}: ${details[node]}`,'linfo');
+  drawCG(v,g,cgState.bwdStep);
+  cgState.bwdStep++;
+}
+
+function cgReset(){cgState={fwdDone:false,bwdStep:0,vals:{},grads:{}};drawCG({},-1,-1);document.getElementById('cg-log').innerHTML='<div class="linfo">> Reset.</div>';}
+
+function drawCG(vals,grads,bwdIdx){
+  const canvas=document.getElementById('cg-canvas'); if(!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.clientWidth||320,H=280;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+  ctx.fillStyle='#F8F7F3'; ctx.fillRect(0,0,W,H);
+  const pos={};
+  CG_NODES.forEach(n=>{pos[n.id]={x:n.x*W,y:n.y*H};});
+
+  // edges
+  CG_EDGES.forEach(([a,b])=>{
+    const bwdActive=bwdIdx>=0&&BWD_ORDER.slice(0,bwdIdx+1).includes(b);
+    ctx.strokeStyle=bwdActive?'rgba(200,42,42,0.5)':'#D8D6CE';
+    ctx.lineWidth=bwdActive?2:1;
+    ctx.beginPath();ctx.moveTo(pos[a].x,pos[a].y);ctx.lineTo(pos[b].x,pos[b].y);ctx.stroke();
+  });
+
+  // nodes
+  CG_NODES.forEach(n=>{
+    const {x,y}=pos[n.id];
+    const hasFwd=vals[n.id]!==undefined;
+    const hasBwd=grads[n.id]!==undefined;
+    const isActive=bwdIdx>=0&&BWD_ORDER.slice(0,bwdIdx+1).includes(n.id);
+    let fill='#FDFDFD',stroke='#D8D6CE';
+    if(n.type==='param'){fill='rgba(28,45,66,0.08)';stroke='#1C2D42';}
+    if(isActive){fill='rgba(200,42,42,0.1)';stroke='#C82A2A';}
+    ctx.fillStyle=fill;ctx.strokeStyle=stroke;ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(x,y,18,0,Math.PI*2);ctx.fill();ctx.stroke();
+    // label
+    ctx.fillStyle=isActive?'#C82A2A':n.type==='param'?'#1C2D42':'#888880';
+    ctx.font='bold 11px JetBrains Mono,monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(n.label,x,y);
+    // fwd value
+    if(hasFwd){
+      ctx.fillStyle='#8B6914';ctx.font='8px JetBrains Mono,monospace';ctx.textBaseline='alphabetic';
+      ctx.fillText(vals[n.id].toFixed(2),x,y-22);
+    }
+    // bwd gradient
+    if(hasBwd){
+      ctx.fillStyle='#C82A2A';ctx.font='8px JetBrains Mono,monospace';
+      ctx.fillText('g='+grads[n.id].toFixed(3),x,y+32);
+    }
+  });
+}
+cgReset();
+
+// ===== GRADIENT DESCENT =====
+let gdPos={x:2.5,y:-2}, gdStep_=0, gdLossFn='bowl', gdHistory=[];
+
+const lossFns={
+  bowl:  {f:(x,y)=>0.5*x*x+0.5*y*y, gx:(x,y)=>x, gy:(x,y)=>y, name:'Bowl'},
+  valley:{f:(x,y)=>0.1*x*x+2*y*y,   gx:(x,y)=>0.2*x, gy:(x,y)=>4*y, name:'Valley'},
+  saddle:{f:(x,y)=>x*x-y*y,          gx:(x,y)=>2*x, gy:(x,y)=>-2*y, name:'Saddle'},
+  bumpy: {f:(x,y)=>x*x+y*y+3*Math.sin(x*2)+2*Math.cos(y*2), gx:(x,y)=>2*x+6*Math.cos(x*2), gy:(x,y)=>2*y-4*Math.sin(y*2), name:'Bumpy'},
+};
+
+function setLossFn(name){gdLossFn=name;document.getElementById('lbl-lossfn').textContent=lossFns[name].name;gdReset();}
+
+function gdReset(){
+  gdPos={x:2.5,y:-2};gdStep_=0;gdHistory=[];
+  document.getElementById('gd-step').textContent=0;
+  document.getElementById('gd-loss').textContent='—';
+  document.getElementById('gd-grad').textContent='—';
+  document.getElementById('gd-log').innerHTML='<div class="linfo">> Reset. Press Step to descend.</div>';
+  drawGD();
+}
+
+function gdStep(){
+  const lr=+document.getElementById('sl-eta').value;
+  const fn=lossFns[gdLossFn];
+  const gx=fn.gx(gdPos.x,gdPos.y), gy=fn.gy(gdPos.x,gdPos.y);
+  gdPos.x-=lr*gx; gdPos.y-=lr*gy;
+  gdPos.x=Math.max(-3,Math.min(3,gdPos.x));
+  gdPos.y=Math.max(-3,Math.min(3,gdPos.y));
+  gdStep_++;
+  const loss=fn.f(gdPos.x,gdPos.y);
+  const grad=Math.sqrt(gx*gx+gy*gy);
+  gdHistory.push({...gdPos,loss});
+  document.getElementById('gd-step').textContent=gdStep_;
+  document.getElementById('gd-loss').textContent=loss.toFixed(4);
+  document.getElementById('gd-grad').textContent=grad.toFixed(4);
+  drawGD();
+  if(grad<0.01) gdLog(`Converged at step ${gdStep_}, loss=${loss.toFixed(5)}`,'lok');
+  else if(gdStep_%10===0) gdLog(`Step ${gdStep_}: loss=${loss.toFixed(4)}, |∇|=${grad.toFixed(4)}`,'linfo');
+}
+
+function gdRun(n){for(let i=0;i<n;i++){const fn=lossFns[gdLossFn];const gx=fn.gx(gdPos.x,gdPos.y),gy=fn.gy(gdPos.x,gdPos.y);if(Math.sqrt(gx*gx+gy*gy)<0.001)break;gdStep();}}
+
+function drawGD(){
+  const canvas=document.getElementById('gd-canvas'); if(!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.clientWidth||320,H=280;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+  const fn=lossFns[gdLossFn];
+  const pad=20,pw=W-pad*2,ph=H-pad*2;
+  const range=3;
+  const toC=(v,axis)=>pad+(v+range)/(2*range)*(axis==='x'?pw:ph);
+
+  // loss surface heatmap
+  const res=8;
+  for(let px=0;px<pw;px+=res){
+    for(let py=0;py<ph;py+=res){
+      const wx=((px/pw)*2-1)*range, wy=(1-(py/ph)*2)*range;
+      const loss=fn.f(wx,wy);
+      const norm=Math.max(0,Math.min(1,loss/10));
+      const r=Math.round(28+norm*224), g=Math.round(45+norm*180), b=Math.round(66-norm*50);
+      ctx.fillStyle=`rgba(${r},${g},${b},${0.05+norm*0.2})`;
+      ctx.fillRect(pad+px,pad+py,res,res);
+    }
+  }
+
+  // contour lines
+  ctx.strokeStyle='rgba(28,45,66,0.12)';ctx.lineWidth=0.8;
+  [0.5,1,2,4,8].forEach(c=>{
+    for(let px=0;px<pw-1;px++){
+      for(let py=0;py<ph-1;py++){
+        const wx=((px/pw)*2-1)*range, wy=(1-(py/ph)*2)*range;
+        const v=fn.f(wx,wy);
+        if(Math.abs(v-c)<0.3){ctx.fillStyle='rgba(28,45,66,0.06)';ctx.fillRect(pad+px,pad+py,1,1);}
+      }
+    }
+  });
+
+  // path
+  if(gdHistory.length>1){
+    ctx.strokeStyle='rgba(200,42,42,0.7)';ctx.lineWidth=1.5;
+    ctx.beginPath();
+    gdHistory.forEach(({x,y},i)=>{
+      const cx=toC(x,'x'), cy=toC(-y,'y');
+      i===0?ctx.moveTo(cx,cy):ctx.lineTo(cx,cy);
+    });
+    ctx.stroke();
+  }
+
+  // current position
+  const cx=toC(gdPos.x,'x'), cy=toC(-gdPos.y,'y');
+  ctx.fillStyle='#C82A2A';ctx.strokeStyle='#FDFDFD';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(cx,cy,7,0,Math.PI*2);ctx.fill();ctx.stroke();
+
+  // axes
+  ctx.strokeStyle='rgba(28,45,66,0.2)';ctx.lineWidth=1;
+  const midX=toC(0,'x'),midY=toC(0,'y');
+  ctx.beginPath();ctx.moveTo(pad,midY);ctx.lineTo(W-pad,midY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(midX,pad);ctx.lineTo(midX,H-pad);ctx.stroke();
+}
+
+function gdLog(m,cls='lmuted'){const el=document.getElementById('gd-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function cgLog(m,cls='lmuted'){const el=document.getElementById('cg-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+gdReset();
+
+// ===== TAB SWITCHING =====
+function switchTab(id){
+  ['chainrule','compgraph','gradesc'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);
+    p.style.display=t===id?'block':'none';
+    p.classList.toggle('active',t===id);
+  });
+  if(id==='chainrule')  setTimeout(updateChainRule,50);
+  if(id==='compgraph')  setTimeout(()=>drawCG({},{},-1),50);
+  if(id==='gradesc')    setTimeout(drawGD,50);
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+window.addEventListener('resize',()=>{updateChainRule();drawCG(cgState.vals,cgState.grads,cgState.bwdStep-1);drawGD();});
+</script>
+</body>
+</html>

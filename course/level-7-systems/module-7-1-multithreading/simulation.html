@@ -1,0 +1,323 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 7.1 — Multithreading and Concurrency</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes race-flash{0%{background:rgba(200,42,42,0.3)}100%{background:transparent}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.zen-btn.success{border-color:var(--accent-gold);color:var(--accent-gold)}.zen-btn.success:hover{background:var(--accent-gold);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+/* Thread lane */
+.thread-lane{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:4px;transition:all var(--t-med)}
+.thread-lane.running{border-color:var(--accent-gold);background:rgba(139,105,20,0.06)}
+.thread-lane.blocked{border-color:var(--accent-red);background:rgba(200,42,42,0.04)}
+.thread-lane.waiting{opacity:.5}
+.tl-name{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-sumi);width:70px;flex-shrink:0}
+.tl-bar{flex:1;height:10px;background:var(--border-paper);border-radius:2px;overflow:hidden}
+.tl-fill{height:100%;border-radius:2px;transition:width .2s}
+.tl-status{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;width:64px;text-align:right;flex-shrink:0}
+.tl-status.running{color:var(--accent-gold)}.tl-status.blocked{color:var(--accent-red)}.tl-status.waiting{color:var(--text-muted)}
+/* Race condition counter */
+.counter-big{font-family:'JetBrains Mono',monospace;font-size:3.5rem;font-weight:300;text-align:center;line-height:1;transition:all .15s}
+/* Producer-consumer buffer */
+.buffer-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-bottom:10px}
+.buf-slot{border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:8px;text-align:center;min-height:40px;transition:all var(--t-med)}
+.buf-slot.filled{border-color:var(--accent-indigo);background:rgba(28,45,66,0.08)}
+.buf-slot.empty{opacity:.4}
+.bs-val{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent-indigo)}
+/* Stat */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.stat-box{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:300;line-height:1;margin-bottom:2px;display:block;color:var(--text-sumi)}
+.sv.red{color:var(--accent-red)}.sv.gold{color:var(--accent-gold)}.sv.indigo{color:var(--accent-indigo)}
+.sl{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:120px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs)}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 7.1 — Multithreading and Concurrency</h1>
+  <p class="zen-subtitle">Race Condition · Thread States · Producer-Consumer</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('race')">Race Condition</div>
+  <div class="zen-tab" onclick="switchTab('states')">Thread States</div>
+  <div class="zen-tab" onclick="switchTab('pc')">Producer-Consumer</div>
+</div>
+
+<!-- RACE CONDITION -->
+<div id="panel-race" class="panel active">
+  <div class="zen-intro"><strong>Two threads increment a shared counter — without a lock.</strong> Each increment is three machine instructions: LOAD, ADD, STORE. If threads interleave between instructions, updates are lost. Enable the lock to see correct behaviour.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Shared counter (target: 200,000)</div>
+      <div style="text-align:center;padding:20px">
+        <div class="counter-big" id="race-counter" style="color:var(--accent-indigo)">0</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:6px">counter value</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:14px;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
+          <input type="checkbox" id="race-lock" style="cursor:pointer">
+          Use mutex lock
+        </label>
+      </div>
+      <div class="btn-row" style="margin-top:0;justify-content:center">
+        <button class="zen-btn primary" id="race-run-btn" onclick="raceRun()">▶ Run (100k each)</button>
+        <button class="zen-btn danger" onclick="raceReset()">↺ Reset</button>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Thread execution interleaving</div>
+      <div id="race-interleave" style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;border-radius:var(--radius-xs);min-height:80px;margin-bottom:10px;color:var(--text-muted);line-height:2">
+        Press Run to see an example of a lost update.
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><span class="sv indigo" id="race-expected">200,000</span><span class="sl">Expected</span></div>
+        <div class="stat-box"><span class="sv red" id="race-actual">—</span><span class="sl">Actual</span></div>
+        <div class="stat-box"><span class="sv gold" id="race-lost">—</span><span class="sl">Lost updates</span></div>
+      </div>
+      <div class="op-log" id="race-log"><div class="linfo">> Without a lock, some increments are lost when threads overwrite each other's work.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- THREAD STATES -->
+<div id="panel-states" class="panel">
+  <div class="zen-intro"><strong>Threads cycle through five states.</strong> NEW → READY → RUNNING (only one thread runs at a time on a single core) → WAITING (blocked on I/O or lock) → TERMINATED. The scheduler decides who runs next.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Thread state machine</div>
+      <div id="thread-lanes" style="margin-bottom:12px"></div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="threadTick()">↓ CPU tick</button>
+        <button class="zen-btn" id="ts-auto-btn" onclick="threadAuto()">▶ Auto</button>
+        <button class="zen-btn" onclick="threadBlock()">Block T1 (I/O)</button>
+        <button class="zen-btn success" onclick="threadWake()">Wake T1</button>
+        <button class="zen-btn danger" onclick="threadReset()">↺ Reset</button>
+      </div>
+      <div class="stat-row" style="margin-top:10px">
+        <div class="stat-box"><span class="sv indigo" id="ts-tick">0</span><span class="sl">CPU ticks</span></div>
+        <div class="stat-box"><span class="sv gold" id="ts-running">—</span><span class="sl">Running</span></div>
+        <div class="stat-box"><span class="sv red" id="ts-ctx">0</span><span class="sl">Context switches</span></div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title red">Execution timeline</div>
+      <canvas id="ts-timeline" height="100" style="display:block;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);width:100%;margin-bottom:10px"></canvas>
+      <div class="op-log" id="ts-log"><div class="linfo">> Each CPU tick runs one thread. Block puts a thread in WAITING; wake returns it to READY.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCER-CONSUMER -->
+<div id="panel-pc" class="panel">
+  <div class="zen-intro"><strong>Producer-Consumer with a bounded buffer (size 5).</strong> Producer blocks when full; consumer blocks when empty. The queue's thread-safe put/get operations coordinate both threads automatically.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Bounded buffer (capacity 5)</div>
+      <div class="buffer-grid" id="pc-buffer"></div>
+      <div style="height:6px;background:var(--border-paper);border-radius:3px;overflow:hidden;margin-bottom:6px">
+        <div id="pc-fill-bar" style="height:100%;background:var(--accent-indigo);width:0%;transition:width .3s;border-radius:3px"></div>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:12px" id="pc-fill-txt">0/5 slots</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="zen-btn primary" onclick="pcProduce()">Produce item</button>
+        <button class="zen-btn success" onclick="pcConsume()">Consume item</button>
+        <button class="zen-btn" id="pc-auto-btn" onclick="pcAuto()">▶ Auto run</button>
+        <button class="zen-btn danger" onclick="pcReset()">↺ Reset</button>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><span class="sv indigo" id="pc-produced">0</span><span class="sl">Produced</span></div>
+        <div class="stat-box"><span class="sv gold" id="pc-consumed">0</span><span class="sl">Consumed</span></div>
+        <div class="stat-box"><span class="sv red" id="pc-blocks">0</span><span class="sl">Blocks</span></div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Thread status</div>
+      <div id="pc-producer-status" style="padding:10px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:6px;font-family:'JetBrains Mono',monospace;font-size:11px">Producer: idle</div>
+      <div id="pc-consumer-status" style="padding:10px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:10px;font-family:'JetBrains Mono',monospace;font-size:11px">Consumer: idle</div>
+      <div class="op-log" id="pc-log"><div class="linfo">> Producer blocks when buffer full. Consumer blocks when buffer empty. Both wait on a condition variable.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== RACE CONDITION =====
+let raceDone=false, raceTimer=null;
+function raceLog(m,cls='lmuted'){const el=document.getElementById('race-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function raceReset(){clearInterval(raceTimer);raceDone=false;document.getElementById('race-counter').textContent='0';document.getElementById('race-counter').style.color='var(--accent-indigo)';document.getElementById('race-actual').textContent='—';document.getElementById('race-lost').textContent='—';document.getElementById('race-run-btn').textContent='▶ Run (100k each)';document.getElementById('race-interleave').textContent='Press Run to see an example of a lost update.';document.getElementById('race-log').innerHTML='<div class="linfo">> Reset.</div>';}
+function raceRun(){
+  if(raceDone){raceReset();return;}
+  const useLock=document.getElementById('race-lock').checked;
+  document.getElementById('race-run-btn').textContent='Running...';
+  const EACH=100000;
+  let counter=0;
+  // Simulate with probabilistic lost updates (no real threading in browser)
+  const lossPct=useLock?0:0.15; // 15% of increments "lost" without lock
+  let lost=0;
+  for(let i=0;i<EACH*2;i++){
+    if(!useLock&&Math.random()<lossPct){lost++;} // simulated lost update
+    else counter++;
+  }
+  const actual=counter;
+  document.getElementById('race-counter').textContent=actual.toLocaleString();
+  document.getElementById('race-counter').style.color=useLock?'var(--accent-gold)':'var(--accent-red)';
+  document.getElementById('race-actual').textContent=actual.toLocaleString();
+  document.getElementById('race-lost').textContent=lost.toLocaleString();
+  document.getElementById('race-run-btn').textContent='▶ Run again';
+  raceDone=true;
+  if(useLock){
+    document.getElementById('race-interleave').innerHTML='<span style="color:var(--accent-gold)">✓ Mutex: each thread holds the lock during LOAD+ADD+STORE.\nNo interleaving possible. Result: 200,000 (correct).</span>';
+    raceLog('With mutex: result=200,000 ✓','lok');
+  } else {
+    document.getElementById('race-interleave').textContent='Example lost update:\n  T1: LOAD counter (=50000)\n  T2: LOAD counter (=50000) ← same value!\n  T1: ADD 1 → 50001\n  T2: ADD 1 → 50001\n  T1: STORE 50001\n  T2: STORE 50001  ← overwrites T1\'s work!\n  One increment is LOST.';
+    raceLog(`Without mutex: lost ${lost.toLocaleString()} updates — result is ${actual.toLocaleString()} not 200,000`,'lerr');
+  }
+}
+
+// ===== THREAD STATES =====
+const THREADS=[
+  {id:'T1',state:'READY',progress:0,color:'#C82A2A'},
+  {id:'T2',state:'READY',progress:0,color:'#1C2D42'},
+  {id:'T3',state:'READY',progress:0,color:'#8B6914'},
+];
+let tsTick=0,tsCtx=0,tsRunning=-1,tsTimeline=[],tsAutoTimer=null;
+function tsLog(m,cls='lmuted'){const el=document.getElementById('ts-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function renderThreadLanes(){
+  document.getElementById('thread-lanes').innerHTML=THREADS.map(t=>`
+    <div class="thread-lane ${t.state==='RUNNING'?'running':t.state==='WAITING'?'blocked':''}">
+      <span class="tl-name" style="color:${t.color}">${t.id}</span>
+      <div class="tl-bar"><div class="tl-fill" style="width:${t.progress}%;background:${t.color}"></div></div>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${t.color}">${t.progress}%</span>
+      <span class="tl-status ${t.state.toLowerCase()}">${t.state}</span>
+    </div>`).join('');
+  const running=THREADS.find(t=>t.state==='RUNNING');
+  document.getElementById('ts-running').textContent=running?running.id:'none';
+  document.getElementById('ts-tick').textContent=tsTick;
+  document.getElementById('ts-ctx').textContent=tsCtx;
+}
+function drawTimeline(){
+  const canvas=document.getElementById('ts-timeline');
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.clientWidth||300,H=canvas.height;
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#F8F7F3';ctx.fillRect(0,0,W,H);
+  const n=Math.min(tsTimeline.length,Math.floor(W/8));
+  const start=tsTimeline.length-n;
+  tsTimeline.slice(start).forEach((id,i)=>{
+    const th=THREADS.find(t=>t.id===id);
+    const thIdx=THREADS.indexOf(th);
+    const col=['#C82A2A','#1C2D42','#8B6914'][thIdx]||'#888';
+    const x=i*8,y=thIdx*30+5;
+    ctx.fillStyle=col;ctx.fillRect(x,y,7,20);
+    ctx.fillStyle='#F8F7F3';ctx.font='8px Inter,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(id,x+3.5,y+10);
+  });
+  ['T1','T2','T3'].forEach((id,i)=>{
+    const col=['#C82A2A','#1C2D42','#8B6914'][i];
+    ctx.fillStyle=col;ctx.font='9px Inter,sans-serif';ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(id,W-3,i*30+15);
+  });
+}
+function threadTick(){
+  // Pick next READY thread (round robin)
+  const ready=THREADS.filter(t=>t.state==='READY'||t.state==='RUNNING');
+  if(!ready.length){tsLog('All threads blocked or done','lerr');return;}
+  const prev=THREADS.find(t=>t.state==='RUNNING');
+  if(prev){prev.state='READY';}
+  const next=ready[(tsRunning+1)%ready.length];
+  tsRunning=THREADS.indexOf(next);
+  const prevName=prev?.id;
+  THREADS.forEach(t=>{if(t.state==='RUNNING')t.state='READY';});
+  next.state='RUNNING';
+  next.progress=Math.min(100,next.progress+8);
+  if(next.progress>=100){next.state='TERMINATED';tsLog(`${next.id} TERMINATED`,'lok');}
+  if(prev&&prev!==next){tsCtx++;tsLog(`Context switch: ${prevName} → ${next.id}`,'linfo');}
+  else tsLog(`${next.id} running (${next.progress}%)`,'lmuted');
+  tsTick++;tsTimeline.push(next.id);
+  renderThreadLanes();drawTimeline();
+}
+function threadBlock(){const t=THREADS.find(t=>t.id==='T1');if(!t||t.state==='TERMINATED')return;t.state='WAITING';t.id==='T1'&&(tsRunning=-1);tsLog('T1 blocked (waiting for I/O)','lerr');renderThreadLanes();}
+function threadWake(){const t=THREADS.find(t=>t.id==='T1');if(!t||t.state!=='WAITING')return;t.state='READY';tsLog('T1 woke up → READY','lok');renderThreadLanes();}
+function threadAuto(){if(tsAutoTimer){clearInterval(tsAutoTimer);tsAutoTimer=null;document.getElementById('ts-auto-btn').textContent='▶ Auto';return;}document.getElementById('ts-auto-btn').textContent='■ Stop';tsAutoTimer=setInterval(()=>{threadTick();if(THREADS.every(t=>t.state==='TERMINATED')){clearInterval(tsAutoTimer);tsAutoTimer=null;document.getElementById('ts-auto-btn').textContent='▶ Auto';}},400);}
+function threadReset(){clearInterval(tsAutoTimer);tsAutoTimer=null;THREADS.forEach((t,i)=>{t.state=i<3?'READY':'READY';t.progress=0;});tsTick=0;tsCtx=0;tsRunning=-1;tsTimeline=[];document.getElementById('ts-log').innerHTML='<div class="linfo">> Reset.</div>';renderThreadLanes();drawTimeline();}
+threadReset();
+
+// ===== PRODUCER-CONSUMER =====
+let pcBuffer=[], pcProduced=0, pcConsumed=0, pcBlocks=0, pcNextItem=1, pcAutoTimer=null;
+const PC_CAP=5;
+function pcLog(m,cls='lmuted'){const el=document.getElementById('pc-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function renderPcBuffer(){
+  const g=document.getElementById('pc-buffer');
+  g.innerHTML=Array.from({length:PC_CAP},(_,i)=>`
+    <div class="buf-slot ${i<pcBuffer.length?'filled':'empty'}">
+      <div class="bs-val">${i<pcBuffer.length?pcBuffer[i]:''}</div>
+    </div>`).join('');
+  const pct=Math.round(pcBuffer.length/PC_CAP*100);
+  document.getElementById('pc-fill-bar').style.width=pct+'%';
+  document.getElementById('pc-fill-txt').textContent=`${pcBuffer.length}/${PC_CAP} slots`;
+  document.getElementById('pc-produced').textContent=pcProduced;
+  document.getElementById('pc-consumed').textContent=pcConsumed;
+  document.getElementById('pc-blocks').textContent=pcBlocks;
+}
+function pcProduce(){
+  if(pcBuffer.length>=PC_CAP){pcBlocks++;document.getElementById('pc-producer-status').textContent='Producer: BLOCKED (buffer full)';document.getElementById('pc-producer-status').style.color='var(--accent-red)';pcLog('Producer blocks — buffer full. Waiting for consumer...','lerr');renderPcBuffer();return;}
+  const item=pcNextItem++;pcBuffer.push(item);pcProduced++;
+  document.getElementById('pc-producer-status').textContent=`Producer: produced item ${item}`;document.getElementById('pc-producer-status').style.color='var(--accent-indigo)';
+  pcLog(`produce(${item}) → buffer [${pcBuffer.join(',')}]`,'linfo');renderPcBuffer();
+}
+function pcConsume(){
+  if(!pcBuffer.length){pcBlocks++;document.getElementById('pc-consumer-status').textContent='Consumer: BLOCKED (buffer empty)';document.getElementById('pc-consumer-status').style.color='var(--accent-red)';pcLog('Consumer blocks — buffer empty. Waiting for producer...','lerr');renderPcBuffer();return;}
+  const item=pcBuffer.shift();pcConsumed++;
+  document.getElementById('pc-consumer-status').textContent=`Consumer: consumed item ${item}`;document.getElementById('pc-consumer-status').style.color='var(--accent-gold)';
+  pcLog(`consume() → got ${item}, buffer [${pcBuffer.join(',')}]`,'lok');renderPcBuffer();
+}
+function pcAuto(){
+  if(pcAutoTimer){clearInterval(pcAutoTimer);pcAutoTimer=null;document.getElementById('pc-auto-btn').textContent='▶ Auto run';return;}
+  document.getElementById('pc-auto-btn').textContent='■ Stop';
+  pcAutoTimer=setInterval(()=>{
+    if(Math.random()<0.55)pcProduce();else pcConsume();
+  },400);
+}
+function pcReset(){clearInterval(pcAutoTimer);pcAutoTimer=null;pcBuffer=[];pcProduced=0;pcConsumed=0;pcBlocks=0;pcNextItem=1;document.getElementById('pc-producer-status').textContent='Producer: idle';document.getElementById('pc-consumer-status').textContent='Consumer: idle';document.getElementById('pc-producer-status').style.color='';document.getElementById('pc-consumer-status').style.color='';document.getElementById('pc-log').innerHTML='<div class="linfo">> Reset.</div>';document.getElementById('pc-auto-btn').textContent='▶ Auto run';renderPcBuffer();}
+renderPcBuffer();
+
+function switchTab(id){
+  ['race','states','pc'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);p.style.display=t===id?'block':'none';p.classList.toggle('active',t===id);
+  });
+  if(id==='states')setTimeout(()=>{renderThreadLanes();drawTimeline();},50);
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+window.addEventListener('resize',()=>{if(document.getElementById('panel-states').style.display!=='none')drawTimeline();});
+</script>
+</body>
+</html>

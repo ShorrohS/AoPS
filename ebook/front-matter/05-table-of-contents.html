@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AoPS — Volume 0: Before Computers — Table of Contents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:         #1C1C1C;
+    --paper:       #F5F4EF;
+    --warm:        #EEECE4;
+    --bone:        #E8E5DC;
+    --ghost:       #D4D0C4;
+    --indigo:      #1C2D42;
+    --lacquer:     #C82A2A;
+    --gold:        #8B6914;
+    --sage:        #3D5B3F;
+    --slate:       #4A5568;
+    --font-display:'Noto Serif JP', Georgia, serif;
+    --font-body:   'EB Garamond', Georgia, serif;
+    --font-sans:   'Inter', system-ui, sans-serif;
+    --font-mono:   'JetBrains Mono', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: #C8C6C0; }
+  body {
+    background: #C8C6C0;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 56px 24px;
+  }
+
+  .page {
+    width: 720px;
+    min-height: 1020px;
+    background: var(--paper);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.14);
+  }
+
+  .running-header {
+    height: 36px;
+    border-bottom: 0.5px solid var(--ghost);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 64px;
+    flex-shrink: 0;
+  }
+  .running-header span {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ghost);
+  }
+
+  .page-body {
+    flex: 1;
+    padding: 64px 96px 56px;
+  }
+
+  /* ── TOC header ── */
+  .toc-book-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+  .toc-book-subtitle {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--slate);
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .toc-header-rule {
+    width: 100%;
+    height: 1px;
+    background: var(--ghost);
+    margin-bottom: 32px;
+  }
+
+  /* ── Contents label ── */
+  .toc-label {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin-bottom: 28px;
+  }
+
+  /* ── Front matter entries ── */
+  .toc-section {
+    margin-bottom: 32px;
+  }
+  .toc-section-rule {
+    width: 100%;
+    height: 1px;
+    background: var(--bone);
+    margin-bottom: 16px;
+  }
+
+  /* Front matter row */
+  .toc-fm-row {
+    display: flex;
+    align-items: baseline;
+    padding: 6px 0;
+  }
+  .toc-fm-title {
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    font-weight: 300;
+    color: var(--slate);
+    min-width: 200px;
+  }
+  .toc-leaders {
+    flex: 1;
+    border-bottom: 1px dotted var(--ghost);
+    margin: 0 8px 3px;
+  }
+  .toc-page {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--slate);
+    min-width: 28px;
+    text-align: right;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Volume / Part header ── */
+  .toc-part-header {
+    margin: 32px 0 20px;
+    padding: 14px 18px;
+    background: var(--indigo);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .toc-part-vol {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    color: rgba(245,244,239,0.5);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .toc-part-rule {
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.12);
+  }
+  .toc-part-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 300;
+    color: rgba(245,244,239,0.92);
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+  }
+
+  /* ── Module entry ── */
+  .toc-module {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--bone);
+  }
+  .toc-module:last-child { border-bottom: none; margin-bottom: 0; }
+
+  .toc-module-header {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+
+  .toc-module-num {
+    font-family: var(--font-sans);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--lacquer);
+    min-width: 72px;
+    flex-shrink: 0;
+  }
+
+  .toc-module-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+    flex: 1;
+  }
+
+  .toc-leaders-module {
+    flex: 0 0 auto;
+    border-bottom: 1px dotted var(--ghost);
+    width: 40px;
+    margin: 0 8px 4px;
+  }
+
+  .toc-module-page {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--indigo);
+    min-width: 28px;
+    text-align: right;
+    letter-spacing: 0.04em;
+  }
+
+  /* Sub-entries for lessons within module */
+  .toc-sub-list {
+    list-style: none;
+    margin-left: 72px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 4px;
+  }
+  .toc-sub-row {
+    display: flex;
+    align-items: baseline;
+  }
+  .toc-sub-title {
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    font-weight: 300;
+    color: var(--slate);
+    flex: 1;
+    line-height: 1.6;
+  }
+  .toc-sub-markers {
+    display: flex;
+    gap: 4px;
+    margin: 0 8px;
+    align-items: center;
+  }
+  .toc-marker {
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    padding: 1px 5px;
+    border-radius: 1px;
+  }
+  .m-sim { color: var(--indigo); border: 1px solid rgba(28,45,66,0.3); }
+  .m-chl { color: var(--lacquer); border: 1px solid rgba(200,42,42,0.3); }
+  .toc-sub-page {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--ghost);
+    min-width: 28px;
+    text-align: right;
+  }
+
+  /* ── Appendices / Series ── */
+  .toc-appendix-header {
+    margin-top: 32px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .toc-appendix-label {
+    font-family: var(--font-sans);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ghost);
+    white-space: nowrap;
+  }
+  .toc-appendix-rule { flex: 1; height: 1px; background: var(--bone); }
+
+  /* ── Series timeline strip ── */
+  .series-strip {
+    margin-top: 28px;
+    border: 1px solid var(--bone);
+    padding: 16px 20px;
+    background: var(--warm);
+  }
+  .series-strip-label {
+    font-family: var(--font-sans);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ghost);
+    margin-bottom: 12px;
+  }
+  .series-strip-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+  }
+  .series-strip-item {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .series-strip-vol {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--ghost);
+    padding: 4px 8px;
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+  }
+  .series-strip-vol.current {
+    color: var(--lacquer);
+    font-weight: 500;
+    background: rgba(200,42,42,0.06);
+    border: 1px solid rgba(200,42,42,0.2);
+    border-radius: 1px;
+  }
+  .series-strip-arrow {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--ghost);
+    padding: 0 2px;
+  }
+  .series-strip-item:last-child .series-strip-arrow { display: none; }
+
+  /* Publisher footer */
+  .publisher-footer {
+    height: 48px;
+    border-top: 0.5px solid var(--ghost);
+    padding: 0 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .pub-mark-name {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ghost);
+  }
+  .page-num { font-family: var(--font-mono); font-size: 11px; font-weight: 400; color: var(--ghost); }
+
+  /* Legend */
+  .toc-legend {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 28px;
+    padding: 10px 14px;
+    background: var(--bone);
+    border-radius: 1px;
+  }
+  .toc-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--slate);
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="running-header">
+    <span>Table of Contents</span>
+    <span>Volume 0 — Before Computers</span>
+  </div>
+
+  <div class="page-body">
+
+    <!-- TOC header -->
+    <h1 class="toc-book-title">Before Computers</h1>
+    <p class="toc-book-subtitle">The Origins of Computation &nbsp;·&nbsp; Volume 0</p>
+    <div class="toc-header-rule"></div>
+    <p class="toc-label">Contents</p>
+
+    <!-- Front matter -->
+    <div class="toc-section">
+      <div class="toc-section-rule"></div>
+
+      <div class="toc-fm-row">
+        <span class="toc-fm-title">Title Page</span>
+        <span class="toc-leaders"></span>
+        <span class="toc-page">i</span>
+      </div>
+      <div class="toc-fm-row">
+        <span class="toc-fm-title">Copyright</span>
+        <span class="toc-leaders"></span>
+        <span class="toc-page">ii</span>
+      </div>
+      <div class="toc-fm-row">
+        <span class="toc-fm-title">Dedication</span>
+        <span class="toc-leaders"></span>
+        <span class="toc-page">iii</span>
+      </div>
+      <div class="toc-fm-row">
+        <span class="toc-fm-title">Preface — Why We Start Here</span>
+        <span class="toc-leaders"></span>
+        <span class="toc-page">v</span>
+      </div>
+      <div class="toc-fm-row">
+        <span class="toc-fm-title">How To Use This Book</span>
+        <span class="toc-leaders"></span>
+        <span class="toc-page">ix</span>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="toc-legend">
+      <div class="toc-legend-item">
+        <span class="toc-marker m-sim">SIM</span>
+        Interactive simulation included
+      </div>
+      <div class="toc-legend-item">
+        <span class="toc-marker m-chl">CHL</span>
+        Challenge problem included
+      </div>
+    </div>
+
+    <!-- Volume header -->
+    <div class="toc-part-header">
+      <span class="toc-part-vol">Level 0</span>
+      <div class="toc-part-rule"></div>
+      <span class="toc-part-title">Before Computers: The Origins of Computation</span>
+    </div>
+
+    <!-- Module 0.1 -->
+    <div class="toc-module">
+      <div class="toc-module-header">
+        <span class="toc-module-num">Module 0.1</span>
+        <span class="toc-module-title">Why Did Humans Need to Compute?</span>
+        <div class="toc-leaders-module"></div>
+        <span class="toc-module-page">3</span>
+      </div>
+      <ul class="toc-sub-list">
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">The 1880 Census Crisis</span>
+          <span class="toc-sub-markers"></span>
+          <span class="toc-sub-page">4</span>
+        </li>
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">Astronomical Tables and Navigation Errors</span>
+          <span class="toc-sub-markers"></span>
+          <span class="toc-sub-page">8</span>
+        </li>
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">Artillery Trajectories in Wartime</span>
+          <span class="toc-sub-markers"></span>
+          <span class="toc-sub-page">12</span>
+        </li>
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">Lesson: Computation is a Necessity Born from Scale</span>
+          <span class="toc-sub-markers"><span class="toc-marker m-sim">SIM</span><span class="toc-marker m-chl">CHL</span></span>
+          <span class="toc-sub-page">16</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Module 0.2 -->
+    <div class="toc-module">
+      <div class="toc-module-header">
+        <span class="toc-module-num">Module 0.2</span>
+        <span class="toc-module-title">Early Mechanical Computation</span>
+        <div class="toc-leaders-module"></div>
+        <span class="toc-module-page">21</span>
+      </div>
+      <ul class="toc-sub-list">
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">The Abacus and Counting Boards</span>
+          <span class="toc-sub-markers"></span>
+          <span class="toc-sub-page">22</span>
+        </li>
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">Napier's Bones, 1617</span>
+          <span class="toc-sub-markers"></span>
+          <span class="toc-sub-page">25</span>
+        </li>
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">Pascal's Pascaline, 1642 — The First Mechanical Calculator</span>
+          <span class="toc-sub-markers"></span>
+          <span class="toc-sub-page">29</span>
+        </li>
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">Leibniz's Stepped Reckoner</span>
+          <span class="toc-sub-markers"></span>
+          <span class="toc-sub-page">34</span>
+        </li>
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">Simulation: Interactive Virtual Pascaline</span>
+          <span class="toc-sub-markers"><span class="toc-marker m-sim">SIM</span><span class="toc-marker m-chl">CHL</span></span>
+          <span class="toc-sub-page">38</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Module 0.3 -->
+    <div class="toc-module">
+      <div class="toc-module-header">
+        <span class="toc-module-num">Module 0.3</span>
+        <span class="toc-module-title">The Loom That Taught Computers</span>
+        <div class="toc-leaders-module"></div>
+        <span class="toc-module-page">43</span>
+      </div>
+      <ul class="toc-sub-list">
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">Joseph Jacquard's Loom, 1804</span>
+          <span class="toc-sub-markers"></span>
+          <span class="toc-sub-page">44</span>
+        </li>
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">Holes in Cards as Stored Instructions</span>
+          <span class="toc-sub-markers"></span>
+          <span class="toc-sub-page">48</span>
+        </li>
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">How Babbage Saw the Connection</span>
+          <span class="toc-sub-markers"></span>
+          <span class="toc-sub-page">52</span>
+        </li>
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">Simulation: Punch Card Pattern Designer</span>
+          <span class="toc-sub-markers"><span class="toc-marker m-sim">SIM</span><span class="toc-marker m-chl">CHL</span></span>
+          <span class="toc-sub-page">56</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Module 0.4 -->
+    <div class="toc-module">
+      <div class="toc-module-header">
+        <span class="toc-module-num">Module 0.4</span>
+        <span class="toc-module-title">Babbage and Ada: The First Programmers</span>
+        <div class="toc-leaders-module"></div>
+        <span class="toc-module-page">61</span>
+      </div>
+      <ul class="toc-sub-list">
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">The Difference Engine and the Analytical Engine</span>
+          <span class="toc-sub-markers"></span>
+          <span class="toc-sub-page">62</span>
+        </li>
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">Ada Lovelace's Note G — The First Algorithm</span>
+          <span class="toc-sub-markers"></span>
+          <span class="toc-sub-page">68</span>
+        </li>
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">Why the Engine Was Never Finished</span>
+          <span class="toc-sub-markers"></span>
+          <span class="toc-sub-page">73</span>
+        </li>
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">Simulation: Difference Engine Stepping Through a Polynomial</span>
+          <span class="toc-sub-markers"><span class="toc-marker m-sim">SIM</span><span class="toc-marker m-chl">CHL</span></span>
+          <span class="toc-sub-page">77</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Module 0.5 -->
+    <div class="toc-module">
+      <div class="toc-module-header">
+        <span class="toc-module-num">Module 0.5</span>
+        <span class="toc-module-title">Hollerith and the Punch Card Era</span>
+        <div class="toc-leaders-module"></div>
+        <span class="toc-module-page">83</span>
+      </div>
+      <ul class="toc-sub-list">
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">Hollerith's Tabulating Machine, 1890</span>
+          <span class="toc-sub-markers"></span>
+          <span class="toc-sub-page">84</span>
+        </li>
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">How Punch Cards Encode Data</span>
+          <span class="toc-sub-markers"></span>
+          <span class="toc-sub-page">88</span>
+        </li>
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">IBM's Birth from the Tabulating Machine Company</span>
+          <span class="toc-sub-markers"></span>
+          <span class="toc-sub-page">93</span>
+        </li>
+        <li class="toc-sub-row">
+          <span class="toc-sub-title">Simulation: Interactive Punch Card Encoder / Decoder</span>
+          <span class="toc-sub-markers"><span class="toc-marker m-sim">SIM</span><span class="toc-marker m-chl">CHL</span></span>
+          <span class="toc-sub-page">97</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Appendices -->
+    <div class="toc-appendix-header">
+      <span class="toc-appendix-label">Back Matter</span>
+      <div class="toc-appendix-rule"></div>
+    </div>
+
+    <div class="toc-fm-row">
+      <span class="toc-fm-title">Glossary of Terms</span>
+      <span class="toc-leaders"></span>
+      <span class="toc-page">103</span>
+    </div>
+    <div class="toc-fm-row">
+      <span class="toc-fm-title">Further Reading</span>
+      <span class="toc-leaders"></span>
+      <span class="toc-page">108</span>
+    </div>
+    <div class="toc-fm-row">
+      <span class="toc-fm-title">Simulation Reference Guide</span>
+      <span class="toc-leaders"></span>
+      <span class="toc-page">111</span>
+    </div>
+    <div class="toc-fm-row">
+      <span class="toc-fm-title">Challenge Solutions</span>
+      <span class="toc-leaders"></span>
+      <span class="toc-page">115</span>
+    </div>
+    <div class="toc-fm-row">
+      <span class="toc-fm-title">Index</span>
+      <span class="toc-leaders"></span>
+      <span class="toc-page">121</span>
+    </div>
+
+    <!-- Series navigation strip -->
+    <div class="series-strip">
+      <p class="series-strip-label">Complete Series — 13 Volumes</p>
+      <ul class="series-strip-list">
+        <li class="series-strip-item">
+          <span class="series-strip-vol current">Vol.0</span>
+          <span class="series-strip-arrow">→</span>
+        </li>
+        <li class="series-strip-item">
+          <span class="series-strip-vol">Vol.1</span>
+          <span class="series-strip-arrow">→</span>
+        </li>
+        <li class="series-strip-item">
+          <span class="series-strip-vol">Vol.2</span>
+          <span class="series-strip-arrow">→</span>
+        </li>
+        <li class="series-strip-item">
+          <span class="series-strip-vol">Vol.3</span>
+          <span class="series-strip-arrow">→</span>
+        </li>
+        <li class="series-strip-item">
+          <span class="series-strip-vol">Vol.4</span>
+          <span class="series-strip-arrow">→</span>
+        </li>
+        <li class="series-strip-item">
+          <span class="series-strip-vol">Vol.5</span>
+          <span class="series-strip-arrow">→</span>
+        </li>
+        <li class="series-strip-item">
+          <span class="series-strip-vol">Vol.6</span>
+          <span class="series-strip-arrow">→</span>
+        </li>
+        <li class="series-strip-item">
+          <span class="series-strip-vol">Vol.7</span>
+          <span class="series-strip-arrow">→</span>
+        </li>
+        <li class="series-strip-item">
+          <span class="series-strip-vol">Vol.8</span>
+          <span class="series-strip-arrow">→</span>
+        </li>
+        <li class="series-strip-item">
+          <span class="series-strip-vol">Vol.9</span>
+          <span class="series-strip-arrow">→</span>
+        </li>
+        <li class="series-strip-item">
+          <span class="series-strip-vol">Vol.10</span>
+          <span class="series-strip-arrow">→</span>
+        </li>
+        <li class="series-strip-item">
+          <span class="series-strip-vol">Vol.11</span>
+          <span class="series-strip-arrow">→</span>
+        </li>
+        <li class="series-strip-item">
+          <span class="series-strip-vol">Vol.12</span>
+          <span class="series-strip-arrow"></span>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="publisher-footer">
+    <span class="pub-mark-name">AoPS Press</span>
+    <span class="page-num">xi</span>
+  </div>
+
+</div>
+
+</body>
+</html>

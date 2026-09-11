@@ -1,0 +1,297 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 4.4 — Memory Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes zen-fade-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fault-flash{0%{background:rgba(200,42,42,0.3)}100%{background:transparent}}
+@keyframes load-flash{0%{background:rgba(139,105,20,0.3)}100%{background:transparent}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:zen-fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast),color var(--t-fast)}
+.zen-btn:hover{background:#1C1C1C;color:#FDFDFD}
+.zen-btn.primary{background:#1C1C1C;color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red);background:transparent}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.zen-btn.success{border-color:var(--accent-gold);color:var(--accent-gold);background:transparent}.zen-btn.success:hover{background:var(--accent-gold);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.zen-pane{background:var(--bg-washi);padding:22px}.zen-pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+/* Page grid */
+.page-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-bottom:12px}
+.pg{padding:8px 4px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);text-align:center;cursor:pointer;transition:all var(--t-fast)}
+.pg:hover{border-color:var(--accent-indigo)}
+.pg.present{background:rgba(28,45,66,0.08);border-color:var(--accent-indigo)}
+.pg.fault-anim{animation:fault-flash .4s var(--ease-out)}
+.pg.load-anim{animation:load-flash .5s var(--ease-out)}
+.pg.evict{border-color:var(--accent-red)!important;background:rgba(200,42,42,0.07)!important}
+.pg-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)}
+.pg-frame{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-sumi);margin-top:2px}
+.pg-flag{font-size:8px;color:var(--text-ghost);margin-top:2px}
+/* Frame grid */
+.frame-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-bottom:12px}
+.frame{padding:8px 4px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);text-align:center;transition:all var(--t-med)}
+.frame.used{background:rgba(28,45,66,0.08);border-color:var(--accent-indigo)}
+.frame-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-muted)}
+.frame-val{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-indigo);margin-top:3px}
+/* Stat boxes */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.stat-box{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:300;line-height:1;margin-bottom:3px;display:block}
+.sl{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)}
+/* Address strips */
+.addr-strip{display:flex;gap:1px;height:34px;margin-bottom:8px}
+.ap{display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;border-radius:1px}
+/* Address map segments */
+.seg-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:4px;cursor:pointer;transition:all var(--t-fast)}
+.seg-row:hover{border-color:var(--accent-indigo)}
+.seg-row.selected{border-color:var(--accent-gold);background:rgba(139,105,20,0.06)}
+.seg-addr{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);width:160px;flex-shrink:0}
+.seg-name{font-size:12px;color:var(--text-sumi);flex:1}
+.seg-perm{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:2px 6px;border-radius:1px;flex-shrink:0}
+.seg-perm.rx{background:rgba(28,45,66,0.1);color:var(--accent-indigo)}
+.seg-perm.rw{background:rgba(139,105,20,0.1);color:var(--accent-gold)}
+.seg-perm.k{background:rgba(200,42,42,0.1);color:var(--accent-red)}
+/* Log */
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:120px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs)}
+.lhit{color:var(--accent-gold)}.lfault{color:var(--accent-red)}.lload{color:var(--accent-indigo)}.linfo{color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 4.4 — Memory Management</h1>
+  <p class="zen-subtitle">Address Translator · Page Fault Handler · Process Memory Map</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('trans')">Address Translator</div>
+  <div class="zen-tab" onclick="switchTab('fault')">Page Fault Handler</div>
+  <div class="zen-tab" onclick="switchTab('map')">Process Memory Map</div>
+</div>
+
+<!-- ADDRESS TRANSLATOR -->
+<div id="panel-trans" class="panel active">
+  <div class="zen-intro"><strong>2-level page table walk (32-bit).</strong> Virtual address = [10-bit dir | 10-bit page | 12-bit offset]. Enter an address to see the full translation. P=0 triggers a page fault.</div>
+  <div class="bento2">
+    <div class="zen-pane">
+      <div class="pane-title gold">Virtual Address Input</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:13px">0x</span>
+        <input id="vaddr" type="text" value="00401B8C" maxlength="8" style="font-family:'JetBrains Mono',monospace;font-size:14px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:7px 10px;color:var(--text-sumi);width:130px">
+        <button class="zen-btn primary" onclick="doTranslate()">Translate</button>
+      </div>
+
+      <div class="pane-title indigo" style="margin-bottom:6px">Address bits</div>
+      <div class="addr-strip" id="addr-strip">
+        <div class="ap" style="flex:2;background:rgba(200,42,42,0.15);color:var(--accent-red)">Dir: --</div>
+        <div class="ap" style="flex:2;background:rgba(28,45,66,0.15);color:var(--accent-indigo)">Page: --</div>
+        <div class="ap" style="flex:3;background:rgba(139,105,20,0.15);color:var(--accent-gold)">Offset: --</div>
+      </div>
+
+      <div class="btn-row" style="margin-top:8px">
+        <button class="zen-btn success" onclick="setEx('00401B8C')">Present example</button>
+        <button class="zen-btn success" onclick="setEx('007FF000')">Another address</button>
+        <button class="zen-btn danger" onclick="setEx('00C00100')">Not present → fault</button>
+      </div>
+    </div>
+    <div class="zen-pane warm">
+      <div class="pane-title indigo">Page Table Walk</div>
+      <div id="walk-result" style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2.2;color:var(--text-muted);min-height:110px">Enter an address and press Translate.</div>
+      <div class="op-log" id="trans-log" style="margin-top:10px"><div class="linfo">&gt; Two memory accesses per translation (for 2-level PT). TLB caches recent translations at 1-cycle cost.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE FAULT -->
+<div id="panel-fault" class="panel">
+  <div class="zen-intro"><strong>LRU page replacement.</strong> 4 physical frames, 8 virtual pages. Access pages by clicking buttons. When all frames are full, the least-recently-used page is evicted to make room.</div>
+  <div class="bento2">
+    <div class="zen-pane">
+      <div class="pane-title gold">Virtual Pages (click to access)</div>
+      <div class="page-grid" id="pg-grid"></div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px" id="pg-btns"></div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn" onclick="runSeq([0,1,2,3,4,1,0,5,1,0])">Run sequence: 0,1,2,3,4,1,0,5,1,0</button>
+        <button class="zen-btn danger" onclick="resetFault()">↺ Reset</button>
+      </div>
+    </div>
+    <div class="zen-pane warm">
+      <div class="pane-title indigo">Physical Frames</div>
+      <div class="frame-grid" id="fr-grid"></div>
+      <div class="stat-row">
+        <div class="stat-box"><span class="sv" id="pf-hits" style="color:var(--accent-gold)">0</span><span class="sl">Hits</span></div>
+        <div class="stat-box"><span class="sv" id="pf-miss" style="color:var(--accent-red)">0</span><span class="sl">Faults</span></div>
+        <div class="stat-box"><span class="sv" id="pf-rate" style="color:var(--accent-indigo)">0%</span><span class="sl">Hit rate</span></div>
+      </div>
+      <div class="op-log" id="fault-log"><div class="linfo">&gt; Cold start: all pages absent. Each access is a fault until loaded.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROCESS MAP -->
+<div id="panel-map" class="panel">
+  <div class="zen-intro"><strong>Process virtual address space.</strong> Each memory region has specific permissions enforced by the MMU. Click a segment to see why its permissions are set the way they are.</div>
+  <div class="bento2">
+    <div class="zen-pane">
+      <div class="pane-title gold">Memory Map — 64-bit Linux Process</div>
+      <div id="map-segs">
+        <div class="seg-row" onclick="selectSeg(0)"><span class="seg-addr">0x7FFE0000–0x7FFFFFFF</span><span class="seg-name">Stack (grows ↓)</span><span class="seg-perm rw">RW</span></div>
+        <div class="seg-row" onclick="selectSeg(1)"><span class="seg-addr">0x00700000–0x0079FFFF</span><span class="seg-name">Heap (malloc)</span><span class="seg-perm rw">RW</span></div>
+        <div class="seg-row" onclick="selectSeg(2)"><span class="seg-addr">0x7F000000–0x7F1FFFFF</span><span class="seg-name">libc.so (shared lib)</span><span class="seg-perm rx">RX</span></div>
+        <div class="seg-row" onclick="selectSeg(3)"><span class="seg-addr">0x00402000–0x00402FFF</span><span class="seg-name">.bss (uninit globals)</span><span class="seg-perm rw">RW</span></div>
+        <div class="seg-row" onclick="selectSeg(4)"><span class="seg-addr">0x00401000–0x00401FFF</span><span class="seg-name">.data (init globals)</span><span class="seg-perm rw">RW</span></div>
+        <div class="seg-row" onclick="selectSeg(5)"><span class="seg-addr">0x00400000–0x00400FFF</span><span class="seg-name">.text (code)</span><span class="seg-perm rx">RX</span></div>
+        <div class="seg-row" onclick="selectSeg(6)"><span class="seg-addr">0xFFFF800000000000+</span><span class="seg-name">Kernel space</span><span class="seg-perm k">KERNEL</span></div>
+      </div>
+    </div>
+    <div class="zen-pane warm">
+      <div class="pane-title indigo" id="seg-title">Select a segment</div>
+      <div id="seg-detail" style="font-size:13px;color:var(--text-muted);line-height:1.85">Click any memory region on the left to see its purpose and why its permissions are set that way.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== ADDRESS TRANSLATOR =====
+const PT = {'1.1025':{f:0x100},'0.1024':{f:0x080},'3.2047':{f:0x200},'0.0':{f:0x010},'1.0':{f:0x011}};
+function setEx(h){document.getElementById('vaddr').value=h;doTranslate();}
+function doTranslate(){
+  const raw=parseInt(document.getElementById('vaddr').value,16);
+  if(isNaN(raw)) return;
+  const dir=(raw>>>22)&0x3FF, page=(raw>>>12)&0x3FF, off=raw&0xFFF;
+  document.getElementById('addr-strip').innerHTML=
+    `<div class="ap" style="flex:2;background:rgba(200,42,42,0.15);color:var(--accent-red)">Dir: ${dir}</div>
+     <div class="ap" style="flex:2;background:rgba(28,45,66,0.15);color:var(--accent-indigo)">Page: ${page}</div>
+     <div class="ap" style="flex:3;background:rgba(139,105,20,0.15);color:var(--accent-gold)">Offset: 0x${off.toString(16).padStart(3,'0').toUpperCase()}</div>`;
+  const key=`${dir%4}.${page%3}`;
+  const entry=PT[key];
+  const present=!!(entry&&(dir<3));
+  const frame=entry?entry.f:(dir*7+page*3+42)&0x1FF;
+  const phys=frame*4096+off;
+  if(!present){
+    document.getElementById('walk-result').innerHTML=
+      `<div style="color:var(--accent-indigo)">1: Read PD[${dir}] → PT base at 0x${(dir*4096+0x2000).toString(16).toUpperCase()}</div>
+       <div style="color:var(--accent-indigo)">2: Read PT[${page}] → <strong style="color:var(--accent-red)">Present=0</strong></div>
+       <div style="color:var(--accent-red);margin-top:8px">PAGE FAULT raised.<br>Kernel handler: load page from swap → set P=1 → resume.</div>`;
+    tLog(`VA 0x${raw.toString(16).padStart(8,'0').toUpperCase()} → PAGE FAULT — kernel handles`,'lfault');
+  }else{
+    document.getElementById('walk-result').innerHTML=
+      `<div style="color:var(--accent-indigo)">1: Read PD[${dir}] → PT at 0x${(dir*4096+0x2000).toString(16).toUpperCase()}</div>
+       <div style="color:var(--accent-indigo)">2: Read PT[${page}] → Frame 0x${frame.toString(16).toUpperCase()}, Present=1</div>
+       <div style="color:var(--accent-gold);margin-top:8px">Physical = frame 0x${frame.toString(16).toUpperCase()} × 4096 + 0x${off.toString(16).padStart(3,'0').toUpperCase()}</div>
+       <div><strong style="color:var(--text-sumi)">= 0x${phys.toString(16).padStart(8,'0').toUpperCase()}</strong></div>`;
+    tLog(`VA 0x${raw.toString(16).padStart(8,'0').toUpperCase()} → PA 0x${phys.toString(16).padStart(8,'0').toUpperCase()}`,'lhit');
+  }
+}
+function tLog(m,c='linfo'){const el=document.getElementById('trans-log');const d=document.createElement('div');d.className=c;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+
+// ===== PAGE FAULT / LRU =====
+let frames,ptes,hits,misses,lru,seqTimer;
+function resetFault(){
+  frames=new Array(4).fill(null);
+  ptes=Array.from({length:8},(_,i)=>({vp:i,frame:null,present:false}));
+  hits=0;misses=0;lru=[];
+  document.getElementById('pf-hits').textContent=0;
+  document.getElementById('pf-miss').textContent=0;
+  document.getElementById('pf-rate').textContent='0%';
+  document.getElementById('fault-log').innerHTML='<div class="linfo">&gt; Reset. All pages absent.</div>';
+  renderPG();renderFR();
+}
+function renderPG(){
+  document.getElementById('pg-grid').innerHTML=ptes.map(p=>
+    `<div class="pg ${p.present?'present':''}" id="pg${p.vp}" onclick="accessPage(${p.vp})">
+       <div class="pg-label">VP${p.vp}</div>
+       <div class="pg-frame">${p.present?'F'+p.frame:'—'}</div>
+       <div class="pg-flag">${p.present?'P=1':'P=0'}</div>
+     </div>`).join('');
+  document.getElementById('pg-btns').innerHTML=ptes.map(p=>
+    `<button class="zen-btn" style="padding:5px 10px;font-size:11px" onclick="accessPage(${p.vp})">P${p.vp}</button>`).join('');
+}
+function renderFR(){
+  document.getElementById('fr-grid').innerHTML=frames.map((vp,i)=>
+    `<div class="frame ${vp!==null?'used':''}">
+       <div class="frame-label">Frame ${i}</div>
+       <div class="frame-val">${vp!==null?'VP'+vp:'free'}</div>
+     </div>`).join('');
+}
+function pfLog(m,c='linfo'){const el=document.getElementById('fault-log');const d=document.createElement('div');d.className=c;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function updateStats(){
+  const tot=hits+misses;
+  document.getElementById('pf-hits').textContent=hits;
+  document.getElementById('pf-miss').textContent=misses;
+  document.getElementById('pf-rate').textContent=tot?Math.round(hits/tot*100)+'%':'0%';
+}
+function accessPage(vp){
+  lru=lru.filter(x=>x!==vp);lru.push(vp);
+  const pte=ptes[vp];
+  if(pte.present){
+    hits++;
+    pfLog(`VP${vp} → HIT (frame ${pte.frame})`,'lhit');
+    const el=document.getElementById('pg'+vp);if(el){el.classList.add('load-anim');setTimeout(()=>el.classList.remove('load-anim'),400);}
+  }else{
+    misses++;
+    const free=frames.indexOf(null);
+    if(free!==-1){
+      frames[free]=vp;pte.frame=free;pte.present=true;
+      pfLog(`VP${vp} → FAULT → loaded into frame ${free}`,'lload');
+    }else{
+      const evVP=lru.slice(0,-1).reverse().find(x=>ptes[x].present);
+      if(evVP===undefined)return;
+      const evF=ptes[evVP].frame;
+      pfLog(`VP${vp} → FAULT → evict VP${evVP} (LRU) from frame ${evF}`,'lfault');
+      const evEl=document.getElementById('pg'+evVP);
+      if(evEl){evEl.classList.add('evict');setTimeout(()=>evEl.classList.remove('evict'),500);}
+      ptes[evVP].present=false;ptes[evVP].frame=null;
+      frames[evF]=vp;pte.frame=evF;pte.present=true;
+    }
+  }
+  updateStats();renderPG();renderFR();
+}
+function runSeq(seq){
+  clearTimeout(seqTimer);let i=0;
+  function next(){if(i>=seq.length)return;accessPage(seq[i++]);seqTimer=setTimeout(next,350);}
+  next();
+}
+resetFault();
+
+// ===== SEGMENT DETAIL =====
+const SEG_INFO=[
+  {title:'Stack',detail:'Grows downward from high addresses. Stores function call frames, local variables, return addresses. RW permissions (no execute — NX bit prevents stack code injection). Guarded by a page with no permissions at the bottom — accessing it raises SIGSEGV (stack overflow detection).'},
+  {title:'Heap (malloc)',detail:'Grows upward via brk()/mmap() syscalls. Stores dynamically allocated data. RW (no execute). malloc() manages a free list within this region — the kernel only sees page-level granularity. Freed memory is returned to malloc\'s free list, not immediately to the OS.'},
+  {title:'libc.so — Shared Library',detail:'The C standard library, shared by all processes. Mapped RX (read + execute, no write). The physical pages are shared across every process that uses libc — only one copy in RAM regardless of how many processes load it. Write protection prevents accidental (or malicious) modification of shared code.'},
+  {title:'.bss — Uninitialised Globals',detail:'Zero-initialised global and static variables. The OS provides zero-filled pages on demand (demand paging with CoW zero pages). RW (no execute). The "BSS" name is historical: "Block Started by Symbol" from early IBM assembly.'},
+  {title:'.data — Initialised Globals',detail:'Global variables with explicit initial values (e.g., int x = 5). Copied from the executable file into RAM at load time. RW. Contains values the programmer set explicitly — unlike .bss which is always zero.'},
+  {title:'.text — Code',detail:'The program\'s machine code instructions. Mapped RX — readable (CPU must fetch instructions) and executable, but NOT writable. Making code read-only prevents self-modifying code bugs and makes it harder to inject malicious instructions. Shared between all instances of the same program (CoW).'},
+  {title:'Kernel Space',detail:'The upper half of the address space is reserved for the kernel. User-space code cannot access any address here — the MMU marks all kernel PTEs with User=0. Attempting to read kernel memory from ring 3 raises a page fault → SIGSEGV. The kernel is mapped into every process\'s address space for efficient syscall entry (no full address space switch on syscall).'},
+];
+function selectSeg(i){
+  document.querySelectorAll('.seg-row').forEach((r,j)=>r.classList.toggle('selected',j===i));
+  document.getElementById('seg-title').textContent=SEG_INFO[i].title;
+  document.getElementById('seg-detail').textContent=SEG_INFO[i].detail;
+}
+
+function switchTab(id){
+  ['trans','fault','map'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);p.style.display=t===id?'block':'none';p.classList.toggle('active',t===id);
+  });
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+</script>
+</body>
+</html>

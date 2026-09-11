@@ -1,0 +1,441 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 10.2 — How Browsers Render Pages</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pipeline-pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out) forwards}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast),color var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}.zen-btn.primary:hover{background:#333}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:760px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border-paper)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:110px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs);margin-top:8px}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+/* Pipeline stages */
+.pipeline{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.stage{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border-paper);background:var(--bg-canvas);border-radius:var(--radius-xs);transition:all .3s var(--ease-out)}
+.stage.active{border-color:var(--accent-red);background:rgba(200,42,42,0.06)}
+.stage.done{border-color:var(--accent-gold);background:rgba(139,105,20,0.05)}
+.stage.blocked{border-color:var(--accent-indigo);background:rgba(28,45,66,0.06)}
+.stage-dot{width:10px;height:10px;border-radius:50%;background:var(--border-paper);flex-shrink:0;transition:background .3s}
+.stage.active .stage-dot{background:var(--accent-red);animation:pipeline-pulse 1s infinite}
+.stage.done .stage-dot{background:var(--accent-gold)}
+.stage.blocked .stage-dot{background:var(--accent-indigo)}
+.stage-name{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:var(--text-muted);min-width:120px;transition:color .3s}
+.stage.active .stage-name{color:var(--accent-red)}
+.stage.done .stage-name{color:var(--accent-gold)}
+.stage.blocked .stage-name{color:var(--accent-indigo)}
+.stage-desc{font-size:11px;color:var(--text-ghost);flex:1}
+.stage-time{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)}
+/* Render tree */
+.render-node{margin:2px 0 2px 16px;padding:4px 10px;border-left:1px solid var(--border-paper);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-body);border-radius:0 var(--radius-xs) var(--radius-xs) 0;transition:background .2s}
+.render-node:hover{background:rgba(200,42,42,0.05)}
+.rn-tag{color:var(--accent-indigo);font-weight:500}
+.rn-prop{color:var(--accent-gold);font-size:10px}
+.rn-hidden{opacity:.35;text-decoration:line-through}
+/* Repaint demo */
+.paint-box{width:100%;height:180px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);background:#fff;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.paint-elem{width:80px;height:80px;background:#1C2D42;border-radius:2px;position:absolute;transition:all .5s var(--ease-out);cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff;font-weight:500}
+.paint-overlay{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;opacity:0;transition:opacity .3s}
+.paint-overlay.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 10.2 — How Browsers Render Pages</h1>
+  <p class="zen-subtitle">Rendering Pipeline · Render Tree · Reflow &amp; Repaint</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('pipeline')">Rendering Pipeline</div>
+  <div class="zen-tab" onclick="switchTab('rendertree')">Render Tree</div>
+  <div class="zen-tab" onclick="switchTab('repaint')">Reflow &amp; Repaint</div>
+</div>
+
+<!-- TAB 1: RENDERING PIPELINE -->
+<div id="panel-pipeline" class="panel active">
+  <div class="zen-intro">
+    <strong>From bytes to pixels — the critical rendering path.</strong> When a browser receives HTML, it runs through a deterministic pipeline: parse HTML → build DOM → parse CSS → build CSSOM → combine into Render Tree → Layout → Paint → Composite. Each stage must finish before the next can begin.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Simulate page load</div>
+      <div style="display:grid;gap:8px;margin-bottom:12px">
+        <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">
+          HTML size
+          <span id="lbl-html" style="font-family:'JetBrains Mono',monospace">50 KB</span>
+        </label>
+        <input type="range" id="sl-html" min="1" max="200" value="50" oninput="updateLabels()" style="-webkit-appearance:none;height:1px;background:var(--border-light);cursor:pointer;width:100%;margin:8px 0">
+        <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">
+          CSS (render-blocking)
+          <span id="lbl-css" style="font-family:'JetBrains Mono',monospace">2 files</span>
+        </label>
+        <input type="range" id="sl-css" min="0" max="5" value="2" oninput="updateLabels()" style="-webkit-appearance:none;height:1px;background:var(--border-light);cursor:pointer;width:100%;margin:8px 0">
+        <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">
+          Blocking JS
+          <span id="lbl-js" style="font-family:'JetBrains Mono',monospace">1 script</span>
+        </label>
+        <input type="range" id="sl-js" min="0" max="5" value="1" oninput="updateLabels()" style="-webkit-appearance:none;height:1px;background:var(--border-light);cursor:pointer;width:100%;margin:8px 0">
+      </div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="runPipeline()">▶ Load Page</button>
+        <button class="zen-btn danger" onclick="resetPipeline()">↺ Reset</button>
+      </div>
+      <div class="op-log" id="pipe-log"><div class="linfo">> Adjust settings and press Load Page to simulate the critical rendering path.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Critical Rendering Path</div>
+      <div class="pipeline" id="pipeline-stages"></div>
+      <div style="background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:10px;margin-top:4px">
+        <div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:6px">Total time to first paint</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:300;color:var(--accent-red)" id="pipe-total">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 2: RENDER TREE -->
+<div id="panel-rendertree" class="panel">
+  <div class="zen-intro">
+    <strong>The Render Tree = DOM ∩ CSSOM.</strong> The browser combines the DOM and CSSOM to produce a render tree containing only visible nodes with computed styles. Nodes with <code>display:none</code> are excluded entirely. <code>visibility:hidden</code> nodes stay in the tree but paint nothing.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">HTML + CSS input</div>
+      <textarea id="rt-html" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg-canvas);border:1px solid var(--border-paper);color:var(--text-sumi);padding:10px;resize:vertical;border-radius:var(--radius-xs);line-height:1.8;min-height:110px" rows="7">&lt;body&gt;
+  &lt;h1&gt;Title&lt;/h1&gt;
+  &lt;p class="intro"&gt;Visible text&lt;/p&gt;
+  &lt;span style="display:none"&gt;Hidden&lt;/span&gt;
+  &lt;div class="box"&gt;
+    &lt;img src="photo.jpg"&gt;
+    &lt;p&gt;Caption&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/body&gt;</textarea>
+      <textarea id="rt-css" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg-canvas);border:1px solid var(--border-paper);color:var(--text-sumi);padding:10px;resize:vertical;border-radius:var(--radius-xs);line-height:1.8;min-height:60px;margin-top:6px" rows="4">h1 { color: #1C2D42; font-size: 24px; }
+.intro { color: #555; }
+.box { display: flex; gap: 8px; }</textarea>
+      <div class="btn-row">
+        <button class="zen-btn primary" onclick="buildRenderTree()">▶ Build Render Tree</button>
+      </div>
+      <div class="op-log" id="rt-log"><div class="linfo">> Build the render tree to see which nodes are included and their computed styles.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Render Tree (visible nodes only)</div>
+      <div id="rt-output" style="font-size:12px;min-height:80px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3: REFLOW & REPAINT -->
+<div id="panel-repaint" class="panel">
+  <div class="zen-intro">
+    <strong>Layout (reflow) recalculates geometry. Paint redraws pixels. Composition assembles layers.</strong> Changing <code>width</code> triggers reflow + repaint. Changing <code>color</code> triggers repaint only. Changing <code>transform</code> or <code>opacity</code> only triggers composition — the GPU handles it, no CPU layout recalculation needed.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Trigger different operations</div>
+      <div style="display:grid;gap:8px;margin-bottom:14px">
+        <button class="zen-btn" onclick="triggerOp('reflow')" style="text-align:left;padding:10px 14px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-red)">Reflow + Repaint</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">width / height / margin / padding / font-size</div>
+        </button>
+        <button class="zen-btn" onclick="triggerOp('repaint')" style="text-align:left;padding:10px 14px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-gold)">Repaint only</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">color / background / border-color / box-shadow</div>
+        </button>
+        <button class="zen-btn" onclick="triggerOp('composite')" style="text-align:left;padding:10px 14px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-indigo)">Composite only (GPU)</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">transform / opacity — no layout recalc</div>
+        </button>
+      </div>
+      <button class="zen-btn danger" onclick="resetRepaint()">↺ Reset</button>
+      <div class="op-log" id="rp-log" style="margin-top:8px"><div class="linfo">> Click an operation to see which rendering stages are triggered.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Rendering stages triggered</div>
+      <div id="rp-stages" style="margin-bottom:12px"></div>
+      <div class="paint-box" id="paint-box">
+        <div class="paint-elem" id="paint-elem">Element</div>
+        <div class="paint-overlay" id="paint-overlay-reflow" style="background:rgba(200,42,42,0.08);border:2px dashed var(--accent-red)"></div>
+        <div class="paint-overlay" id="paint-overlay-repaint" style="background:rgba(139,105,20,0.08);border:2px dashed var(--accent-gold)"></div>
+        <div class="paint-overlay" id="paint-overlay-composite" style="background:rgba(28,45,66,0.08);border:2px dashed var(--accent-indigo)"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== PIPELINE =====
+const STAGES = [
+  { id:'bytes',    name:'Bytes → Characters', desc:'Network bytes decoded to characters', base:5 },
+  { id:'tokens',   name:'Tokenising',          desc:'Characters split into HTML tokens', base:8 },
+  { id:'dom',      name:'DOM Construction',    desc:'Tokens assembled into DOM nodes', base:12 },
+  { id:'cssblock', name:'CSS Download',         desc:'Parser blocks on render-blocking CSS', base:0 },
+  { id:'cssom',    name:'CSSOM Construction',   desc:'CSS parsed into CSSOM', base:10 },
+  { id:'jsblock',  name:'JS Execution',         desc:'Parser blocks on synchronous scripts', base:0 },
+  { id:'rtree',    name:'Render Tree',          desc:'DOM + CSSOM merged, hidden nodes removed', base:6 },
+  { id:'layout',   name:'Layout (Reflow)',      desc:'Geometry of every visible element computed', base:15 },
+  { id:'paint',    name:'Paint',                desc:'Pixels drawn into layers', base:20 },
+  { id:'composite',name:'Composite',            desc:'GPU assembles layers into final frame', base:8 },
+];
+
+function updateLabels() {
+  document.getElementById('lbl-html').textContent = document.getElementById('sl-html').value + ' KB';
+  document.getElementById('lbl-css').textContent  = document.getElementById('sl-css').value  + ' files';
+  document.getElementById('lbl-js').textContent   = document.getElementById('sl-js').value   + ' script' + (document.getElementById('sl-js').value!=='1'?'s':'');
+}
+
+function renderPipelineUI(stages) {
+  document.getElementById('pipeline-stages').innerHTML = stages.map(s => `
+    <div class="stage" id="stage-${s.id}">
+      <div class="stage-dot"></div>
+      <span class="stage-name">${s.name}</span>
+      <span class="stage-desc">${s.desc}</span>
+      <span class="stage-time" id="time-${s.id}"></span>
+    </div>`).join('');
+}
+
+function pipeLog(m, cls='lmuted') {
+  const el = document.getElementById('pipe-log');
+  const d = document.createElement('div'); d.className = cls; d.textContent = '> ' + m;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+
+async function runPipeline() {
+  const htmlKB = +document.getElementById('sl-html').value;
+  const cssFiles = +document.getElementById('sl-css').value;
+  const jsScripts = +document.getElementById('sl-js').value;
+
+  const times = {
+    bytes:     Math.round(htmlKB * 0.4),
+    tokens:    Math.round(htmlKB * 0.8),
+    dom:       Math.round(htmlKB * 1.2),
+    cssblock:  cssFiles * 60,
+    cssom:     cssFiles * 15 + 10,
+    jsblock:   jsScripts * 80,
+    rtree:     8,
+    layout:    Math.round(htmlKB * 0.3 + 15),
+    paint:     Math.round(htmlKB * 0.5 + 20),
+    composite: 8,
+  };
+
+  renderPipelineUI(STAGES);
+  document.getElementById('pipe-total').textContent = '—';
+  let total = 0;
+
+  for (const s of STAGES) {
+    const el = document.getElementById('stage-'+s.id);
+    const tel = document.getElementById('time-'+s.id);
+    el.className = 'stage active';
+    const t = times[s.id];
+
+    if ((s.id === 'cssblock' && cssFiles === 0) || (s.id === 'jsblock' && jsScripts === 0)) {
+      el.className = 'stage done';
+      tel.textContent = 'skipped';
+      pipeLog(`${s.name}: skipped (none present)`, 'lmuted');
+      continue;
+    }
+
+    if (s.id === 'cssblock' || s.id === 'jsblock') {
+      el.className = 'stage blocked';
+      tel.textContent = t + 'ms ⚠';
+      pipeLog(`${s.name}: ${t}ms — PARSER BLOCKED`, 'lerr');
+    } else {
+      tel.textContent = t + 'ms';
+      pipeLog(`${s.name}: ${t}ms`, s.id === 'composite' ? 'lok' : 'lmuted');
+    }
+
+    total += t;
+    await new Promise(r => setTimeout(r, Math.min(t, 300)));
+    if (s.id !== 'cssblock' && s.id !== 'jsblock') el.className = 'stage done';
+  }
+
+  document.getElementById('pipe-total').textContent = total + 'ms';
+  pipeLog(`First paint: ${total}ms total`, 'lok');
+}
+
+function resetPipeline() {
+  renderPipelineUI(STAGES);
+  document.getElementById('pipe-total').textContent = '—';
+  document.getElementById('pipe-log').innerHTML = '<div class="linfo">> Reset.</div>';
+}
+renderPipelineUI(STAGES);
+
+// ===== RENDER TREE =====
+const DISPLAY_NONE_RX = /display\s*:\s*none/i;
+
+function buildRenderTree() {
+  const html = document.getElementById('rt-html').value;
+  const css  = document.getElementById('rt-css').value;
+
+  // Extract inline display:none
+  const hiddenInline = [];
+  const tagRx = /<([a-z]+)[^>]*style="([^"]*)"[^>]*>/gi;
+  let m;
+  while ((m = tagRx.exec(html)) !== null) {
+    if (DISPLAY_NONE_RX.test(m[2])) hiddenInline.push(m[1].toLowerCase());
+  }
+
+  // Rough parse
+  const tagNames = [];
+  const allTags = /<([a-z][a-z0-9]*)[^>]*>/gi;
+  while ((m = allTags.exec(html)) !== null) {
+    const t = m[1].toLowerCase();
+    if (!['html','head','meta','link','script','style'].includes(t)) tagNames.push({tag:t, full:m[0]});
+  }
+
+  // CSS class rules
+  const cssClassDisplay = {};
+  const cssRx = /\.([\w-]+)\s*\{([^}]+)\}/g;
+  while ((m = cssRx.exec(css)) !== null) {
+    if (DISPLAY_NONE_RX.test(m[2])) cssClassDisplay[m[1]] = 'none';
+  }
+
+  const output = document.getElementById('rt-output');
+  let html_out = '';
+  let included = 0, excluded = 0;
+
+  tagNames.forEach(({tag, full}) => {
+    const classMatch = full.match(/class="([^"]+)"/);
+    const classes = classMatch ? classMatch[1].split(' ') : [];
+    const inlineHidden = DISPLAY_NONE_RX.test(full);
+    const cssHidden = classes.some(c => cssClassDisplay[c] === 'none');
+    const hidden = inlineHidden || cssHidden;
+
+    // Extract attributes for display
+    const idMatch = full.match(/id="([^"]+)"/);
+    const styleMatch = full.match(/style="([^"]+)"/);
+
+    // Find matching CSS rule
+    let computedStyles = [];
+    const tagCssRx = new RegExp(`${tag}\\s*\\{([^}]+)\\}`, 'g');
+    let tcm;
+    while ((tcm = tagCssRx.exec(css)) !== null) {
+      tcm[1].split(';').forEach(rule => { const r = rule.trim(); if(r) computedStyles.push(r); });
+    }
+    classes.forEach(cls => {
+      const clsRx = new RegExp(`\\.${cls}\\s*\\{([^}]+)\\}`, 'g');
+      let cm;
+      while ((cm = clsRx.exec(css)) !== null) {
+        cm[1].split(';').forEach(rule => { const r = rule.trim(); if(r) computedStyles.push(r); });
+      }
+    });
+
+    const nodeClass = hidden ? 'render-node rn-hidden' : 'render-node';
+    const reason = hidden ? ' <span style="color:var(--accent-red);font-size:9px">[display:none — excluded]</span>' : '';
+    const attrStr = [idMatch?`id="${idMatch[1]}"`:null, classMatch?`class="${classMatch[1]}"`:null].filter(Boolean).join(' ');
+    const styleStr = computedStyles.slice(0,2).join('; ');
+
+    html_out += `<div class="${nodeClass}">
+      <span class="rn-tag">&lt;${tag}${attrStr?' '+attrStr:''}&gt;</span>
+      ${styleStr ? `<span class="rn-prop"> {${styleStr}${computedStyles.length>2?'…':''}}</span>` : ''}
+      ${reason}
+    </div>`;
+
+    if (hidden) excluded++; else included++;
+  });
+
+  output.innerHTML = html_out || '<div style="color:var(--text-ghost);font-size:12px;padding:10px">No visible nodes found.</div>';
+  rtLog(`Render tree: ${included} visible nodes, ${excluded} excluded (display:none)`, included > 0 ? 'lok' : 'linfo');
+}
+
+function rtLog(m, cls='lmuted') {
+  const el = document.getElementById('rt-log');
+  const d = document.createElement('div'); d.className = cls; d.textContent = '> ' + m;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+
+// ===== REFLOW & REPAINT =====
+const RP_STAGES = {
+  reflow:    [{name:'JavaScript',cls:'lmuted'},{name:'Style recalc',cls:'linfo'},{name:'Layout (Reflow)',cls:'lerr'},{name:'Paint',cls:'lerr'},{name:'Composite',cls:'lmuted'}],
+  repaint:   [{name:'JavaScript',cls:'lmuted'},{name:'Style recalc',cls:'linfo'},{name:'Layout',cls:'lmuted',skip:true},{name:'Paint',cls:'lok'},{name:'Composite',cls:'lmuted'}],
+  composite: [{name:'JavaScript',cls:'lmuted'},{name:'Style recalc',cls:'linfo'},{name:'Layout',cls:'lmuted',skip:true},{name:'Paint',cls:'lmuted',skip:true},{name:'Composite',cls:'linfo'}],
+};
+
+const RP_COLOURS = { reflow:'var(--accent-red)', repaint:'var(--accent-gold)', composite:'var(--accent-indigo)' };
+let rpTimeout = null;
+
+function triggerOp(type) {
+  const stagesEl = document.getElementById('rp-stages');
+  const stages = RP_STAGES[type];
+  stagesEl.innerHTML = stages.map(s => {
+    const skipped = s.skip;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;margin-bottom:3px;border:1px solid ${skipped?'var(--border-paper)':RP_COLOURS[type]};border-radius:var(--radius-xs);background:${skipped?'transparent':'rgba(200,42,42,0.04)'}">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${skipped?'var(--text-ghost)':RP_COLOURS[type]};text-decoration:${skipped?'line-through':'none'}">${s.name}</span>
+      ${skipped?'<span style="font-size:9px;color:var(--text-ghost)">skipped</span>':'<span style="font-size:9px;color:var(--text-muted)">triggered</span>'}
+    </div>`;
+  }).join('');
+
+  // Animate element
+  const el = document.getElementById('paint-elem');
+  ['reflow','repaint','composite'].forEach(t => {
+    document.getElementById('paint-overlay-'+t).classList.remove('show');
+  });
+  document.getElementById('paint-overlay-'+type).classList.add('show');
+
+  if (type === 'reflow') {
+    el.style.width = el.style.width === '100px' ? '80px' : '100px';
+    el.style.height = el.style.height === '100px' ? '80px' : '100px';
+    rpLog('width/height changed → Layout recalculated for this node AND all descendants', 'lerr');
+  } else if (type === 'repaint') {
+    const colors = ['#1C2D42','#8B6914','#C82A2A','#3A3A3A'];
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    rpLog('background changed → only pixels redrawn, no geometry recalculated', 'lok');
+  } else {
+    el.style.transform = el.style.transform === 'translateX(40px) rotate(15deg)' ? 'translateX(0) rotate(0deg)' : 'translateX(40px) rotate(15deg)';
+    rpLog('transform changed → GPU handles this, zero layout/paint cost', 'linfo');
+  }
+
+  if (rpTimeout) clearTimeout(rpTimeout);
+  rpTimeout = setTimeout(() => {
+    ['reflow','repaint','composite'].forEach(t => document.getElementById('paint-overlay-'+t).classList.remove('show'));
+  }, 1000);
+}
+
+function resetRepaint() {
+  const el = document.getElementById('paint-elem');
+  el.style.width=''; el.style.height=''; el.style.background='#1C2D42'; el.style.transform='';
+  document.getElementById('rp-stages').innerHTML='';
+  ['reflow','repaint','composite'].forEach(t => document.getElementById('paint-overlay-'+t).classList.remove('show'));
+  document.getElementById('rp-log').innerHTML='<div class="linfo">> Reset.</div>';
+}
+
+function rpLog(m, cls='lmuted') {
+  const el = document.getElementById('rp-log');
+  const d = document.createElement('div'); d.className = cls; d.textContent = '> ' + m;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+
+// ===== TAB SWITCHING =====
+function switchTab(id) {
+  ['pipeline','rendertree','repaint'].forEach((t,i) => {
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active', t===id);
+    const p = document.getElementById('panel-'+t);
+    p.style.display = t===id ? 'block' : 'none';
+    p.classList.toggle('active', t===id);
+  });
+}
+document.querySelectorAll('.panel').forEach((p,i) => { if(i>0) p.style.display='none'; });
+</script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 8.1 — Physical and Data Link Layers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+canvas{display:block;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);width:100%}
+/* MAC table */
+.mac-row{display:flex;align-items:center;gap:10px;padding:7px 12px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:3px;transition:all var(--t-med);font-family:'JetBrains Mono',monospace;font-size:11px}
+.mac-row.fresh{border-color:var(--accent-gold);background:rgba(139,105,20,0.06)}
+/* Stats */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.stat-box{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:300;line-height:1;margin-bottom:2px;display:block;color:var(--text-sumi)}
+.sv.red{color:var(--accent-red)}.sv.gold{color:var(--accent-gold)}.sv.indigo{color:var(--accent-indigo)}
+.sl{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:120px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs)}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 8.1 — Physical and Data Link Layers</h1>
+  <p class="zen-subtitle">Manchester Encoding · Ethernet Frame Builder · Switch MAC Table</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('encoding')">Encoding</div>
+  <div class="zen-tab" onclick="switchTab('frame')">Ethernet Frame</div>
+  <div class="zen-tab" onclick="switchTab('switch')">Switch MAC Table</div>
+</div>
+
+<!-- ENCODING -->
+<div id="panel-encoding" class="panel active">
+  <div class="zen-intro"><strong>Manchester encoding: each bit includes a voltage transition.</strong> 1 = low→high (rising edge). 0 = high→low (falling edge). Every bit period has a transition, allowing the receiver to synchronise its clock even with long runs of the same bit.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Enter bit sequence</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+        <input id="enc-bits" type="text" value="10110010" maxlength="12" style="font-family:'JetBrains Mono',monospace;font-size:18px;flex:1;letter-spacing:.2em;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:7px 10px;color:var(--text-sumi)">
+        <button class="zen-btn primary" onclick="drawEncoding()">Draw waveform</button>
+      </div>
+      <canvas id="enc-canvas" height="120"></canvas>
+      <div style="display:flex;gap:10px;margin-top:8px;font-size:11px;color:var(--text-muted)">
+        <span>1 = <span style="color:var(--accent-gold)">↑ rising</span></span>
+        <span>0 = <span style="color:var(--accent-indigo)">↓ falling</span></span>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Decode a waveform</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.8">
+        Waveform starting HIGH, transitions:<br>
+        ↓↑↓↑↑↓↓↑<br><br>
+        Each pair of half-periods = one bit.<br>
+        First half HIGH→second half LOW = 0<br>
+        First half LOW→second half HIGH = 1
+      </div>
+      <div style="padding:10px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);font-family:'JetBrains Mono',monospace;font-size:12px;margin-bottom:8px" id="decode-result">
+        Encoded waveform → decoded bits shown here.
+      </div>
+      <div class="op-log" id="enc-log"><div class="linfo">> Manchester doubles the bandwidth requirement but enables reliable clock recovery.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ETHERNET FRAME -->
+<div id="panel-frame" class="panel">
+  <div class="zen-intro"><strong>Build an Ethernet frame byte by byte.</strong> Every frame starts with a preamble for synchronisation, then destination and source MAC addresses, the EtherType identifying the payload protocol, the payload, and a CRC-32 checksum.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Frame fields</div>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;margin-bottom:14px;font-size:12px">
+        <label style="color:var(--text-muted)">Dst MAC:</label>
+        <input id="f-dst" type="text" value="FF:FF:FF:FF:FF:FF" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+        <label style="color:var(--text-muted)">Src MAC:</label>
+        <input id="f-src" type="text" value="AA:BB:CC:DD:EE:FF" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+        <label style="color:var(--text-muted)">EtherType:</label>
+        <select id="f-type" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+          <option value="0800">0x0800 — IPv4</option>
+          <option value="0806">0x0806 — ARP</option>
+          <option value="86DD">0x86DD — IPv6</option>
+        </select>
+        <label style="color:var(--text-muted)">Payload:</label>
+        <input id="f-payload" type="text" value="Hello, Ethernet!" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+      </div>
+      <button class="zen-btn primary" onclick="buildFrame()">Build frame</button>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Frame bytes</div>
+      <div id="frame-vis" style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;border-radius:var(--radius-xs);min-height:80px;margin-bottom:10px;color:var(--text-muted)">
+        Press Build frame to see output.
+      </div>
+      <div class="op-log" id="frame-log"><div class="linfo">> FF:FF:FF:FF:FF:FF = broadcast — all devices on the segment receive it.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SWITCH MAC TABLE -->
+<div id="panel-switch" class="panel">
+  <div class="zen-intro"><strong>A switch learns MAC addresses by observing incoming frames.</strong> When a frame arrives on port N from MAC M, the switch records M→N. To forward, look up the destination MAC. If unknown, flood to all ports except the source.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Send a frame</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+        <select id="sw-src-mac" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:6px 8px;color:var(--text-sumi)">
+          <option value="A:Port1">PC-A (Port 1)</option>
+          <option value="B:Port2">PC-B (Port 2)</option>
+          <option value="C:Port3">PC-C (Port 3)</option>
+          <option value="D:Port4">PC-D (Port 4)</option>
+        </select>
+        <span style="font-size:12px;color:var(--text-muted)">→</span>
+        <select id="sw-dst-mac" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:6px 8px;color:var(--text-sumi)">
+          <option value="B">PC-B</option>
+          <option value="A">PC-A</option>
+          <option value="C">PC-C</option>
+          <option value="FF">Broadcast</option>
+        </select>
+        <button class="zen-btn primary" onclick="swSend()">Send frame</button>
+        <button class="zen-btn danger" onclick="swReset()">↺ Reset</button>
+      </div>
+      <div class="pane-title indigo" style="margin-bottom:6px">MAC Address Table</div>
+      <div id="sw-mac-table" style="max-height:200px;overflow-y:auto">
+        <div style="color:var(--text-ghost);font-size:12px;padding:8px">Empty — switch will learn on first frame</div>
+      </div>
+      <div class="stat-row" style="margin-top:10px">
+        <div class="stat-box"><span class="sv indigo" id="sw-learned">0</span><span class="sl">Learned</span></div>
+        <div class="stat-box"><span class="sv gold" id="sw-forwards">0</span><span class="sl">Forwarded</span></div>
+        <div class="stat-box"><span class="sv red" id="sw-floods">0</span><span class="sl">Flooded</span></div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title red">Frame trace</div>
+      <div class="op-log" id="sw-log"><div class="linfo">> Switch learns src MAC on arrival. Forwards to known dst port, or floods to all others.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== ENCODING =====
+function drawEncoding(){
+  const bits=document.getElementById('enc-bits').value.replace(/[^01]/g,'');
+  if(!bits){return;}
+  const canvas=document.getElementById('enc-canvas');
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.clientWidth||300,H=canvas.height;
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#F8F7F3';ctx.fillRect(0,0,W,H);
+  const bitW=(W-20)/bits.length;const mid=H/2,hi=16,lo=H-16;
+  ctx.strokeStyle='#E8E6DF';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(10,mid);ctx.lineTo(W-10,mid);ctx.stroke();
+  let curLevel=lo; // start LOW (before first bit)
+  ctx.strokeStyle='#1C2D42';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(10,curLevel);
+  bits.split('').forEach((b,i)=>{
+    const x=10+i*bitW;
+    if(b==='1'){// rising: low first half, high second half
+      ctx.lineTo(x+bitW/2,curLevel); // stay low
+      ctx.lineTo(x+bitW/2,hi);       // rise
+      curLevel=hi;
+    }else{// falling: high first half, low second half
+      ctx.lineTo(x+bitW/2,curLevel); // stay high
+      ctx.lineTo(x+bitW/2,lo);       // fall
+      curLevel=lo;
+    }
+  });
+  ctx.lineTo(10+bits.length*bitW,curLevel);ctx.stroke();
+  // Bit labels
+  ctx.fillStyle='#888880';ctx.font='9px Inter,sans-serif';ctx.textAlign='center';
+  bits.split('').forEach((b,i)=>{
+    const x=10+i*bitW+bitW/2;
+    ctx.fillStyle=b==='1'?'#8B6914':'#1C2D42';
+    ctx.fillText(b,x,H-3);
+  });
+  // Decode the encoded pattern
+  const decoded=bits; // already decoded since we drew from bits
+  document.getElementById('decode-result').textContent=`Bits: ${bits} → Waveform above`;
+  const encLog=document.getElementById('enc-log');
+  encLog.innerHTML=`<div class="linfo">> ${bits.length} bits encoded. Each bit = 2 half-periods. Transitions ensure clock sync.</div>`;
+}
+drawEncoding();
+window.addEventListener('resize',drawEncoding);
+
+// ===== ETHERNET FRAME =====
+function macToBytes(mac){return mac.split(':').map(h=>parseInt(h,16));}
+function simpleCRC(data){let crc=0xFFFFFFFF;for(const b of data){crc^=b;for(let i=0;i<8;i++)crc=(crc&1)?(crc>>>1)^0xEDB88320:(crc>>>1);}return (crc^0xFFFFFFFF)>>>0;}
+function fLog(m,cls='lmuted'){const el=document.getElementById('frame-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function buildFrame(){
+  const dst=document.getElementById('f-dst').value.trim()||'FF:FF:FF:FF:FF:FF';
+  const src=document.getElementById('f-src').value.trim()||'AA:BB:CC:DD:EE:FF';
+  const etype=document.getElementById('f-type').value;
+  const payload=document.getElementById('f-payload').value;
+  const payBytes=Array.from(payload).map(c=>c.charCodeAt(0));
+  // Pad to min 46 bytes
+  while(payBytes.length<46)payBytes.push(0);
+  const preamble=[0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAA,0xAB];
+  const dstBytes=macToBytes(dst);const srcBytes=macToBytes(src);
+  const typeBytes=[parseInt(etype.slice(0,2),16),parseInt(etype.slice(2),16)];
+  const allData=[...dstBytes,...srcBytes,...typeBytes,...payBytes];
+  const crc=simpleCRC(allData);
+  const crcBytes=[(crc>>>24)&0xFF,(crc>>>16)&0xFF,(crc>>>8)&0xFF,crc&0xFF];
+  const frame=[...preamble,...allData,...crcBytes];
+  const hex=s=>s.map(b=>b.toString(16).padStart(2,'0').toUpperCase()).join(' ');
+  document.getElementById('frame-vis').innerHTML=
+    `<span style="color:var(--text-ghost)">Preamble (8B):  </span>${hex(preamble)}\n<span style="color:var(--accent-red)">Dst MAC (6B):   </span>${hex(dstBytes)}\n<span style="color:var(--accent-indigo)">Src MAC (6B):   </span>${hex(srcBytes)}\n<span style="color:var(--accent-gold)">EtherType (2B): </span>${hex(typeBytes)}\n<span style="color:var(--text-muted)">Payload (${Math.min(payload.length,46)}-1500B): </span>${hex(payBytes.slice(0,8))}...\n<span style="color:var(--text-ghost)">FCS/CRC (4B):   </span>${hex(crcBytes)}\n\n<span style="color:var(--text-muted)">Total: ${frame.length}B</span>`;
+  fLog(`Frame built: ${frame.length}B. Dst=${dst}, Type=0x${etype}, Payload=${payload.length}B`,'linfo');
+}
+
+// ===== SWITCH MAC TABLE =====
+let swMacTable={}, swLearned=0, swForwards=0, swFloods=0;
+const SW_PORTS={A:'Port1',B:'Port2',C:'Port3',D:'Port4'};
+function swLog(m,cls='lmuted'){const el=document.getElementById('sw-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function renderSwTable(){
+  const el=document.getElementById('sw-mac-table');
+  const entries=Object.entries(swMacTable);
+  if(!entries.length){el.innerHTML='<div style="color:var(--text-ghost);font-size:12px;padding:8px">Empty</div>';return;}
+  el.innerHTML=entries.map(([mac,port])=>`
+    <div class="mac-row fresh">
+      <span style="color:var(--accent-indigo)">MAC-${mac}</span>
+      <span style="color:var(--text-muted)">→</span>
+      <span style="color:var(--accent-gold)">${port}</span>
+    </div>`).join('');
+  document.getElementById('sw-learned').textContent=swLearned;
+  document.getElementById('sw-forwards').textContent=swForwards;
+  document.getElementById('sw-floods').textContent=swFloods;
+}
+function swSend(){
+  const srcFull=document.getElementById('sw-src-mac').value;
+  const [srcMac,srcPort]=srcFull.split(':');
+  const dstMac=document.getElementById('sw-dst-mac').value;
+  // Learn src
+  if(!swMacTable[srcMac]){swMacTable[srcMac]=srcPort;swLearned++;swLog(`Learned: MAC-${srcMac} → ${srcPort}`,'linfo');}
+  // Forward
+  if(dstMac==='FF'){swFloods++;swLog(`Broadcast: flood to all ports except ${srcPort}`,'lerr');}
+  else if(swMacTable[dstMac]){swForwards++;swLog(`Forward: MAC-${dstMac} found on ${swMacTable[dstMac]} → unicast`,'lok');}
+  else{swFloods++;swLog(`Unknown dst MAC-${dstMac} → flood to all except ${srcPort}`,'lerr');}
+  renderSwTable();
+}
+function swReset(){swMacTable={};swLearned=0;swForwards=0;swFloods=0;renderSwTable();document.getElementById('sw-log').innerHTML='<div class="linfo">> Switch reset. MAC table empty.</div>';}
+renderSwTable();
+
+function switchTab(id){
+  ['encoding','frame','switch'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);p.style.display=t===id?'block':'none';p.classList.toggle('active',t===id);
+  });
+  if(id==='encoding')setTimeout(drawEncoding,50);
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+</script>
+</body>
+</html>

@@ -1,0 +1,378 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 10.3 — REST APIs and JSON</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes request-fly{0%{transform:translateX(0);opacity:1}100%{transform:translateX(200px);opacity:0}}
+@keyframes response-fly{0%{transform:translateX(200px);opacity:0}100%{transform:translateX(0);opacity:1}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out) forwards}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast),color var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}.zen-btn.primary:hover{background:#333}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:760px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border-paper)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:110px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs);margin-top:8px}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+/* Method badges */
+.method{display:inline-block;padding:2px 8px;border-radius:var(--radius-xs);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;margin-right:6px}
+.method.GET{background:rgba(139,105,20,0.12);color:var(--accent-gold);border:1px solid rgba(139,105,20,0.3)}
+.method.POST{background:rgba(28,45,66,0.12);color:var(--accent-indigo);border:1px solid rgba(28,45,66,0.3)}
+.method.PUT{background:rgba(200,42,42,0.12);color:var(--accent-red);border:1px solid rgba(200,42,42,0.3)}
+.method.DELETE{background:rgba(28,28,28,0.08);color:var(--text-muted);border:1px solid var(--border-paper)}
+.method.PATCH{background:rgba(200,42,42,0.08);color:var(--accent-red);border:1px solid rgba(200,42,42,0.2)}
+/* Status codes */
+.status{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;padding:3px 8px;border-radius:var(--radius-xs)}
+.status.s2{color:var(--accent-gold);background:rgba(139,105,20,0.1);border:1px solid rgba(139,105,20,0.3)}
+.status.s4{color:var(--accent-red);background:rgba(200,42,42,0.1);border:1px solid rgba(200,42,42,0.3)}
+.status.s5{color:#fff;background:var(--accent-red)}
+/* Route list */
+.route-row{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:4px;background:var(--bg-canvas);cursor:pointer;transition:border-color var(--t-fast),background var(--t-fast)}
+.route-row:hover{border-color:var(--accent-indigo);background:rgba(28,45,66,0.03)}
+.route-row.active{border-color:var(--accent-red);background:rgba(200,42,42,0.04)}
+.route-path{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-body);flex:1}
+.route-desc{font-size:11px;color:var(--text-muted)}
+/* JSON viewer */
+.json-key{color:var(--accent-indigo)}
+.json-str{color:var(--accent-gold)}
+.json-num{color:var(--accent-red)}
+.json-bool{color:var(--text-muted);font-style:italic}
+pre.json-view{font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:12px;overflow-x:auto;max-height:240px;overflow-y:auto}
+textarea.body-ed{width:100%;font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg-canvas);border:1px solid var(--border-paper);color:var(--text-sumi);padding:10px;resize:vertical;border-radius:var(--radius-xs);line-height:1.8}
+textarea.body-ed:focus{outline:none;border-color:var(--accent-indigo)}
+select,input[type=text]{background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);color:var(--text-sumi);font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 10px}
+select:focus,input:focus{outline:none;border-color:var(--accent-indigo)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 10.3 — REST APIs and JSON</h1>
+  <p class="zen-subtitle">API Explorer · Request Builder · Status Codes</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('explorer')">API Explorer</div>
+  <div class="zen-tab" onclick="switchTab('builder')">Request Builder</div>
+  <div class="zen-tab" onclick="switchTab('statuscodes')">Status Codes</div>
+</div>
+
+<!-- TAB 1: API EXPLORER -->
+<div id="panel-explorer" class="panel active">
+  <div class="zen-intro">
+    <strong>REST (Representational State Transfer) maps HTTP verbs to CRUD operations.</strong> GET reads, POST creates, PUT/PATCH updates, DELETE removes. Every resource has a URL. The server is stateless — each request carries all the context it needs.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Users API — available routes</div>
+      <div id="route-list"></div>
+      <div class="op-log" id="exp-log"><div class="linfo">> Click a route to send a request to the in-browser mock server.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Response</div>
+      <div id="exp-status" style="margin-bottom:8px;min-height:22px"></div>
+      <pre class="json-view" id="exp-response">// Response will appear here</pre>
+      <div style="margin-top:8px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:10px">
+        <div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:6px">Response headers</div>
+        <pre id="exp-headers" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);line-height:1.8"></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 2: REQUEST BUILDER -->
+<div id="panel-builder" class="panel">
+  <div class="zen-intro">
+    <strong>Build and fire a raw HTTP request.</strong> Choose the method, set the path, write a JSON body, and add headers. Watch how the request is serialised and the response parsed. This is exactly what <code>fetch()</code> does under the hood.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Request</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+        <select id="req-method">
+          <option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option>
+        </select>
+        <input type="text" id="req-path" value="/api/users" style="flex:1;min-width:120px">
+      </div>
+      <div style="margin-bottom:8px">
+        <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:6px">Request headers</div>
+        <textarea class="body-ed" id="req-headers" rows="2">Content-Type: application/json
+Authorization: Bearer token123</textarea>
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:6px">Request body (JSON)</div>
+        <textarea class="body-ed" id="req-body" rows="5">{ "name": "Iris", "email": "iris@example.com", "role": "student" }</textarea>
+      </div>
+      <div class="btn-row">
+        <button class="zen-btn primary" onclick="sendRequest()">▶ Send</button>
+        <button class="zen-btn danger" onclick="resetBuilder()">↺ Reset</button>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Raw request / response</div>
+      <div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:4px">Request</div>
+      <pre class="json-view" id="raw-request" style="min-height:70px">// Will appear here</pre>
+      <div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin:8px 0 4px">Response</div>
+      <pre class="json-view" id="raw-response" style="min-height:70px">// Will appear here</pre>
+      <div class="op-log" id="builder-log"><div class="linfo">> Press Send to fire the request against the mock API.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3: STATUS CODES -->
+<div id="panel-statuscodes" class="panel">
+  <div class="zen-intro">
+    <strong>HTTP status codes tell the client what happened.</strong> 2xx = success. 3xx = redirection. 4xx = client error (your fault). 5xx = server error (their fault). Knowing the difference is fundamental to debugging APIs.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Simulate a response</div>
+      <div style="display:grid;gap:6px;margin-bottom:12px" id="status-list"></div>
+      <div class="op-log" id="sc-log"><div class="linfo">> Click a status code to see what it means and when it occurs.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Response detail</div>
+      <div id="sc-detail" style="min-height:100px">
+        <div style="color:var(--text-ghost);font-size:13px;padding:20px 0">Select a status code to see its detail.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== MOCK DATABASE =====
+let mockUsers = [
+  {id:1,name:'Alice',email:'alice@example.com',role:'admin'},
+  {id:2,name:'Bob',email:'bob@example.com',role:'student'},
+  {id:3,name:'Carol',email:'carol@example.com',role:'student'},
+  {id:4,name:'Dave',email:'dave@example.com',role:'teacher'},
+];
+let nextId = 5;
+
+// ===== MOCK ROUTER =====
+function mockFetch(method, path, body=null) {
+  const delay = 120 + Math.random()*80;
+  return new Promise(resolve => setTimeout(() => {
+    const now = new Date().toUTCString();
+    const headers = `Content-Type: application/json\nX-Request-Id: req_${Math.random().toString(36).slice(2,9)}\nDate: ${now}`;
+
+    // GET /api/users
+    if (method==='GET' && path==='/api/users') {
+      resolve({status:200,statusText:'OK',headers,body:mockUsers});
+    }
+    // GET /api/users/:id
+    else if (method==='GET' && path.match(/^\/api\/users\/\d+$/)) {
+      const id = parseInt(path.split('/').pop());
+      const user = mockUsers.find(u=>u.id===id);
+      if (user) resolve({status:200,statusText:'OK',headers,body:user});
+      else resolve({status:404,statusText:'Not Found',headers,body:{error:'User not found',id}});
+    }
+    // POST /api/users
+    else if (method==='POST' && path==='/api/users') {
+      if (!body||!body.name||!body.email) { resolve({status:400,statusText:'Bad Request',headers,body:{error:'name and email are required'}}); return; }
+      const newUser = {id:nextId++,...body};
+      mockUsers.push(newUser);
+      resolve({status:201,statusText:'Created',headers,body:newUser});
+    }
+    // PUT /api/users/:id
+    else if (method==='PUT' && path.match(/^\/api\/users\/\d+$/)) {
+      const id = parseInt(path.split('/').pop());
+      const idx = mockUsers.findIndex(u=>u.id===id);
+      if (idx===-1) { resolve({status:404,statusText:'Not Found',headers,body:{error:'User not found'}}); return; }
+      mockUsers[idx] = {id,...body};
+      resolve({status:200,statusText:'OK',headers,body:mockUsers[idx]});
+    }
+    // PATCH /api/users/:id
+    else if (method==='PATCH' && path.match(/^\/api\/users\/\d+$/)) {
+      const id = parseInt(path.split('/').pop());
+      const idx = mockUsers.findIndex(u=>u.id===id);
+      if (idx===-1) { resolve({status:404,statusText:'Not Found',headers,body:{error:'User not found'}}); return; }
+      mockUsers[idx] = {...mockUsers[idx],...body};
+      resolve({status:200,statusText:'OK',headers,body:mockUsers[idx]});
+    }
+    // DELETE /api/users/:id
+    else if (method==='DELETE' && path.match(/^\/api\/users\/\d+$/)) {
+      const id = parseInt(path.split('/').pop());
+      const idx = mockUsers.findIndex(u=>u.id===id);
+      if (idx===-1) { resolve({status:404,statusText:'Not Found',headers,body:{error:'User not found'}}); return; }
+      const deleted = mockUsers.splice(idx,1)[0];
+      resolve({status:200,statusText:'OK',headers,body:{message:'User deleted',user:deleted}});
+    }
+    else {
+      resolve({status:404,statusText:'Not Found',headers,body:{error:'Route not found',path,method}});
+    }
+  }, delay));
+}
+
+// ===== JSON SYNTAX HIGHLIGHT =====
+function syntaxHL(json) {
+  if (typeof json !== 'string') json = JSON.stringify(json, null, 2);
+  return json
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, m => {
+      if (/^"/.test(m)) return /:$/.test(m) ? `<span class="json-key">${m}</span>` : `<span class="json-str">${m}</span>`;
+      if (/true|false|null/.test(m)) return `<span class="json-bool">${m}</span>`;
+      return `<span class="json-num">${m}</span>`;
+    });
+}
+
+function statusBadge(code) {
+  const cls = code>=500?'s5':code>=400?'s4':'s2';
+  return `<span class="status ${cls}">${code}</span>`;
+}
+
+// ===== EXPLORER =====
+const ROUTES = [
+  {method:'GET',   path:'/api/users',      desc:'List all users',        body:null},
+  {method:'GET',   path:'/api/users/1',    desc:'Get user by id=1',      body:null},
+  {method:'GET',   path:'/api/users/99',   desc:'Get non-existent user', body:null},
+  {method:'POST',  path:'/api/users',      desc:'Create a new user',     body:{name:'Iris',email:'iris@example.com',role:'student'}},
+  {method:'PUT',   path:'/api/users/2',    desc:'Replace user id=2',     body:{name:'Bobby',email:'bobby@example.com',role:'teacher'}},
+  {method:'PATCH', path:'/api/users/3',    desc:'Update user role',      body:{role:'admin'}},
+  {method:'DELETE',path:'/api/users/4',    desc:'Delete user id=4',      body:null},
+];
+
+function renderRouteList() {
+  document.getElementById('route-list').innerHTML = ROUTES.map((r,i) =>
+    `<div class="route-row" id="route-${i}" onclick="callRoute(${i})">
+      <span class="method ${r.method}">${r.method}</span>
+      <span class="route-path">${r.path}</span>
+      <span class="route-desc">${r.desc}</span>
+    </div>`
+  ).join('');
+}
+
+async function callRoute(i) {
+  document.querySelectorAll('.route-row').forEach(r=>r.classList.remove('active'));
+  document.getElementById('route-'+i).classList.add('active');
+  const r = ROUTES[i];
+  expLog(`${r.method} ${r.path} → sending…`, 'linfo');
+  const res = await mockFetch(r.method, r.path, r.body);
+  document.getElementById('exp-status').innerHTML = `${statusBadge(res.status)} <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)">${res.statusText}</span>`;
+  document.getElementById('exp-response').innerHTML = syntaxHL(res.body);
+  document.getElementById('exp-headers').textContent = res.headers;
+  expLog(`${r.method} ${r.path} → ${res.status} ${res.statusText}`, res.status<300?'lok':'lerr');
+}
+
+function expLog(m, cls='lmuted') {
+  const el = document.getElementById('exp-log');
+  const d = document.createElement('div'); d.className=cls; d.textContent='> '+m;
+  el.appendChild(d); el.scrollTop=el.scrollHeight;
+}
+
+renderRouteList();
+
+// ===== REQUEST BUILDER =====
+async function sendRequest() {
+  const method = document.getElementById('req-method').value;
+  const path   = document.getElementById('req-path').value.trim();
+  const rawBody = document.getElementById('req-body').value.trim();
+  const rawHeaders = document.getElementById('req-headers').value.trim();
+
+  let body = null;
+  if (['POST','PUT','PATCH'].includes(method) && rawBody) {
+    try { body = JSON.parse(rawBody); } catch(e) { builderLog('Invalid JSON body: '+e.message,'lerr'); return; }
+  }
+
+  const reqLines = `${method} ${path} HTTP/1.1\nHost: api.example.com\n${rawHeaders}\n${body?'\n'+JSON.stringify(body,null,2):''}`;
+  document.getElementById('raw-request').innerHTML = syntaxHL(reqLines);
+
+  builderLog(`${method} ${path} → sending…`, 'linfo');
+  const res = await mockFetch(method, path, body);
+  const resLines = `HTTP/1.1 ${res.status} ${res.statusText}\n${res.headers}\n\n${JSON.stringify(res.body,null,2)}`;
+  document.getElementById('raw-response').innerHTML = syntaxHL(resLines);
+  builderLog(`${res.status} ${res.statusText}`, res.status<300?'lok':'lerr');
+}
+
+function resetBuilder() {
+  document.getElementById('req-method').value='GET';
+  document.getElementById('req-path').value='/api/users';
+  document.getElementById('req-body').value='{ "name": "Iris", "email": "iris@example.com", "role": "student" }';
+  document.getElementById('raw-request').innerHTML='// Will appear here';
+  document.getElementById('raw-response').innerHTML='// Will appear here';
+  document.getElementById('builder-log').innerHTML='<div class="linfo">> Reset.</div>';
+}
+
+function builderLog(m, cls='lmuted') {
+  const el = document.getElementById('builder-log');
+  const d = document.createElement('div'); d.className=cls; d.textContent='> '+m;
+  el.appendChild(d); el.scrollTop=el.scrollHeight;
+}
+
+// ===== STATUS CODES =====
+const STATUS_CODES = [
+  {code:200,text:'OK',              cls:'s2', desc:'Request succeeded. Used for successful GET, PUT, PATCH, DELETE.', example:'GET /api/users → 200 OK'},
+  {code:201,text:'Created',         cls:'s2', desc:'A new resource was created. Returned after a successful POST.', example:'POST /api/users → 201 Created'},
+  {code:204,text:'No Content',      cls:'s2', desc:'Succeeded with no body. Common for DELETE when nothing to return.', example:'DELETE /api/users/3 → 204 No Content'},
+  {code:301,text:'Moved Permanently',cls:'s2',desc:'Resource has a new permanent URL. Browser should update bookmarks.', example:'GET /old-path → 301 → Location: /new-path'},
+  {code:400,text:'Bad Request',     cls:'s4', desc:'Client sent malformed data — invalid JSON, missing fields, wrong types.', example:'POST /api/users (missing email) → 400'},
+  {code:401,text:'Unauthorized',    cls:'s4', desc:'Authentication required. Token missing or invalid.', example:'GET /api/admin → 401 Unauthorized'},
+  {code:403,text:'Forbidden',       cls:'s4', desc:'Authenticated but not permitted. You know who you are, but you can\'t go there.', example:'DELETE /api/users/1 (as student) → 403'},
+  {code:404,text:'Not Found',       cls:'s4', desc:'Resource doesn\'t exist at this URL. Check for typos in path or id.', example:'GET /api/users/999 → 404 Not Found'},
+  {code:409,text:'Conflict',        cls:'s4', desc:'Request conflicts with current state — e.g. duplicate email on POST.', example:'POST /api/users (email already exists) → 409'},
+  {code:422,text:'Unprocessable',   cls:'s4', desc:'Syntactically valid JSON but semantically wrong — e.g. age is negative.', example:'POST /api/users { "age": -5 } → 422'},
+  {code:500,text:'Internal Server Error',cls:'s5', desc:'The server crashed. Not the client\'s fault. Check server logs.', example:'Any request → unhandled exception → 500'},
+  {code:503,text:'Service Unavailable', cls:'s5', desc:'Server is temporarily down — overloaded, deploying, or maintenance.', example:'GET /api/data → 503 (DB unreachable)'},
+];
+
+function renderStatusList() {
+  document.getElementById('status-list').innerHTML = STATUS_CODES.map((s,i) =>
+    `<div class="route-row" onclick="showStatus(${i})" style="cursor:pointer">
+      <span class="status ${s.cls}">${s.code}</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-body)">${s.text}</span>
+    </div>`
+  ).join('');
+}
+
+function showStatus(i) {
+  const s = STATUS_CODES[i];
+  const color = s.cls==='s5'?'var(--accent-red)':s.cls==='s4'?'var(--accent-red)':'var(--accent-gold)';
+  document.getElementById('sc-detail').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <span class="status ${s.cls}" style="font-size:1.4rem;padding:6px 14px">${s.code}</span>
+      <span style="font-family:'Noto Serif JP',serif;font-size:16px;font-weight:300;color:var(--text-sumi)">${s.text}</span>
+    </div>
+    <div style="font-size:13px;line-height:1.75;color:var(--text-body);margin-bottom:12px">${s.desc}</div>
+    <div style="background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)">${s.example}</div>
+  `;
+  scLog(`${s.code} ${s.text}: ${s.desc}`, s.cls==='s2'?'lok':'lerr');
+}
+
+function scLog(m, cls='lmuted') {
+  const el = document.getElementById('sc-log');
+  const d = document.createElement('div'); d.className=cls; d.textContent='> '+m;
+  el.appendChild(d); el.scrollTop=el.scrollHeight;
+}
+
+renderStatusList();
+
+// ===== TAB SWITCHING =====
+function switchTab(id) {
+  ['explorer','builder','statuscodes'].forEach((t,i) => {
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active', t===id);
+    const p = document.getElementById('panel-'+t);
+    p.style.display = t===id ? 'block' : 'none';
+    p.classList.toggle('active', t===id);
+  });
+}
+document.querySelectorAll('.panel').forEach((p,i) => { if(i>0) p.style.display='none'; });
+</script>
+</body>
+</html>

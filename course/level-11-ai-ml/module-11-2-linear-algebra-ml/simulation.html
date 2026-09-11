@@ -1,0 +1,360 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 11.2 — Linear Algebra for ML</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out) forwards}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast),color var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}.zen-btn.primary:hover{background:#333}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:760px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border-paper)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:100px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs);margin-top:8px}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+canvas{display:block;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs)}
+/* Matrix display */
+.mat-wrap{display:inline-flex;align-items:center;gap:2px;vertical-align:middle}
+.mat-bracket{font-size:2.5rem;font-weight:100;color:var(--text-muted);line-height:1}
+.mat-grid{display:grid;gap:2px;padding:4px}
+.mat-cell{font-family:'JetBrains Mono',monospace;font-size:13px;text-align:center;padding:4px 8px;min-width:44px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);color:var(--text-body);transition:background .3s,color .3s}
+.mat-cell.hl{background:rgba(200,42,42,0.12);border-color:var(--accent-red);color:var(--accent-red)}
+.mat-cell.gold{background:rgba(139,105,20,0.1);border-color:var(--accent-gold);color:var(--accent-gold)}
+.mat-cell input{width:44px;font-family:'JetBrains Mono',monospace;font-size:13px;text-align:center;background:transparent;border:none;color:inherit;padding:0}
+.mat-cell input:focus{outline:none}
+.op-sym{font-family:'JetBrains Mono',monospace;font-size:1.6rem;color:var(--text-muted);padding:0 8px;align-self:center}
+.result-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:8px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:1px;background:var(--border-light);cursor:pointer;margin:8px 0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--text-sumi);border-radius:50%;cursor:grab}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 11.2 — Linear Algebra for ML</h1>
+  <p class="zen-subtitle">Vector Operations · Matrix Multiplication · Linear Transformations</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('vectors')">Vectors</div>
+  <div class="zen-tab" onclick="switchTab('matmul')">Matrix Multiply</div>
+  <div class="zen-tab" onclick="switchTab('transform')">Transformations</div>
+</div>
+
+<!-- VECTORS -->
+<div id="panel-vectors" class="panel active">
+  <div class="zen-intro">
+    <strong>Vectors are the atoms of ML.</strong> Every data point, every weight, every gradient is a vector. Dot product measures similarity. Magnitude measures length. The angle between vectors tells you how similar two things are — the foundation of cosine similarity in embeddings.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Vector A</div>
+      <div style="display:grid;gap:8px;margin-bottom:12px">
+        <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">ax <span id="lbl-ax" style="font-family:'JetBrains Mono',monospace">3</span></label>
+        <input type="range" id="sl-ax" min="-5" max="5" value="3" step="0.5" oninput="updateVectors()">
+        <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">ay <span id="lbl-ay" style="font-family:'JetBrains Mono',monospace">2</span></label>
+        <input type="range" id="sl-ay" min="-5" max="5" value="2" step="0.5" oninput="updateVectors()">
+      </div>
+      <div class="pane-title" style="margin-top:4px">Vector B</div>
+      <div style="display:grid;gap:8px;margin-bottom:12px">
+        <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">bx <span id="lbl-bx" style="font-family:'JetBrains Mono',monospace">1</span></label>
+        <input type="range" id="sl-bx" min="-5" max="5" value="1" step="0.5" oninput="updateVectors()">
+        <label style="font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between">by <span id="lbl-by" style="font-family:'JetBrains Mono',monospace">4</span></label>
+        <input type="range" id="sl-by" min="-5" max="5" value="4" step="0.5" oninput="updateVectors()">
+      </div>
+      <div style="background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:12px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2">
+        <div>|A| = <span id="mag-a" style="color:var(--accent-gold)">—</span></div>
+        <div>|B| = <span id="mag-b" style="color:var(--accent-indigo)">—</span></div>
+        <div>A·B = <span id="dot-ab" style="color:var(--accent-red)">—</span></div>
+        <div>cos θ = <span id="cos-ab" style="color:var(--text-sumi)">—</span></div>
+        <div>angle = <span id="angle-ab" style="color:var(--text-sumi)">—</span>°</div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Vector space</div>
+      <canvas id="vec-canvas" width="300" height="300" style="width:100%;max-width:300px"></canvas>
+      <div class="op-log" id="vec-log"><div class="linfo">> Drag sliders to change vectors. Dot product = |A||B|cos(θ).</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MATRIX MULTIPLY -->
+<div id="panel-matmul" class="panel">
+  <div class="zen-intro">
+    <strong>Matrix multiplication is the core operation of every neural network.</strong> A forward pass is just a sequence of matrix multiplications. Element [i,j] of C = A×B is the dot product of row i of A and column j of B.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Matrix A (2×3) and B (3×2)</div>
+      <div style="display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+        <div>
+          <div class="result-label">A</div>
+          <div id="mat-a-display"></div>
+        </div>
+        <span class="op-sym">×</span>
+        <div>
+          <div class="result-label">B</div>
+          <div id="mat-b-display"></div>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="matStep()">↓ Step through</button>
+        <button class="zen-btn" onclick="matRunAll()">▶ Compute all</button>
+        <button class="zen-btn danger" onclick="matReset()">↺ Reset</button>
+        <button class="zen-btn" onclick="matRandomise()">Random values</button>
+      </div>
+      <div class="op-log" id="mat-log" style="margin-top:10px"><div class="linfo">> C[i][j] = dot(row i of A, col j of B). Press Step to compute cell by cell.</div></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Result C = A × B (2×2)</div>
+      <div id="mat-c-display" style="margin-bottom:14px"></div>
+      <div id="mat-working" style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.9;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:12px;min-height:60px;color:var(--text-muted)">
+        Working will appear here step by step.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSFORMATIONS -->
+<div id="panel-transform" class="panel">
+  <div class="zen-intro">
+    <strong>Every linear transformation is a matrix.</strong> Rotation, scaling, reflection, shear — all can be expressed as multiplying a vector by a matrix. Neural network layers learn exactly these kinds of transformations to map inputs to outputs.
+  </div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title">Transformation matrix</div>
+      <div style="display:grid;gap:10px;margin-bottom:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div>
+            <label style="font-size:10px;color:var(--text-muted)">m00</label>
+            <input type="range" id="m00" min="-2" max="2" value="1" step="0.1" oninput="updateTransform()" style="-webkit-appearance:none;height:1px;background:var(--border-light);cursor:pointer;width:100%;margin:6px 0">
+            <span id="lm00" style="font-family:'JetBrains Mono',monospace;font-size:11px">1.0</span>
+          </div>
+          <div>
+            <label style="font-size:10px;color:var(--text-muted)">m01</label>
+            <input type="range" id="m01" min="-2" max="2" value="0" step="0.1" oninput="updateTransform()" style="-webkit-appearance:none;height:1px;background:var(--border-light);cursor:pointer;width:100%;margin:6px 0">
+            <span id="lm01" style="font-family:'JetBrains Mono',monospace;font-size:11px">0.0</span>
+          </div>
+          <div>
+            <label style="font-size:10px;color:var(--text-muted)">m10</label>
+            <input type="range" id="m10" min="-2" max="2" value="0" step="0.1" oninput="updateTransform()" style="-webkit-appearance:none;height:1px;background:var(--border-light);cursor:pointer;width:100%;margin:6px 0">
+            <span id="lm10" style="font-family:'JetBrains Mono',monospace;font-size:11px">0.0</span>
+          </div>
+          <div>
+            <label style="font-size:10px;color:var(--text-muted)">m11</label>
+            <input type="range" id="m11" min="-2" max="2" value="1" step="0.1" oninput="updateTransform()" style="-webkit-appearance:none;height:1px;background:var(--border-light);cursor:pointer;width:100%;margin:6px 0">
+            <span id="lm11" style="font-family:'JetBrains Mono',monospace;font-size:11px">1.0</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="zen-btn" style="padding:5px 10px;font-size:10px" onclick="setTransform(1,0,0,1)">Identity</button>
+        <button class="zen-btn" style="padding:5px 10px;font-size:10px" onclick="setTransform(0,-1,1,0)">Rotate 90°</button>
+        <button class="zen-btn" style="padding:5px 10px;font-size:10px" onclick="setTransform(2,0,0,2)">Scale ×2</button>
+        <button class="zen-btn" style="padding:5px 10px;font-size:10px" onclick="setTransform(-1,0,0,1)">Reflect X</button>
+        <button class="zen-btn" style="padding:5px 10px;font-size:10px" onclick="setTransform(1,0.5,0,1)">Shear</button>
+        <button class="zen-btn" style="padding:5px 10px;font-size:10px" onclick="setTransform(0.707,-0.707,0.707,0.707)">Rotate 45°</button>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title">Unit square transformed</div>
+      <canvas id="tr-canvas" width="300" height="300" style="width:100%;max-width:300px"></canvas>
+      <div style="margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;color:var(--text-muted)" id="tr-det"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== VECTORS =====
+function updateVectors(){
+  const ax=+document.getElementById('sl-ax').value, ay=+document.getElementById('sl-ay').value;
+  const bx=+document.getElementById('sl-bx').value, by=+document.getElementById('sl-by').value;
+  ['ax','ay','bx','by'].forEach(id=>{document.getElementById('lbl-'+id).textContent=document.getElementById('sl-'+id).value;});
+  const magA=Math.sqrt(ax*ax+ay*ay), magB=Math.sqrt(bx*bx+by*by);
+  const dot=ax*bx+ay*by;
+  const cosT=magA&&magB?dot/(magA*magB):0;
+  const angle=(Math.acos(Math.max(-1,Math.min(1,cosT)))*180/Math.PI).toFixed(1);
+  document.getElementById('mag-a').textContent=magA.toFixed(2);
+  document.getElementById('mag-b').textContent=magB.toFixed(2);
+  document.getElementById('dot-ab').textContent=dot.toFixed(2);
+  document.getElementById('cos-ab').textContent=cosT.toFixed(3);
+  document.getElementById('angle-ab').textContent=angle;
+  drawVectors(ax,ay,bx,by);
+}
+
+function drawVectors(ax,ay,bx,by){
+  const canvas=document.getElementById('vec-canvas'); if(!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.clientWidth||300; canvas.width=W*dpr; canvas.height=W*dpr;
+  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+  const cx=W/2,cy=W/2,scale=W/14;
+  ctx.clearRect(0,0,W,W); ctx.fillStyle='#F8F7F3'; ctx.fillRect(0,0,W,W);
+  // grid
+  ctx.strokeStyle='#E8E6DF'; ctx.lineWidth=1;
+  for(let i=-6;i<=6;i++){ctx.beginPath();ctx.moveTo(cx+i*scale,0);ctx.lineTo(cx+i*scale,W);ctx.stroke();ctx.beginPath();ctx.moveTo(0,cy+i*scale);ctx.lineTo(W,cy+i*scale);ctx.stroke();}
+  // axes
+  ctx.strokeStyle='#D8D6CE'; ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,W);ctx.stroke();
+  // vector A
+  arrow(ctx,cx,cy,cx+ax*scale,cy-ay*scale,'#8B6914',2);
+  ctx.fillStyle='#8B6914';ctx.font='bold 12px Inter,sans-serif';ctx.textAlign='center';
+  ctx.fillText('A',cx+ax*scale+10,cy-ay*scale-6);
+  // vector B
+  arrow(ctx,cx,cy,cx+bx*scale,cy-by*scale,'#1C2D42',2);
+  ctx.fillStyle='#1C2D42';ctx.font='bold 12px Inter,sans-serif';
+  ctx.fillText('B',cx+bx*scale+10,cy-by*scale-6);
+  // A+B
+  arrow(ctx,cx,cy,cx+(ax+bx)*scale,cy-(ay+by)*scale,'#C82A2A',1.5,true);
+  ctx.fillStyle='#C82A2A';ctx.font='11px Inter,sans-serif';
+  ctx.fillText('A+B',cx+(ax+bx)*scale+10,cy-(ay+by)*scale-4);
+}
+
+function arrow(ctx,x1,y1,x2,y2,color,lw,dashed=false){
+  ctx.save(); ctx.strokeStyle=color; ctx.lineWidth=lw; ctx.fillStyle=color;
+  if(dashed){ctx.setLineDash([4,3]);}
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  ctx.setLineDash([]);
+  const angle=Math.atan2(y2-y1,x2-x1);
+  const hs=8;
+  ctx.beginPath(); ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-hs*Math.cos(angle-0.4),y2-hs*Math.sin(angle-0.4));
+  ctx.lineTo(x2-hs*Math.cos(angle+0.4),y2-hs*Math.sin(angle+0.4));
+  ctx.closePath(); ctx.fill(); ctx.restore();
+}
+
+updateVectors();
+
+// ===== MATRIX MULTIPLY =====
+let matA=[[1,2,3],[4,5,6]], matB=[[7,8],[9,10],[11,12]];
+let matStepI=0,matStepJ=0,matDone=false;
+
+function renderMat(data,id,hlRow=-1,hlCol=-1){
+  const rows=data.length,cols=data[0].length;
+  const el=document.getElementById(id);
+  let html='<div class="mat-wrap"><span class="mat-bracket">[</span><div class="mat-grid" style="grid-template-columns:repeat('+cols+',1fr)">';
+  data.forEach((row,r)=>row.forEach((v,c)=>{
+    const hl=(r===hlRow)|||(c===hlCol)?'hl':'';
+    html+=`<div class="mat-cell ${hl}">${v}</div>`;
+  }));
+  html+='</div><span class="mat-bracket">]</span></div>';
+  el.innerHTML=html;
+}
+
+function matReset(){
+  matStepI=0;matStepJ=0;matDone=false;
+  renderMat(matA,'mat-a-display');renderMat(matB,'mat-b-display');
+  const C=[[' ',' '],[' ',' ']];renderMat(C,'mat-c-display');
+  document.getElementById('mat-working').textContent='Working will appear here step by step.';
+  document.getElementById('mat-log').innerHTML='<div class="linfo">> C[i][j] = dot(row i of A, col j of B). Press Step to compute cell by cell.</div>';
+}
+
+function matStep(){
+  if(matDone){matLog('All cells computed','lok');return;}
+  const i=matStepI,j=matStepJ;
+  renderMat(matA,'mat-a-display',i,-1);
+  renderMat(matB,'mat-b-display',-1,j);
+  let sum=0,terms=[];
+  for(let k=0;k<matA[0].length;k++){sum+=matA[i][k]*matB[k][j];terms.push(`${matA[i][k]}×${matB[k][j]}`);}
+  const C_partial=Array.from({length:2},(_,r)=>Array.from({length:2},(_,c)=>r<i||(r===i&&c<=j)?matA[r][c]*matB[0][c]+matA[r][1]*matB[1][c]+matA[r][2]*matB[2][c]:' '));
+  // build correct partial result
+  const Cfull=[[0,0],[0,0]];
+  for(let r=0;r<2;r++)for(let c=0;c<2;c++){let s=0;for(let k=0;k<3;k++)s+=matA[r][k]*matB[k][c];Cfull[r][c]=s;}
+  const Cshow=[[' ',' '],[' ',' ']];
+  for(let r=0;r<2;r++)for(let c=0;c<2;c++){if(r<i||(r===i&&c<=j))Cshow[r][c]=Cfull[r][c];}
+  renderMat(Cshow,'mat-c-display',i,j);
+  document.getElementById('mat-working').textContent=`C[${i}][${j}] = ${terms.join(' + ')} = ${sum}`;
+  matLog(`C[${i}][${j}] = ${sum}`,'linfo');
+  matStepJ++;if(matStepJ>=2){matStepJ=0;matStepI++;}
+  if(matStepI>=2){matDone=true;renderMat(Cfull,'mat-c-display');matLog('Matrix multiplication complete','lok');}
+}
+
+function matRunAll(){matReset();while(!matDone)matStep();}
+function matRandomise(){matA=Array.from({length:2},()=>Array.from({length:3},()=>Math.floor(Math.random()*9)+1));matB=Array.from({length:3},()=>Array.from({length:2},()=>Math.floor(Math.random()*9)+1));matReset();}
+function matLog(m,cls='lmuted'){const el=document.getElementById('mat-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+matReset();
+
+// ===== TRANSFORMATIONS =====
+function setTransform(a,b,c,d){
+  document.getElementById('m00').value=a;document.getElementById('m01').value=b;
+  document.getElementById('m10').value=c;document.getElementById('m11').value=d;
+  updateTransform();
+}
+
+function updateTransform(){
+  const a=+document.getElementById('m00').value,b=+document.getElementById('m01').value;
+  const c=+document.getElementById('m10').value,d=+document.getElementById('m11').value;
+  ['m00','m01','m10','m11'].forEach(id=>{document.getElementById('l'+id).textContent=(+document.getElementById(id).value).toFixed(1);});
+  const det=a*d-b*c;
+  document.getElementById('tr-det').textContent=`Matrix: [[${a.toFixed(1)}, ${b.toFixed(1)}], [${c.toFixed(1)}, ${d.toFixed(1)}]]\nDeterminant: ${det.toFixed(2)} ${Math.abs(det)<0.001?'(singular — collapses space)':det<0?'(orientation flipped)':''}`;
+  drawTransform(a,b,c,d);
+}
+
+function drawTransform(a,b,c,d){
+  const canvas=document.getElementById('tr-canvas'); if(!canvas)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.clientWidth||300; canvas.width=W*dpr; canvas.height=W*dpr;
+  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+  const cx=W/2,cy=W/2,scale=W/7;
+  ctx.clearRect(0,0,W,W); ctx.fillStyle='#F8F7F3'; ctx.fillRect(0,0,W,W);
+  // grid
+  ctx.strokeStyle='#E8E6DF'; ctx.lineWidth=0.8;
+  for(let i=-4;i<=4;i++){ctx.beginPath();ctx.moveTo(cx+i*scale,0);ctx.lineTo(cx+i*scale,W);ctx.stroke();ctx.beginPath();ctx.moveTo(0,cy+i*scale);ctx.lineTo(W,cy+i*scale);ctx.stroke();}
+  ctx.strokeStyle='#D8D6CE'; ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,W);ctx.stroke();
+
+  // original unit square (dashed)
+  const orig=[[0,0],[1,0],[1,1],[0,1]];
+  ctx.strokeStyle='rgba(28,45,66,0.3)'; ctx.lineWidth=1; ctx.setLineDash([4,3]);
+  ctx.beginPath();
+  orig.forEach(([x,y],i)=>{const px=cx+x*scale,py=cy-y*scale;i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);});
+  ctx.closePath(); ctx.stroke(); ctx.setLineDash([]);
+
+  // transformed square
+  const tx=([x,y])=>[cx+(a*x+b*y)*scale, cy-(c*x+d*y)*scale];
+  ctx.strokeStyle='#C82A2A'; ctx.lineWidth=2; ctx.fillStyle='rgba(200,42,42,0.08)';
+  ctx.beginPath();
+  orig.forEach(([x,y],i)=>{const [px,py]=tx([x,y]);i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);});
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+
+  // basis vectors
+  arrow(ctx,cx,cy,...tx([1,0]),'#8B6914',2);
+  arrow(ctx,cx,cy,...tx([0,1]),'#1C2D42',2);
+}
+
+updateTransform();
+
+// ===== TAB SWITCHING =====
+function switchTab(id){
+  ['vectors','matmul','transform'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);
+    p.style.display=t===id?'block':'none';
+    p.classList.toggle('active',t===id);
+  });
+  if(id==='vectors')  setTimeout(updateVectors,50);
+  if(id==='transform')setTimeout(updateTransform,50);
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+window.addEventListener('resize',()=>{updateVectors();updateTransform();});
+</script>
+</body>
+</html>

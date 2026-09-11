@@ -1,0 +1,1273 @@
+/*
+ * ================================================================
+ * AoPS Publishing Design System — Master Stylesheet
+ * Art of Problem Solving Ebook Series
+ * Theme: Japanese Zen Garden Minimalism
+ * Version: 1.0
+ * ================================================================
+ */
+
+/* ---- Google Fonts Import ---- */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ================================================================
+   1. DESIGN TOKENS
+   ================================================================ */
+
+:root {
+  /* Color — Primary */
+  --ink:           #1C1C1C;
+  --paper:         #F5F4EF;
+  --warm:          #EEECE4;
+  --bone:          #E8E5DC;
+  --ghost:         #D4D0C4;
+
+  /* Color — Accent */
+  --indigo:        #1C2D42;
+  --lacquer:       #C82A2A;
+  --gold:          #8B6914;
+  --sage:          #3D5B3F;
+  --slate:         #4A5568;
+
+  /* Color — Tints */
+  --indigo-tint:   rgba(28, 45, 66, 0.08);
+  --lacquer-tint:  rgba(200, 42, 42, 0.07);
+  --gold-tint:     rgba(139, 105, 20, 0.08);
+  --sage-tint:     rgba(61, 91, 63, 0.07);
+
+  /* Fonts */
+  --font-display:  'Noto Serif JP', Georgia, 'Times New Roman', serif;
+  --font-body:     'EB Garamond', Georgia, 'Times New Roman', serif;
+  --font-sans:     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:     'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+
+  /* Spacing — 8px base unit */
+  --sp-xs:  4px;
+  --sp-sm:  8px;
+  --sp-md:  16px;
+  --sp-lg:  32px;
+  --sp-xl:  64px;
+  --sp-2xl: 96px;
+  --sp-3xl: 128px;
+
+  /* Layout */
+  --content-width: 720px;
+  --text-width:    640px;
+  --border-radius: 2px;
+  --line-height:   1.75;
+}
+
+
+/* ================================================================
+   2. BASE RESET & PAGE
+   ================================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 17px;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body.aops-book {
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: var(--line-height);
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ================================================================
+   3. LAYOUT CONTAINERS
+   ================================================================ */
+
+.book-container {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: var(--sp-xl) var(--sp-xl);
+}
+
+.book-text {
+  max-width: var(--text-width);
+}
+
+@media (max-width: 800px) {
+  .book-container { padding: var(--sp-lg) var(--sp-lg); }
+}
+@media (max-width: 600px) {
+  .book-container { padding: var(--sp-md) var(--sp-md); }
+}
+
+
+/* ================================================================
+   4. TYPOGRAPHY — HEADINGS
+   ================================================================ */
+
+/* Chapter Number Label */
+.chapter-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--indigo);
+  display: block;
+  margin-bottom: var(--sp-sm);
+}
+
+/* Chapter Title (H1 equivalent) */
+h1, .chapter-title {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 4vw, 32px);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin-top: var(--sp-md);
+  margin-bottom: var(--sp-sm);
+}
+
+/* Chapter Subtitle */
+.chapter-subtitle {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--slate);
+  margin-bottom: var(--sp-xl);
+}
+
+/* Section Heading (H2) */
+h2, .section-head {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin-top: var(--sp-2xl);
+  margin-bottom: var(--sp-md);
+  padding-bottom: var(--sp-sm);
+  border-bottom: 1px solid var(--ghost);
+}
+
+/* Sub-section Heading (H3) */
+h3, .subsection-head {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--indigo);
+  margin-top: var(--sp-xl);
+  margin-bottom: var(--sp-md);
+}
+
+/* H4 */
+h4 {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--slate);
+  margin-top: var(--sp-lg);
+  margin-bottom: var(--sp-sm);
+}
+
+
+/* ================================================================
+   5. TYPOGRAPHY — BODY
+   ================================================================ */
+
+/* Body paragraphs */
+p {
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--ink);
+  margin: 0;
+  hyphens: auto;
+}
+
+/* Subsequent paragraphs — hanging indent style */
+p + p {
+  text-indent: 1.4em;
+}
+
+/* Opening / lead paragraph */
+.lead-para {
+  font-size: 18px;
+  font-style: italic;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  margin-bottom: var(--sp-lg);
+  text-indent: 0 !important;
+}
+
+/* Drop cap */
+.drop-cap::first-letter {
+  font-family: var(--font-display);
+  font-size: 4.2em;
+  font-weight: 300;
+  line-height: 0.78;
+  float: left;
+  color: var(--indigo);
+  padding-right: 6px;
+  padding-top: 4px;
+}
+
+/* Strong / Bold */
+strong, b {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* Emphasis / Italic */
+em, i {
+  font-style: italic;
+}
+
+/* Inline code */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: var(--bone);
+  border: 1px solid var(--ghost);
+  padding: 1px 5px;
+  border-radius: var(--border-radius);
+  color: var(--indigo);
+  word-break: break-all;
+}
+
+/* Links */
+a {
+  color: var(--indigo);
+  text-decoration: underline;
+  text-decoration-color: var(--ghost);
+  text-underline-offset: 3px;
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+a:hover {
+  color: var(--lacquer);
+  text-decoration-color: var(--lacquer);
+}
+
+/* Small text */
+small, .small-text {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--slate);
+}
+
+/* Abbreviations */
+abbr {
+  font-variant: small-caps;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  border-bottom: 1px dotted var(--ghost);
+  cursor: help;
+}
+
+
+/* ================================================================
+   6. CHAPTER OPENER
+   ================================================================ */
+
+.chapter-opener {
+  margin-bottom: var(--sp-2xl);
+  page-break-after: avoid;
+}
+
+.chapter-opener-band {
+  width: 100%;
+  height: 160px;
+  background: linear-gradient(135deg, var(--indigo-tint) 0%, transparent 100%);
+  border-bottom: 1px solid var(--ghost);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--sp-xl);
+  overflow: hidden;
+  position: relative;
+}
+
+.chapter-opener-band svg {
+  opacity: 0.4;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.chapter-opener-content {
+  padding-top: var(--sp-lg);
+}
+
+.chapter-rule {
+  width: 100%;
+  border: none;
+  border-top: 1px solid var(--ghost);
+  margin: var(--sp-sm) 0 var(--sp-xl);
+}
+
+.chapter-divider {
+  display: block;
+  width: 48px;
+  height: 1px;
+  background: var(--gold);
+  margin: var(--sp-xl) auto;
+}
+
+
+/* ================================================================
+   7. PULL QUOTE
+   ================================================================ */
+
+blockquote, .pull-quote {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--indigo);
+  border-left: 3px solid var(--indigo);
+  padding: 6px 0 6px 28px;
+  margin: var(--sp-xl) 0 var(--sp-xl) 0;
+}
+
+blockquote cite, .pull-quote cite {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--slate);
+  margin-top: var(--sp-md);
+}
+
+/* Opening story blockquote */
+.opening-story {
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-style: italic;
+  line-height: 1.8;
+  color: var(--ink);
+  background: var(--warm);
+  border-left: 3px solid var(--indigo);
+  padding: var(--sp-lg) var(--sp-lg) var(--sp-lg) var(--sp-xl);
+  margin: var(--sp-lg) 0 var(--sp-xl);
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+}
+
+.opening-story strong {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--indigo);
+}
+
+
+/* ================================================================
+   8. CALLOUT BOXES
+   ================================================================ */
+
+.callout {
+  margin: var(--sp-xl) 0;
+  padding: var(--sp-lg) var(--sp-lg) var(--sp-lg) calc(var(--sp-lg) + 4px);
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  page-break-inside: avoid;
+}
+
+.callout-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin-bottom: var(--sp-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+}
+
+.callout-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.2;
+}
+
+.callout-body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.callout-body p { font-size: 15px; }
+.callout-body p + p { text-indent: 1.2em; }
+
+/* Historical Note */
+.callout-historical {
+  background: var(--sage-tint);
+  border-left: 3px solid var(--sage);
+}
+.callout-historical .callout-label { color: var(--sage); }
+
+/* Key Insight */
+.callout-insight {
+  background: var(--gold-tint);
+  border-left: 3px solid var(--gold);
+}
+.callout-insight .callout-label { color: var(--gold); }
+
+/* Think About It */
+.callout-think {
+  background: var(--indigo-tint);
+  border-left: 3px solid var(--indigo);
+}
+.callout-think .callout-label { color: var(--indigo); }
+
+/* Try It Yourself */
+.callout-try {
+  background: var(--bone);
+  border-left: 3px solid var(--slate);
+}
+.callout-try .callout-label { color: var(--slate); }
+
+/* Challenge */
+.callout-challenge {
+  background: var(--lacquer-tint);
+  border-left: 3px solid var(--lacquer);
+}
+.callout-challenge .callout-label { color: var(--lacquer); }
+
+/* Deep Dive */
+.callout-deep {
+  background: var(--warm);
+  border-left: 3px solid var(--indigo);
+}
+.callout-deep .callout-label { color: var(--indigo); }
+.callout-deep .callout-body { font-style: italic; }
+
+/* Future Connection */
+.callout-future {
+  background: var(--warm);
+  border-left: 3px solid var(--gold);
+}
+.callout-future .callout-label { color: var(--gold); }
+
+
+/* ================================================================
+   9. FIGURES
+   ================================================================ */
+
+figure {
+  margin: var(--sp-xl) 0;
+  page-break-inside: avoid;
+}
+
+.figure-wrapper {
+  background: var(--warm);
+  border: 1px solid var(--ghost);
+  border-radius: var(--border-radius);
+  padding: var(--sp-md);
+  overflow: hidden;
+}
+
+.figure-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--indigo);
+  border: 1px solid rgba(28,45,66,0.3);
+  padding: 2px 8px;
+  border-radius: var(--border-radius);
+  display: inline-block;
+  margin-bottom: var(--sp-sm);
+}
+
+.figure-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--indigo);
+  margin-bottom: var(--sp-xs);
+}
+
+.figure-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--border-radius);
+}
+
+.figure-screen {
+  display: block;
+  width: 100%;
+  background: var(--bone);
+  border: 1px solid var(--ghost);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  min-height: 200px;
+}
+
+figcaption, .figure-caption {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.55;
+  color: var(--slate);
+  margin-top: var(--sp-md);
+  max-width: 600px;
+}
+
+.figure-caption strong {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.figure-sep {
+  border: none;
+  border-top: 1px solid var(--ghost);
+  margin: var(--sp-sm) 0 var(--sp-md);
+}
+
+
+/* ================================================================
+   10. CODE BLOCKS
+   ================================================================ */
+
+pre {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  background: var(--warm);
+  border: 1px solid var(--ghost);
+  border-left: 3px solid var(--indigo);
+  padding: var(--sp-md) var(--sp-lg);
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  overflow-x: auto;
+  color: var(--ink);
+  margin: var(--sp-lg) 0;
+  tab-size: 4;
+}
+
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+.code-caption {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--slate);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: -8px;
+  margin-top: var(--sp-lg);
+}
+
+
+/* ================================================================
+   11. TABLES
+   ================================================================ */
+
+.book-table-wrap {
+  overflow-x: auto;
+  margin: var(--sp-xl) 0;
+}
+
+.book-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 15px;
+}
+
+.book-table th {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--slate);
+  background: var(--warm);
+  padding: 10px 14px;
+  border-top: 1.5px solid var(--ink);
+  border-bottom: 1px solid var(--ghost);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.book-table td {
+  font-family: var(--font-body);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--bone);
+  color: var(--ink);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.book-table tr:last-child td {
+  border-bottom: 1.5px solid var(--ink);
+}
+
+.book-table td code {
+  font-size: 12px;
+}
+
+.table-caption {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-style: italic;
+  color: var(--slate);
+  margin-top: var(--sp-sm);
+  text-align: center;
+}
+
+
+/* ================================================================
+   12. LISTS
+   ================================================================ */
+
+ul, ol {
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--ink);
+  padding-left: var(--sp-xl);
+  margin: var(--sp-md) 0 var(--sp-lg);
+}
+
+li {
+  margin-bottom: var(--sp-sm);
+  padding-left: var(--sp-xs);
+}
+
+li::marker {
+  color: var(--indigo);
+}
+
+ul li::marker { content: '—  '; }
+
+li p { text-indent: 0 !important; }
+
+
+/* ================================================================
+   13. DIVIDERS & SECTION BREAKS
+   ================================================================ */
+
+.section-break {
+  text-align: center;
+  margin: var(--sp-2xl) 0;
+  color: var(--ghost);
+  font-size: 18px;
+  letter-spacing: 0.5em;
+}
+
+.section-break::before {
+  content: '· · ·';
+  color: var(--gold);
+  letter-spacing: 0.6em;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--ghost);
+  margin: var(--sp-xl) 0;
+}
+
+.rule-indigo {
+  border-top-color: var(--indigo);
+  opacity: 0.3;
+}
+
+
+/* ================================================================
+   14. TABLE OF CONTENTS
+   ================================================================ */
+
+.toc {
+  font-family: var(--font-body);
+  margin: var(--sp-xl) 0;
+}
+
+.toc-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 300;
+  color: var(--ink);
+  margin-bottom: var(--sp-md);
+  padding-bottom: var(--sp-md);
+  border-bottom: 1px solid var(--ghost);
+}
+
+.toc-part {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--slate);
+  margin: var(--sp-xl) 0 var(--sp-md);
+}
+
+.toc-entry {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-sm);
+  margin-bottom: var(--sp-sm);
+  line-height: 1.4;
+}
+
+.toc-chapter-num {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--indigo);
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.toc-chapter-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--ink);
+  flex: 1;
+}
+
+.toc-dots {
+  flex: 1;
+  overflow: hidden;
+  color: var(--ghost);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  padding: 0 var(--sp-sm);
+  white-space: nowrap;
+}
+
+.toc-page {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--slate);
+  min-width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.toc-sub-entry {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-sm);
+  margin: var(--sp-xs) 0 var(--sp-xs) 96px;
+  line-height: 1.3;
+}
+
+.toc-sub-title {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--slate);
+  flex: 1;
+}
+
+
+/* ================================================================
+   15. COVER PAGE
+   ================================================================ */
+
+.book-cover {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  background: var(--paper);
+  page-break-after: always;
+}
+
+.cover-top-band {
+  background: var(--indigo);
+  padding: var(--sp-xl) var(--sp-xl) var(--sp-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cover-logo {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 300;
+  color: #FDFDFD;
+  letter-spacing: 0.06em;
+}
+
+.cover-level-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 3px 10px;
+  border-radius: var(--border-radius);
+}
+
+.cover-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--sp-3xl) var(--sp-xl);
+  position: relative;
+}
+
+.cover-series {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--slate);
+  margin-bottom: var(--sp-lg);
+}
+
+.cover-title {
+  font-family: var(--font-display);
+  font-size: clamp(42px, 6vw, 56px);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: var(--sp-lg);
+}
+
+.cover-rule {
+  width: 64px;
+  height: 1.5px;
+  background: var(--indigo);
+  margin-bottom: var(--sp-lg);
+}
+
+.cover-subtitle {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 1.3;
+  color: var(--indigo);
+  margin-bottom: var(--sp-sm);
+}
+
+.cover-tagline {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--slate);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.cover-illustration {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 45%;
+  opacity: 0.15;
+}
+
+.cover-bottom-band {
+  background: var(--warm);
+  border-top: 1px solid var(--ghost);
+  padding: var(--sp-md) var(--sp-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cover-level-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--lacquer);
+}
+
+.cover-series-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--slate);
+  letter-spacing: 0.08em;
+}
+
+
+/* ================================================================
+   16. COPYRIGHT PAGE
+   ================================================================ */
+
+.copyright-page {
+  padding: var(--sp-2xl) 0;
+  page-break-after: always;
+}
+
+.copyright-text {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--slate);
+}
+
+.copyright-text p + p {
+  margin-top: var(--sp-md);
+  text-indent: 0;
+}
+
+
+/* ================================================================
+   17. RUNNING HEADERS (Screen simulation)
+   ================================================================ */
+
+.running-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: var(--sp-sm);
+  border-bottom: 0.5px solid var(--ghost);
+  margin-bottom: var(--sp-xl);
+}
+
+.running-header-text {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--slate);
+}
+
+.running-page-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--slate);
+}
+
+
+/* ================================================================
+   18. GLOSSARY
+   ================================================================ */
+
+.glossary-entry {
+  margin-bottom: var(--sp-lg);
+  padding-bottom: var(--sp-lg);
+  border-bottom: 1px solid var(--bone);
+}
+
+.glossary-term {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--indigo);
+  margin-bottom: var(--sp-sm);
+}
+
+.glossary-def {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.glossary-def p { font-size: 15px; }
+
+
+/* ================================================================
+   19. TIMELINE
+   ================================================================ */
+
+.timeline {
+  margin: var(--sp-xl) 0;
+  position: relative;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 80px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--ghost);
+}
+
+.timeline-entry {
+  display: flex;
+  gap: var(--sp-lg);
+  margin-bottom: var(--sp-xl);
+  position: relative;
+}
+
+.timeline-year {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--indigo);
+  min-width: 72px;
+  padding-top: 2px;
+  text-align: right;
+}
+
+.timeline-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--indigo);
+  margin-top: 6px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.timeline-content-wrap {
+  flex: 1;
+  padding-bottom: var(--sp-md);
+}
+
+.timeline-event {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: var(--sp-xs);
+}
+
+.timeline-desc {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--slate);
+}
+
+
+/* ================================================================
+   20. REFLECTION QUESTIONS
+   ================================================================ */
+
+.reflection-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--sp-xl) 0;
+}
+
+.reflection-list li {
+  padding: var(--sp-lg) var(--sp-lg);
+  background: var(--warm);
+  border-left: 2px solid var(--indigo);
+  margin-bottom: var(--sp-sm);
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink);
+  counter-increment: reflection;
+}
+
+.reflection-list li::before {
+  content: counter(reflection);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--indigo);
+  display: block;
+  margin-bottom: var(--sp-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+
+/* ================================================================
+   21. CHAPTER SUMMARY / KEY TAKEAWAYS
+   ================================================================ */
+
+.key-takeaways {
+  background: var(--warm);
+  border: 1px solid var(--ghost);
+  border-top: 3px solid var(--indigo);
+  padding: var(--sp-xl);
+  margin: var(--sp-2xl) 0;
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+.key-takeaways-title {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--indigo);
+  margin-bottom: var(--sp-lg);
+}
+
+.key-takeaways ul {
+  padding-left: var(--sp-lg);
+  margin: 0;
+  font-size: 15px;
+}
+
+
+/* ================================================================
+   22. MODERN CONNECTION PANEL
+   ================================================================ */
+
+.modern-connection {
+  background: var(--indigo-tint);
+  border: 1px solid rgba(28,45,66,0.18);
+  border-top: 3px solid var(--indigo);
+  padding: var(--sp-xl);
+  margin: var(--sp-2xl) 0;
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+.modern-connection-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--indigo);
+  margin-bottom: var(--sp-md);
+}
+
+.modern-connection-arrow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-md);
+  margin-bottom: var(--sp-md);
+}
+
+.modern-connection-from {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--slate);
+  min-width: 140px;
+  padding-top: 2px;
+}
+
+.modern-connection-to {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+.modern-connection-arrow::before {
+  content: '→';
+  font-family: var(--font-mono);
+  color: var(--indigo);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+
+/* ================================================================
+   23. PRINT / PDF OVERRIDES
+   ================================================================ */
+
+@media print {
+  :root {
+    font-size: 10.5pt;
+  }
+
+  body.aops-book {
+    background: white;
+    color: #1C1C1C;
+  }
+
+  .book-container {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  h2 { page-break-after: avoid; }
+  h3 { page-break-after: avoid; }
+  figure { page-break-inside: avoid; }
+  .callout { page-break-inside: avoid; }
+  blockquote { page-break-inside: avoid; }
+
+  a { color: #1C1C1C; text-decoration: none; }
+  a[href]::after { content: ' (' attr(href) ')'; font-size: 9pt; color: #4A5568; }
+
+  pre { border: 0.5pt solid #D4D0C4; }
+
+  .cover-illustration { display: none; }
+}
+
+
+/* ================================================================
+   24. EPUB OVERRIDES
+   ================================================================ */
+
+@media (max-device-width: 600px) {
+  html { font-size: 16px; }
+  .book-container { padding: var(--sp-md); }
+  h1, .chapter-title { font-size: 26px; }
+  h2 { font-size: 20px; }
+  .cover-title { font-size: 36px; }
+  .cover-illustration { display: none; }
+  .toc-dots { display: none; }
+  pre { font-size: 12px; }
+}
+
+
+/* ================================================================
+   25. ACCESSIBILITY
+   ================================================================ */
+
+:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  /* Dark mode override — minimal, preserves the zen palette */
+  .aops-book {
+    --ink:    #E8E5DC;
+    --paper:  #1A1A18;
+    --warm:   #222220;
+    --bone:   #2A2A28;
+    --ghost:  #3A3A38;
+    --slate:  #8A8A80;
+    --indigo: #7B9CC4;
+    --gold:   #C4A245;
+  }
+}

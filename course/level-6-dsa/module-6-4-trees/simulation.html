@@ -1,0 +1,293 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 6.4 — Trees: BST, AVL, Red-Black</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+canvas{display:block;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);width:100%}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.stat-box{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:300;line-height:1;margin-bottom:2px;display:block;color:var(--text-sumi)}
+.sv.red{color:var(--accent-red)}.sv.gold{color:var(--accent-gold)}.sv.indigo{color:var(--accent-indigo)}
+.sl{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:120px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs)}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 6.4 — Trees: BST, AVL, Red-Black</h1>
+  <p class="zen-subtitle">BST Builder · Tree Traversals · Worst-Case Demonstration</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('bst')">BST Builder</div>
+  <div class="zen-tab" onclick="switchTab('trav')">Traversals</div>
+  <div class="zen-tab" onclick="switchTab('worst')">Worst Case</div>
+</div>
+
+<!-- BST BUILDER -->
+<div id="panel-bst" class="panel active">
+  <div class="zen-intro"><strong>Build a Binary Search Tree by inserting keys.</strong> Left subtree keys < node key < right subtree keys. The resulting shape depends entirely on insertion order — try sorted vs random inputs to see the difference.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Insert and search</div>
+      <canvas id="bst-canvas" height="260"></canvas>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
+        <input id="bst-val" type="number" value="50" style="font-family:'JetBrains Mono',monospace;font-size:13px;width:70px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+        <button class="zen-btn primary" onclick="bstInsert()">Insert</button>
+        <button class="zen-btn" onclick="bstSearch()">Search</button>
+        <button class="zen-btn danger" onclick="bstClear()">↺ Clear</button>
+        <button class="zen-btn" onclick="bstLoadRandom()">Random 9</button>
+      </div>
+      <div class="stat-row" style="margin-top:10px">
+        <div class="stat-box"><span class="sv indigo" id="bst-count">0</span><span class="sl">Nodes</span></div>
+        <div class="stat-box"><span class="sv gold" id="bst-height">0</span><span class="sl">Height</span></div>
+        <div class="stat-box"><span class="sv red" id="bst-comps">0</span><span class="sl">Last search</span></div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">In-order traversal = sorted output</div>
+      <div id="bst-inorder" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent-gold);margin-bottom:12px;min-height:24px">—</div>
+      <div class="pane-title red" style="margin-bottom:6px">BST property</div>
+      <div style="font-size:12px;color:var(--text-muted);line-height:1.8;padding:10px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:10px">
+        For any node with key k:<br>
+        • All <strong style="color:var(--text-sumi)">left subtree</strong> keys &lt; k<br>
+        • All <strong style="color:var(--text-sumi)">right subtree</strong> keys &gt; k<br><br>
+        This enables O(log n) search — like binary search on a dynamic structure.
+      </div>
+      <div class="op-log" id="bst-log"><div class="linfo">> Insert keys and watch the BST property maintained at every node.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TRAVERSALS -->
+<div id="panel-trav" class="panel">
+  <div class="zen-intro"><strong>Four ways to visit every node.</strong> In-order produces sorted output. Pre-order serialises the tree structure. Post-order processes children before parents. Level-order explores breadth-first.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Tree</div>
+      <canvas id="trav-canvas" height="220"></canvas>
+      <div class="btn-row" style="margin-top:8px">
+        <button class="zen-btn" onclick="travRun('in')">In-order</button>
+        <button class="zen-btn" onclick="travRun('pre')">Pre-order</button>
+        <button class="zen-btn" onclick="travRun('post')">Post-order</button>
+        <button class="zen-btn" onclick="travRun('level')">Level-order</button>
+        <button class="zen-btn danger" onclick="travReset()">↺ Reset</button>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Visit order</div>
+      <div id="trav-result" style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--accent-gold);min-height:28px;margin-bottom:12px;letter-spacing:.05em">—</div>
+      <div class="pane-title red" style="margin-bottom:6px">Step-by-step</div>
+      <div id="trav-nodes-vis" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;min-height:32px"></div>
+      <div class="op-log" id="trav-log"><div class="linfo">> Click a traversal type to see visit order animated.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- WORST CASE -->
+<div id="panel-worst" class="panel">
+  <div class="zen-intro"><strong>A BST is only O(log n) when balanced.</strong> Inserting already-sorted data produces a degenerate tree — a linked list with O(n) operations. Compare: 9 keys inserted in random order vs sorted order.</div>
+  <div class="pane" style="margin-bottom:1px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)">
+      <div class="pane warm">
+        <div class="pane-title gold">Random insertion order</div>
+        <canvas id="wc-rand-canvas" height="220"></canvas>
+        <div class="stat-row" style="margin-top:8px">
+          <div class="stat-box"><span class="sv gold" id="wc-rand-h">0</span><span class="sl">Height</span></div>
+          <div class="stat-box"><span class="sv gold" id="wc-rand-ops">0</span><span class="sl">Max search ops</span></div>
+          <div class="stat-box"><span class="sv gold">O(log n)</span><span class="sl">Expected</span></div>
+        </div>
+      </div>
+      <div class="pane">
+        <div class="pane-title red">Sorted insertion — DEGENERATE</div>
+        <canvas id="wc-sort-canvas" height="220"></canvas>
+        <div class="stat-row" style="margin-top:8px">
+          <div class="stat-box"><span class="sv red" id="wc-sort-h">0</span><span class="sl">Height</span></div>
+          <div class="stat-box"><span class="sv red" id="wc-sort-ops">0</span><span class="sl">Max search ops</span></div>
+          <div class="stat-box"><span class="sv red">O(n)</span><span class="sl">Actual</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="op-log" id="wc-log" style="margin-top:1px;border-top:1px solid var(--border-light)"><div class="linfo">> The shape of a BST is entirely determined by insertion order. Self-balancing trees (AVL, red-black) fix this automatically.</div></div>
+  </div>
+</div>
+
+<script>
+// ===== BST Node =====
+class BSTNode{constructor(k){this.k=k;this.l=null;this.r=null;}}
+class BST{
+  constructor(){this.root=null;}
+  insert(k){
+    const n=new BSTNode(k);
+    if(!this.root){this.root=n;return;}
+    let cur=this.root;
+    for(;;){if(k<cur.k){if(!cur.l){cur.l=n;return;}cur=cur.l;}else if(k>cur.k){if(!cur.r){cur.r=n;return;}cur=cur.r;}else return;}
+  }
+  search(k){let c=this.root,steps=0;while(c){steps++;if(k===c.k)return{found:true,steps};if(k<c.k)c=c.l;else c=c.r;}return{found:false,steps};}
+  height(n=this.root){if(!n)return 0;return 1+Math.max(this.height(n.l),this.height(n.r));}
+  count(n=this.root){if(!n)return 0;return 1+this.count(n.l)+this.count(n.r);}
+  inorder(n=this.root,res=[]){if(n){this.inorder(n.l,res);res.push(n.k);this.inorder(n.r,res);}return res;}
+  preorder(n=this.root,res=[]){if(n){res.push(n.k);this.preorder(n.l,res);this.preorder(n.r,res);}return res;}
+  postorder(n=this.root,res=[]){if(n){this.postorder(n.l,res);this.postorder(n.r,res);res.push(n.k);}return res;}
+  levelorder(){const res=[],q=[this.root];while(q.length){const n=q.shift();if(n){res.push(n.k);q.push(n.l,n.r);}}return res;}
+}
+
+function drawBST(canvas, tree, highlighted=null){
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.clientWidth||320, H=canvas.height;
+  canvas.width=W*dpr; canvas.height=H*dpr;
+  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#F8F7F3'; ctx.fillRect(0,0,W,H);
+  if(!tree.root){ctx.fillStyle='#BBBBB5';ctx.font='12px Inter,sans-serif';ctx.textAlign='center';ctx.fillText('Empty tree',W/2,H/2);return;}
+  const positions={};
+  function assignPos(node, depth, lo, hi){
+    if(!node)return;
+    const x=lo+(hi-lo)/2, y=30+depth*44;
+    positions[node.k]={x,y};
+    assignPos(node.l,depth+1,lo,lo+(hi-lo)/2-2);
+    assignPos(node.r,depth+1,lo+(hi-lo)/2+2,hi);
+  }
+  assignPos(tree.root,0,10,W-10);
+  // Edges
+  function drawEdges(node){
+    if(!node)return;
+    const p=positions[node.k];
+    if(node.l){const c=positions[node.l.k];ctx.strokeStyle='#D8D6CE';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(c.x,c.y);ctx.stroke();drawEdges(node.l);}
+    if(node.r){const c=positions[node.r.k];ctx.strokeStyle='#D8D6CE';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(c.x,c.y);ctx.stroke();drawEdges(node.r);}
+  }
+  drawEdges(tree.root);
+  // Nodes
+  Object.values(positions).forEach(({x,y})=>{});
+  function drawNodes(node){
+    if(!node)return;
+    const {x,y}=positions[node.k];
+    const isHL=highlighted&&highlighted.includes(node.k);
+    ctx.beginPath();ctx.arc(x,y,16,0,Math.PI*2);
+    ctx.fillStyle=isHL?'rgba(139,105,20,0.2)':'rgba(248,247,243,0.9)';
+    ctx.fill();
+    ctx.strokeStyle=isHL?'#8B6914':'#D8D6CE';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle=isHL?'#8B6914':'#1C1C1C';
+    ctx.font='bold 12px JetBrains Mono,monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(node.k,x,y);
+    drawNodes(node.l);drawNodes(node.r);
+  }
+  drawNodes(tree.root);
+}
+
+// ===== BST PANEL =====
+let bstTree=new BST(), bstHL=[];
+function bstLog(m,cls='lmuted'){const el=document.getElementById('bst-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function bstRefresh(){
+  drawBST(document.getElementById('bst-canvas'),bstTree,bstHL);
+  document.getElementById('bst-count').textContent=bstTree.count();
+  document.getElementById('bst-height').textContent=bstTree.height();
+  document.getElementById('bst-inorder').textContent=bstTree.inorder().join(' → ')||'—';
+}
+function bstInsert(){const v=parseInt(document.getElementById('bst-val').value)||0;bstTree.insert(v);bstLog(`insert(${v}) → height=${bstTree.height()}`,'linfo');bstHL=[];bstRefresh();}
+function bstSearch(){
+  const v=parseInt(document.getElementById('bst-val').value)||0;
+  const {found,steps}=bstTree.search(v);
+  document.getElementById('bst-comps').textContent=steps;
+  bstHL=found?[v]:[];bstLog(`search(${v}) → ${found?'found':'not found'} after ${steps} comparisons`,found?'lok':'lerr');bstRefresh();
+}
+function bstClear(){bstTree=new BST();bstHL=[];bstLog('Cleared.','lmuted');bstRefresh();}
+function bstLoadRandom(){bstClear();const keys=[8,3,10,1,6,9,14,4,7];keys.forEach(k=>bstTree.insert(k));bstLog('Loaded: '+keys.join(', '),'linfo');bstRefresh();}
+bstLoadRandom();
+
+// ===== TRAVERSALS =====
+let travTree=new BST();
+[8,3,10,1,6,9,14,4,7].forEach(k=>travTree.insert(k));
+let travHL=[];
+function travLog(m,cls='lmuted'){const el=document.getElementById('trav-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function travRefresh(){drawBST(document.getElementById('trav-canvas'),travTree,travHL);}
+function travReset(){travHL=[];travRefresh();document.getElementById('trav-result').textContent='—';document.getElementById('trav-nodes-vis').innerHTML='';}
+function travRun(type){
+  let order;
+  if(type==='in')order=travTree.inorder();
+  else if(type==='pre')order=travTree.preorder();
+  else if(type==='post')order=travTree.postorder();
+  else order=travTree.levelorder().filter(v=>v!==undefined);
+  const name={'in':'In-order','pre':'Pre-order','post':'Post-order','level':'Level-order'}[type];
+  document.getElementById('trav-result').textContent=order.join(' → ');
+  travLog(`${name}: [${order.join(', ')}]`, 'linfo');
+  // Animate
+  let i=0; travHL=[];
+  const vis=document.getElementById('trav-nodes-vis'); vis.innerHTML='';
+  const step=()=>{
+    if(i>=order.length)return;
+    travHL.push(order[i]);
+    const chip=document.createElement('div');
+    chip.style.cssText='background:var(--bg-washi);border:1px solid var(--accent-gold);padding:4px 10px;border-radius:var(--radius-xs);font-family:\'JetBrains Mono\',monospace;font-size:12px;color:var(--accent-gold)';
+    chip.textContent=order[i];
+    vis.appendChild(chip);
+    travRefresh(); i++;
+    if(i<order.length) setTimeout(step,300);
+  };
+  step();
+}
+travRefresh();
+
+// ===== WORST CASE =====
+let wcRandTree=new BST(), wcSortTree=new BST();
+[8,3,10,1,6,9,14,4,7].forEach(k=>{wcRandTree.insert(k);});
+[1,2,3,4,5,6,7,8,9].forEach(k=>{wcSortTree.insert(k);});
+function wcDraw(){
+  drawBST(document.getElementById('wc-rand-canvas'),wcRandTree);
+  drawBST(document.getElementById('wc-sort-canvas'),wcSortTree);
+  document.getElementById('wc-rand-h').textContent=wcRandTree.height();
+  document.getElementById('wc-sort-h').textContent=wcSortTree.height();
+  document.getElementById('wc-rand-ops').textContent=wcRandTree.height();
+  document.getElementById('wc-sort-ops').textContent=wcSortTree.height();
+  const wcLog=document.getElementById('wc-log');
+  wcLog.innerHTML=`<div class="linfo">> Random order (8,3,10...): height=${wcRandTree.height()} — O(log n) ≈ 4 comparisons max</div>
+<div class="lerr">> Sorted order (1,2,3...): height=${wcSortTree.height()} — O(n) = ${wcSortTree.height()} comparisons max</div>
+<div class="lmuted">> Self-balancing trees (AVL, red-black) guarantee height ≤ 1.44 log₂(n).</div>`;
+}
+wcDraw();
+
+window.addEventListener('resize',()=>{
+  if(document.getElementById('panel-bst').style.display!=='none'){bstRefresh();}
+  if(document.getElementById('panel-trav').style.display!=='none'){travRefresh();}
+  if(document.getElementById('panel-worst').style.display!=='none'){wcDraw();}
+});
+
+function switchTab(id){
+  ['bst','trav','worst'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);p.style.display=t===id?'block':'none';p.classList.toggle('active',t===id);
+  });
+  if(id==='bst')setTimeout(bstRefresh,50);
+  if(id==='trav')setTimeout(travRefresh,50);
+  if(id==='worst')setTimeout(wcDraw,50);
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+</script>
+</body>
+</html>

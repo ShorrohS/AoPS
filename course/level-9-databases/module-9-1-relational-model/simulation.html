@@ -1,0 +1,386 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 9.1 — The Relational Model and SQL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+/* SQL editor */
+textarea.sql-ed{width:100%;font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);color:var(--text-sumi);padding:12px;resize:vertical;border-radius:var(--radius-xs);line-height:1.8;min-height:90px}
+textarea.sql-ed:focus{outline:none;border-color:var(--accent-indigo)}
+/* Result table */
+.result-table{border-collapse:collapse;width:100%;font-size:12px;margin-top:8px}
+.result-table th{background:var(--bg-warm);color:var(--text-muted);padding:6px 12px;border:1px solid var(--border-paper);font-family:'Inter',sans-serif;font-size:9px;text-transform:uppercase;letter-spacing:.1em;text-align:left}
+.result-table td{padding:6px 12px;border:1px solid var(--border-paper);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-body)}
+.result-table tr:nth-child(even) td{background:rgba(28,45,66,0.02)}
+.result-table tr.highlighted td{background:rgba(200,42,42,0.06);color:var(--text-sumi)}
+/* Join vis */
+.join-row{display:flex;gap:4px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+.join-cell{padding:5px 10px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);font-family:'JetBrains Mono',monospace;font-size:11px;transition:all var(--t-fast)}
+.join-cell.left{border-color:var(--accent-indigo);background:rgba(28,45,66,0.06);color:var(--accent-indigo)}
+.join-cell.right{border-color:var(--accent-gold);background:rgba(139,105,20,0.06);color:var(--accent-gold)}
+.join-cell.matched{border-color:var(--accent-red);background:rgba(200,42,42,0.08);color:var(--accent-red)}
+.join-cell.null-cell{opacity:.4;border-style:dashed}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:110px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs)}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 9.1 — The Relational Model and SQL</h1>
+  <p class="zen-subtitle">SQL Query Executor · JOIN Visualiser · Index Impact</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('sql')">SQL Executor</div>
+  <div class="zen-tab" onclick="switchTab('join')">JOIN Types</div>
+  <div class="zen-tab" onclick="switchTab('index')">Index Impact</div>
+</div>
+
+<!-- SQL EXECUTOR -->
+<div id="panel-sql" class="panel active">
+  <div class="zen-intro"><strong>Run SQL queries against a live in-browser database.</strong> Tables: <code>users</code> (id, name, city, age) and <code>orders</code> (id, user_id, amount, status). Try SELECT, WHERE, GROUP BY, HAVING, ORDER BY, and JOINs.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">SQL query</div>
+      <textarea class="sql-ed" id="sql-input">SELECT name, city, age FROM users WHERE age > 25 ORDER BY age DESC;</textarea>
+      <div class="btn-row">
+        <button class="zen-btn primary" onclick="runSQL()">▶ Execute</button>
+        <button class="zen-btn danger" onclick="clearResult()">✕ Clear</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:10px">
+        <button class="zen-btn" style="padding:4px 9px;font-size:10px" onclick="setQ('SELECT * FROM users;')">All users</button>
+        <button class="zen-btn" style="padding:4px 9px;font-size:10px" onclick="setQ('SELECT city, COUNT(*) as cnt FROM users GROUP BY city ORDER BY cnt DESC;')">Cities count</button>
+        <button class="zen-btn" style="padding:4px 9px;font-size:10px" onclick="setQ('SELECT u.name, SUM(o.amount) as total FROM users u JOIN orders o ON u.id=o.user_id GROUP BY u.id,u.name ORDER BY total DESC;')">Revenue/user</button>
+        <button class="zen-btn" style="padding:4px 9px;font-size:10px" onclick="setQ('SELECT * FROM users WHERE city=\'London\';')">London users</button>
+        <button class="zen-btn" style="padding:4px 9px;font-size:10px" onclick="setQ('SELECT u.name, o.amount, o.status FROM users u LEFT JOIN orders o ON u.id=o.user_id;')">LEFT JOIN</button>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Result</div>
+      <div id="sql-result" style="overflow-x:auto;max-height:280px;overflow-y:auto"></div>
+      <div class="op-log" id="sql-log" style="margin-top:8px"><div class="linfo">> Type a query and press Execute. Case-insensitive SQL.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- JOIN VISUALISER -->
+<div id="panel-join" class="panel">
+  <div class="zen-intro"><strong>See exactly which rows each JOIN type returns.</strong> INNER JOIN: only matching rows. LEFT JOIN: all left rows, NULL for unmatched right. RIGHT JOIN: opposite. FULL OUTER: everything.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Join type</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+        <button class="zen-btn" id="jt-inner" onclick="showJoin('inner')">INNER JOIN</button>
+        <button class="zen-btn" id="jt-left" onclick="showJoin('left')">LEFT JOIN</button>
+        <button class="zen-btn" id="jt-right" onclick="showJoin('right')">RIGHT JOIN</button>
+        <button class="zen-btn" id="jt-full" onclick="showJoin('full')">FULL OUTER</button>
+      </div>
+      <div class="pane-title indigo" style="margin-bottom:6px">users (left)</div>
+      <div id="join-left" style="margin-bottom:12px"></div>
+      <div class="pane-title gold" style="margin-bottom:6px">orders (right, first order each)</div>
+      <div id="join-right"></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title red">Result rows</div>
+      <div id="join-result" style="overflow-x:auto"></div>
+      <div class="op-log" id="join-log" style="margin-top:10px"><div class="linfo">> Columns in blue come from users, gold from orders. NULL = no match found.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- INDEX IMPACT -->
+<div id="panel-index" class="panel">
+  <div class="zen-intro"><strong>Compare query cost with and without an index.</strong> Without an index: full table scan (every row checked). With a B-tree index: O(log n) lookup. The difference is catastrophic at scale.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Query: SELECT * FROM users WHERE city = 'London'</div>
+      <div style="margin-bottom:14px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;margin-bottom:8px">
+          <input type="checkbox" id="use-index" style="cursor:pointer">
+          CREATE INDEX idx_city ON users(city)
+        </label>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span style="font-size:11px;color:var(--text-muted)">Table rows:</span>
+          <select id="idx-rows" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+            <option value="10">10 rows</option>
+            <option value="100">100 rows</option>
+            <option value="1000" selected>1,000 rows</option>
+            <option value="1000000">1,000,000 rows</option>
+          </select>
+        </div>
+      </div>
+      <button class="zen-btn primary" onclick="runIndexDemo()">Simulate query</button>
+      <div id="idx-vis" style="margin-top:14px"></div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Execution plan</div>
+      <div id="idx-plan" style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2;min-height:80px;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:12px;border-radius:var(--radius-xs);margin-bottom:10px;color:var(--text-muted)">
+        Run the simulation to see the execution plan.
+      </div>
+      <div class="op-log" id="idx-log"><div class="linfo">> Full table scan = check every row. Index = follow tree to matching rows directly.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== IN-BROWSER DATABASE =====
+const DB = {
+  users: [
+    {id:1,name:'Alice',city:'London',age:30},
+    {id:2,name:'Bob',city:'New York',age:25},
+    {id:3,name:'Carol',city:'London',age:35},
+    {id:4,name:'Dave',city:'Paris',age:28},
+    {id:5,name:'Eve',city:'New York',age:32},
+    {id:6,name:'Frank',city:'London',age:40},
+    {id:7,name:'Grace',city:'Tokyo',age:27},
+    {id:8,name:'Henry',city:'Paris',age:22},
+  ],
+  orders: [
+    {id:1,user_id:1,amount:120,status:'completed'},
+    {id:2,user_id:2,amount:85,status:'pending'},
+    {id:3,user_id:1,amount:200,status:'completed'},
+    {id:4,user_id:3,amount:55,status:'completed'},
+    {id:5,user_id:5,amount:340,status:'cancelled'},
+    {id:6,user_id:6,amount:90,status:'completed'},
+    {id:7,user_id:7,amount:175,status:'pending'},
+    {id:8,user_id:2,amount:60,status:'completed'},
+    {id:9,user_id:4,amount:420,status:'completed'},
+  ]
+};
+
+function renderTable(rows, parent) {
+  if (!rows.length) { parent.innerHTML = '<div style="color:var(--text-ghost);padding:10px;font-size:12px">No rows returned</div>'; return; }
+  const cols = Object.keys(rows[0]);
+  let html = `<table class="result-table"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+  rows.forEach(r => {
+    html += `<tr>${cols.map(c=>`<td>${r[c]??'NULL'}</td>`).join('')}</tr>`;
+  });
+  html += '</tbody></table>';
+  parent.innerHTML = html;
+}
+
+function sqlLog(m, cls='lmuted') {
+  const el = document.getElementById('sql-log');
+  const d = document.createElement('div'); d.className = cls; d.textContent = '> ' + m;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+
+function setQ(q) { document.getElementById('sql-input').value = q; }
+function clearResult() { document.getElementById('sql-result').innerHTML = ''; }
+
+function runSQL() {
+  const raw = document.getElementById('sql-input').value.trim();
+  const q = raw.toLowerCase().replace(/\s+/g,' ');
+  const resultEl = document.getElementById('sql-result');
+
+  try {
+    let rows;
+
+    // SELECT with JOIN
+    if (q.includes('join')) {
+      const leftJoin = q.includes('left join');
+      rows = DB.users.map(u => {
+        const orders = DB.orders.filter(o => o.user_id === u.id);
+        if (orders.length) return orders.map(o => ({...u,...{o_id:o.id,amount:o.amount,status:o.status}}));
+        return leftJoin ? [{...u,...{o_id:null,amount:null,status:null}}] : [];
+      }).flat().filter(r=>r!==null);
+    }
+    // GROUP BY
+    else if (q.includes('group by')) {
+      const grpMatch = q.match(/group by (\w+)/);
+      const grpCol = grpMatch?.[1];
+      const groups = {};
+      DB.users.forEach(u => {
+        const k = u[grpCol] ?? u.city;
+        if (!groups[k]) groups[k] = [];
+        groups[k].push(u);
+      });
+      // Check if joining orders
+      if (q.includes('orders')) {
+        const userGroups = {};
+        DB.users.forEach(u => {
+          if (!userGroups[u.id]) userGroups[u.id] = {...u, total: 0};
+          DB.orders.filter(o=>o.user_id===u.id).forEach(o => userGroups[u.id].total += o.amount);
+        });
+        rows = Object.values(userGroups).map(u=>({name:u.name,total:u.total}));
+      } else {
+        rows = Object.entries(groups).map(([k,arr]) => {
+          const obj = {}; obj[grpCol || 'city'] = k; obj['cnt'] = arr.length; return obj;
+        });
+      }
+      // ORDER BY
+      if (q.includes('order by')) {
+        const orderMatch = q.match(/order by (\w+)(\s+desc)?/);
+        if (orderMatch) {
+          const col = orderMatch[1]; const desc = !!orderMatch[2];
+          rows.sort((a,b) => desc ? (b[col]??0)-(a[col]??0) : (a[col]??0)-(b[col]??0));
+        }
+      }
+    }
+    // Regular SELECT
+    else {
+      rows = [...DB.users];
+      // WHERE
+      const whereMatch = raw.match(/WHERE\s+(.+?)(?:ORDER|GROUP|HAVING|;|$)/i);
+      if (whereMatch) {
+        const cond = whereMatch[1].trim();
+        const cityMatch = cond.match(/city\s*=\s*'([^']+)'/i);
+        const ageGtMatch = cond.match(/age\s*>\s*(\d+)/i);
+        const ageLtMatch = cond.match(/age\s*<\s*(\d+)/i);
+        if (cityMatch) rows = rows.filter(r=>r.city.toLowerCase()===cityMatch[1].toLowerCase());
+        if (ageGtMatch) rows = rows.filter(r=>r.age>parseInt(ageGtMatch[1]));
+        if (ageLtMatch) rows = rows.filter(r=>r.age<parseInt(ageLtMatch[1]));
+      }
+      // SELECT cols
+      const selectMatch = raw.match(/SELECT\s+(.+?)\s+FROM/i);
+      if (selectMatch && selectMatch[1].trim() !== '*') {
+        const cols = selectMatch[1].split(',').map(c=>c.trim().toLowerCase());
+        rows = rows.map(r => {
+          const obj = {};
+          cols.forEach(c => { if(r[c]!==undefined) obj[c]=r[c]; });
+          return obj;
+        });
+      }
+      // ORDER BY
+      const orderMatch = raw.match(/ORDER\s+BY\s+(\w+)(\s+DESC)?/i);
+      if (orderMatch) {
+        const col = orderMatch[1].toLowerCase(); const desc = !!orderMatch[2];
+        rows.sort((a,b) => desc ? (b[col]>a[col]?1:-1) : (a[col]>b[col]?1:-1));
+      }
+    }
+
+    renderTable(rows, resultEl);
+    sqlLog(`Query returned ${rows.length} row${rows.length!==1?'s':''}`, 'lok');
+
+  } catch(e) {
+    resultEl.innerHTML = `<div style="color:var(--accent-red);font-family:'JetBrains Mono',monospace;font-size:12px;padding:10px">Error: ${e.message}</div>`;
+    sqlLog('Query error: ' + e.message, 'lerr');
+  }
+}
+
+// ===== JOIN VISUALISER =====
+function joinLog(m, cls='lmuted') {
+  const el = document.getElementById('join-log');
+  const d = document.createElement('div'); d.className = cls; d.textContent = '> ' + m;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+
+const firstOrders = {};
+DB.orders.forEach(o => { if (!firstOrders[o.user_id]) firstOrders[o.user_id] = o; });
+
+function showJoin(type) {
+  ['inner','left','right','full'].forEach(t => {
+    const btn = document.getElementById('jt-'+t);
+    if (btn) btn.className = 'zen-btn' + (t===type?' primary':'');
+  });
+
+  // Render left/right tables
+  document.getElementById('join-left').innerHTML = DB.users.map(u =>
+    `<div class="join-cell left" style="display:inline-flex;gap:6px;margin:2px">${u.id}:${u.name}</div>`
+  ).join('');
+  const rightUsers = Object.values(firstOrders);
+  document.getElementById('join-right').innerHTML = rightUsers.map(o =>
+    `<div class="join-cell right" style="display:inline-flex;gap:6px;margin:2px">${o.user_id}→£${o.amount}</div>`
+  ).join('');
+
+  let rows = [];
+  if (type === 'inner') {
+    rows = DB.users.filter(u => firstOrders[u.id]).map(u => ({
+      'u.name': u.name, 'u.city': u.city, 'o.amount': '£'+firstOrders[u.id].amount
+    }));
+  } else if (type === 'left') {
+    rows = DB.users.map(u => ({
+      'u.name': u.name, 'u.city': u.city,
+      'o.amount': firstOrders[u.id] ? '£'+firstOrders[u.id].amount : 'NULL'
+    }));
+  } else if (type === 'right') {
+    rows = Object.values(firstOrders).map(o => {
+      const u = DB.users.find(u=>u.id===o.user_id);
+      return { 'u.name': u?.name??'NULL', 'u.city': u?.city??'NULL', 'o.amount': '£'+o.amount };
+    });
+    // add unmatched right (none here since all orders have valid user)
+  } else { // full outer
+    rows = DB.users.map(u => ({
+      'u.name': u.name, 'u.city': u.city,
+      'o.amount': firstOrders[u.id] ? '£'+firstOrders[u.id].amount : 'NULL'
+    }));
+    // users with no orders already included above via LEFT JOIN logic
+  }
+
+  renderTable(rows, document.getElementById('join-result'));
+  const names = {'inner':'INNER JOIN: only rows that match in both tables','left':'LEFT JOIN: all users, NULL if no order','right':'RIGHT JOIN: all orders, NULL if no user','full':'FULL OUTER: all rows from both sides'};
+  joinLog(names[type], 'linfo');
+}
+
+showJoin('inner');
+
+// ===== INDEX IMPACT =====
+function idxLog(m, cls='lmuted') {
+  const el = document.getElementById('idx-log');
+  const d = document.createElement('div'); d.className = cls; d.textContent = '> ' + m;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+
+function runIndexDemo() {
+  const hasIndex = document.getElementById('use-index').checked;
+  const n = parseInt(document.getElementById('idx-rows').value);
+  const matchPct = 0.12; // ~12% of rows match
+  const matches = Math.round(n * matchPct);
+
+  const scanned = hasIndex ? Math.ceil(Math.log2(n)) + matches : n;
+  const reads = hasIndex ? Math.ceil(Math.log2(n)) + Math.ceil(matches/100) : Math.ceil(n/100); // pages
+
+  const plan = hasIndex
+    ? `Index Scan using idx_city\n→ B-tree lookup: ${Math.ceil(Math.log2(n))} levels\n→ Fetch ${matches} matching rows\n→ Total rows examined: ${scanned.toLocaleString()}\n→ Disk page reads: ~${reads}`
+    : `Seq Scan on users\n→ No index: check every row\n→ Total rows examined: ${n.toLocaleString()}\n→ Disk page reads: ~${reads.toLocaleString()}\n→ Found ${matches} matches`;
+
+  document.getElementById('idx-plan').textContent = plan;
+
+  const vis = document.getElementById('idx-vis');
+  const pct = Math.min(scanned/n*100, 100);
+  vis.innerHTML = `
+    <div style="margin-bottom:6px;font-size:11px;color:var(--text-muted)">Rows examined: ${scanned.toLocaleString()} / ${n.toLocaleString()}</div>
+    <div style="height:10px;background:var(--border-paper);border-radius:2px;overflow:hidden;margin-bottom:4px">
+      <div style="height:100%;width:${pct}%;background:${hasIndex?'var(--accent-gold)':'var(--accent-red)'};transition:width .4s;border-radius:2px"></div>
+    </div>
+    <div style="font-size:11px;color:${hasIndex?'var(--accent-gold)':'var(--accent-red)'}">${pct.toFixed(1)}% of table scanned</div>`;
+
+  idxLog(`${hasIndex?'INDEX SCAN':'FULL SCAN'}: ${scanned.toLocaleString()} rows examined for ${n.toLocaleString()} total (${pct.toFixed(1)}%)`, hasIndex?'lok':'lerr');
+}
+
+function switchTab(id) {
+  ['sql','join','index'].forEach((t,i) => {
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active', t===id);
+    document.getElementById('panel-'+t).style.display = t===id?'block':'none';
+    document.getElementById('panel-'+t).classList.toggle('active', t===id);
+  });
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{ if(i>0) p.style.display='none'; });
+</script>
+</body>
+</html>

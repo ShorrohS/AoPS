@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AoPS — Volume 0: Before Computers — How To Use This Book</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:          #1C1C1C;
+    --paper:        #F5F4EF;
+    --warm:         #EEECE4;
+    --bone:         #E8E5DC;
+    --ghost:        #D4D0C4;
+    --indigo:       #1C2D42;
+    --lacquer:      #C82A2A;
+    --gold:         #8B6914;
+    --sage:         #3D5B3F;
+    --slate:        #4A5568;
+    --indigo-tint:  rgba(28,45,66,0.08);
+    --lacquer-tint: rgba(200,42,42,0.07);
+    --gold-tint:    rgba(139,105,20,0.08);
+    --sage-tint:    rgba(61,91,63,0.07);
+    --font-display: 'Noto Serif JP', Georgia, serif;
+    --font-body:    'EB Garamond', Georgia, serif;
+    --font-sans:    'Inter', system-ui, sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: #C8C6C0; }
+  body {
+    background: #C8C6C0;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 56px 24px;
+  }
+
+  .page {
+    width: 720px;
+    min-height: 1020px;
+    background: var(--paper);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.14);
+  }
+
+  .running-header {
+    height: 36px;
+    border-bottom: 0.5px solid var(--ghost);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 64px;
+    flex-shrink: 0;
+  }
+  .running-header span {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ghost);
+  }
+
+  .page-body {
+    flex: 1;
+    padding: 64px 96px 56px;
+  }
+
+  /* ── Section opener ── */
+  .chapter-label {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--indigo);
+    margin-bottom: 14px;
+  }
+  .chapter-rule { width: 100%; height: 1px; background: var(--ghost); margin-bottom: 24px; }
+  .chapter-title {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    margin-bottom: 32px;
+  }
+
+  /* ── Intro paragraph ── */
+  p.intro {
+    font-family: var(--font-body);
+    font-size: 17px;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--slate);
+    line-height: 1.75;
+    margin-bottom: 40px;
+    max-width: 520px;
+  }
+
+  /* ── Section heading ── */
+  h2.section-head {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--indigo);
+    margin-bottom: 20px;
+    margin-top: 40px;
+    padding-top: 40px;
+    border-top: 1px solid var(--bone);
+  }
+  h2.section-head:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+
+  /* ── Lesson anatomy diagram ── */
+  .anatomy-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--ghost);
+    margin-bottom: 32px;
+  }
+
+  .anatomy-row {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid var(--bone);
+  }
+  .anatomy-row:last-child { border-bottom: none; }
+
+  .anatomy-num {
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--bone);
+    background: var(--warm);
+    flex-shrink: 0;
+  }
+  .anatomy-num span {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ghost);
+  }
+
+  .anatomy-icon {
+    width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--bone);
+    flex-shrink: 0;
+    padding: 14px 0;
+  }
+
+  .anatomy-content {
+    flex: 1;
+    padding: 14px 18px;
+  }
+  .anatomy-title {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+    margin-bottom: 3px;
+  }
+  .anatomy-desc {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--slate);
+    line-height: 1.6;
+  }
+
+  /* ── Callout showcase — all 5 types ── */
+  .callout-showcase {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .callout-demo {
+    padding: 14px 18px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .callout-demo-icon {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: inherit;
+    flex-shrink: 0;
+    margin-top: 1px;
+    width: 20px;
+  }
+  .callout-demo-inner {}
+  .callout-demo-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .callout-demo-text {
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+
+  .c-historical { border-left: 3px solid var(--sage);   background: var(--sage-tint);   }
+  .c-historical .callout-demo-label { color: var(--sage); }
+
+  .c-insight    { border-left: 3px solid var(--gold);   background: var(--gold-tint);   }
+  .c-insight .callout-demo-label { color: var(--gold); }
+
+  .c-think      { border-left: 3px solid var(--indigo); background: var(--indigo-tint); }
+  .c-think .callout-demo-label { color: var(--indigo); }
+
+  .c-challenge  { border-left: 3px solid var(--lacquer); background: var(--lacquer-tint); }
+  .c-challenge .callout-demo-label { color: var(--lacquer); }
+
+  .c-simulation { border-left: 3px solid var(--slate);  background: var(--bone); }
+  .c-simulation .callout-demo-label { color: var(--slate); }
+
+  /* ── Typography guide ── */
+  .type-guide {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--bone);
+  }
+  .type-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    gap: 16px;
+    border-bottom: 1px solid var(--bone);
+  }
+  .type-row:last-child { border-bottom: none; }
+  .type-sample { flex: 0 0 180px; }
+  .type-desc {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--slate);
+    line-height: 1.5;
+  }
+  .type-desc strong { font-weight: 500; color: var(--ink); }
+
+  /* ── Simulation badge ── */
+  .sim-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--indigo);
+    border: 1px solid var(--indigo);
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+
+  /* ── Two-col feature grid ── */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--ghost);
+    margin-bottom: 32px;
+  }
+  .feature-cell {
+    padding: 20px 22px;
+    border-right: 1px solid var(--bone);
+    border-bottom: 1px solid var(--bone);
+  }
+  .feature-cell:nth-child(2n) { border-right: none; }
+  .feature-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .feature-icon {
+    font-size: 18px;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .feature-title {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .feature-desc {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--slate);
+    line-height: 1.65;
+  }
+
+  /* ── Progression note ── */
+  .progression {
+    background: var(--warm);
+    border: 1px solid var(--bone);
+    border-left: 3px solid var(--indigo);
+    padding: 18px 22px;
+    margin-top: 32px;
+  }
+  .progression-label {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--indigo);
+    margin-bottom: 10px;
+  }
+  .progression-text {
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    font-weight: 300;
+    color: var(--ink);
+    line-height: 1.75;
+  }
+
+  /* Publisher footer */
+  .publisher-footer {
+    height: 48px;
+    border-top: 0.5px solid var(--ghost);
+    padding: 0 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .pub-mark-name {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ghost);
+  }
+  .page-num { font-family: var(--font-mono); font-size: 11px; font-weight: 400; color: var(--ghost); }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="running-header">
+    <span>How To Use This Book</span>
+    <span>Volume 0 — Before Computers</span>
+  </div>
+
+  <div class="page-body">
+
+    <p class="chapter-label">Guide</p>
+    <div class="chapter-rule"></div>
+    <h1 class="chapter-title">How To Use This Book</h1>
+
+    <p class="intro">This is not a book you read passively. Every module contains something to do — a simulation to run, a problem to solve, a machine to operate. The text exists to frame the activity, not to replace it.</p>
+
+    <!-- ── Lesson structure ── -->
+    <h2 class="section-head">Each Lesson Has Five Parts</h2>
+
+    <div class="anatomy-grid" role="table" aria-label="Lesson structure">
+
+      <div class="anatomy-row" role="row">
+        <div class="anatomy-num"><span>1</span></div>
+        <div class="anatomy-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <circle cx="10" cy="10" r="8" stroke="#C82A2A" stroke-width="1"/>
+            <line x1="10" y1="5" x2="10" y2="10" stroke="#C82A2A" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="10" cy="13" r="1" fill="#C82A2A"/>
+          </svg>
+        </div>
+        <div class="anatomy-content">
+          <p class="anatomy-title">The Problem</p>
+          <p class="anatomy-desc">Every lesson opens with the human problem that forced this invention into existence. Read this first. It tells you why you should care about what follows.</p>
+        </div>
+      </div>
+
+      <div class="anatomy-row" role="row">
+        <div class="anatomy-num"><span>2</span></div>
+        <div class="anatomy-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <rect x="3" y="3" width="14" height="14" stroke="#1C2D42" stroke-width="1" rx="1"/>
+            <line x1="3" y1="8" x2="17" y2="8" stroke="#1C2D42" stroke-width="0.8"/>
+            <line x1="8" y1="8" x2="8" y2="17" stroke="#1C2D42" stroke-width="0.8"/>
+          </svg>
+        </div>
+        <div class="anatomy-content">
+          <p class="anatomy-title">The Story</p>
+          <p class="anatomy-desc">Historical and narrative context — concise, vivid, and always tied to a specific person or moment. The story explains the itch. The rest of the lesson is the scratch.</p>
+        </div>
+      </div>
+
+      <div class="anatomy-row" role="row">
+        <div class="anatomy-num"><span>3</span></div>
+        <div class="anatomy-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <circle cx="10" cy="10" r="3" stroke="#1C1C1C" stroke-width="1"/>
+            <circle cx="10" cy="10" r="7.5" stroke="#1C1C1C" stroke-width="0.8" stroke-dasharray="2 2"/>
+          </svg>
+        </div>
+        <div class="anatomy-content">
+          <p class="anatomy-title">The Concept</p>
+          <p class="anatomy-desc">Precise technical explanation — definitions, diagrams, worked examples. This section is dense by design. Re-read it after completing the simulation.</p>
+        </div>
+      </div>
+
+      <div class="anatomy-row" role="row">
+        <div class="anatomy-num"><span>4</span></div>
+        <div class="anatomy-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <polygon points="6,4 16,10 6,16" stroke="#3D5B3F" stroke-width="1" fill="rgba(61,91,63,0.12)"/>
+          </svg>
+        </div>
+        <div class="anatomy-content">
+          <p class="anatomy-title">Hands-On Exercise</p>
+          <p class="anatomy-desc">A guided walkthrough using the interactive simulation. Follow the steps exactly the first time. Then experiment freely. The simulation will not break.</p>
+        </div>
+      </div>
+
+      <div class="anatomy-row" role="row">
+        <div class="anatomy-num"><span>5</span></div>
+        <div class="anatomy-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <polygon points="10,3 13,8 18,8.5 14,12.5 15,18 10,15 5,18 6,12.5 2,8.5 7,8" stroke="#C82A2A" stroke-width="1" fill="rgba(200,42,42,0.08)"/>
+          </svg>
+        </div>
+        <div class="anatomy-content">
+          <p class="anatomy-title">The Challenge</p>
+          <p class="anatomy-desc">A specific, measurable problem. Attempt it before reading any hint. The challenge is the proof that you understood the lesson — not a test, but a confirmation.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Callout types ── -->
+    <h2 class="section-head">Callout Types</h2>
+
+    <div class="callout-showcase">
+
+      <div class="callout-demo c-historical">
+        <span class="callout-demo-icon">⊕</span>
+        <div class="callout-demo-inner">
+          <p class="callout-demo-label">Historical Note</p>
+          <p class="callout-demo-text">People, dates, and context. Who built this, when, and why it mattered to the world they lived in.</p>
+        </div>
+      </div>
+
+      <div class="callout-demo c-insight">
+        <span class="callout-demo-icon">◆</span>
+        <div class="callout-demo-inner">
+          <p class="callout-demo-label">Key Insight</p>
+          <p class="callout-demo-text">The single idea that unlocks the section. If you remember nothing else, remember this.</p>
+        </div>
+      </div>
+
+      <div class="callout-demo c-think">
+        <span class="callout-demo-icon">◇</span>
+        <div class="callout-demo-inner">
+          <p class="callout-demo-label">Think About It</p>
+          <p class="callout-demo-text">A question to pause on before reading further. There is no single right answer — the thinking is the point.</p>
+        </div>
+      </div>
+
+      <div class="callout-demo c-simulation">
+        <span class="callout-demo-icon">▷</span>
+        <div class="callout-demo-inner">
+          <p class="callout-demo-label">Hands-On / Simulation</p>
+          <p class="callout-demo-text">An instruction to open the simulation and perform a specific action. Always do this — reading about it is not a substitute.</p>
+        </div>
+      </div>
+
+      <div class="callout-demo c-challenge">
+        <span class="callout-demo-icon">✦</span>
+        <div class="callout-demo-inner">
+          <p class="callout-demo-label">Challenge</p>
+          <p class="callout-demo-text">The module challenge. Attempt it independently. Hints are available on request; the solution is revealed only after a genuine attempt.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Typography guide ── -->
+    <h2 class="section-head">Typography in This Book</h2>
+
+    <div class="type-guide">
+      <div class="type-row">
+        <div class="type-sample">
+          <span style="font-family:'Noto Serif JP',serif; font-size:18px; font-weight:300; color:#1C1C1C;">Chapter Title</span>
+        </div>
+        <p class="type-desc"><strong>Noto Serif JP, 300</strong> — chapter and section headings. Light weight emphasises precision over authority.</p>
+      </div>
+      <div class="type-row">
+        <div class="type-sample">
+          <span style="font-family:'EB Garamond',serif; font-size:16px; color:#1C1C1C;">Body text flows here.</span>
+        </div>
+        <p class="type-desc"><strong>EB Garamond, 400</strong> — all prose. Warm, readable, suitable for extended technical reading.</p>
+      </div>
+      <div class="type-row">
+        <div class="type-sample">
+          <span style="font-family:'Inter',sans-serif; font-size:10px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#4A5568;">LABEL TEXT</span>
+        </div>
+        <p class="type-desc"><strong>Inter, 600, uppercase</strong> — callout labels, section markers, captions. Structural chrome, never decorative.</p>
+      </div>
+      <div class="type-row">
+        <div class="type-sample">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#1C2D42;">01001000</span>
+        </div>
+        <p class="type-desc"><strong>JetBrains Mono, 400</strong> — code, binary values, technical notation, page numbers, and all machine-readable text.</p>
+      </div>
+      <div class="type-row">
+        <div class="type-sample">
+          <span style="font-family:'EB Garamond',serif; font-size:16px; font-style:italic; color:#4A5568;">Opening paragraphs.</span>
+        </div>
+        <p class="type-desc"><strong>EB Garamond, italic</strong> — opening lead paragraphs and pull quotes. Signals a shift from instruction to narration.</p>
+      </div>
+    </div>
+
+    <!-- ── Feature overview ── -->
+    <h2 class="section-head">What This Volume Contains</h2>
+
+    <div class="feature-grid">
+      <div class="feature-cell">
+        <span class="feature-icon" aria-hidden="true">📖</span>
+        <p class="feature-title">5 Modules</p>
+        <p class="feature-desc">Modules 0.1 through 0.5, each covering one major era or invention in the history of computation.</p>
+      </div>
+      <div class="feature-cell">
+        <span class="feature-icon" aria-hidden="true">⚙️</span>
+        <p class="feature-title">5 Simulations</p>
+        <p class="feature-desc">Browser-based interactive tools — no installation, no accounts. Each simulation runs entirely offline once loaded.</p>
+      </div>
+      <div class="feature-cell">
+        <span class="feature-icon" aria-hidden="true">🎯</span>
+        <p class="feature-title">5 Challenges</p>
+        <p class="feature-desc">One challenge per module. Each has a specific, verifiable answer. Hints are structured in three tiers: nudge, direction, near-solution.</p>
+      </div>
+      <div class="feature-cell">
+        <span class="feature-icon" aria-hidden="true">🔗</span>
+        <p class="feature-title">Forward Links</p>
+        <p class="feature-desc">Each module ends with a <em>Future Connection</em> callout — a direct pointer to the later concept this invention makes possible.</p>
+      </div>
+    </div>
+
+    <!-- ── Progression note ── -->
+    <div class="progression">
+      <p class="progression-label">◇ &nbsp; A Note on Progression</p>
+      <p class="progression-text">Each volume in this series assumes the previous volume is understood — not memorised, but genuinely understood. If a challenge defeats you, do not skip it. Re-read the concept, re-run the simulation, and try again. The challenge exists because understanding it is the prerequisite for everything that follows.</p>
+    </div>
+
+  </div>
+
+  <div class="publisher-footer">
+    <span class="pub-mark-name">AoPS Press</span>
+    <span class="page-num">ix</span>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 2.4 — Combinational Circuits</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;
+  --text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;
+  --accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--accent-ink:#1C1C1C;
+  --border-hair:#1C1C1C;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;
+  --ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes zen-fade-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes carry-pulse{0%{transform:scale(1.3);color:var(--accent-red)}100%{transform:scale(1);color:inherit}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast),border-color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:zen-fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 20px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-hair);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast),color var(--t-fast)}
+.zen-btn:hover{background:var(--accent-ink);color:#FDFDFD}
+.zen-btn.primary{background:var(--accent-ink);color:#FDFDFD}
+.zen-btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.zen-pane{background:var(--bg-washi);padding:22px}
+.zen-pane.warm{background:var(--bg-warm)}
+/* Bit toggle buttons */
+.bit-toggle{width:40px;height:40px;border:1px solid var(--border-paper);background:var(--bg-canvas);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--text-muted);border-radius:var(--radius-xs);transition:all var(--t-fast);display:flex;align-items:center;justify-content:center}
+.bit-toggle.on{background:var(--accent-indigo);border-color:var(--accent-indigo);color:#FDFDFD}
+.bit-row{display:flex;gap:4px;align-items:center}
+.bit-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:6px}
+/* Adder display */
+.adder-operand{display:flex;gap:4px;margin-bottom:4px;align-items:center}
+.op-label{width:28px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);text-align:right;padding-right:4px}
+.op-bit{width:44px;height:44px;border:1px solid var(--border-paper);background:var(--bg-warm);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:1.2rem;color:var(--text-sumi);border-radius:var(--radius-xs);transition:all var(--t-med)}
+.op-bit.one{background:var(--accent-indigo);border-color:var(--accent-indigo);color:#FDFDFD}
+.res-bit{width:44px;height:44px;border:1px solid var(--border-paper);background:var(--bg-canvas);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:1.2rem;border-radius:var(--radius-xs);transition:all var(--t-med)}
+.res-bit.one{background:var(--accent-red);border-color:var(--accent-red);color:#FDFDFD}
+.carry-bit-disp{width:44px;height:28px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-red);border-radius:var(--radius-xs);transition:all var(--t-med)}
+.carry-bit-disp.active{background:rgba(200,42,42,0.12);animation:carry-pulse .4s}
+.divider-bar{border-top:1.5px solid var(--border-hair);margin:4px 0 4px 32px}
+/* Stage trace */
+.stage-row{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border-paper);font-size:12px;align-items:center;transition:background var(--t-fast)}
+.stage-row.active{background:rgba(200,42,42,0.06)}
+.stage-row.done{background:rgba(139,105,20,0.05)}
+.stage-label{width:40px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.stage-detail{flex:1;font-family:'JetBrains Mono',monospace;color:var(--text-body)}
+.stage-carry{width:60px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--accent-red);font-size:11px}
+/* Stat boxes */
+.stat-box{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:14px;margin-bottom:8px;border-radius:var(--radius-xs)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:300;color:var(--text-sumi);display:block;margin-bottom:2px}
+.sl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)}
+.sv.red{color:var(--accent-red)}.sv.gold{color:var(--accent-gold)}.sv.indigo{color:var(--accent-indigo)}
+.overflow-badge{background:rgba(200,42,42,0.1);border:1px solid rgba(200,42,42,0.3);padding:5px 12px;border-radius:var(--radius-xs);font-size:11px;font-weight:500;color:var(--accent-red);text-transform:uppercase;letter-spacing:.08em;display:inline-block;margin-top:6px}
+/* Truth table */
+.truth-table{border-collapse:collapse;width:100%;font-size:12px}
+.truth-table th{background:var(--bg-warm);color:var(--text-muted);padding:6px 10px;border:1px solid var(--border-paper);font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.06em;text-align:center}
+.truth-table td{padding:6px 10px;border:1px solid var(--border-paper);text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px}
+.truth-table tr.hl td{background:rgba(200,42,42,0.07)}
+.val-1{color:var(--accent-indigo);font-weight:500}.val-0{color:var(--text-muted)}
+</style>
+</head>
+<body>
+
+<div class="zen-header">
+  <h1 class="zen-title">Module 2.4 — Combinational Circuits</h1>
+  <p class="zen-subtitle">Half Adder · Full Adder · 4-Bit Ripple Carry Adder</p>
+</div>
+
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('half')">Half Adder</div>
+  <div class="zen-tab" onclick="switchTab('full')">Full Adder</div>
+  <div class="zen-tab" onclick="switchTab('ripple')">4-Bit Adder</div>
+</div>
+
+<!-- ===== HALF ADDER ===== -->
+<div id="panel-half" class="panel active">
+  <div class="zen-intro">
+    <strong>Half Adder</strong> — adds two 1-bit numbers. Produces a Sum (A XOR B) and a Carry (A AND B). Called "half" because it cannot accept a carry-in from a previous stage.
+  </div>
+  <div class="bento2">
+    <div class="zen-pane">
+      <div class="pane-title gold">Inputs</div>
+      <div style="margin-bottom:16px">
+        <div class="bit-label">Toggle A and B</div>
+        <div class="bit-row">
+          <button class="bit-toggle off" id="ha-A" onclick="toggleHA('A')">0</button>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);padding:0 4px">A</span>
+          <button class="bit-toggle off" id="ha-B" onclick="toggleHA('B')">0</button>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);padding:0 4px">B</span>
+        </div>
+      </div>
+      <div class="pane-title indigo">Outputs</div>
+      <div class="stat-box">
+        <span class="sv" id="ha-sum">0</span>
+        <span class="sl">Sum = A XOR B</span>
+      </div>
+      <div class="stat-box">
+        <span class="sv" id="ha-carry">0</span>
+        <span class="sl">Carry = A AND B</span>
+      </div>
+      <div style="margin-top:14px;font-size:12px;color:var(--text-muted);line-height:1.6;background:var(--bg-warm);padding:10px 14px;border-radius:var(--radius-xs)">
+        Boolean: Sum = A ⊕ B &nbsp;·&nbsp; Carry = A · B<br>
+        Implementation: 1 XOR gate + 1 AND gate
+      </div>
+    </div>
+    <div class="zen-pane warm">
+      <div class="pane-title red">Truth Table</div>
+      <table class="truth-table">
+        <thead><tr><th>A</th><th>B</th><th>Sum</th><th>Carry</th></tr></thead>
+        <tbody id="ha-tt">
+          <tr id="ha-r0"><td class="val-0">0</td><td class="val-0">0</td><td class="val-0">0</td><td class="val-0">0</td></tr>
+          <tr id="ha-r1"><td class="val-0">0</td><td class="val-1">1</td><td class="val-1">1</td><td class="val-0">0</td></tr>
+          <tr id="ha-r2"><td class="val-1">1</td><td class="val-0">0</td><td class="val-1">1</td><td class="val-0">0</td></tr>
+          <tr id="ha-r3"><td class="val-1">1</td><td class="val-1">1</td><td class="val-0">0</td><td class="val-1">1</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:16px">
+        <div class="pane-title gold" style="margin-bottom:8px">Circuit diagram</div>
+        <canvas id="ha-canvas" width="300" height="120" style="display:block;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);width:100%"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FULL ADDER ===== -->
+<div id="panel-full" class="panel">
+  <div class="zen-intro">
+    <strong>Full Adder</strong> — adds three 1-bit inputs: A, B, and Carry-In. Produces Sum and Carry-Out. Chain these to build multi-bit adders. Implementation: two half adders + one OR gate.
+  </div>
+  <div class="bento2">
+    <div class="zen-pane">
+      <div class="pane-title gold">Inputs</div>
+      <div style="margin-bottom:16px">
+        <div class="bit-label">Toggle A, B, Cin</div>
+        <div class="bit-row" style="gap:8px">
+          <div style="text-align:center">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);margin-bottom:4px">A</div>
+            <button class="bit-toggle off" id="fa-A" onclick="toggleFA('A')">0</button>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);margin-bottom:4px">B</div>
+            <button class="bit-toggle off" id="fa-B" onclick="toggleFA('B')">0</button>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);margin-bottom:4px">Cin</div>
+            <button class="bit-toggle off" id="fa-Cin" onclick="toggleFA('Cin')">0</button>
+          </div>
+        </div>
+      </div>
+      <div class="pane-title indigo">Outputs</div>
+      <div class="stat-box">
+        <span class="sv" id="fa-sum">0</span>
+        <span class="sl">Sum = A XOR B XOR Cin</span>
+      </div>
+      <div class="stat-box">
+        <span class="sv" id="fa-cout">0</span>
+        <span class="sl">Cout = (A·B) OR (Cin·(A XOR B))</span>
+      </div>
+      <div style="margin-top:14px;font-size:12px;color:var(--text-muted);line-height:1.6;background:var(--bg-warm);padding:10px 14px;border-radius:var(--radius-xs)">
+        <strong style="color:var(--text-sumi)">Internals:</strong><br>
+        HA1: s1 = A ⊕ B, c1 = A·B<br>
+        HA2: Sum = s1 ⊕ Cin, c2 = s1·Cin<br>
+        Cout = c1 OR c2
+      </div>
+    </div>
+    <div class="zen-pane warm">
+      <div class="pane-title red">Full Truth Table (8 rows)</div>
+      <table class="truth-table">
+        <thead><tr><th>A</th><th>B</th><th>Cin</th><th>Sum</th><th>Cout</th></tr></thead>
+        <tbody id="fa-tt"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 4-BIT RIPPLE CARRY ADDER ===== -->
+<div id="panel-ripple" class="panel">
+  <div class="zen-intro">
+    <strong>4-Bit Ripple Carry Adder</strong> — four full adders chained together. Each stage's Carry-Out feeds the next stage's Carry-In. Watch the carry "ripple" from bit 0 to bit 3. Step through one stage at a time to see the propagation.
+  </div>
+
+  <div class="bento2" style="margin-bottom:1px">
+    <div class="zen-pane">
+      <div class="pane-title gold">Input A (4 bits)</div>
+      <div class="bit-row" style="margin-bottom:16px">
+        <span class="op-label">A</span>
+        <button class="bit-toggle off" id="ra-3" onclick="toggleR('a',3)">0</button>
+        <button class="bit-toggle off" id="ra-2" onclick="toggleR('a',2)">0</button>
+        <button class="bit-toggle off" id="ra-1" onclick="toggleR('a',1)">0</button>
+        <button class="bit-toggle off" id="ra-0" onclick="toggleR('a',0)">0</button>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);margin-left:8px">=<span id="ra-dec"> 0</span></span>
+      </div>
+      <div class="pane-title gold">Input B (4 bits)</div>
+      <div class="bit-row">
+        <span class="op-label">B</span>
+        <button class="bit-toggle off" id="rb-3" onclick="toggleR('b',3)">0</button>
+        <button class="bit-toggle off" id="rb-2" onclick="toggleR('b',2)">0</button>
+        <button class="bit-toggle off" id="rb-1" onclick="toggleR('b',1)">0</button>
+        <button class="bit-toggle off" id="rb-0" onclick="toggleR('b',0)">0</button>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);margin-left:8px">=<span id="rb-dec"> 0</span></span>
+      </div>
+    </div>
+    <div class="zen-pane warm">
+      <div class="pane-title indigo">Quick examples</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="zen-btn" onclick="setRipple(5,3)" style="font-size:10px;padding:6px 10px">5 + 3</button>
+        <button class="zen-btn" onclick="setRipple(9,6)" style="font-size:10px;padding:6px 10px">9 + 6</button>
+        <button class="zen-btn" onclick="setRipple(7,7)" style="font-size:10px;padding:6px 10px">7 + 7</button>
+        <button class="zen-btn" onclick="setRipple(15,1)" style="font-size:10px;padding:6px 10px">15 + 1</button>
+        <button class="zen-btn" onclick="setRipple(13,5)" style="font-size:10px;padding:6px 10px">13 + 5</button>
+      </div>
+      <div class="btn-row">
+        <button class="zen-btn primary" onclick="rippleAuto()">▶ Auto Run</button>
+        <button class="zen-btn" id="step-btn" onclick="rippleStep()">▶| Step</button>
+        <button class="zen-btn" onclick="rippleReset()">↺ Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Adder display -->
+  <div style="background:var(--bg-washi);border:1px solid var(--border-paper);padding:20px;margin-bottom:1px">
+    <div class="pane-title indigo" style="margin-bottom:14px">Column-by-column carry propagation</div>
+    <!-- Carry row -->
+    <div class="adder-operand" style="margin-bottom:8px">
+      <span class="op-label" style="font-size:10px;color:var(--accent-red)">Cin</span>
+      <div class="carry-bit-disp" id="carry-4"></div>
+      <div class="carry-bit-disp" id="carry-3"></div>
+      <div class="carry-bit-disp" id="carry-2"></div>
+      <div class="carry-bit-disp" id="carry-1"></div>
+      <div class="carry-bit-disp" id="carry-0" style="color:var(--text-ghost);font-size:10px">0</div>
+    </div>
+    <!-- A row -->
+    <div class="adder-operand">
+      <span class="op-label">A</span>
+      <div class="op-bit" id="disp-a3">0</div>
+      <div class="op-bit" id="disp-a2">0</div>
+      <div class="op-bit" id="disp-a1">0</div>
+      <div class="op-bit" id="disp-a0">0</div>
+    </div>
+    <!-- B row -->
+    <div class="adder-operand">
+      <span class="op-label">B</span>
+      <div class="op-bit" id="disp-b3">0</div>
+      <div class="op-bit" id="disp-b2">0</div>
+      <div class="op-bit" id="disp-b1">0</div>
+      <div class="op-bit" id="disp-b0">0</div>
+    </div>
+    <div class="divider-bar"></div>
+    <!-- Result row -->
+    <div class="adder-operand">
+      <span class="op-label">S</span>
+      <div class="res-bit" id="disp-s3">—</div>
+      <div class="res-bit" id="disp-s2">—</div>
+      <div class="res-bit" id="disp-s1">—</div>
+      <div class="res-bit" id="disp-s0">—</div>
+      <div style="margin-left:12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted)" id="result-decimal"></div>
+    </div>
+    <!-- Overflow -->
+    <div id="overflow-display" style="margin-top:8px;display:none">
+      <span class="overflow-badge">⚠ Carry out = 1 (overflow / carry flag)</span>
+    </div>
+  </div>
+
+  <!-- Stage trace -->
+  <div style="background:var(--bg-washi);border:1px solid var(--border-paper);padding:0">
+    <div style="padding:14px 16px;border-bottom:1px solid var(--border-paper)">
+      <div class="pane-title red" style="margin:0">Stage-by-stage trace</div>
+    </div>
+    <div id="stage-trace">
+      <div class="stage-row"><span class="stage-label"></span><span class="stage-detail" style="color:var(--text-muted)">Press Step or Auto Run to begin.</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========================= HALF ADDER =========================
+const haState = {A:0, B:0};
+
+function toggleHA(v) {
+  haState[v] ^= 1;
+  const btn = document.getElementById('ha-'+v);
+  btn.textContent = haState[v];
+  btn.className = 'bit-toggle ' + (haState[v] ? 'on' : 'off');
+  updateHA();
+}
+
+function updateHA() {
+  const A=haState.A, B=haState.B;
+  const sum=A^B, carry=A&B;
+  document.getElementById('ha-sum').textContent=sum;
+  document.getElementById('ha-sum').style.color=sum?'var(--accent-red)':'var(--text-sumi)';
+  document.getElementById('ha-carry').textContent=carry;
+  document.getElementById('ha-carry').style.color=carry?'var(--accent-red)':'var(--text-sumi)';
+  // Highlight truth table
+  const row=(A<<1)|B;
+  for(let i=0;i<4;i++) document.getElementById('ha-r'+i).classList.toggle('hl',i===row);
+  drawHaCanvas();
+}
+
+function drawHaCanvas() {
+  const canvas=document.getElementById('ha-canvas'); if(!canvas)return;
+  const ctx=canvas.getContext('2d'); const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#F8F7F3'; ctx.fillRect(0,0,W,H);
+  const A=haState.A,B=haState.B; const sum=A^B,carry=A&B;
+  const on='#8B6914',off='#D8D6CE';
+  ctx.font='9px JetBrains Mono,monospace'; ctx.textAlign='left';
+  // A wire
+  ctx.strokeStyle=A?on:off; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(10,35); ctx.lineTo(90,35); ctx.stroke();
+  ctx.fillStyle=A?on:'#888880'; ctx.fillText('A='+A,2,32);
+  // B wire
+  ctx.strokeStyle=B?on:off;
+  ctx.beginPath(); ctx.moveTo(10,75); ctx.lineTo(90,75); ctx.stroke();
+  ctx.fillStyle=B?on:'#888880'; ctx.fillText('B='+B,2,72);
+  // XOR box
+  ctx.strokeStyle='#888880'; ctx.lineWidth=1.5; ctx.strokeRect(90,22,60,26);
+  ctx.fillStyle='#888880'; ctx.textAlign='center'; ctx.fillText('XOR',120,40);
+  // AND box
+  ctx.strokeStyle='#888880'; ctx.lineWidth=1.5; ctx.strokeRect(90,62,60,26);
+  ctx.fillStyle='#888880'; ctx.textAlign='center'; ctx.fillText('AND',120,80);
+  // Output wires
+  const sumC=sum?'#C82A2A':'#D8D6CE', carryC=carry?'#C82A2A':'#D8D6CE';
+  ctx.strokeStyle=sumC; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(150,35); ctx.lineTo(220,35); ctx.stroke();
+  ctx.fillStyle=sumC; ctx.textAlign='left'; ctx.fillText('Sum='+sum,155,32);
+  ctx.strokeStyle=carryC; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(150,75); ctx.lineTo(220,75); ctx.stroke();
+  ctx.fillStyle=carryC; ctx.textAlign='left'; ctx.fillText('Carry='+carry,155,72);
+  // Junction lines
+  ctx.strokeStyle=A?on:off; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(60,35); ctx.lineTo(60,65); ctx.lineTo(90,65); ctx.stroke();
+  ctx.strokeStyle=B?on:off;
+  ctx.beginPath(); ctx.moveTo(40,75); ctx.lineTo(40,68); ctx.lineTo(90,68); ctx.stroke();
+}
+
+updateHA();
+
+// ========================= FULL ADDER =========================
+const faState = {A:0, B:0, Cin:0};
+
+function buildFATT() {
+  const tbody=document.getElementById('fa-tt'); tbody.innerHTML='';
+  for(let i=0;i<8;i++){
+    const A=(i>>2)&1,B=(i>>1)&1,Cin=i&1;
+    const s1=A^B, c1=A&B, sum=s1^Cin, cout=c1|(s1&Cin);
+    const tr=document.createElement('tr'); tr.id='fa-r'+i;
+    tr.innerHTML=`<td class="val-${A}">${A}</td><td class="val-${B}">${B}</td><td class="val-${Cin}">${Cin}</td><td class="val-${sum}">${sum}</td><td class="val-${cout}">${cout}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+function toggleFA(v) {
+  faState[v] ^= 1;
+  document.getElementById('fa-'+v).textContent=faState[v];
+  document.getElementById('fa-'+v).className='bit-toggle '+(faState[v]?'on':'off');
+  updateFA();
+}
+
+function updateFA() {
+  const {A,B,Cin}=faState;
+  const s1=A^B, c1=A&B, sum=s1^Cin, cout=c1|(s1&Cin);
+  document.getElementById('fa-sum').textContent=sum;
+  document.getElementById('fa-sum').style.color=sum?'var(--accent-red)':'var(--text-sumi)';
+  document.getElementById('fa-cout').textContent=cout;
+  document.getElementById('fa-cout').style.color=cout?'var(--accent-red)':'var(--text-sumi)';
+  const rowIdx=(A<<2)|(B<<1)|Cin;
+  for(let i=0;i<8;i++){const r=document.getElementById('fa-r'+i);if(r)r.classList.toggle('hl',i===rowIdx);}
+}
+
+buildFATT(); updateFA();
+
+// ========================= RIPPLE CARRY ADDER =========================
+let rA=[0,0,0,0], rB=[0,0,0,0]; // bit 0=LSB, bit 3=MSB
+let rippleStep_n=0, rippleRunning=false, rippleTimer=null;
+
+function toggleR(op,bit) {
+  if(op==='a') rA[bit]^=1; else rB[bit]^=1;
+  updateRippleInputDisplay();
+  rippleReset();
+}
+
+function updateRippleInputDisplay() {
+  for(let i=0;i<4;i++){
+    const ab=document.getElementById('ra-'+i); ab.textContent=rA[i]; ab.className='bit-toggle '+(rA[i]?'on':'off');
+    const bb=document.getElementById('rb-'+i); bb.textContent=rB[i]; bb.className='bit-toggle '+(rB[i]?'on':'off');
+    document.getElementById('disp-a'+i).textContent=rA[i]; document.getElementById('disp-a'+i).className='op-bit '+(rA[i]?'one':'');
+    document.getElementById('disp-b'+i).textContent=rB[i]; document.getElementById('disp-b'+i).className='op-bit '+(rB[i]?'one':'');
+  }
+  const aVal=rA[3]*8+rA[2]*4+rA[1]*2+rA[0];
+  const bVal=rB[3]*8+rB[2]*4+rB[1]*2+rB[0];
+  document.getElementById('ra-dec').textContent=' '+aVal;
+  document.getElementById('rb-dec').textContent=' '+bVal;
+  // Reset results
+  for(let i=0;i<4;i++){const s=document.getElementById('disp-s'+i);s.textContent='—';s.className='res-bit';}
+  for(let i=0;i<5;i++){const c=document.getElementById('carry-'+i);if(c){c.textContent='';c.className='carry-bit-disp';}}
+  document.getElementById('result-decimal').textContent='';
+  document.getElementById('overflow-display').style.display='none';
+}
+
+function setRipple(a,b) {
+  for(let i=0;i<4;i++){rA[i]=(a>>i)&1;rB[i]=(b>>i)&1;}
+  updateRippleInputDisplay();
+  rippleReset();
+}
+
+function fullAdder(a,b,cin){
+  const s1=a^b,c1=a&b,sum=s1^cin,cout=c1|(s1&cin);
+  return{sum,cout};
+}
+
+function rippleReset() {
+  clearInterval(rippleTimer); rippleRunning=false; rippleStep_n=0;
+  for(let i=0;i<4;i++){const s=document.getElementById('disp-s'+i);s.textContent='—';s.className='res-bit';}
+  for(let i=0;i<5;i++){const c=document.getElementById('carry-'+i);if(c){c.textContent='';c.className='carry-bit-disp';}}
+  document.getElementById('result-decimal').textContent='';
+  document.getElementById('overflow-display').style.display='none';
+  document.getElementById('stage-trace').innerHTML='<div class="stage-row"><span class="stage-label"></span><span class="stage-detail" style="color:var(--text-muted)">Press Step or Auto Run to begin.</span></div>';
+  document.getElementById('step-btn').disabled=false;
+}
+
+function rippleStepOnce() {
+  const stage=rippleStep_n;
+  if(stage>=4) return false;
+
+  // Compute all stages up to current
+  let cin=0;
+  const carries=[0,0,0,0,0];
+  const sums=[0,0,0,0];
+  for(let i=0;i<=stage;i++){
+    const res=fullAdder(rA[i],rB[i],carries[i]);
+    sums[i]=res.sum; carries[i+1]=res.cout;
+  }
+
+  // Display computed stages
+  for(let i=0;i<=stage;i++){
+    const s=document.getElementById('disp-s'+i);s.textContent=sums[i];s.className='res-bit '+(sums[i]?'one':'');
+    const c=document.getElementById('carry-'+(i+1)); if(c){c.textContent=carries[i+1]||'';c.className='carry-bit-disp '+(carries[i+1]?'active':'');}
+  }
+  if(stage===3){
+    document.getElementById('overflow-display').style.display=carries[4]?'block':'none';
+    const res=sums[3]*8+sums[2]*4+sums[1]*2+sums[0];
+    const aV=rA[3]*8+rA[2]*4+rA[1]*2+rA[0];
+    const bV=rB[3]*8+rB[2]*4+rB[1]*2+rB[0];
+    document.getElementById('result-decimal').textContent=`= ${res} decimal (${aV}+${bV}=${aV+bV}${carries[4]?' ⚠ overflow':''})`;
+  }
+
+  // Update trace
+  const traceEl=document.getElementById('stage-trace');
+  const existing=document.getElementById('trace-stage-'+stage);
+  const prevStage=stage>0?document.getElementById('trace-stage-'+(stage-1)):null;
+  if(prevStage)prevStage.className='stage-row done';
+  const row=existing||document.createElement('div');
+  row.id='trace-stage-'+stage; row.className='stage-row active';
+  const prevCarry=carries[stage]; const fa=fullAdder(rA[stage],rB[stage],prevCarry);
+  row.innerHTML=`<span class="stage-label">FA${stage}</span><span class="stage-detail">A=${rA[stage]}+B=${rB[stage]}+Cin=${prevCarry} = Sum=${fa.sum}, Cout=${fa.cout}</span><span class="stage-carry">${fa.cout?'→ carry':'no carry'}</span>`;
+  if(!existing) traceEl.appendChild(row);
+
+  rippleStep_n++;
+  return rippleStep_n<4;
+}
+
+function rippleStep() {
+  const more=rippleStepOnce();
+  if(!more) document.getElementById('step-btn').disabled=true;
+}
+
+function rippleAuto() {
+  rippleReset();
+  let i=0;
+  rippleTimer=setInterval(()=>{
+    const more=rippleStepOnce(); i++;
+    if(!more||i>=4){ clearInterval(rippleTimer); document.getElementById('step-btn').disabled=true; }
+  },600);
+}
+
+updateRippleInputDisplay();
+
+// ========================= TABS =========================
+function switchTab(id) {
+  document.querySelectorAll('.zen-tab').forEach((t,i)=>t.classList.toggle('active',['half','full','ripple'][i]===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+}
+</script>
+</body>
+</html>

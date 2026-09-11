@@ -1,0 +1,471 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 4.2 — The Stack and Calling Conventions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;
+  --text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;
+  --accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--accent-ink:#1C1C1C;
+  --border-hair:#1C1C1C;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;
+  --ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes zen-fade-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slot-push{0%{background:rgba(200,42,42,0.3)}100%{background:transparent}}
+@keyframes slot-pop{0%{background:rgba(139,105,20,0.3)}100%{background:transparent}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast),border-color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:zen-fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 20px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-hair);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast),color var(--t-fast)}
+.zen-btn:hover{background:var(--accent-ink);color:#FDFDFD}
+.zen-btn.primary{background:var(--accent-ink);color:#FDFDFD}
+.zen-btn.success{border-color:var(--accent-gold);color:var(--accent-gold);background:transparent}.zen-btn.success:hover{background:var(--accent-gold);color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red);background:transparent}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.zen-btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.zen-pane{background:var(--bg-washi);padding:22px}
+.zen-pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:14px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+/* Stack cells */
+.stack-visual{display:flex;flex-direction:column;gap:0;max-width:320px;margin:0 auto}
+.stack-slot{border:1px solid var(--border-paper);padding:10px 14px;background:var(--bg-canvas);display:flex;justify-content:space-between;align-items:center;min-height:40px;transition:all var(--t-med);position:relative}
+.stack-slot.frame-top{border-top:2px solid var(--accent-indigo)}
+.stack-slot.frame-bot{border-bottom:2px solid var(--accent-indigo)}
+.stack-slot.rsp{border-left:3px solid var(--accent-red)}
+.stack-slot.rbp{border-left:3px solid var(--accent-gold)}
+.stack-slot.pushed{animation:slot-push 0.4s var(--ease-out)}
+.stack-slot.popped{animation:slot-pop 0.4s var(--ease-out)}
+.stack-slot.empty{opacity:.35}
+.ss-addr{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);width:90px;flex-shrink:0}
+.ss-val{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text-sumi);flex:1;text-align:center}
+.ss-val.ret{color:var(--accent-red)}
+.ss-val.saved-rbp{color:var(--accent-gold)}
+.ss-val.local{color:var(--accent-indigo)}
+.ss-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);width:70px;text-align:right;flex-shrink:0}
+.ss-ptr{font-size:9px;font-weight:600;letter-spacing:.08em;color:var(--accent-red);width:32px;text-align:right;flex-shrink:0}
+/* Registers */
+.reg-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:14px}
+.reg-cell{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:8px 12px;border-radius:var(--radius-xs)}
+.reg-cell.rsp-reg{border-color:var(--accent-red)}
+.reg-cell.rbp-reg{border-color:var(--accent-gold)}
+.rc-name{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:2px}
+.rc-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:300;color:var(--text-sumi);line-height:1}
+/* Op log */
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:130px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;color:var(--text-body);border-radius:var(--radius-xs)}
+.log-push{color:var(--accent-red)}.log-pop{color:var(--accent-gold)}.log-call{color:var(--accent-indigo)}.log-ret{color:var(--text-muted)}.log-info{color:var(--accent-indigo)}
+/* ABI table */
+.abi-table{border-collapse:collapse;width:100%;font-size:12px;margin-bottom:10px}
+.abi-table th{background:var(--bg-warm);color:var(--text-muted);padding:6px 10px;border:1px solid var(--border-paper);font-size:9px;text-transform:uppercase;letter-spacing:.08em;text-align:left}
+.abi-table td{padding:6px 10px;border:1px solid var(--border-paper);font-family:'JetBrains Mono',monospace;font-size:11px}
+.abi-table td.active-reg{background:rgba(200,42,42,0.06);color:var(--accent-red);font-weight:500}
+.abi-table td.callee{color:var(--accent-gold)}
+</style>
+</head>
+<body>
+
+<div class="zen-header">
+  <h1 class="zen-title">Module 4.2 — The Stack and Calling Conventions</h1>
+  <p class="zen-subtitle">Stack Frame Visualiser · Calling Convention Explorer · Stack Overflow Demo</p>
+</div>
+
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('frame')">Stack Frame</div>
+  <div class="zen-tab" onclick="switchTab('abi')">Calling Convention</div>
+  <div class="zen-tab" onclick="switchTab('overflow')">Stack Overflow</div>
+</div>
+
+<!-- ===== STACK FRAME ===== -->
+<div id="panel-frame" class="panel active">
+  <div class="zen-intro">
+    <strong>Watch the stack grow and shrink</strong> as a main→add→multiply call chain executes. Each CALL pushes a return address; each prologue saves RBP and allocates locals. Step through one instruction at a time.
+  </div>
+  <div class="bento2">
+    <div class="zen-pane">
+      <div class="pane-title gold">Registers</div>
+      <div class="reg-grid">
+        <div class="reg-cell rsp-reg"><div class="rc-name">RSP (stack ptr)</div><div class="rc-val" id="rsp-val">0x7FFF_0040</div></div>
+        <div class="reg-cell rbp-reg"><div class="rc-name">RBP (frame ptr)</div><div class="rc-val" id="rbp-val">0x7FFF_0040</div></div>
+        <div class="reg-cell"><div class="rc-name">RAX (return val)</div><div class="rc-val" id="rax-val">0x0000_0000</div></div>
+        <div class="reg-cell"><div class="rc-name">RIP (instr ptr)</div><div class="rc-val" id="rip-val">main+0</div></div>
+      </div>
+
+      <div class="pane-title indigo" style="margin-bottom:8px">Current instruction</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px 14px;border-radius:var(--radius-xs);margin-bottom:14px;color:var(--accent-indigo);min-height:36px" id="cur-instr">Ready to step</div>
+
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" id="step-btn" onclick="frameStep()">↓ Step</button>
+        <button class="zen-btn" id="run-btn" onclick="frameRun()">▶ Run</button>
+        <button class="zen-btn danger" onclick="frameReset()">↺ Reset</button>
+      </div>
+      <div style="margin-top:8px;font-size:11px;color:var(--text-muted)">Step: <span id="step-num" style="font-family:'JetBrains Mono',monospace;color:var(--text-sumi)">0</span></div>
+    </div>
+
+    <div class="zen-pane warm">
+      <div class="pane-title red">Call Stack (grows ↓)</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Address</span>
+        <span style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Value</span>
+        <span style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Description</span>
+        <span style="font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Ptr</span>
+      </div>
+      <div class="stack-visual" id="stack-visual"></div>
+
+      <div class="pane-title red" style="margin-top:14px;margin-bottom:6px">Execution Log</div>
+      <div class="op-log" id="frame-log"><div class="log-info">&gt; Call chain: main → add(3,4) → result stored. Step to begin.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CALLING CONVENTION ===== -->
+<div id="panel-abi" class="panel">
+  <div class="zen-intro">
+    <strong>Linux x86-64 System V ABI.</strong> Enter a function signature and see which registers receive which arguments. Arguments 1–6 go in registers; argument 7+ go on the stack.
+  </div>
+  <div class="bento2">
+    <div class="zen-pane">
+      <div class="pane-title gold">Function Signature</div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px">Try these signatures:</div>
+        <div class="btn-row" style="margin-top:0">
+          <button class="zen-btn" onclick="setABISig('int add(int a, int b)')">add(a,b)</button>
+          <button class="zen-btn" onclick="setABISig('void fn(int a, int b, int c, int d, int e, int f)')">6-arg</button>
+          <button class="zen-btn" onclick="setABISig('long compute(long a, long b, long c, long d, long e, long f, long g)')">7-arg (stack!)</button>
+          <button class="zen-btn" onclick="setABISig('double hypot(double x, double y)')">float args</button>
+        </div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;border-radius:var(--radius-xs);margin-bottom:14px;color:var(--text-sumi)" id="abi-sig-display">int add(int a, int b)</div>
+
+      <div class="pane-title indigo" style="margin-bottom:8px">Argument Mapping</div>
+      <table class="abi-table" id="abi-args-table">
+        <thead><tr><th>Argument</th><th>Type</th><th>Register / Location</th></tr></thead>
+        <tbody id="abi-args-body"></tbody>
+      </table>
+
+      <div style="padding:10px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);font-size:11px;line-height:1.8;color:var(--text-muted)">
+        Return value: <strong style="color:var(--text-sumi)">rax</strong> (integer/pointer) or <strong style="color:var(--text-sumi)">xmm0</strong> (float/double)
+      </div>
+    </div>
+
+    <div class="zen-pane warm">
+      <div class="pane-title gold">Linux x86-64 ABI — Full Register Table</div>
+      <table class="abi-table">
+        <thead><tr><th>Register</th><th>Role</th><th>Saved by</th></tr></thead>
+        <tbody>
+          <tr><td>rdi</td><td>Arg 1 (int)</td><td class="callee" style="color:var(--accent-red)">caller</td></tr>
+          <tr><td>rsi</td><td>Arg 2 (int)</td><td style="color:var(--accent-red)">caller</td></tr>
+          <tr><td>rdx</td><td>Arg 3 (int)</td><td style="color:var(--accent-red)">caller</td></tr>
+          <tr><td>rcx</td><td>Arg 4 (int)</td><td style="color:var(--accent-red)">caller</td></tr>
+          <tr><td>r8</td><td>Arg 5 (int)</td><td style="color:var(--accent-red)">caller</td></tr>
+          <tr><td>r9</td><td>Arg 6 (int)</td><td style="color:var(--accent-red)">caller</td></tr>
+          <tr><td>xmm0–xmm7</td><td>Float args 1–8</td><td style="color:var(--accent-red)">caller</td></tr>
+          <tr><td>rax</td><td>Return value</td><td style="color:var(--accent-red)">caller</td></tr>
+          <tr><td>rbx</td><td>General</td><td class="callee">callee ✓</td></tr>
+          <tr><td>rbp</td><td>Frame pointer</td><td class="callee">callee ✓</td></tr>
+          <tr><td>r12–r15</td><td>General</td><td class="callee">callee ✓</td></tr>
+          <tr><td>rsp</td><td>Stack pointer</td><td class="callee">callee ✓</td></tr>
+          <tr><td>[rsp+8]…</td><td>Args 7+ (stack)</td><td style="color:var(--accent-red)">caller</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== STACK OVERFLOW ===== -->
+<div id="panel-overflow" class="panel">
+  <div class="zen-intro">
+    <strong>Stack overflow visualiser.</strong> A recursive function with no base case calls itself forever. Watch the stack grow until it exhausts the 1 MB limit. Observe where a stack canary would detect a buffer overflow.
+  </div>
+  <div class="bento2">
+    <div class="zen-pane">
+      <div class="pane-title gold">Recursive countdown(n) — no base case!</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:12px;border-radius:var(--radius-xs);line-height:1.9;margin-bottom:14px">
+        <span style="color:var(--accent-red)">void</span> countdown(<span style="color:var(--accent-red)">int</span> n) {<br>
+        &nbsp;&nbsp;<span style="color:var(--text-muted)">// BUG: no base case!</span><br>
+        &nbsp;&nbsp;countdown(n - <span style="color:var(--accent-indigo)">1</span>);<br>
+        }
+      </div>
+
+      <div style="margin-bottom:14px">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px">Stack usage</div>
+        <div style="height:16px;background:var(--border-paper);border-radius:2px;overflow:hidden">
+          <div id="so-bar" style="height:100%;background:var(--accent-indigo);width:0%;transition:width 0.1s linear;border-radius:2px"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;font-family:'JetBrains Mono',monospace;font-size:11px">
+          <span id="so-used" style="color:var(--accent-indigo)">0 KB used</span>
+          <span style="color:var(--text-muted)">1024 KB limit</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px">
+        <div style="background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:300;color:var(--accent-red)" id="so-depth">0</div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">Call depth</div>
+        </div>
+        <div style="background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:300;color:var(--accent-indigo)" id="so-rsp">0x7FFF_0000</div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)">RSP value</div>
+        </div>
+      </div>
+
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="soStep()">↓ One call</button>
+        <button class="zen-btn" id="so-run-btn" onclick="soRun()">▶ Auto (fast)</button>
+        <button class="zen-btn danger" onclick="soReset()">↺ Reset</button>
+      </div>
+    </div>
+
+    <div class="zen-pane warm">
+      <div class="pane-title red" style="margin-bottom:8px">Call Stack (last 8 frames)</div>
+      <div id="so-frames" style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2;color:var(--text-muted);margin-bottom:14px">No calls yet.</div>
+
+      <div class="pane-title gold" style="margin-bottom:8px">Stack Canary — How It Works</div>
+      <div style="padding:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);font-size:12px;line-height:1.8;color:var(--text-muted)">
+        A <strong style="color:var(--text-sumi)">stack canary</strong> is a random value placed between local variables and the return address:<br><br>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-indigo)">
+        [buffer    16 bytes]<br>
+        [canary  ← 0xDEAD_BEEF_CAFE_1234]<br>
+        [saved RBP  8 bytes]<br>
+        [return addr 8 bytes]
+        </span><br><br>
+        Before <code style="font-family:'JetBrains Mono',monospace">RET</code>, the function checks the canary. If it changed → <strong style="color:var(--accent-red)">abort()</strong> before the corrupted return address is used.
+      </div>
+
+      <div class="op-log" id="so-log" style="margin-top:10px"><div class="log-info">&gt; Press "One call" or "Auto" to begin.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== STACK FRAME VISUALISER =====
+// Simulate: main calls add(3,4); add returns 7; main stores result
+const BASE_RSP = 0x7FFF0040;
+const BASE_RBP = 0x7FFF0040;
+const FRAME_SIZE = 8; // bytes per stack word (64-bit)
+
+let rsp = BASE_RSP, rbp = BASE_RBP, rax = 0;
+let stackSlots = []; // {addr, val, desc, type}
+let stepIdx = 0, runTimer = null, running = false;
+
+const STEPS = [
+  // main prologue
+  { instr: 'push rbp          ; save caller RBP (= 0)',  action: () => { push(rbp, 'saved RBP (caller)', 'saved-rbp'); rbp = rsp; }, rip: 'main+0' },
+  { instr: 'mov  rbp, rsp     ; set frame base',          action: () => { rbp = rsp; }, rip: 'main+3' },
+  { instr: 'sub  rsp, 8       ; allocate local: result',  action: () => { rsp -= 8; stackSlots.unshift({addr:rsp, val:'uninit', desc:'local: result', type:'local'}); }, rip: 'main+6' },
+  // set up call arguments
+  { instr: 'mov  edi, 3       ; arg1 (a) = 3',            action: () => {}, rip: 'main+9' },
+  { instr: 'mov  esi, 4       ; arg2 (b) = 4',            action: () => {}, rip: 'main+12' },
+  // call add
+  { instr: 'call add          ; push ret addr, jump',     action: () => { push(0x401020, 'return addr → main+17', 'ret'); }, rip: 'add+0' },
+  // add prologue
+  { instr: 'push rbp          ; add: save main\'s RBP',   action: () => { push(rbp, 'saved RBP (main frame)', 'saved-rbp'); rbp = rsp; }, rip: 'add+1' },
+  { instr: 'mov  rbp, rsp     ; add: set frame base',      action: () => { rbp = rsp; }, rip: 'add+4' },
+  // add body: a (edi=3) + b (esi=4)
+  { instr: 'mov  eax, edi     ; eax = a = 3',             action: () => { rax = 3; }, rip: 'add+7' },
+  { instr: 'add  eax, esi     ; eax = 3 + 4 = 7',         action: () => { rax = 7; }, rip: 'add+10' },
+  // add epilogue
+  { instr: 'pop  rbp          ; add: restore RBP',         action: () => { const slot = stackSlots.shift(); if(slot){rbp = slot.val==='saved RBP (main frame)'?BASE_RBP:rbp; slot.popping=true;} rsp += 8; }, rip: 'add+13' },
+  { instr: 'ret               ; pop return addr, jump',    action: () => { const slot = stackSlots.shift(); rsp += 8; }, rip: 'main+17' },
+  // main: store result
+  { instr: 'mov  [rbp-8], eax ; result = 7 (store in local)', action: () => { const slot = stackSlots.find(s=>s.desc==='local: result'); if(slot) slot.val=rax; }, rip: 'main+17' },
+  // main epilogue
+  { instr: 'mov  rsp, rbp     ; main: restore RSP',        action: () => { rsp = rbp; stackSlots = stackSlots.filter(s=>s.type==='saved-rbp'||s.type==='ret'); }, rip: 'main+20' },
+  { instr: 'pop  rbp          ; main: restore caller RBP', action: () => { const slot = stackSlots.shift(); rsp += 8; rbp = BASE_RBP + 0x100; }, rip: 'main+23' },
+  { instr: 'ret               ; main returns to OS',       action: () => { rsp += 8; stepIdx = STEPS.length - 1; }, rip: 'exit' },
+];
+
+function push(val, desc, type) {
+  rsp -= 8;
+  stackSlots.unshift({addr: rsp, val, desc, type, new: true});
+  setTimeout(() => { if(stackSlots[0]) delete stackSlots[0].new; renderStack(); }, 200);
+}
+
+function fmtAddr(n) {
+  const h = n.toString(16).toUpperCase().padStart(8,'0');
+  return `0x${h.slice(0,4)}_${h.slice(4)}`;
+}
+
+function renderStack() {
+  const el = document.getElementById('stack-visual');
+  if (!stackSlots.length) { el.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:12px">Stack empty</div>'; return; }
+  el.innerHTML = stackSlots.map((s, i) => {
+    const isRsp = s.addr === rsp;
+    const isRbp = s.addr === rbp;
+    const cls = `stack-slot ${s.type==='ret'?'':''}${isRsp?' rsp':''}${isRbp?' rbp':''}${s.new?' pushed':''}`;
+    const valCls = `ss-val ${s.type||''}`;
+    const ptr = (isRsp ? '←RSP' : '') + (isRbp ? '←RBP' : '');
+    return `<div class="${cls}">
+      <span class="ss-addr">${fmtAddr(s.addr)}</span>
+      <span class="${valCls}">${typeof s.val==='number' ? '0x'+s.val.toString(16).toUpperCase().padStart(8,'0') : s.val}</span>
+      <span class="ss-label">${s.desc||''}</span>
+      <span class="ss-ptr">${ptr}</span>
+    </div>`;
+  }).join('');
+}
+
+function updateRegs() {
+  document.getElementById('rsp-val').textContent = fmtAddr(rsp);
+  document.getElementById('rbp-val').textContent = fmtAddr(rbp);
+  document.getElementById('rax-val').textContent = '0x'+rax.toString(16).toUpperCase().padStart(8,'0');
+  document.getElementById('rip-val').textContent = STEPS[Math.min(stepIdx, STEPS.length-1)]?.rip || 'done';
+}
+
+function frameLog(msg, cls='') {
+  const el = document.getElementById('frame-log');
+  const d = document.createElement('div'); d.className = cls; d.textContent = '> ' + msg;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+
+function frameStep() {
+  if (stepIdx >= STEPS.length) return;
+  const step = STEPS[stepIdx];
+  document.getElementById('cur-instr').textContent = step.instr;
+  step.action();
+  const clsMap = {PUSH:'log-push',CALL:'log-call',RET:'log-ret',pop:'log-pop'};
+  const word = step.instr.trim().split(/\s+/)[0].toUpperCase();
+  frameLog(step.instr.trim(), clsMap[word] || 'log-info');
+  stepIdx++;
+  document.getElementById('step-num').textContent = stepIdx;
+  updateRegs(); renderStack();
+  if (stepIdx >= STEPS.length) { document.getElementById('step-btn').disabled = true; frameLog('--- All done: main returned ---', 'log-info'); clearInterval(runTimer); running = false; document.getElementById('run-btn').textContent = '▶ Run'; }
+}
+
+function frameRun() {
+  if (running) { clearInterval(runTimer); running = false; document.getElementById('run-btn').textContent = '▶ Run'; return; }
+  running = true; document.getElementById('run-btn').textContent = '■ Stop';
+  runTimer = setInterval(() => { if (stepIdx >= STEPS.length) { clearInterval(runTimer); running = false; document.getElementById('run-btn').textContent = '▶ Run'; return; } frameStep(); }, 350);
+}
+
+function frameReset() {
+  clearInterval(runTimer); running = false; stepIdx = 0;
+  rsp = BASE_RSP; rbp = BASE_RBP; rax = 0; stackSlots = [];
+  document.getElementById('step-btn').disabled = false;
+  document.getElementById('run-btn').textContent = '▶ Run';
+  document.getElementById('step-num').textContent = 0;
+  document.getElementById('cur-instr').textContent = 'Ready to step';
+  document.getElementById('frame-log').innerHTML = '<div class="log-info">&gt; Reset. Call chain: main → add(3,4).</div>';
+  updateRegs(); renderStack();
+}
+
+frameReset();
+
+// ===== CALLING CONVENTION =====
+const INT_REGS = ['rdi','rsi','rdx','rcx','r8','r9'];
+const FLOAT_REGS = ['xmm0','xmm1','xmm2','xmm3','xmm4','xmm5','xmm6','xmm7'];
+
+function setABISig(sig) {
+  document.getElementById('abi-sig-display').textContent = sig;
+  // Parse args
+  const argsMatch = sig.match(/\(([^)]*)\)/);
+  if (!argsMatch) return;
+  const argsStr = argsMatch[1].trim();
+  if (!argsStr) return;
+  const args = argsStr.split(',').map(a => a.trim()).filter(a => a);
+  const tbody = document.getElementById('abi-args-body');
+  tbody.innerHTML = '';
+  let intSlot = 0, floatSlot = 0, stackOff = 8;
+  args.forEach((arg, i) => {
+    const isFloat = arg.startsWith('double') || arg.startsWith('float');
+    let reg, cls = '';
+    if (isFloat && floatSlot < 8) { reg = FLOAT_REGS[floatSlot++]; cls = 'active-reg'; }
+    else if (!isFloat && intSlot < 6) { reg = INT_REGS[intSlot++]; cls = 'active-reg'; }
+    else { reg = `[rsp+${stackOff}] (stack)`; stackOff += 8; cls = ''; }
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${arg.split(' ').pop() || 'arg'+(i+1)} (${i+1})</td><td>${arg.split(' ')[0]}</td><td class="${cls}">${reg}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+setABISig('int add(int a, int b)');
+
+// ===== STACK OVERFLOW =====
+const SO_BASE = 0x7FFF0000;
+const SO_LIMIT = 1024 * 1024; // 1 MB
+const FRAME_BYTES = 24; // each recursive frame
+let soDepth = 0, soTimer = null, soRunning = false;
+
+function soLog(msg, cls='') {
+  const el = document.getElementById('so-log');
+  const d = document.createElement('div'); d.className = cls; d.textContent = '> ' + msg;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+
+function soStep() {
+  const usedBytes = (soDepth + 1) * FRAME_BYTES;
+  if (usedBytes >= SO_LIMIT) {
+    soLog('*** STACK OVERFLOW! RSP exceeded limit ***', 'log-push');
+    soLog(`Depth: ${soDepth} calls × ${FRAME_BYTES} bytes = ${usedBytes} bytes`, 'log-push');
+    clearInterval(soTimer); soRunning = false; document.getElementById('so-run-btn').textContent = '▶ Auto (fast)';
+    document.getElementById('so-bar').style.background = 'var(--accent-red)';
+    return;
+  }
+  soDepth++;
+  const usedKB = Math.round(soDepth * FRAME_BYTES / 1024 * 10) / 10;
+  const pct = Math.min(soDepth * FRAME_BYTES / SO_LIMIT * 100, 100);
+  const curRsp = SO_BASE - soDepth * FRAME_BYTES;
+  document.getElementById('so-depth').textContent = soDepth;
+  document.getElementById('so-rsp').textContent = fmtAddr(curRsp);
+  document.getElementById('so-used').textContent = `${usedKB} KB used`;
+  document.getElementById('so-bar').style.width = pct + '%';
+  document.getElementById('so-bar').style.background = pct > 90 ? 'var(--accent-red)' : pct > 70 ? '#C87A2A' : 'var(--accent-indigo)';
+
+  // Update frames display (last 8)
+  const el = document.getElementById('so-frames');
+  const startDepth = Math.max(1, soDepth - 7);
+  let html = '';
+  for (let d = startDepth; d <= soDepth; d++) {
+    const frameRsp = SO_BASE - d * FRAME_BYTES;
+    const isCurrent = d === soDepth;
+    html += `<div style="color:${isCurrent?'var(--accent-red)':'var(--text-muted)'}">${isCurrent?'→':' '} countdown(${d - 1}) @ ${fmtAddr(frameRsp)}</div>`;
+  }
+  if (soDepth > 8) html = `<div style="color:var(--text-ghost)">... ${soDepth - 8} earlier frames ...</div>` + html;
+  el.innerHTML = html;
+
+  if (soDepth % 50 === 0) soLog(`Depth ${soDepth}: ${usedKB} KB used (${Math.round(pct)}%)`, pct > 80 ? 'log-push' : 'log-info');
+  if (pct > 95) soLog('CRITICAL: Stack nearly exhausted!', 'log-push');
+}
+
+function soRun() {
+  if (soRunning) { clearInterval(soTimer); soRunning = false; document.getElementById('so-run-btn').textContent = '▶ Auto (fast)'; return; }
+  soRunning = true; document.getElementById('so-run-btn').textContent = '■ Stop';
+  soTimer = setInterval(() => {
+    for (let i = 0; i < 5; i++) soStep();
+    if ((soDepth * FRAME_BYTES) >= SO_LIMIT) { clearInterval(soTimer); soRunning = false; document.getElementById('so-run-btn').textContent = '▶ Auto (fast)'; }
+  }, 50);
+}
+
+function soReset() {
+  clearInterval(soTimer); soRunning = false; soDepth = 0;
+  document.getElementById('so-depth').textContent = 0;
+  document.getElementById('so-rsp').textContent = '0x7FFF_0000';
+  document.getElementById('so-used').textContent = '0 KB used';
+  document.getElementById('so-bar').style.width = '0%';
+  document.getElementById('so-bar').style.background = 'var(--accent-indigo)';
+  document.getElementById('so-frames').innerHTML = 'No calls yet.';
+  document.getElementById('so-run-btn').textContent = '▶ Auto (fast)';
+  document.getElementById('so-log').innerHTML = '<div class="log-info">&gt; Reset.</div>';
+}
+
+function switchTab(id) {
+  const tabs = ['frame','abi','overflow'];
+  document.querySelectorAll('.zen-tab').forEach((t,i) => t.classList.toggle('active', tabs[i] === id));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+}
+</script>
+</body>
+</html>

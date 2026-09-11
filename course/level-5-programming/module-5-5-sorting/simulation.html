@@ -1,0 +1,466 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 5.5 — Sorting: Putting Things in Order</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes swap-flash{0%{background:rgba(200,42,42,0.35)}100%{background:transparent}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+/* Bar chart */
+.bar-chart{display:flex;align-items:flex-end;gap:3px;height:160px;padding:4px 0;overflow:hidden}
+.bar{flex:1;border-radius:2px 2px 0 0;transition:height .15s,background .15s;min-width:8px;position:relative}
+.bar.comparing{background:var(--accent-red)!important}
+.bar.sorted{background:var(--accent-gold)!important}
+.bar.pivot{background:var(--accent-indigo)!important}
+/* Stats */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.stat-box{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:300;color:var(--text-sumi);line-height:1;margin-bottom:2px;display:block}
+.sv.red{color:var(--accent-red)}.sv.gold{color:var(--accent-gold)}.sv.indigo{color:var(--accent-indigo)}
+.sl{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:110px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs)}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 5.5 — Sorting: Putting Things in Order</h1>
+  <p class="zen-subtitle">Sort Race · Merge Sort Tree · Quicksort Partition</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('race')">Sort Race</div>
+  <div class="zen-tab" onclick="switchTab('merge')">Merge Sort Tree</div>
+  <div class="zen-tab" onclick="switchTab('quick')">Quicksort Partition</div>
+</div>
+
+<!-- SORT RACE -->
+<div id="panel-race" class="panel active">
+  <div class="zen-intro"><strong>Three algorithms sort the same array simultaneously.</strong> Each bar represents one element. Red = currently comparing, gold = placed in final position. Watch comparison and swap counts diverge.</div>
+  <div class="pane" style="margin-bottom:1px">
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      <button class="zen-btn primary" onclick="raceStep()">↓ Step all</button>
+      <button class="zen-btn" id="race-auto-btn" onclick="raceAuto()">▶ Auto</button>
+      <button class="zen-btn danger" onclick="raceReset()">↺ New array</button>
+      <select id="race-speed" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+        <option value="200">Slow</option>
+        <option value="80" selected>Medium</option>
+        <option value="20">Fast</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border-light)">
+      <div class="pane warm" style="padding:14px">
+        <div class="pane-title red" style="margin-bottom:6px">Bubble Sort</div>
+        <div class="bar-chart" id="bubble-chart"></div>
+        <div class="stat-row" style="margin-top:8px">
+          <div class="stat-box"><span class="sv red" id="bubble-cmp">0</span><span class="sl">Comps</span></div>
+          <div class="stat-box"><span class="sv gold" id="bubble-swp">0</span><span class="sl">Swaps</span></div>
+          <div class="stat-box"><span class="sv indigo" id="bubble-done">—</span><span class="sl">Status</span></div>
+        </div>
+      </div>
+      <div class="pane" style="padding:14px">
+        <div class="pane-title gold" style="margin-bottom:6px">Merge Sort</div>
+        <div class="bar-chart" id="merge-chart"></div>
+        <div class="stat-row" style="margin-top:8px">
+          <div class="stat-box"><span class="sv red" id="merge-cmp">0</span><span class="sl">Comps</span></div>
+          <div class="stat-box"><span class="sv gold" id="merge-swp">0</span><span class="sl">Copies</span></div>
+          <div class="stat-box"><span class="sv indigo" id="merge-done">—</span><span class="sl">Status</span></div>
+        </div>
+      </div>
+      <div class="pane warm" style="padding:14px">
+        <div class="pane-title indigo" style="margin-bottom:6px">Quick Sort</div>
+        <div class="bar-chart" id="quick-chart"></div>
+        <div class="stat-row" style="margin-top:8px">
+          <div class="stat-box"><span class="sv red" id="quick-cmp">0</span><span class="sl">Comps</span></div>
+          <div class="stat-box"><span class="sv gold" id="quick-swp">0</span><span class="sl">Swaps</span></div>
+          <div class="stat-box"><span class="sv indigo" id="quick-done">—</span><span class="sl">Status</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MERGE SORT TREE -->
+<div id="panel-merge" class="panel">
+  <div class="zen-intro"><strong>Merge Sort's divide-and-conquer strategy.</strong> Enter an array and watch the recursion tree unfold — splitting into halves, then merging back in sorted order. Each merge step counts comparisons.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Input array</div>
+      <input id="ms-input" type="text" value="5,3,8,1,9,2,7,4" style="font-family:'JetBrains Mono',monospace;font-size:13px;width:100%;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:7px 10px;color:var(--text-sumi);margin-bottom:12px">
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="msStep()">↓ Next step</button>
+        <button class="zen-btn" onclick="msRunAll()">▶ Run all</button>
+        <button class="zen-btn danger" onclick="msReset()">↺ Reset</button>
+      </div>
+      <div class="stat-row" style="margin-top:12px">
+        <div class="stat-box"><span class="sv red" id="ms-comps">0</span><span class="sl">Comparisons</span></div>
+        <div class="stat-box"><span class="sv gold" id="ms-merges">0</span><span class="sl">Merges</span></div>
+        <div class="stat-box"><span class="sv indigo" id="ms-result">—</span><span class="sl">Result</span></div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Recursion tree</div>
+      <div id="ms-tree" style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8;color:var(--text-muted);min-height:80px;margin-bottom:10px"></div>
+      <div class="op-log" id="ms-log"><div class="linfo">> Press Next step to trace merge sort.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- QUICKSORT PARTITION -->
+<div id="panel-quick" class="panel">
+  <div class="zen-intro"><strong>Quicksort's partition step</strong> is its heart. The pivot is placed in its final position; everything smaller goes left, everything larger goes right. Try different pivot strategies and see their effect.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Partition settings</div>
+      <input id="qs-input" type="text" value="3,7,8,5,2,1,9,5,4" style="font-family:'JetBrains Mono',monospace;font-size:13px;width:100%;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:7px 10px;color:var(--text-sumi);margin-bottom:10px">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text-muted)">Pivot:</span>
+        <select id="qs-pivot" style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+          <option value="last">Last element</option>
+          <option value="first">First element</option>
+          <option value="random">Random</option>
+          <option value="median">Median of 3</option>
+        </select>
+        <button class="zen-btn primary" onclick="qsStep()">↓ Step</button>
+        <button class="zen-btn" onclick="qsRunAll()">Run all</button>
+        <button class="zen-btn danger" onclick="qsReset()">↺ Reset</button>
+      </div>
+      <div class="bar-chart" id="qs-chart" style="height:130px"></div>
+      <div class="stat-row" style="margin-top:8px">
+        <div class="stat-box"><span class="sv red" id="qs-comps">0</span><span class="sl">Comparisons</span></div>
+        <div class="stat-box"><span class="sv gold" id="qs-swaps">0</span><span class="sl">Swaps</span></div>
+        <div class="stat-box"><span class="sv indigo" id="qs-pivpos">—</span><span class="sl">Pivot pos</span></div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Current array state</div>
+      <div id="qs-arr-view" style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.05em;color:var(--text-sumi);margin-bottom:10px;line-height:2"></div>
+      <div class="pane-title red" style="margin-bottom:6px">Partition trace</div>
+      <div class="op-log" id="qs-log"><div class="linfo">> Press Step to trace the Lomuto partition algorithm.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== SORT RACE =====
+function randArr(n=20) { return Array.from({length:n}, () => Math.floor(Math.random()*95)+5); }
+
+let raceArr, bubbleArr, mergeArr, quickArr;
+let bubbleI, bubbleJ, bubbleCmp, bubbleSwp, bubbleDone;
+let mergeCmp, mergeCopies, mergeDone, mergeArr2, mergeSorted;
+let quickArr2, quickCmp, quickSwp, quickDone, quickSteps, quickStepIdx;
+let raceTimer = null;
+
+function renderBars(id, arr, comparing=[], sorted=[], pivot=-1) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  const max = Math.max(...arr, 1);
+  el.innerHTML = arr.map((v, i) => {
+    let cls = 'bar'; let bg = '#D8D6CE';
+    if (sorted.includes(i)) { cls += ' sorted'; bg = '#8B6914'; }
+    else if (comparing.includes(i)) { cls += ' comparing'; bg = '#C82A2A'; }
+    else if (i === pivot) { cls += ' pivot'; bg = '#1C2D42'; }
+    const h = Math.max(4, (v/max)*140);
+    return `<div class="${cls}" style="height:${h}px;background:${bg}" title="${v}"></div>`;
+  }).join('');
+}
+
+function raceReset() {
+  clearInterval(raceTimer); raceTimer = null;
+  document.getElementById('race-auto-btn').textContent = '▶ Auto';
+  raceArr = randArr();
+  bubbleArr = [...raceArr]; mergeArr = [...raceArr]; quickArr = [...raceArr];
+  bubbleI=0; bubbleJ=0; bubbleCmp=0; bubbleSwp=0; bubbleDone=false;
+  mergeCmp=0; mergeCopies=0; mergeDone=false;
+  mergeArr2 = [...raceArr];
+  mergeSorted = new Set(); buildMergeSteps(mergeArr2);
+  quickArr2 = [...raceArr]; quickCmp=0; quickSwp=0; quickDone=false;
+  buildQuickSteps(quickArr2);
+  ['bubble','merge','quick'].forEach(k => {
+    document.getElementById(k+'-cmp').textContent=0;
+    document.getElementById(k+'-swp').textContent=0;
+    document.getElementById(k+'-done').textContent='—';
+  });
+  renderBars('bubble-chart', bubbleArr);
+  renderBars('merge-chart', mergeArr);
+  renderBars('quick-chart', quickArr);
+}
+
+// Bubble sort step
+function bubbleStep() {
+  if (bubbleDone) return;
+  const n = bubbleArr.length;
+  if (bubbleI >= n - 1) { bubbleDone = true; document.getElementById('bubble-done').textContent='Done'; renderBars('bubble-chart', bubbleArr, [], Array.from({length:n},(_,i)=>i)); return; }
+  bubbleCmp++;
+  if (bubbleArr[bubbleJ] > bubbleArr[bubbleJ+1]) {
+    [bubbleArr[bubbleJ], bubbleArr[bubbleJ+1]] = [bubbleArr[bubbleJ+1], bubbleArr[bubbleJ]];
+    bubbleSwp++;
+  }
+  renderBars('bubble-chart', bubbleArr, [bubbleJ, bubbleJ+1], Array.from({length:bubbleI}, (_,i)=>n-1-i));
+  document.getElementById('bubble-cmp').textContent = bubbleCmp;
+  document.getElementById('bubble-swp').textContent = bubbleSwp;
+  bubbleJ++;
+  if (bubbleJ >= n - 1 - bubbleI) { bubbleJ = 0; bubbleI++; }
+}
+
+// Merge sort (pre-computed steps)
+let mergeSteps=[], mergeStepIdx=0;
+function buildMergeSteps(arr) {
+  mergeSteps = []; mergeStepIdx = 0;
+  function ms(a, depth=0) {
+    if (a.length <= 1) return a;
+    const mid = Math.floor(a.length/2);
+    const L = ms(a.slice(0,mid), depth+1);
+    const R = ms(a.slice(mid), depth+1);
+    const merged = [];
+    let i=0,j=0;
+    while(i<L.length && j<R.length) {
+      mergeSteps.push({type:'compare', left:L[i], right:R[j], merged:[...merged], remaining:{L,R,li:i,ri:j}});
+      if(L[i]<=R[j]) merged.push(L[i++]);
+      else merged.push(R[j++]);
+    }
+    while(i<L.length) merged.push(L[i++]);
+    while(j<R.length) merged.push(R[j++]);
+    mergeSteps.push({type:'merge', result:[...merged]});
+    return merged;
+  }
+  ms([...arr]);
+}
+
+function mergeStep() {
+  if (mergeStepIdx >= mergeSteps.length) { mergeDone=true; document.getElementById('merge-done').textContent='Done'; return; }
+  const s = mergeSteps[mergeStepIdx++];
+  if (s.type === 'compare') {
+    mergeCmp++;
+    document.getElementById('merge-cmp').textContent = mergeCmp;
+  } else {
+    mergeCopies += s.result.length;
+    // Update a segment of mergeArr with result (simplified)
+    const arrLen = mergeArr.length;
+    mergeSteps.slice(0, mergeStepIdx).filter(x=>x.type==='merge').forEach(step => {
+      const sorted = step.result;
+      for(let k=0; k<arrLen; k++) {
+        if(mergeArr.slice(k, k+sorted.length).every((v,i)=>v===sorted[i])) return;
+      }
+    });
+    document.getElementById('merge-swp').textContent = mergeCopies;
+  }
+  renderBars('merge-chart', mergeArr, [], []);
+}
+
+// Quick sort (pre-computed)
+let quickStepsArr=[], quickStepIdxR=0;
+function buildQuickSteps(arr) {
+  quickStepsArr=[]; quickStepIdxR=0;
+  const a=[...arr];
+  function qs(lo, hi) {
+    if(lo>=hi) return;
+    const p = partition(a, lo, hi);
+    quickStepsArr.push({arr:[...a], pivot:p, lo, hi});
+    qs(lo, p-1); qs(p+1, hi);
+  }
+  function partition(a, lo, hi) {
+    const pivot=a[hi]; let i=lo-1;
+    for(let j=lo;j<hi;j++) {
+      quickCmp++;
+      if(a[j]<=pivot){i++;[a[i],a[j]]=[a[j],a[i]];quickSwp++;}
+    }
+    [a[i+1],a[hi]]=[a[hi],a[i+1]]; quickSwp++;
+    return i+1;
+  }
+  qs(0, a.length-1);
+  quickStepsArr.push({arr:[...a], pivot:-1, lo:0, hi:a.length-1, done:true});
+}
+
+function quickStepRace() {
+  if (quickStepIdxR >= quickStepsArr.length) { quickDone=true; document.getElementById('quick-done').textContent='Done'; return; }
+  const s = quickStepsArr[quickStepIdxR++];
+  quickArr2 = s.arr;
+  document.getElementById('quick-cmp').textContent = quickCmp;
+  document.getElementById('quick-swp').textContent = quickSwp;
+  renderBars('quick-chart', quickArr2, [], s.done ? Array.from({length:quickArr2.length},(_,i)=>i) : [], s.pivot);
+}
+
+function raceStep() {
+  bubbleStep(); mergeStep(); quickStepRace();
+}
+
+function raceAuto() {
+  if (raceTimer) { clearInterval(raceTimer); raceTimer=null; document.getElementById('race-auto-btn').textContent='▶ Auto'; return; }
+  document.getElementById('race-auto-btn').textContent='■ Stop';
+  const speed = parseInt(document.getElementById('race-speed').value);
+  raceTimer = setInterval(() => {
+    if (bubbleDone && mergeDone && quickDone) { clearInterval(raceTimer); raceTimer=null; document.getElementById('race-auto-btn').textContent='▶ Auto'; return; }
+    raceStep();
+  }, speed);
+}
+
+raceReset();
+
+// ===== MERGE SORT TREE =====
+let msStepsAll=[], msStepIdx2=0, msInputArr=[];
+
+function msReset() {
+  msInputArr = document.getElementById('ms-input').value.split(',').map(Number).filter(n=>!isNaN(n));
+  msStepsAll=[]; msStepIdx2=0;
+  document.getElementById('ms-comps').textContent=0;
+  document.getElementById('ms-merges').textContent=0;
+  document.getElementById('ms-result').textContent='—';
+  document.getElementById('ms-log').innerHTML='<div class="linfo">> Press Next step to trace merge sort.</div>';
+  buildMsSteps();
+  document.getElementById('ms-tree').textContent='Array: [' + msInputArr.join(', ') + ']';
+}
+
+function buildMsSteps() {
+  msStepsAll = [];
+  let totalComps=0, totalMerges=0;
+  function ms(a, depth) {
+    msStepsAll.push({type:'split', arr:[...a], depth});
+    if(a.length<=1) return a;
+    const mid=Math.floor(a.length/2);
+    const L=ms(a.slice(0,mid), depth+1);
+    const R=ms(a.slice(mid), depth+1);
+    const merged=[];
+    let i=0,j=0;
+    while(i<L.length&&j<R.length){totalComps++;if(L[i]<=R[j])merged.push(L[i++]);else merged.push(R[j++]);}
+    while(i<L.length)merged.push(L[i++]);
+    while(j<R.length)merged.push(R[j++]);
+    totalMerges++;
+    msStepsAll.push({type:'merge', left:[...L], right:[...R], result:[...merged], comps:totalComps, merges:totalMerges, depth});
+    return merged;
+  }
+  ms([...msInputArr], 0);
+}
+
+function msStep() {
+  if (msStepIdx2 >= msStepsAll.length) { msLog('Merge sort complete.','lok'); return; }
+  const s = msStepsAll[msStepIdx2++];
+  const indent = '  '.repeat(s.depth);
+  if (s.type === 'split') {
+    document.getElementById('ms-tree').textContent += '\n' + indent + '↓ split [' + s.arr.join(',') + ']';
+    msLog(`Depth ${s.depth}: split [${s.arr.join(', ')}]`, 'linfo');
+  } else {
+    document.getElementById('ms-tree').textContent += '\n' + indent + '↑ merge [' + s.left.join(',') + '] + [' + s.right.join(',') + '] → [' + s.result.join(',') + ']';
+    document.getElementById('ms-comps').textContent = s.comps;
+    document.getElementById('ms-merges').textContent = s.merges;
+    document.getElementById('ms-result').textContent = '[' + s.result.join(',') + ']';
+    msLog(`Merge: [${s.left.join(',')}] + [${s.right.join(',')}] → [${s.result.join(',')}]`, 'lok');
+  }
+  const tree = document.getElementById('ms-tree');
+  tree.scrollTop = tree.scrollHeight;
+}
+
+function msRunAll() { let g=200; while(msStepIdx2<msStepsAll.length&&g-->0) msStep(); }
+function msLog(m,cls='lmuted'){const el=document.getElementById('ms-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+
+msReset();
+
+// ===== QUICKSORT PARTITION (STEP BY STEP) =====
+let qsArr=[], qsI=-1, qsJ=0, qsLo=0, qsHi=0, qsComps=0, qsSwaps=0, qsDone=false, qsPivotVal=0;
+
+function qsGetPivotIdx(arr, lo, hi) {
+  const strategy = document.getElementById('qs-pivot').value;
+  if(strategy==='last') return hi;
+  if(strategy==='first') return lo;
+  if(strategy==='random') return lo + Math.floor(Math.random()*(hi-lo+1));
+  // median of 3
+  const mid = Math.floor((lo+hi)/2);
+  const vals = [[arr[lo],lo],[arr[mid],mid],[arr[hi],hi]].sort((a,b)=>a[0]-b[0]);
+  return vals[1][1];
+}
+
+function qsReset() {
+  qsArr = document.getElementById('qs-input').value.split(',').map(Number).filter(n=>!isNaN(n));
+  qsLo=0; qsHi=qsArr.length-1;
+  const pivIdx = qsGetPivotIdx(qsArr, qsLo, qsHi);
+  // swap pivot to end
+  [qsArr[pivIdx], qsArr[qsHi]] = [qsArr[qsHi], qsArr[pivIdx]];
+  qsPivotVal = qsArr[qsHi];
+  qsI=-1; qsJ=qsLo; qsComps=0; qsSwaps=0; qsDone=false;
+  document.getElementById('qs-comps').textContent=0;
+  document.getElementById('qs-swaps').textContent=0;
+  document.getElementById('qs-pivpos').textContent='—';
+  document.getElementById('qs-log').innerHTML='<div class="linfo">> Pivot = '+qsPivotVal+'. i=-1, j=0. Scanning from left.</div>';
+  renderQsArr();
+  renderBars('qs-chart', qsArr, [], [], qsHi);
+}
+
+function renderQsArr() {
+  const el = document.getElementById('qs-arr-view');
+  el.innerHTML = qsArr.map((v,i) => {
+    let color = 'var(--text-sumi)';
+    if(i === qsHi) color = 'var(--accent-indigo)';
+    else if(i === qsJ) color = 'var(--accent-red)';
+    else if(i <= qsI) color = 'var(--accent-gold)';
+    return `<span style="color:${color};display:inline-block;width:28px;text-align:center">${v}</span>`;
+  }).join('');
+}
+
+function qsStep() {
+  if(qsDone) return;
+  if(qsJ <= qsHi - 1) {
+    qsComps++;
+    if(qsArr[qsJ] <= qsPivotVal) {
+      qsI++;
+      [qsArr[qsI], qsArr[qsJ]] = [qsArr[qsJ], qsArr[qsI]];
+      qsSwaps++;
+      qsLog(`arr[${qsJ}]=${qsArr[qsJ]} ≤ pivot(${qsPivotVal}) → swap arr[${qsI}] ↔ arr[${qsJ}]`, 'linfo');
+    } else {
+      qsLog(`arr[${qsJ}]=${qsArr[qsJ]} > pivot(${qsPivotVal}) → no swap`, 'lmuted');
+    }
+    qsJ++;
+  } else {
+    // Final swap
+    [qsArr[qsI+1], qsArr[qsHi]] = [qsArr[qsHi], qsArr[qsI+1]];
+    qsSwaps++;
+    const pivPos = qsI+1;
+    qsLog(`Final: swap pivot to position ${pivPos}. Everything ≤${qsPivotVal} is to its left.`, 'lok');
+    document.getElementById('qs-pivpos').textContent = pivPos;
+    qsDone = true;
+    renderBars('qs-chart', qsArr, [], [pivPos], -1);
+  }
+  document.getElementById('qs-comps').textContent = qsComps;
+  document.getElementById('qs-swaps').textContent = qsSwaps;
+  renderQsArr();
+  if(!qsDone) renderBars('qs-chart', qsArr, [qsJ-1], [], qsHi);
+}
+
+function qsRunAll(){let g=100;while(!qsDone&&g-->0)qsStep();}
+function qsLog(m,cls='lmuted'){const el=document.getElementById('qs-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+
+qsReset();
+
+function switchTab(id) {
+  ['race','merge','quick'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);p.style.display=t===id?'block':'none';p.classList.toggle('active',t===id);
+  });
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+</script>
+</body>
+</html>

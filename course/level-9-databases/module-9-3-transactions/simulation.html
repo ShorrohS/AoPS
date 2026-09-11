@@ -1,0 +1,267 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 9.3 — Transactions, ACID, and Isolation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--bg-canvas:#F8F7F3;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--radius-xs:2px;--ease-out:cubic-bezier(0.16,1,0.3,1);--t-fast:120ms;--t-med:240ms;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;font-weight:300;background:var(--bg-paper);color:var(--text-body);min-height:100vh;padding:32px;line-height:1.6}
+@keyframes fade-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.zen-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border-light)}
+.zen-title{font-family:'Noto Serif JP',serif;font-size:22px;font-weight:300;color:var(--text-sumi);letter-spacing:-.01em;margin-bottom:4px}
+.zen-subtitle{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--text-muted)}
+.zen-tabs{display:flex;border-bottom:1px solid var(--border-light);margin-bottom:28px}
+.zen-tab{padding:11px 22px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:color var(--t-fast);user-select:none;background:transparent;border-top:none;border-left:none;border-right:none}
+.zen-tab:hover{color:var(--text-sumi)}.zen-tab.active{color:var(--accent-red);border-bottom-color:var(--accent-red)}
+.panel{display:none}.panel.active{display:block;animation:fade-in var(--t-med) var(--ease-out)}
+.zen-intro{border-left:2px solid var(--accent-red);padding:12px 18px;margin-bottom:24px;font-size:14px;line-height:1.75;color:var(--text-body)}
+.zen-intro strong{color:var(--text-sumi);font-weight:500}
+.zen-btn{padding:9px 18px;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;border:1px solid var(--border-light);background:var(--bg-washi);color:var(--text-sumi);cursor:pointer;border-radius:var(--radius-xs);transition:background var(--t-fast)}
+.zen-btn:hover{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.primary{background:var(--text-sumi);color:#FDFDFD}
+.zen-btn.danger{border-color:var(--accent-red);color:var(--accent-red)}.zen-btn.danger:hover{background:var(--accent-red);color:#FDFDFD}
+.zen-btn.success{border-color:var(--accent-gold);color:var(--accent-gold)}.zen-btn.success:hover{background:var(--accent-gold);color:#FDFDFD}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.bento2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-light)}
+@media(max-width:700px){.bento2{grid-template-columns:1fr}}
+.pane{background:var(--bg-washi);padding:22px}.pane.warm{background:var(--bg-warm)}
+.pane-title{font-family:'Noto Serif JP',serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:.1em;color:var(--text-sumi);margin-bottom:12px}
+.pane-title.red{color:var(--accent-red)}.pane-title.gold{color:var(--accent-gold)}.pane-title.indigo{color:var(--accent-indigo)}
+/* Account boxes */
+.acct-box{background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:14px;margin-bottom:6px;transition:all var(--t-med)}
+.acct-box.updated{border-color:var(--accent-gold);background:rgba(139,105,20,0.06)}
+.acct-box.crashed{border-color:var(--accent-red);background:rgba(200,42,42,0.05);opacity:.7}
+.ab-name{font-size:11px;color:var(--text-muted);margin-bottom:4px}
+.ab-balance{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:300;color:var(--text-sumi);line-height:1}
+/* WAL entries */
+.wal-entry{padding:6px 10px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);margin-bottom:3px;font-family:'JetBrains Mono',monospace;font-size:11px;transition:all var(--t-med)}
+.wal-entry.committed{border-color:var(--accent-gold);background:rgba(139,105,20,0.06)}
+.wal-entry.pending{border-color:var(--accent-indigo);background:rgba(28,45,66,0.04)}
+/* Isolation cells */
+.iso-cell{padding:7px 10px;border:1px solid var(--border-paper);border-radius:var(--radius-xs);font-family:'JetBrains Mono',monospace;font-size:11px;transition:all var(--t-med)}
+.iso-cell.read{border-color:var(--accent-indigo);background:rgba(28,45,66,0.05)}
+.iso-cell.dirty{border-color:var(--accent-red);background:rgba(200,42,42,0.05);color:var(--accent-red)}
+/* Stats */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.stat-box{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;text-align:center;border-radius:var(--radius-xs)}
+.sv{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:300;line-height:1;margin-bottom:2px;display:block;color:var(--text-sumi)}
+.sv.red{color:var(--accent-red)}.sv.gold{color:var(--accent-gold)}.sv.indigo{color:var(--accent-indigo)}
+.sl{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted)}
+.op-log{background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;height:120px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;border-radius:var(--radius-xs)}
+.linfo{color:var(--accent-indigo)}.lok{color:var(--accent-gold)}.lerr{color:var(--accent-red)}.lmuted{color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="zen-header">
+  <h1 class="zen-title">Module 9.3 — Transactions, ACID, and Isolation</h1>
+  <p class="zen-subtitle">ACID Bank Transfer · WAL Recovery · Isolation Levels</p>
+</div>
+<div class="zen-tabs">
+  <div class="zen-tab active" onclick="switchTab('acid')">ACID Transfer</div>
+  <div class="zen-tab" onclick="switchTab('wal')">WAL Recovery</div>
+  <div class="zen-tab" onclick="switchTab('isolation')">Isolation Levels</div>
+</div>
+
+<!-- ACID TRANSFER -->
+<div id="panel-acid" class="panel active">
+  <div class="zen-intro"><strong>A bank transfer must be atomic — both debits and credits happen, or neither does.</strong> Without a transaction, a crash between operations leaves money lost. With ACID, the database recovers to a consistent state.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Account balances</div>
+      <div style="display:flex;gap:6px;margin-bottom:14px">
+        <div class="acct-box" id="acct-a" style="flex:1"><div class="ab-name">Account A</div><div class="ab-balance" id="bal-a">£1,000</div></div>
+        <div class="acct-box" id="acct-b" style="flex:1"><div class="ab-name">Account B</div><div class="ab-balance" id="bal-b">£500</div></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text-muted)">Transfer:</span>
+        <input id="txn-amount" type="number" value="300" min="1" max="1000" style="font-family:'JetBrains Mono',monospace;font-size:14px;width:80px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:5px 8px;color:var(--text-sumi)">
+        <span style="font-size:11px;color:var(--text-muted)">from A to B</span>
+      </div>
+      <div class="btn-row" style="margin-top:0">
+        <button class="zen-btn primary" onclick="txnStart()">BEGIN + Transfer</button>
+        <button class="zen-btn success" onclick="txnCommit()">COMMIT</button>
+        <button class="zen-btn danger" onclick="txnCrash()">⚡ Crash mid-transfer</button>
+        <button class="zen-btn" onclick="txnReset()">↺ Reset</button>
+      </div>
+      <div class="stat-row" style="margin-top:12px">
+        <div class="stat-box"><span class="sv gold" id="txn-total">£1,500</span><span class="sl">Total (must stay £1500)</span></div>
+        <div class="stat-box"><span class="sv indigo" id="txn-state">Idle</span><span class="sl">Transaction state</span></div>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title red">Transaction log</div>
+      <div class="op-log" id="acid-log"><div class="linfo">> Atomicity: both operations commit together, or neither does. The total always stays £1,500.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- WAL RECOVERY -->
+<div id="panel-wal" class="panel">
+  <div class="zen-intro"><strong>Write-Ahead Log: write changes to the log before applying to data pages.</strong> On crash recovery, replay committed log entries (REDO) and undo uncommitted ones. Recovery is O(log size), not O(disk size).</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">WAL entries</div>
+      <div id="wal-entries" style="max-height:200px;overflow-y:auto;margin-bottom:12px"></div>
+      <div class="btn-row" style="margin-top:0;flex-wrap:wrap">
+        <button class="zen-btn primary" onclick="walWrite('begin')">BEGIN</button>
+        <button class="zen-btn" onclick="walWrite('update')">UPDATE balance</button>
+        <button class="zen-btn success" onclick="walWrite('commit')">COMMIT</button>
+        <button class="zen-btn danger" onclick="walCrash()">⚡ Crash</button>
+        <button class="zen-btn" onclick="walRecover()">↺ Recover</button>
+        <button class="zen-btn danger" onclick="walReset()">↺ Reset</button>
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title indigo">Data pages (disk)</div>
+      <div id="wal-data" style="font-family:'JetBrains Mono',monospace;font-size:12px;line-height:2;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;border-radius:var(--radius-xs);margin-bottom:10px;min-height:60px;color:var(--text-muted)">
+        accounts.balance = 1000 (flushed to disk)
+      </div>
+      <div class="op-log" id="wal-log"><div class="linfo">> WAL ensures durability: committed data survives crashes. Only the log needs to be flushed on commit.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ISOLATION LEVELS -->
+<div id="panel-isolation" class="panel">
+  <div class="zen-intro"><strong>Isolation level controls what concurrent transactions can see.</strong> Lower isolation = better performance but more anomalies. Higher isolation = correctness but more blocking. Click step buttons to see what each session reads.</div>
+  <div class="bento2">
+    <div class="pane">
+      <div class="pane-title gold">Two concurrent transactions</div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px">Isolation level:</div>
+        <select id="iso-level" style="font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--bg-canvas);border:1px solid var(--border-paper);border-radius:var(--radius-xs);padding:6px 10px;color:var(--text-sumi);width:100%;margin-bottom:10px">
+          <option value="read_uncommitted">Read Uncommitted</option>
+          <option value="read_committed" selected>Read Committed (default)</option>
+          <option value="repeatable_read">Repeatable Read</option>
+          <option value="serializable">Serializable</option>
+        </select>
+        <button class="zen-btn primary" onclick="isoRun()">▶ Run scenario</button>
+        <button class="zen-btn danger" onclick="isoReset()">↺ Reset</button>
+      </div>
+      <div id="iso-timeline" style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2;background:var(--bg-canvas);border:1px solid var(--border-paper);padding:10px;border-radius:var(--radius-xs);min-height:80px;color:var(--text-muted)">
+        Select level and press Run.
+      </div>
+    </div>
+    <div class="pane warm">
+      <div class="pane-title red">What each level sees</div>
+      <table style="border-collapse:collapse;width:100%;font-size:11px;font-family:'JetBrains Mono',monospace;margin-bottom:10px">
+        <thead><tr style="background:var(--bg-warm)"><th style="padding:5px 8px;border:1px solid var(--border-paper);font-size:9px;text-transform:uppercase;color:var(--text-muted)">Level</th><th style="padding:5px 8px;border:1px solid var(--border-paper);font-size:9px;color:var(--text-muted)">Dirty Read</th><th style="padding:5px 8px;border:1px solid var(--border-paper);font-size:9px;color:var(--text-muted)">Non-Rep Read</th><th style="padding:5px 8px;border:1px solid var(--border-paper);font-size:9px;color:var(--text-muted)">Phantom</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:5px 8px;border:1px solid var(--border-paper)">Read Uncommitted</td><td style="padding:5px 8px;border:1px solid var(--border-paper);color:var(--accent-red)">Yes</td><td style="padding:5px 8px;border:1px solid var(--border-paper);color:var(--accent-red)">Yes</td><td style="padding:5px 8px;border:1px solid var(--border-paper);color:var(--accent-red)">Yes</td></tr>
+          <tr><td style="padding:5px 8px;border:1px solid var(--border-paper)">Read Committed</td><td style="padding:5px 8px;border:1px solid var(--border-paper);color:var(--accent-gold)">No</td><td style="padding:5px 8px;border:1px solid var(--border-paper);color:var(--accent-red)">Yes</td><td style="padding:5px 8px;border:1px solid var(--border-paper);color:var(--accent-red)">Yes</td></tr>
+          <tr><td style="padding:5px 8px;border:1px solid var(--border-paper)">Repeatable Read</td><td style="padding:5px 8px;border:1px solid var(--border-paper);color:var(--accent-gold)">No</td><td style="padding:5px 8px;border:1px solid var(--border-paper);color:var(--accent-gold)">No</td><td style="padding:5px 8px;border:1px solid var(--border-paper);color:var(--accent-red)">Yes</td></tr>
+          <tr><td style="padding:5px 8px;border:1px solid var(--border-paper)">Serializable</td><td style="padding:5px 8px;border:1px solid var(--border-paper);color:var(--accent-gold)">No</td><td style="padding:5px 8px;border:1px solid var(--border-paper);color:var(--accent-gold)">No</td><td style="padding:5px 8px;border:1px solid var(--border-paper);color:var(--accent-gold)">No</td></tr>
+        </tbody>
+      </table>
+      <div class="op-log" id="iso-log"><div class="linfo">> PostgreSQL default: Read Committed. MySQL InnoDB default: Repeatable Read.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== ACID =====
+let balA=1000,balB=500,txnActive=false,midTransfer=false,transferAmt=300;
+function acidLog(m,cls='lmuted'){const el=document.getElementById('acid-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function renderAccts(){
+  document.getElementById('bal-a').textContent='£'+balA.toLocaleString();
+  document.getElementById('bal-b').textContent='£'+balB.toLocaleString();
+  document.getElementById('txn-total').textContent='£'+(balA+balB).toLocaleString();
+  document.getElementById('txn-total').style.color=(balA+balB)===1500?'var(--accent-gold)':'var(--accent-red)';
+}
+function txnStart(){
+  transferAmt=parseInt(document.getElementById('txn-amount').value)||300;
+  if(balA<transferAmt){acidLog('Insufficient funds','lerr');return;}
+  txnActive=true;midTransfer=false;
+  document.getElementById('txn-state').textContent='ACTIVE';
+  acidLog('BEGIN TRANSACTION','linfo');
+  acidLog(`UPDATE accounts SET balance=${balA-transferAmt} WHERE id=1 -- A: ${balA}→${balA-transferAmt}`,'lmuted');
+  balA-=transferAmt;
+  document.getElementById('acct-a').classList.add('updated');
+  midTransfer=true;
+  renderAccts();
+  acidLog(`[B not yet updated — halfway state! Total=${balA+balB}]`,'lerr');
+}
+function txnCommit(){
+  if(!txnActive){acidLog('No active transaction','lerr');return;}
+  acidLog(`UPDATE accounts SET balance=${balB+transferAmt} WHERE id=2 -- B: ${balB}→${balB+transferAmt}`,'lmuted');
+  balB+=transferAmt;midTransfer=false;txnActive=false;
+  document.getElementById('acct-a').classList.remove('updated');
+  document.getElementById('acct-b').classList.add('updated');
+  setTimeout(()=>document.getElementById('acct-b').classList.remove('updated'),1000);
+  document.getElementById('txn-state').textContent='COMMITTED';
+  acidLog(`COMMIT — transfer of £${transferAmt} complete. Total: £${balA+balB}`,'lok');
+  renderAccts();
+}
+function txnCrash(){
+  if(!midTransfer){acidLog('Start a transfer first (BEGIN)','lerr');return;}
+  document.getElementById('acct-a').classList.add('crashed');
+  document.getElementById('txn-state').textContent='CRASHED';
+  acidLog(`⚡ CRASH — A debited by £${transferAmt} but B not credited. Total: £${balA+balB} (INCONSISTENT!)`,'lerr');
+  acidLog('Without transactions: money is LOST. With WAL: ROLLBACK restores A.','lerr');
+}
+function txnReset(){balA=1000;balB=500;txnActive=false;midTransfer=false;document.getElementById('acct-a').className='acct-box';document.getElementById('acct-b').className='acct-box';document.getElementById('txn-state').textContent='Idle';renderAccts();document.getElementById('acid-log').innerHTML='<div class="linfo">> Reset. Total: £1,500.</div>';}
+renderAccts();
+
+// ===== WAL =====
+let walEntries=[],walData=1000,walTxnActive=false,walLSN=1000;
+function walLog(m,cls='lmuted'){const el=document.getElementById('wal-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function renderWal(){
+  document.getElementById('wal-entries').innerHTML=walEntries.map(e=>`
+    <div class="wal-entry ${e.committed?'committed':'pending'}">
+      <span style="color:var(--text-muted)">LSN ${e.lsn}:</span> <span style="color:${e.committed?'var(--accent-gold)':'var(--accent-indigo)'}">${e.text}</span>
+    </div>`).join('');
+  document.getElementById('wal-data').textContent=`accounts.balance = ${walData} (flushed to disk)`;
+}
+function walWrite(type){
+  if(type==='begin'){walEntries.push({lsn:walLSN++,text:'BEGIN txn#42',committed:false});walTxnActive=true;walLog('BEGIN txn#42 — written to WAL','linfo');}
+  else if(type==='update'&&walTxnActive){walEntries.push({lsn:walLSN++,text:`UPDATE balance: old=${walData} new=${walData-300}`,committed:false});walLog(`WAL: UPDATE written. Data page NOT yet updated.`,'lmuted');}
+  else if(type==='commit'&&walTxnActive){
+    walEntries.forEach(e=>e.committed=true);
+    walEntries.push({lsn:walLSN++,text:'COMMIT txn#42',committed:true});
+    walData-=300;walTxnActive=false;
+    walLog('COMMIT written to WAL. Data pages now safe to update.','lok');
+  }
+  renderWal();
+}
+function walCrash(){walLog('⚡ CRASH — system halted mid-operation','lerr');walLog('On restart: WAL will be replayed...','lmuted');}
+function walRecover(){
+  const committed=walEntries.filter(e=>e.committed&&e.text.includes('UPDATE'));
+  if(committed.length){walData=700;walLog(`REDO: replayed ${committed.length} committed UPDATE(s). balance=${walData}`,'lok');}
+  else{walLog('No committed transactions to replay. State unchanged.','linfo');}
+  const pending=walEntries.filter(e=>!e.committed&&e.text.includes('UPDATE'));
+  if(pending.length){walLog(`UNDO: rolled back ${pending.length} uncommitted UPDATE(s)`,'linfo');}
+  renderWal();
+}
+function walReset(){walEntries=[];walData=1000;walTxnActive=false;walLSN=1000;renderWal();document.getElementById('wal-log').innerHTML='<div class="linfo">> Reset.</div>';}
+renderWal();
+
+// ===== ISOLATION =====
+function isoLog(m,cls='lmuted'){const el=document.getElementById('iso-log');const d=document.createElement('div');d.className=cls;d.textContent='> '+m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function isoReset(){document.getElementById('iso-timeline').textContent='Select level and press Run.';document.getElementById('iso-log').innerHTML='<div class="linfo">> Reset.</div>';}
+function isoRun(){
+  const level=document.getElementById('iso-level').value;
+  const scenarios={
+    read_uncommitted:`t=1: Session B: UPDATE balance=1200 (uncommitted)\nt=2: Session A: SELECT balance → 1200 (DIRTY READ: sees B's uncommitted change!)\nt=3: Session B: ROLLBACK\nt=4: Session A: READ value that was never committed — ANOMALY`,
+    read_committed:`t=1: Session A: SELECT balance → 1000\nt=2: Session B: UPDATE balance=1200, COMMIT\nt=3: Session A: SELECT balance → 1200 (NON-REPEATABLE READ: different from t=1)\n\nSession A sees different values within the same transaction.`,
+    repeatable_read:`t=1: Session A: SELECT balance → 1000 (snapshot taken)\nt=2: Session B: UPDATE balance=1200, COMMIT\nt=3: Session A: SELECT balance → 1000 (SAME as t=1 — snapshot protected)\n\nSession A always sees its own consistent snapshot.`,
+    serializable:`t=1: Session A: SELECT COUNT(*) WHERE city='London' → 5\nt=2: Session B: INSERT new London customer, COMMIT\nt=3: Session A: SELECT COUNT(*) WHERE city='London' → 5 (NOT 6)\n\nFull serialization: no anomalies possible. Highest consistency, lowest concurrency.`
+  };
+  document.getElementById('iso-timeline').textContent=scenarios[level];
+  const labels={read_uncommitted:'Dirty reads possible',read_committed:'Only committed data visible',repeatable_read:'Consistent snapshot throughout txn',serializable:'Full isolation — no anomalies'};
+  isoLog(`${level.replace('_',' ')}: ${labels[level]}`,level==='serializable'?'lok':level==='read_uncommitted'?'lerr':'linfo');
+}
+
+function switchTab(id){
+  ['acid','wal','isolation'].forEach((t,i)=>{
+    document.querySelectorAll('.zen-tab')[i].classList.toggle('active',t===id);
+    const p=document.getElementById('panel-'+t);p.style.display=t===id?'block':'none';p.classList.toggle('active',t===id);
+  });
+}
+document.querySelectorAll('.panel').forEach((p,i)=>{if(i>0)p.style.display='none';});
+</script>
+</body>
+</html>
