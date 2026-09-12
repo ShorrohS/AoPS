@@ -1,0 +1,2233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AoPS &mdash; Chapter Four: Babbage and Ada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ═══════════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════════ */
+:root {
+  --ink:          #1C1C1C;
+  --paper:        #F5F4EF;
+  --warm:         #EEECE4;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --indigo:       #1C2D42;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --slate:        #4A5568;
+  --indigo-tint:  rgba(28,45,66,0.08);
+  --lacquer-tint: rgba(200,42,42,0.07);
+  --gold-tint:    rgba(139,105,20,0.08);
+  --sage-tint:    rgba(61,91,63,0.07);
+
+  --font-display: 'Noto Serif JP', 'Noto Serif', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  32px;
+  --space-xl:  64px;
+  --space-2xl: 96px;
+  --space-3xl: 128px;
+
+  --content-width: 720px;
+  --text-width:    640px;
+  --line-height:   1.75;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { background: #C8C6C0; scroll-behavior: smooth; }
+
+body {
+  background: #C8C6C0;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: var(--line-height);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE WRAPPER — simulates printed book page
+═══════════════════════════════════════════════ */
+.book-page {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  background: var(--paper);
+  min-height: 100vh;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 16px 56px rgba(0,0,0,0.22);
+  position: relative;
+}
+
+/* ═══════════════════════════════════════════════
+   RUNNING HEADER
+═══════════════════════════════════════════════ */
+.running-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  height: 36px;
+  background: var(--paper);
+  border-bottom: 0.5px solid var(--ghost);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 64px;
+}
+.running-header span {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ghost);
+}
+.running-header .rh-chapter { color: var(--slate); }
+
+/* ═══════════════════════════════════════════════
+   CHAPTER OPENER — FULL-BLEED HEADER BAND
+═══════════════════════════════════════════════ */
+.chapter-opener {
+  width: 100%;
+  background: var(--indigo);
+  position: relative;
+  overflow: hidden;
+  padding: 0 64px 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 320px;
+}
+
+/* Ink-wash texture */
+.chapter-opener::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(28,45,66,0.5) 0%, transparent 55%),
+    radial-gradient(ellipse at 0% 100%, rgba(8,14,22,0.8) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Lacquer left edge */
+.chapter-opener::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--lacquer);
+}
+
+/* Opener motif SVG — tally marks dissolving */
+.opener-motif {
+  position: absolute;
+  top: 0; right: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+
+.chapter-num-label {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(200,42,42,0.9);
+  margin-bottom: 20px;
+}
+
+.chapter-rule {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin-bottom: 28px;
+}
+
+.chapter-title {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 300;
+  color: rgba(245,244,239,0.96);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin-bottom: 16px;
+}
+
+.chapter-subtitle {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(245,244,239,0.4);
+}
+
+/* Ghost chapter number — decorative */
+.chapter-ghost-num {
+  position: absolute;
+  right: 56px;
+  bottom: 40px;
+  font-family: var(--font-mono);
+  font-size: 120px;
+  font-weight: 300;
+  color: rgba(245,244,239,0.04);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  z-index: 1;
+  user-select: none;
+}
+
+/* ═══════════════════════════════════════════════
+   INK-WASH ILLUSTRATION BAND
+   Appears between chapter opener and body
+═══════════════════════════════════════════════ */
+.chapter-illustration {
+  width: 100%;
+  height: 160px;
+  background: var(--warm);
+  border-top: 1px solid var(--ghost);
+  border-bottom: 1px solid var(--ghost);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.chapter-illustration::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(238,236,228,0.5) 100%);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════════ */
+.chapter-body {
+  padding: 56px 96px 80px;
+  max-width: var(--content-width);
+}
+
+/* ── Section headings ── */
+h2.section-head {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-top: var(--space-2xl);
+  margin-bottom: var(--space-lg);
+  padding-top: var(--space-2xl);
+  border-top: 1px solid var(--ghost);
+}
+h2.section-head:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+h3.sub-head {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--indigo);
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-md);
+}
+
+/* ── Body prose ── */
+p.lead {
+  font-family: var(--font-body);
+  font-size: 19px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  margin-bottom: var(--space-lg);
+  max-width: var(--text-width);
+}
+
+/* Drop cap on lead paragraph */
+p.lead.drop-cap::first-letter {
+  font-family: var(--font-display);
+  font-size: 4.4em;
+  font-weight: 300;
+  color: var(--indigo);
+  float: left;
+  line-height: 0.8;
+  margin-right: 8px;
+  margin-top: 6px;
+}
+
+p.body {
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.78;
+  max-width: var(--text-width);
+  text-indent: 1.4em;
+}
+p.body.no-indent { text-indent: 0; }
+p.body + p.body { margin-top: 0; }
+p.body + p.body.no-indent,
+p.body.no-indent + p.body { margin-top: var(--space-md); }
+
+/* ── Pull quote ── */
+.pull-quote {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--indigo);
+  border-left: 3px solid var(--indigo);
+  padding: 10px 0 10px 28px;
+  margin: var(--space-xl) 0 var(--space-xl) -4px;
+  line-height: 1.5;
+  max-width: 520px;
+}
+.pull-quote cite {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--slate);
+  margin-top: 14px;
+}
+
+/* ── Section break ornament ── */
+.section-break {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: var(--space-xl) 0;
+}
+.sb-line { flex: 1; height: 1px; background: var(--bone); max-width: 120px; }
+.sb-dot  { width: 3px; height: 3px; border-radius: 50%; background: var(--ghost); }
+
+/* ═══════════════════════════════════════════════
+   CALLOUTS — all 7 types
+═══════════════════════════════════════════════ */
+.callout {
+  margin: var(--space-xl) 0;
+  padding: 20px 24px;
+  max-width: var(--text-width);
+}
+
+.callout-label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.callout p, .callout-body {
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: var(--ink);
+  text-indent: 0;
+}
+.callout p + p { margin-top: var(--space-sm); }
+
+.callout em { font-style: italic; }
+.callout strong { font-weight: 500; }
+
+/* Historical Note */
+.callout-historical {
+  border-left: 3px solid var(--sage);
+  background: var(--sage-tint);
+}
+.callout-historical .callout-label { color: var(--sage); }
+
+/* Key Insight */
+.callout-insight {
+  border-left: 3px solid var(--gold);
+  background: var(--gold-tint);
+}
+.callout-insight .callout-label { color: var(--gold); }
+
+/* Think About It */
+.callout-think {
+  border-left: 3px solid var(--indigo);
+  background: var(--indigo-tint);
+}
+.callout-think .callout-label { color: var(--indigo); }
+
+/* Simulation / Try It */
+.callout-sim {
+  border-left: 3px solid var(--slate);
+  background: var(--bone);
+}
+.callout-sim .callout-label { color: var(--slate); }
+
+/* Challenge */
+.callout-challenge {
+  border-left: 3px solid var(--lacquer);
+  background: var(--lacquer-tint);
+}
+.callout-challenge .callout-label { color: var(--lacquer); }
+
+/* Deep Dive */
+.callout-deep {
+  border-left: 3px solid var(--indigo);
+  background: var(--warm);
+}
+.callout-deep .callout-label { color: var(--indigo); }
+.callout-deep p { font-style: italic; }
+
+/* Future Connection */
+.callout-future {
+  border-left: 3px solid var(--gold);
+  background: var(--warm);
+}
+.callout-future .callout-label { color: var(--gold); }
+
+/* ═══════════════════════════════════════════════
+   TABLES
+═══════════════════════════════════════════════ */
+.table-wrap {
+  margin: var(--space-xl) 0;
+  overflow-x: auto;
+  max-width: var(--text-width);
+}
+.book-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 14px;
+}
+.book-table th {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--slate);
+  background: var(--warm);
+  padding: 10px 14px;
+  border-top: 1.5px solid var(--ink);
+  border-bottom: 1px solid var(--ghost);
+  text-align: left;
+  white-space: nowrap;
+}
+.book-table td {
+  font-family: var(--font-sans);
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--bone);
+  color: var(--ink);
+  vertical-align: top;
+  line-height: 1.55;
+}
+.book-table td:first-child {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+}
+.book-table td.mono {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--indigo);
+}
+.book-table tr:last-child td { border-bottom: 1.5px solid var(--ink); }
+.book-table tr.highlight td { background: rgba(28,45,66,0.04); }
+
+.table-caption {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--slate);
+  margin-top: 10px;
+  line-height: 1.5;
+  max-width: var(--text-width);
+}
+.table-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--indigo);
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ═══════════════════════════════════════════════
+   SIMULATION FIGURE BLOCK
+═══════════════════════════════════════════════ */
+.sim-figure {
+  margin: var(--space-xl) 0;
+  max-width: var(--text-width);
+}
+.sim-figure-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--indigo);
+  border: 1px solid var(--indigo);
+  padding: 3px 9px;
+  border-radius: 2px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.sim-figure-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--indigo);
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--ghost);
+  display: block;
+}
+.sim-figure-frame {
+  border: 1px solid var(--ghost);
+  background: var(--warm);
+  padding: 28px 32px;
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+.sim-figure-frame::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: rgba(28,45,66,0.2);
+}
+.sim-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ghost);
+}
+.sim-preview-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--ink);
+}
+.sim-preview-subtitle {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-top: 2px;
+}
+.sim-tabs-preview {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--ghost);
+  margin-bottom: 16px;
+}
+.sim-tab-p {
+  padding: 8px 18px;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ghost);
+  border-bottom: 2px solid transparent;
+}
+.sim-tab-p.active {
+  color: var(--lacquer);
+  border-bottom-color: var(--lacquer);
+}
+.sim-stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  margin-bottom: 16px;
+}
+.sim-stat {
+  background: var(--paper);
+  border: 1px solid var(--bone);
+  padding: 12px;
+  text-align: center;
+}
+.sim-stat-val {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--ink);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.sim-stat-label {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ghost);
+}
+.sim-records-preview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.sim-record {
+  background: var(--paper);
+  border: 1px solid var(--bone);
+  padding: 10px 12px;
+  border-radius: 1px;
+}
+.sim-record-name {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 5px;
+}
+.sim-record-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.sim-tag {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--slate);
+  background: var(--warm);
+  padding: 1px 6px;
+  border-radius: 1px;
+}
+.sim-tag.hi {
+  background: var(--indigo);
+  color: rgba(245,244,239,0.9);
+}
+.sim-link-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--bone);
+}
+.sim-open-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--indigo);
+  border: 1px solid var(--indigo);
+  padding: 9px 18px;
+  text-decoration: none;
+  border-radius: 1px;
+  transition: background 0.12s;
+}
+.sim-open-btn:hover { background: var(--ink); }
+.sim-note {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--slate);
+  line-height: 1.5;
+}
+.sim-figure-caption {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-style: italic;
+  color: var(--slate);
+  margin-top: 10px;
+  line-height: 1.55;
+}
+
+/* ═══════════════════════════════════════════════
+   CHALLENGE SECTION
+═══════════════════════════════════════════════ */
+.challenge-section {
+  margin-top: var(--space-2xl);
+  border-top: 1.5px solid var(--ink);
+  padding-top: var(--space-xl);
+  max-width: var(--text-width);
+}
+.challenge-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: var(--space-xl);
+}
+.challenge-num {
+  font-family: var(--font-mono);
+  font-size: 42px;
+  font-weight: 300;
+  color: var(--lacquer);
+  line-height: 1;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+  opacity: 0.7;
+}
+.challenge-title-block {}
+.challenge-overline {
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--lacquer);
+  margin-bottom: 6px;
+}
+.challenge-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 300;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+.challenge-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.challenge-meta-item {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--slate);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.challenge-meta-item::before {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--ghost);
+}
+
+.challenge-setup {
+  background: var(--warm);
+  border: 1px solid var(--bone);
+  border-left: 3px solid var(--lacquer);
+  padding: 20px 24px;
+  margin-bottom: var(--space-xl);
+}
+.challenge-setup-label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--lacquer);
+  margin-bottom: 12px;
+}
+.challenge-setup p {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 300;
+  color: var(--ink);
+  line-height: 1.8;
+  margin-bottom: var(--space-sm);
+}
+.challenge-setup p:last-child { margin-bottom: 0; }
+.challenge-setup strong {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.challenge-part {
+  margin-bottom: var(--space-xl);
+}
+.challenge-part-label {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--indigo);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--bone);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.challenge-part-label span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--lacquer);
+  background: var(--lacquer-tint);
+  border: 1px solid rgba(200,42,42,0.2);
+  padding: 2px 8px;
+  border-radius: 1px;
+}
+
+ol.challenge-questions {
+  list-style: none;
+  counter-reset: q-counter;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-left: 0;
+}
+ol.challenge-questions li {
+  counter-increment: q-counter;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+ol.challenge-questions li::before {
+  content: counter(q-counter, upper-alpha) attr(data-sub);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--lacquer);
+  min-width: 24px;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+ol.challenge-questions li p {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 300;
+  color: var(--ink);
+  line-height: 1.75;
+}
+ol.challenge-questions li p em {
+  font-style: italic;
+  color: var(--slate);
+}
+ol.challenge-questions li p strong {
+  font-weight: 500;
+}
+
+/* Rubric table */
+.rubric-wrap { margin-top: var(--space-xl); }
+.rubric-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin-bottom: 10px;
+  display: block;
+}
+.rubric-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.rubric-table th {
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--slate);
+  background: var(--warm);
+  padding: 8px 12px;
+  border-top: 1.5px solid var(--ink);
+  border-bottom: 1px solid var(--ghost);
+  text-align: left;
+}
+.rubric-table td {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 300;
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--bone);
+  color: var(--ink);
+  vertical-align: top;
+}
+.rubric-table td:first-child {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--indigo);
+  font-weight: 400;
+  white-space: nowrap;
+}
+.rubric-table td:nth-child(2) {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--lacquer);
+  font-weight: 400;
+  text-align: center;
+}
+.rubric-table tr:last-child td {
+  border-bottom: 1.5px solid var(--ink);
+  font-weight: 500;
+}
+.rubric-table tr.total td { background: var(--warm); }
+
+/* Hint accordion */
+.hint-block {
+  margin-top: var(--space-lg);
+  border: 1px solid var(--bone);
+}
+.hint-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--warm);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--slate);
+  border-bottom: 1px solid var(--bone);
+  text-align: left;
+  gap: 8px;
+}
+.hint-toggle:hover { background: var(--bone); }
+.hint-toggle-arrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ghost);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.hint-content {
+  padding: 16px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--ink);
+  line-height: 1.75;
+  display: none;
+}
+.hint-content.open { display: block; }
+.hint-content code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--bone);
+  border: 1px solid var(--ghost);
+  padding: 1px 5px;
+  border-radius: 2px;
+  color: var(--indigo);
+}
+
+/* ═══════════════════════════════════════════════
+   CHAPTER SUMMARY / BRIDGE
+═══════════════════════════════════════════════ */
+.chapter-summary {
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--ghost);
+  max-width: var(--text-width);
+}
+
+.chapter-nav {
+  margin-top: var(--space-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0;
+  border-top: 1px solid var(--bone);
+  border-bottom: 1px solid var(--bone);
+}
+.nav-label {
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ghost);
+  margin-bottom: 4px;
+}
+.nav-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--indigo);
+}
+.nav-next { text-align: right; }
+
+/* ═══════════════════════════════════════════════
+   PAGE FOOTER
+═══════════════════════════════════════════════ */
+.page-footer {
+  height: 48px;
+  border-top: 0.5px solid var(--ghost);
+  padding: 0 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--paper);
+}
+.page-footer-series {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ghost);
+}
+.page-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--ghost);
+  letter-spacing: 0.05em;
+}
+
+/* ═══════════════════════════════════════════════
+   INLINE CODE
+═══════════════════════════════════════════════ */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--bone);
+  border: 1px solid var(--ghost);
+  padding: 1px 5px;
+  border-radius: 2px;
+  color: var(--indigo);
+}
+
+/* ═══════════════════════════════════════════════
+   SMALL CAPS UTILITY
+═══════════════════════════════════════════════ */
+.sc {
+  font-variant: small-caps;
+  letter-spacing: 0.04em;
+}
+
+
+.fig-block{margin:var(--space-2xl) 0;max-width:var(--text-width);}
+.fig-block.wide{max-width:100%;}
+.fig-label{display:block;font-family:var(--font-mono);font-size:10.5px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--indigo);margin-bottom:6px;}
+.fig-rule{display:block;height:1px;background:var(--ghost);margin-bottom:14px;}
+.fig-frame{border:1px solid var(--ghost);background:var(--warm);border-radius:2px;overflow:hidden;margin-bottom:10px;}
+.fig-frame svg{display:block;width:100%;height:auto;}
+.fig-caption{font-family:var(--font-sans);font-size:12px;font-style:italic;color:var(--slate);line-height:1.6;}
+.fig-caption strong{font-style:normal;font-weight:500;color:var(--ink);display:block;margin-bottom:3px;}
+</style>
+</head>
+<body>
+<article class="book-page">
+  <header class="running-header" role="banner">
+    <span>Volume 0 &mdash; Before Computers</span>
+    <span class="rh-chapter">Chapter Four</span>
+  </header>
+
+  <div class="chapter-opener" role="heading" aria-level="1">
+    <svg class="opener-motif" viewBox="0 0 720 320" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+      <!-- Difference Engine register columns -->
+      <g stroke="#F5F4EF" opacity="0.15">
+        <!-- Column shafts -->
+        <g stroke-width="0.8">
+          <line x1="60"  y1="30" x2="60"  y2="240"/>
+          <line x1="110" y1="30" x2="110" y2="240"/>
+          <line x1="160" y1="30" x2="160" y2="240"/>
+          <line x1="210" y1="30" x2="210" y2="240"/>
+          <line x1="260" y1="30" x2="260" y2="240"/>
+        </g>
+        <!-- Wheel discs on each column -->
+        <g stroke-width="1">
+          <circle cx="60"  cy="80"  r="16"/><circle cx="60"  cy="80"  r="8"/>
+          <circle cx="60"  cy="130" r="16"/><circle cx="60"  cy="130" r="8"/>
+          <circle cx="60"  cy="180" r="16"/><circle cx="60"  cy="180" r="8"/>
+          <circle cx="110" cy="90"  r="16"/><circle cx="110" cy="90"  r="8"/>
+          <circle cx="110" cy="145" r="16"/><circle cx="110" cy="145" r="8"/>
+          <circle cx="110" cy="200" r="16"/><circle cx="110" cy="200" r="8"/>
+          <circle cx="160" cy="75"  r="16"/><circle cx="160" cy="75"  r="8"/>
+          <circle cx="160" cy="130" r="16"/><circle cx="160" cy="130" r="8"/>
+          <circle cx="210" cy="85"  r="16"/><circle cx="210" cy="85"  r="8"/>
+          <circle cx="210" cy="140" r="16"/><circle cx="210" cy="140" r="8"/>
+          <circle cx="260" cy="95"  r="16"/><circle cx="260" cy="95"  r="8"/>
+        </g>
+        <!-- Digit labels on wheels -->
+        <g fill="#F5F4EF" opacity="0.4" font-family="JetBrains Mono, monospace" font-size="9" text-anchor="middle">
+          <text x="60"  y="84">7</text><text x="60"  y="134">2</text><text x="60"  y="184">0</text>
+          <text x="110" y="94">4</text><text x="110" y="149">1</text><text x="110" y="204">3</text>
+          <text x="160" y="79">9</text><text x="160" y="134">6</text>
+          <text x="210" y="89">5</text><text x="210" y="144">8</text>
+          <text x="260" y="99">2</text>
+        </g>
+        <!-- Carry rods (horizontal connections) -->
+        <g stroke-width="0.5" opacity="0.5">
+          <line x1="60" y1="128" x2="110" y2="128"/>
+          <line x1="110" y1="143" x2="160" y2="143"/>
+          <line x1="160" y1="128" x2="210" y2="128"/>
+        </g>
+      </g>
+      <!-- Difference table (right) — Ada's algorithm -->
+      <g stroke="#F5F4EF" stroke-width="0.5" opacity="0.12">
+        <line x1="340" y1="50"  x2="660" y2="50"/>
+        <line x1="340" y1="80"  x2="660" y2="80"/>
+        <line x1="340" y1="110" x2="660" y2="110"/>
+        <line x1="340" y1="140" x2="660" y2="140"/>
+        <line x1="340" y1="170" x2="660" y2="170"/>
+        <line x1="340" y1="200" x2="660" y2="200"/>
+        <line x1="380" y1="40"  x2="380" y2="220"/>
+        <line x1="460" y1="40"  x2="460" y2="220"/>
+        <line x1="540" y1="40"  x2="540" y2="220"/>
+        <line x1="620" y1="40"  x2="620" y2="220"/>
+      </g>
+      <!-- Lacquer accent — diff values -->
+      <g fill="#C82A2A" opacity="0.4">
+        <circle cx="380" cy="65"  r="3"/><circle cx="460" cy="50"  r="3"/>
+        <circle cx="540" cy="65"  r="3"/><circle cx="620" cy="50"  r="3"/>
+      </g>
+      <g fill="#F5F4EF" opacity="0.3" font-family="JetBrains Mono, monospace" font-size="8" text-anchor="middle">
+        <text x="380" y="68">41</text><text x="380" y="98">43</text><text x="380" y="128">47</text>
+        <text x="460" y="68">2</text><text x="460" y="98">4</text><text x="460" y="128">6</text>
+        <text x="540" y="68">2</text><text x="540" y="98">2</text>
+      </g>
+      <text x="155" y="265" font-family="JetBrains Mono, monospace" font-size="8" fill="#F5F4EF" opacity="0.25" text-anchor="middle">Difference Engine registers</text>
+      <text x="500" y="265" font-family="JetBrains Mono, monospace" font-size="8" fill="#F5F4EF" opacity="0.25" text-anchor="middle">finite differences &mdash; Ada's algorithm</text>
+    </svg>
+    <div class="chapter-ghost-num" aria-hidden="true">04</div>
+    <p class="chapter-num-label">Module 0.4 &nbsp;&middot;&nbsp; Level 0 &mdash; Before Computers</p>
+    <div class="chapter-rule" role="separator"></div>
+    <h1 class="chapter-title">Babbage and Ada:<br>The First Programmers</h1>
+    <p class="chapter-subtitle">The design of a general-purpose computer, a century before electronics</p>
+  </div>
+
+  <figure class="chapter-illustration" aria-label="Decorative: Difference Engine register columns with finite differences table">
+    <svg viewBox="0 0 672 140" fill="none" xmlns="http://www.w3.org/2000/svg" width="672" height="140" aria-hidden="true">
+      <defs>
+        <linearGradient id="fl4" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#EEECE4" stop-opacity="1"/><stop offset="12%" stop-color="#EEECE4" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="fr4" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="88%" stop-color="#EEECE4" stop-opacity="0"/><stop offset="100%" stop-color="#EEECE4" stop-opacity="1"/>
+        </linearGradient>
+      </defs>
+      <!-- Register columns -->
+      <g stroke="#1C2D42" stroke-width="0.5" opacity="0.15">
+        <line x1="70"  y1="15" x2="70"  y2="130"/><line x1="110" y1="15" x2="110" y2="130"/>
+        <line x1="150" y1="15" x2="150" y2="130"/><line x1="190" y1="15" x2="190" y2="130"/>
+        <line x1="230" y1="15" x2="230" y2="130"/>
+      </g>
+      <g stroke="#1C2D42" stroke-width="0.8" opacity="0.2" fill="none">
+        <circle cx="70"  cy="40" r="12"/><circle cx="70"  cy="80" r="12"/><circle cx="70"  cy="115" r="12"/>
+        <circle cx="110" cy="50" r="12"/><circle cx="110" cy="90" r="12"/>
+        <circle cx="150" cy="40" r="12"/><circle cx="150" cy="85" r="12"/>
+        <circle cx="190" cy="55" r="12"/><circle cx="230" cy="45" r="12"/>
+      </g>
+      <!-- Difference table right -->
+      <g stroke="#1C2D42" stroke-width="0.4" opacity="0.12">
+        <line x1="300" y1="25" x2="600" y2="25"/><line x1="300" y1="50" x2="600" y2="50"/>
+        <line x1="300" y1="75" x2="600" y2="75"/><line x1="300" y1="100" x2="600" y2="100"/>
+        <line x1="300" y1="125" x2="600" y2="125"/>
+        <line x1="335" y1="18" x2="335" y2="132"/><line x1="415" y1="18" x2="415" y2="132"/>
+        <line x1="495" y1="18" x2="495" y2="132"/><line x1="575" y1="18" x2="575" y2="132"/>
+      </g>
+      <g fill="#1C2D42" opacity="0.28" font-family="JetBrains Mono, monospace" font-size="9" text-anchor="middle">
+        <text x="335" y="40">41</text><text x="335" y="65">43</text><text x="335" y="90">47</text><text x="335" y="115">53</text>
+        <text x="415" y="40">2</text><text x="415" y="65">4</text><text x="415" y="90">6</text>
+        <text x="495" y="40">2</text><text x="495" y="65">2</text>
+      </g>
+      <g fill="#C82A2A" opacity="0.45">
+        <circle cx="335" cy="25" r="2.5"/><circle cx="495" cy="25" r="2.5"/>
+      </g>
+      <text x="150"  y="132" font-family="JetBrains Mono, monospace" font-size="8" fill="#1C2D42" opacity="0.35" text-anchor="middle">Difference Engine, 1822</text>
+      <text x="455"  y="132" font-family="JetBrains Mono, monospace" font-size="8" fill="#1C2D42" opacity="0.35" text-anchor="middle">finite differences &mdash; constant second diff = 2</text>
+      <rect x="0"   y="0" width="60"  height="140" fill="url(#fl4)"/>
+      <rect x="612" y="0" width="60"  height="140" fill="url(#fr4)"/>
+    </svg>
+  </figure>
+
+  <main class="chapter-body">
+
+    <section aria-labelledby="sect-prob4">
+      <h2 class="section-head" id="sect-prob4" style="border-top:none;padding-top:0;margin-top:0;">The Problem</h2>
+      <p class="lead drop-cap">You are an astronomer in 1820. You need a table of logarithms accurate to twenty decimal places. The only way to produce it: hire a room full of human computers to calculate each value by hand and have another room check their work.</p>
+      <p class="body no-indent">Charles Babbage receives such a table, sits down to check it, and finds error after error. He slams it on the desk and says to his colleague:</p>
+      <p class="body no-indent" style="font-family:var(--font-display);font-size:19px;font-weight:300;font-style:italic;color:var(--indigo);text-indent:0;margin:var(--space-lg) 0;">&ldquo;I wish to God these calculations had been executed by steam.&rdquo;</p>
+      <p class="body no-indent">That frustration launched forty years of obsessive work &mdash; and produced the first complete design of a general-purpose programmable computer, a century before electronics made it practical.</p>
+    </section>
+
+    <section aria-labelledby="sect-story4">
+      <h2 class="section-head" id="sect-story4">The Story</h2>
+
+      <h3 class="sub-head">The Difference Engine &mdash; 1822</h3>
+      <p class="body no-indent">Babbage&rsquo;s first machine, the <strong>Difference Engine</strong>, was designed to compute polynomial functions using the method of <strong>finite differences</strong>.</p>
+      <p class="body">Almost every useful mathematical table &mdash; logarithms, trigonometric functions, astronomical positions &mdash; can be approximated by a polynomial. Polynomials have a beautiful property: if you take successive differences of their values, you eventually reach a constant. For <em>f</em>(<em>n</em>) = <em>n</em>&sup2; + <em>n</em> + 41 at <em>n</em> = 0, 1, 2, 3&hellip;: the values are 41, 43, 47, 53, 61, 71&hellip; The first differences are 2, 4, 6, 8, 10&hellip; The second differences are always 2.</p>
+      <p class="body">So to compute the <em>next</em> value of <em>f</em>(<em>n</em>), you only ever need to <strong>add</strong> &mdash; no multiplication required. Babbage&rsquo;s Difference Engine encoded this: columns of gear wheels, each representing one &ldquo;order&rdquo; of difference. Turn a crank; the next value computes automatically.</p>
+
+      <figure class="fig-block" id="fig-4_1" aria-labelledby="fig-4_1-title">
+        <span class="fig-label">Figure 4.1</span>
+        <span class="fig-rule" role="separator"></span>
+        <div class="fig-frame"><svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" style="height:340px">
+      <rect width="1200" height="400" fill="#F4EFE6"/>
+
+      <!-- Header -->
+      <rect x="0" y="0" width="1200" height="44" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="27" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" font-weight="300" fill="#2C2C2C">f(x) = x²  computed by repeated addition alone — no multiplication required</text>
+
+      <!-- Table columns -->
+      <g>
+        <!-- Col headers -->
+        <text x="100" y="72" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">x</text>
+        <text x="230" y="72" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">f(x) = x²</text>
+        <text x="390" y="72" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">Δ¹ (1st diff)</text>
+        <text x="550" y="72" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">Δ² (2nd diff = constant!)</text>
+
+        <!-- Vertical column dividers -->
+        <line x1="160" y1="56" x2="160" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="320" y1="56" x2="320" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="480" y1="56" x2="480" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="640" y1="56" x2="640" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+
+        <!-- Data rows -->
+        <g font-family="'JetBrains Mono',monospace" font-size="16" text-anchor="middle">
+          <!-- Row 1: x=0 -->
+          <text x="100" y="106" fill="#6E6E6E">0</text>
+          <text x="230" y="106" fill="#2C2C2C">0</text>
+
+          <!-- Row 2: x=1 -->
+          <rect x="40" y="118" width="120" height="36" fill="#EEECE6"/>
+          <text x="100" y="142" fill="#6E6E6E">1</text>
+          <rect x="170" y="118" width="120" height="36" fill="#EEECE6"/>
+          <text x="230" y="142" fill="#2C2C2C">1</text>
+          <!-- Δ¹ between row1 and row2: 1-0=1 -->
+          <text x="390" y="126" fill="#2E4057">1</text>
+          <!-- Δ² between first pair: 3-1=2 -->
+
+          <!-- Row 3: x=2 -->
+          <text x="100" y="178" fill="#6E6E6E">2</text>
+          <text x="230" y="178" fill="#2C2C2C">4</text>
+          <!-- Δ¹: 4-1=3 -->
+          <text x="390" y="162" fill="#2E4057">3</text>
+          <!-- Δ² = 2 -->
+          <text x="550" y="144" fill="#C82A2A" font-weight="500">2</text>
+
+          <!-- Row 4: x=3 -->
+          <rect x="40" y="190" width="120" height="36" fill="#EEECE6"/>
+          <rect x="170" y="190" width="120" height="36" fill="#EEECE6"/>
+          <text x="100" y="214" fill="#6E6E6E">3</text>
+          <text x="230" y="214" fill="#2C2C2C">9</text>
+          <!-- Δ¹: 9-4=5 -->
+          <text x="390" y="198" fill="#2E4057">5</text>
+          <!-- Δ² = 2 -->
+          <text x="550" y="180" fill="#C82A2A" font-weight="500">2</text>
+
+          <!-- Row 5: x=4 -->
+          <text x="100" y="250" fill="#6E6E6E">4</text>
+          <text x="230" y="250" fill="#2C2C2C">16</text>
+          <!-- Δ¹: 16-9=7 -->
+          <text x="390" y="234" fill="#2E4057">7</text>
+          <!-- Δ² = 2 -->
+          <text x="550" y="216" fill="#C82A2A" font-weight="500">2</text>
+
+          <!-- Row 6: x=5 -->
+          <rect x="40" y="262" width="120" height="36" fill="#EEECE6"/>
+          <rect x="170" y="262" width="120" height="36" fill="#EEECE6"/>
+          <text x="100" y="286" fill="#6E6E6E">5</text>
+          <text x="230" y="286" fill="#2C2C2C">25</text>
+          <!-- Δ¹: 25-16=9 -->
+          <text x="390" y="270" fill="#2E4057">9</text>
+          <!-- Δ² = 2 -->
+          <text x="550" y="252" fill="#C82A2A" font-weight="500">2</text>
+
+          <!-- Row 7: x=6 (derived, shown computed) -->
+          <text x="100" y="322" fill="#6E6E6E">6</text>
+          <!-- 25 + (9+2=11) = 36 -->
+          <text x="230" y="322" fill="#C82A2A" font-weight="500">36</text>
+          <!-- Δ¹: 11 -->
+          <text x="390" y="306" fill="#C82A2A" font-weight="400">11</text>
+          <!-- Δ²: still 2 -->
+          <text x="550" y="288" fill="#C82A2A" font-weight="500">2</text>
+        </g>
+
+        <!-- Difference arrows (right side of table) -->
+        <g stroke="#2E4057" stroke-width="1" fill="none">
+          <!-- Connecting lines between f(x) values -->
+          <line x1="270" y1="106" x2="270" y2="142" stroke-dasharray="2,2"/>
+          <line x1="270" y1="142" x2="270" y2="178" stroke-dasharray="2,2"/>
+          <line x1="270" y1="178" x2="270" y2="214" stroke-dasharray="2,2"/>
+          <line x1="270" y1="214" x2="270" y2="250" stroke-dasharray="2,2"/>
+          <line x1="270" y1="250" x2="270" y2="286" stroke-dasharray="2,2"/>
+          <line x1="270" y1="286" x2="270" y2="322" stroke-dasharray="2,2"/>
+        </g>
+
+        <!-- Arrow showing: to get next f(x), just add Δ¹, and to get next Δ¹, just add Δ² -->
+        <g stroke="#C82A2A" stroke-width="1.5" fill="none">
+          <line x1="430" y1="270" x2="430" y2="306"/>
+          <path d="M426 302 L430 310 L434 302"/>
+        </g>
+        <text x="445" y="295" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">+2</text>
+
+        <g stroke="#2E4057" stroke-width="1.5" fill="none">
+          <line x1="350" y1="250" x2="350" y2="286"/>
+          <path d="M346 282 L350 290 L354 282"/>
+        </g>
+        <text x="310" y="275" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">+9</text>
+
+        <!-- Key insight callout -->
+        <rect x="680" y="80" width="480" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+        <rect x="680" y="80" width="480" height="28" fill="#2E4057" opacity="0.08"/>
+        <text x="920" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">HOW THE ENGINE COMPUTES THE NEXT VALUE</text>
+
+        <g font-family="'Inter',sans-serif" font-size="12">
+          <text x="700" y="130" fill="#3A3A3A">Step 1: Δ² is constant for quadratics = 2</text>
+          <text x="700" y="152" fill="#3A3A3A">Step 2: Add Δ² to Δ¹ → new Δ¹</text>
+          <text x="700" y="170" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2E4057">  Δ¹ₙ = Δ¹ₙ₋₁ + 2</text>
+          <text x="700" y="192" fill="#3A3A3A">Step 3: Add new Δ¹ to f(x) → new f(x)</text>
+          <text x="700" y="210" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2E4057">  f(x+1) = f(x) + Δ¹ₙ</text>
+        </g>
+
+        <line x1="700" y1="224" x2="1140" y2="224" stroke="#E8E6DF" stroke-width="1"/>
+
+        <text x="700" y="248" font-family="'Inter',sans-serif" font-size="12" fill="#3A3A3A">To compute x=6: previous Δ¹ = 9</text>
+        <text x="700" y="266" font-family="'Inter',sans-serif" font-size="12" fill="#3A3A3A">  new Δ¹ = 9 + 2 = 11</text>
+        <text x="700" y="284" font-family="'Inter',sans-serif" font-size="12" fill="#3A3A3A">  f(6) = 25 + 11 = 36 ✓</text>
+
+        <rect x="700" y="298" width="400" height="18" fill="#C82A2A" opacity="0.07"/>
+        <text x="900" y="311" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A" font-weight="500">NO MULTIPLICATION EVER NEEDED — just addition</text>
+      </g>
+
+      <!-- Bottom -->
+      <rect x="0" y="368" width="1200" height="32" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="388" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 0.4-B · The method of finite differences. For any polynomial, repeatedly adding a constant difference eventually produces the function values. The Difference Engine mechanises this: each column is one order of difference, and each step is one addition.</text>
+      <text x="1140" y="388" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 0.4</text>
+    </svg></div>
+        <figcaption class="fig-caption">
+          <strong id="fig-4_1-title">Figure 4.1 &mdash; Method of Finite Differences — Computing f(x) = x² Without Multiplication</strong> The method of finite differences applied to f(x) = x². The second-order difference (Δ²) is always 2 for any quadratic — a constant. The engine exploits this: at each step it adds Δ² to Δ¹ to produce a new first difference, then adds that to the current f(x) to produce the next f(x). No multiplication is ever performed. Babbage designed columns of digit wheels, one per order of difference, connected by an addition mechanism. The same principle applies to any polynomial up to any degree.
+        </figcaption>
+      </figure>
+      <div class="callout callout-historical" role="note" aria-label="Historical Note">
+        <div class="callout-label"><span aria-hidden="true">&oplus;</span> Historical Note</div>
+        <p>Babbage began construction in 1823 with British government funding. After a decade and &pound;17,000 (millions in today&rsquo;s money), the machine was abandoned. The manufacturing precision required was beyond what 1830s toolmaking could deliver. Parts didn&rsquo;t fit. The project collapsed. A complete Difference Engine No. 2 was finally built by the Science Museum in London in <strong>1991</strong> using Babbage&rsquo;s original drawings &mdash; and it worked perfectly.</p>
+      </div>
+      <div class="section-break" role="separator" aria-hidden="true">
+        <div class="sb-line"></div><div class="sb-dot"></div><div class="sb-dot"></div><div class="sb-dot"></div><div class="sb-line"></div>
+      </div>
+      <h3 class="sub-head">The Analytical Engine &mdash; General-Purpose (1837 onward)</h3>
+      <p class="body no-indent">Before the Difference Engine was even finished, Babbage&rsquo;s mind had already moved on to something far more ambitious: the <strong>Analytical Engine</strong>, a general-purpose mechanical computer.</p>
+      <p class="body">Its design, completed in 1837, included:</p>
+
+      <figure class="fig-block wide" id="fig-4_2" aria-labelledby="fig-4_2-title">
+        <span class="fig-label">Figure 4.2</span>
+        <span class="fig-rule" role="separator"></span>
+        <div class="fig-frame"><svg viewBox="0 0 1200 560" xmlns="http://www.w3.org/2000/svg" style="height:480px">
+      <defs>
+        <linearGradient id="heroBg04" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EDE6DA"/>
+          <stop offset="100%" stop-color="#E4DDD0"/>
+        </linearGradient>
+        <linearGradient id="brassGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#D4BC88"/>
+          <stop offset="50%" stop-color="#C0A870"/>
+          <stop offset="100%" stop-color="#B09060"/>
+        </linearGradient>
+        <linearGradient id="steelGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C8C4BC"/>
+          <stop offset="100%" stop-color="#A8A4A0"/>
+        </linearGradient>
+        <filter id="engShadow">
+          <feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="#2C2C2C" flood-opacity="0.15"/>
+        </filter>
+      </defs>
+
+      <rect width="1200" height="560" fill="url(#heroBg04)"/>
+
+      <!-- ── DIFFERENCE ENGINE COLUMNS (left section) ── -->
+      <!-- Base plate -->
+      <rect x="60" y="380" width="440" height="18" rx="1" fill="url(#brassGrad)" stroke="#988050" stroke-width="1"/>
+      <!-- Column supports -->
+      <rect x="60" y="160" width="440" height="220" rx="1" fill="#D8D0C0" stroke="#B8B0A0" stroke-width="1"/>
+
+      <!-- 6 column towers -->
+      <g>
+        <!-- Tower 1 -->
+        <rect x="76" y="170" width="52" height="210" rx="1" fill="url(#steelGrad)" stroke="#A8A4A0" stroke-width="1" filter="url(#engShadow)"/>
+        <!-- Digit wheels on tower 1 -->
+        <g fill="url(#brassGrad)" stroke="#988050" stroke-width="0.8">
+          <rect x="80" y="176" width="44" height="26" rx="1"/>
+          <rect x="80" y="206" width="44" height="26" rx="1"/>
+          <rect x="80" y="236" width="44" height="26" rx="1"/>
+          <rect x="80" y="266" width="44" height="26" rx="1"/>
+          <rect x="80" y="296" width="44" height="26" rx="1"/>
+          <rect x="80" y="326" width="44" height="26" rx="1"/>
+        </g>
+        <!-- Digits on wheels T1 -->
+        <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" fill="#2C2C2C">
+          <text x="102" y="193">1</text><text x="102" y="223">4</text>
+          <text x="102" y="253">9</text><text x="102" y="283">7</text>
+          <text x="102" y="313">3</text><text x="102" y="343">2</text>
+        </g>
+
+        <!-- Tower 2 -->
+        <rect x="144" y="170" width="52" height="210" rx="1" fill="url(#steelGrad)" stroke="#A8A4A0" stroke-width="1"/>
+        <g fill="url(#brassGrad)" stroke="#988050" stroke-width="0.8">
+          <rect x="148" y="176" width="44" height="26" rx="1"/>
+          <rect x="148" y="206" width="44" height="26" rx="1"/>
+          <rect x="148" y="236" width="44" height="26" rx="1"/>
+          <rect x="148" y="266" width="44" height="26" rx="1"/>
+          <rect x="148" y="296" width="44" height="26" rx="1"/>
+          <rect x="148" y="326" width="44" height="26" rx="1"/>
+        </g>
+        <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" fill="#2C2C2C">
+          <text x="170" y="193">3</text><text x="170" y="223">6</text>
+          <text x="170" y="253">1</text><text x="170" y="283">8</text>
+          <text x="170" y="313">0</text><text x="170" y="343">5</text>
+        </g>
+
+        <!-- Tower 3 (highlighted — active column) -->
+        <rect x="212" y="160" width="52" height="220" rx="1" fill="#E0C880" stroke="#C82A2A" stroke-width="2" filter="url(#engShadow)"/>
+        <g fill="#C8A840" stroke="#A88828" stroke-width="0.8">
+          <rect x="216" y="167" width="44" height="28" rx="1"/>
+          <rect x="216" y="199" width="44" height="28" rx="1"/>
+          <rect x="216" y="231" width="44" height="28" rx="1"/>
+          <rect x="216" y="263" width="44" height="28" rx="1"/>
+          <rect x="216" y="295" width="44" height="28" rx="1"/>
+          <rect x="216" y="327" width="44" height="28" rx="1"/>
+        </g>
+        <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" fill="#2C2C2C" font-weight="500">
+          <text x="238" y="185">2</text><text x="238" y="217">8</text>
+          <text x="238" y="249">4</text><text x="238" y="281">1</text>
+          <text x="238" y="313">6</text><text x="238" y="345">9</text>
+        </g>
+        <!-- Column label -->
+        <text x="238" y="154" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" text-anchor="middle" font-weight="500">Δ²</text>
+
+        <!-- Tower 4 -->
+        <rect x="280" y="170" width="52" height="210" rx="1" fill="url(#steelGrad)" stroke="#A8A4A0" stroke-width="1"/>
+        <g fill="url(#brassGrad)" stroke="#988050" stroke-width="0.8">
+          <rect x="284" y="176" width="44" height="26" rx="1"/>
+          <rect x="284" y="206" width="44" height="26" rx="1"/>
+          <rect x="284" y="236" width="44" height="26" rx="1"/>
+          <rect x="284" y="266" width="44" height="26" rx="1"/>
+          <rect x="284" y="296" width="44" height="26" rx="1"/>
+          <rect x="284" y="326" width="44" height="26" rx="1"/>
+        </g>
+        <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" fill="#2C2C2C">
+          <text x="306" y="193">5</text><text x="306" y="223">2</text>
+          <text x="306" y="253">7</text><text x="306" y="283">4</text>
+          <text x="306" y="313">9</text><text x="306" y="343">1</text>
+        </g>
+
+        <!-- Tower 5 -->
+        <rect x="348" y="170" width="52" height="210" rx="1" fill="url(#steelGrad)" stroke="#A8A4A0" stroke-width="1"/>
+        <g fill="url(#brassGrad)" stroke="#988050" stroke-width="0.8">
+          <rect x="352" y="176" width="44" height="26" rx="1"/>
+          <rect x="352" y="206" width="44" height="26" rx="1"/>
+          <rect x="352" y="236" width="44" height="26" rx="1"/>
+          <rect x="352" y="266" width="44" height="26" rx="1"/>
+          <rect x="352" y="296" width="44" height="26" rx="1"/>
+          <rect x="352" y="326" width="44" height="26" rx="1"/>
+        </g>
+        <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" fill="#2C2C2C">
+          <text x="374" y="193">8</text><text x="374" y="223">0</text>
+          <text x="374" y="253">3</text><text x="374" y="283">6</text>
+          <text x="374" y="313">2</text><text x="374" y="343">7</text>
+        </g>
+
+        <!-- Tower 6 -->
+        <rect x="416" y="170" width="52" height="210" rx="1" fill="url(#steelGrad)" stroke="#A8A4A0" stroke-width="1"/>
+        <g fill="url(#brassGrad)" stroke="#988050" stroke-width="0.8">
+          <rect x="420" y="176" width="44" height="26" rx="1"/>
+          <rect x="420" y="206" width="44" height="26" rx="1"/>
+          <rect x="420" y="236" width="44" height="26" rx="1"/>
+          <rect x="420" y="266" width="44" height="26" rx="1"/>
+          <rect x="420" y="296" width="44" height="26" rx="1"/>
+          <rect x="420" y="326" width="44" height="26" rx="1"/>
+        </g>
+        <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" fill="#2C2C2C">
+          <text x="442" y="193">6</text><text x="442" y="223">3</text>
+          <text x="442" y="253">8</text><text x="442" y="283">5</text>
+          <text x="442" y="313">1</text><text x="442" y="343">4</text>
+        </g>
+
+        <!-- Column labels -->
+        <g font-family="'Inter',sans-serif" font-size="9" fill="#888880" text-anchor="middle">
+          <text x="102" y="154">f(x)</text>
+          <text x="170" y="154">Δ¹</text>
+          <text x="306" y="154">Δ³</text>
+          <text x="374" y="154">Δ⁴</text>
+          <text x="442" y="154">Δ⁵</text>
+        </g>
+      </g>
+
+      <!-- Gear linkage bars between towers -->
+      <g stroke="#988050" stroke-width="2.5" fill="none" opacity="0.7">
+        <line x1="128" y1="290" x2="144" y2="290"/>
+        <line x1="196" y1="290" x2="212" y2="290"/>
+        <line x1="264" y1="290" x2="280" y2="290"/>
+        <line x1="332" y1="290" x2="348" y2="290"/>
+        <line x1="400" y1="290" x2="416" y2="290"/>
+      </g>
+
+      <!-- Printing mechanism at bottom -->
+      <rect x="70" y="398" width="420" height="30" rx="1" fill="url(#brassGrad)" stroke="#988050" stroke-width="1"/>
+      <rect x="80" y="404" width="30" height="18" rx="1" fill="#2C2C2C"/>
+      <rect x="118" y="404" width="30" height="18" rx="1" fill="#2C2C2C"/>
+      <rect x="156" y="404" width="30" height="18" rx="1" fill="#2C2C2C"/>
+      <rect x="194" y="404" width="30" height="18" rx="1" fill="#2C2C2C"/>
+      <rect x="232" y="404" width="30" height="18" rx="1" fill="#2C2C2C"/>
+      <rect x="270" y="404" width="30" height="18" rx="1" fill="#2C2C2C"/>
+      <!-- Print labels -->
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#F4EFE6" text-anchor="middle">
+        <text x="95" y="416">1</text><text x="133" y="416">4</text>
+        <text x="171" y="416">9</text><text x="209" y="416">7</text>
+        <text x="247" y="416">3</text><text x="285" y="416">2</text>
+      </g>
+      <!-- Paper strip -->
+      <rect x="70" y="428" width="300" height="14" rx="0" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">
+        <text x="80" y="439">149732  157294  164988  172814</text>
+      </g>
+      <text x="260" y="460" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" font-style="italic">printed mathematical table</text>
+
+      <!-- Engine title -->
+      <text x="260" y="510" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" font-weight="300" fill="#6E6E6E">Difference Engine No. 1 — 1822</text>
+
+      <!-- ── DIVIDER ── -->
+      <line x1="540" y1="60" x2="540" y2="500" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- ── ANALYTICAL ENGINE SCHEMATIC (right) ── -->
+      <!-- Title -->
+      <text x="870" y="80" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="16" font-weight="300" fill="#2C2C2C">Analytical Engine — 1837</text>
+      <text x="870" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">THE FIRST GENERAL-PURPOSE COMPUTER (NEVER BUILT)</text>
+
+      <!-- Four major components as architecture blocks -->
+      <!-- The Mill (CPU equivalent) -->
+      <rect x="700" y="130" width="200" height="120" rx="1" fill="#FDFDFD" stroke="#2E4057" stroke-width="2" filter="url(#engShadow)"/>
+      <rect x="700" y="130" width="200" height="28" fill="#2E4057" opacity="0.12"/>
+      <text x="800" y="150" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">THE MILL</text>
+      <text x="800" y="170" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Arithmetic Unit</text>
+      <text x="800" y="188" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">+  −  ×  ÷</text>
+      <text x="800" y="204" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">carries, shifts</text>
+      <rect x="716" y="218" width="168" height="18" fill="#2E4057" opacity="0.06"/>
+      <text x="800" y="230" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">≡ modern ALU / CPU core</text>
+
+      <!-- The Store (Memory) -->
+      <rect x="940" y="130" width="200" height="120" rx="1" fill="#FDFDFD" stroke="#728C69" stroke-width="2" filter="url(#engShadow)"/>
+      <rect x="940" y="130" width="200" height="28" fill="#728C69" opacity="0.12"/>
+      <text x="1040" y="150" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69" letter-spacing="0.1em">THE STORE</text>
+      <text x="1040" y="170" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Memory (1000 numbers)</text>
+      <text x="1040" y="188" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">50-digit decimal registers</text>
+      <text x="1040" y="204" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">read / write</text>
+      <rect x="956" y="218" width="168" height="18" fill="#728C69" opacity="0.06"/>
+      <text x="1040" y="230" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">≡ modern RAM</text>
+
+      <!-- Arrow: Store ↔ Mill -->
+      <path d="M900 190 L940 190" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#da)" marker-start="url(#da2)"/>
+      <text x="920" y="183" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">data bus</text>
+      <defs>
+        <marker id="da" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#2C2C2C"/>
+        </marker>
+        <marker id="da2" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto-start-reverse">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#2C2C2C"/>
+        </marker>
+      </defs>
+
+      <!-- The Reader (Input — punch cards) -->
+      <rect x="700" y="310" width="200" height="120" rx="1" fill="#FDFDFD" stroke="#8B6914" stroke-width="2"/>
+      <rect x="700" y="310" width="200" height="28" fill="#8B6914" opacity="0.1"/>
+      <text x="800" y="330" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914" letter-spacing="0.1em">THE READER</text>
+      <text x="800" y="350" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Punch Card Input</text>
+      <!-- Mini card -->
+      <rect x="740" y="358" width="60" height="36" rx="1" fill="#FDFDFD" stroke="#C8C4BC" stroke-width="1"/>
+      <g fill="#2C2C2C" opacity="0.7">
+        <rect x="748" y="364" width="7" height="9" rx="0"/>
+        <rect x="758" y="364" width="7" height="9" rx="0"/>
+        <rect x="778" y="364" width="7" height="9" rx="0"/>
+        <rect x="748" y="378" width="7" height="9" rx="0"/>
+        <rect x="768" y="378" width="7" height="9" rx="0"/>
+        <rect x="788" y="378" width="7" height="9" rx="0"/>
+      </g>
+      <rect x="716" y="400" width="168" height="18" fill="#8B6914" opacity="0.06"/>
+      <text x="800" y="412" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">≡ modern keyboard / I/O</text>
+
+      <!-- The Printer (Output) -->
+      <rect x="940" y="310" width="200" height="120" rx="1" fill="#FDFDFD" stroke="#C82A2A" stroke-width="2"/>
+      <rect x="940" y="310" width="200" height="28" fill="#C82A2A" opacity="0.08"/>
+      <text x="1040" y="330" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">THE PRINTER</text>
+      <text x="1040" y="350" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Output / Print</text>
+      <!-- Paper strip -->
+      <rect x="956" y="356" width="168" height="14" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="1040" y="367" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">3.14159265…</text>
+      <rect x="956" y="374" width="168" height="14" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="1040" y="385" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">2.71828182…</text>
+      <rect x="956" y="400" width="168" height="18" fill="#C82A2A" opacity="0.05"/>
+      <text x="1040" y="412" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">≡ modern display / output</text>
+
+      <!-- Arrows: Reader→Mill, Mill→Printer -->
+      <path d="M800 310 L800 250" stroke="#8B6914" stroke-width="1.5" fill="none" marker-end="url(#gold_arr)"/>
+      <text x="808" y="283" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">ops</text>
+      <defs>
+        <marker id="gold_arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#8B6914"/>
+        </marker>
+        <marker id="red_arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+      </defs>
+      <path d="M900 190 Q920 280 1040 310" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#red_arr)"/>
+      <text x="970" y="268" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">results</text>
+
+      <!-- Conditional branch label -->
+      <rect x="700" y="460" width="440" height="30" rx="1" fill="#2E4057" opacity="0.07" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="920" y="478" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Conditional Branching — the leap beyond all prior machines</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="520" width="1200" height="40" fill="rgba(44,64,87,0.06)"/>
+      <text x="60" y="544" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Fig 0.4-A</text>
+      <text x="120" y="544" font-family="'Inter',sans-serif" font-size="12" fill="#6E6E6E">Left: Difference Engine column array with brass digit wheels and printing mechanism. Right: Analytical Engine architecture — Mill (ALU), Store (RAM), Reader (I/O), and Printer (output).</text>
+      <text x="1140" y="544" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 0.4</text>
+    </svg></div>
+        <figcaption class="fig-caption">
+          <strong id="fig-4_2-title">Figure 4.2 &mdash; The Analytical Engine — Babbage's Vision of a General-Purpose Computer</strong> Left: The Difference Engine — a finite-difference calculator with six columns of toothed brass wheels. The highlighted column (Δ²) is the second-order difference register. The printing mechanism at the base stamps results directly onto paper, eliminating human transcription errors. Right: The Analytical Engine's four-component architecture. Unlike the Difference Engine, it included conditional branching — the ability to execute different instruction sequences based on computed results. This is the first complete description of a general-purpose programmable computer, 108 years before the first one was built.
+        </figcaption>
+      </figure>
+      <span class="table-label">Table 4.1</span>
+      <div class="table-wrap">
+        <table class="book-table" role="table" aria-label="Babbage's Analytical Engine vs modern Von Neumann architecture">
+          <thead><tr><th scope="col">Component</th><th scope="col">Babbage&rsquo;s name (1837)</th><th scope="col">Modern equivalent</th></tr></thead>
+          <tbody>
+            <tr><td>Memory for 1,000 numbers of 50 digits</td><td class="mono">The Store</td><td><abbr title="Random Access Memory">RAM</abbr></td></tr>
+            <tr><td>Computing unit</td><td class="mono">The Mill</td><td><abbr title="Central Processing Unit">CPU</abbr> / <abbr title="Arithmetic Logic Unit">ALU</abbr></td></tr>
+            <tr><td>Input via punch cards</td><td class="mono">Operation + Variable cards</td><td>Instruction + data memory</td></tr>
+            <tr><td>Conditional branching</td><td class="mono">Conditional lever</td><td><code>if</code> statement / branch instruction</td></tr>
+            <tr><td>Looping</td><td class="mono">Backing up the cards</td><td>Loops / iteration</td></tr>
+            <tr class="highlight"><td>Printing output</td><td class="mono">The Printing Apparatus</td><td>Output device</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-caption">Table 4.1 &mdash; The Analytical Engine&rsquo;s architecture, mapped to modern computing concepts. Babbage designed all of this in 1837. The Von Neumann architecture &mdash; which every computer since 1945 has used &mdash; is structurally identical.</p>
+
+      <p class="body">Point five in the table is the key. A machine that can only follow a fixed sequence is a calculator. A machine that can <em>decide</em> &mdash; take this branch if the result is zero, that branch if it isn&rsquo;t &mdash; is a computer. Babbage designed that decision in 1837. Every <code>if</code> statement you will ever write is the direct descendant of his conditional lever.</p>
+
+      <div class="callout callout-historical" role="note" aria-label="Historical Note">
+        <div class="callout-label"><span aria-hidden="true">&oplus;</span> Historical Note</div>
+        <p>The Analytical Engine was never built. Babbage couldn&rsquo;t raise funding, couldn&rsquo;t get government support after the Difference Engine debacle, and spent his remaining years revising the design. He died in 1871 with the machine unbuilt. He left behind thousands of engineering drawings and the most sophisticated mechanical computing design in human history.</p>
+      </div>
+      <div class="section-break" role="separator" aria-hidden="true">
+        <div class="sb-line"></div><div class="sb-dot"></div><div class="sb-dot"></div><div class="sb-dot"></div><div class="sb-line"></div>
+      </div>
+      <h3 class="sub-head">Ada Lovelace &mdash; The First Programmer</h3>
+      <p class="body no-indent">In 1842, an Italian mathematician named Luigi Menabrea published a paper describing the Analytical Engine in French, based on lectures Babbage gave in Turin. A young English mathematician &mdash; <strong>Augusta Ada King, Countess of Lovelace</strong> &mdash; was asked to translate it.</p>
+      <p class="body">Ada did not just translate. She added her own <strong>Notes</strong>, labeled A through G, that were three times longer than the original paper.</p>
+      <p class="body"><strong>Note G</strong> is the most famous document in the history of computing. It contains the first published algorithm intended to be executed by a machine: a procedure for computing Bernoulli numbers using the Analytical Engine. It demonstrates a complete understanding of what an algorithm <em>is</em>: a finite sequence of unambiguous steps that can be mechanically followed. And it contains a visionary observation: <em>&ldquo;The Engine might act upon other things besides number&hellip; the Engine might compose elaborate and scientific pieces of music of any degree of complexity or extent.&rdquo;</em></p>
+
+      <figure class="fig-block" id="fig-4_3" aria-labelledby="fig-4_3-title">
+        <span class="fig-label">Figure 4.3</span>
+        <span class="fig-rule" role="separator"></span>
+        <div class="fig-frame"><svg viewBox="0 0 1200 440" xmlns="http://www.w3.org/2000/svg" style="height:380px">
+      <defs>
+        <linearGradient id="noteBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#F8F2E8"/>
+          <stop offset="100%" stop-color="#F0E8DC"/>
+        </linearGradient>
+      </defs>
+
+      <rect width="1200" height="440" fill="#EDE8DE"/>
+
+      <!-- ── MANUSCRIPT PAGE (left) ── -->
+      <rect x="40" y="30" width="320" height="380" rx="1" fill="url(#noteBg)" stroke="#C8B898" stroke-width="1.5"/>
+      <!-- Page lines -->
+      <g stroke="#D8CEC0" stroke-width="0.5">
+        <line x1="60" y1="64" x2="340" y2="64"/>
+        <line x1="60" y1="84" x2="340" y2="84"/>
+        <line x1="60" y1="104" x2="340" y2="104"/>
+        <line x1="60" y1="124" x2="340" y2="124"/>
+        <line x1="60" y1="144" x2="340" y2="144"/>
+        <line x1="60" y1="164" x2="340" y2="164"/>
+        <line x1="60" y1="184" x2="340" y2="184"/>
+        <line x1="60" y1="204" x2="340" y2="204"/>
+        <line x1="60" y1="224" x2="340" y2="224"/>
+        <line x1="60" y1="244" x2="340" y2="244"/>
+        <line x1="60" y1="264" x2="340" y2="264"/>
+        <line x1="60" y1="284" x2="340" y2="284"/>
+        <line x1="60" y1="304" x2="340" y2="304"/>
+        <line x1="60" y1="324" x2="340" y2="324"/>
+        <line x1="60" y1="344" x2="340" y2="344"/>
+        <line x1="60" y1="364" x2="340" y2="364"/>
+        <line x1="60" y1="384" x2="340" y2="384"/>
+      </g>
+      <!-- Manuscript text (stylised) -->
+      <text x="200" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#6E5E4E">Note G — Bernoulli Numbers</text>
+      <!-- Simulated handwriting lines -->
+      <g font-family="'Noto Serif JP',serif" font-size="9.5" fill="#4A3A2E">
+        <text x="64" y="78">Let B₀ = 1. We seek B₁, B₂, B₃, …</text>
+        <text x="64" y="98">The general formula relates Bₙ to</text>
+        <text x="64" y="118">all preceding Bernoulli numbers.</text>
+        <text x="64" y="138">The Engine must iterate through</text>
+        <text x="64" y="158">values of n from 1 upward, at each</text>
+        <text x="64" y="178">step computing a partial sum and</text>
+        <text x="64" y="198">updating the accumulator.</text>
+        <text x="64" y="218" font-style="italic">This requires the machine to</text>
+        <text x="64" y="238" font-style="italic">repeat operations — a loop —</text>
+        <text x="64" y="258" font-style="italic">controlled by the result.</text>
+      </g>
+      <!-- Formulae section -->
+      <line x1="60" y1="272" x2="340" y2="272" stroke="#C8B898" stroke-width="0.8"/>
+      <text x="64" y="290" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2E4057">Bₙ = − Σ C(n+1,k)·Bₖ / (n+1)</text>
+      <text x="64" y="310" font-family="'Inter',sans-serif" font-size="9" fill="#6E5E4E" font-style="italic">for k = 0 to n−1</text>
+      <!-- Table fragment (Ada's actual table) -->
+      <rect x="60" y="324" width="270" height="64" fill="#FDFDFD" stroke="#D8CEC0" stroke-width="0.5"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">
+        <text x="70" y="340">n  Variable   Card op   Value</text>
+        <line x1="64" y1="344" x2="322" y2="344" stroke="#D8CEC0" stroke-width="0.3"/>
+        <text x="70" y="358">1  v₁ ← B₀    +v₀/v₁    1</text>
+        <text x="70" y="372">2  v₂ ← n     +v₁       1</text>
+        <text x="70" y="386">3  v₃ ← 2n+1  +v₂       3</text>
+      </g>
+
+      <!-- Author signature area -->
+      <text x="200" y="403" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="10" fill="#8C7858" font-style="italic">A.A. Lovelace — 1843</text>
+
+      <!-- ── ALGORITHM FLOWCHART (centre) ── -->
+      <rect x="400" y="30" width="280" height="380" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="400" y="30" width="280" height="28" fill="#2E4057" opacity="0.08"/>
+      <text x="540" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">ADA'S ALGORITHM — FLOWCHART</text>
+
+      <!-- Flowchart nodes -->
+      <!-- START -->
+      <rect x="470" y="74" width="120" height="30" rx="15" fill="#2E4057" opacity="0.9"/>
+      <text x="530" y="94" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD" font-weight="500">START</text>
+      <!-- Arrow down -->
+      <line x1="530" y1="104" x2="530" y2="122" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M526 118 L530 126 L534 118" fill="#2C2C2C"/>
+
+      <!-- Init -->
+      <rect x="450" y="126" width="160" height="34" rx="2" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="530" y="143" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">n ← 1</text>
+      <text x="530" y="156" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">acc ← 0</text>
+      <line x1="530" y1="160" x2="530" y2="178" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M526 174 L530 182 L534 174" fill="#2C2C2C"/>
+
+      <!-- Compute term -->
+      <rect x="440" y="182" width="180" height="34" rx="2" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="530" y="199" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">term ← C(n+1,k)·Bₖ</text>
+      <text x="530" y="212" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">acc ← acc + term</text>
+      <line x1="530" y1="216" x2="530" y2="234" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M526 230 L530 238 L534 230" fill="#2C2C2C"/>
+
+      <!-- Decision diamond -->
+      <polygon points="530,238 600,268 530,298 460,268" fill="#8B6914" opacity="0.12" stroke="#8B6914" stroke-width="1.5"/>
+      <text x="530" y="264" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#6E4A00">k &lt; n−1?</text>
+      <text x="530" y="277" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#6E4A00">loop test</text>
+      <!-- Yes arrow — loops back up -->
+      <path d="M460 268 Q420 268 420 200 Q420 160 450 160" stroke="#8B6914" stroke-width="1.5" fill="none"/>
+      <path d="M446 157 L454 163 L444 166" fill="#8B6914"/>
+      <text x="412" y="220" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">YES</text>
+      <text x="398" y="233" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">k++</text>
+      <!-- No arrow -->
+      <line x1="530" y1="298" x2="530" y2="316" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M526 312 L530 320 L534 312" fill="#2C2C2C"/>
+      <text x="544" y="310" font-family="'Inter',sans-serif" font-size="9" fill="#888880">NO</text>
+
+      <!-- Store result -->
+      <rect x="450" y="320" width="160" height="34" rx="2" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="530" y="337" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">Bₙ ← −acc / (n+1)</text>
+      <text x="530" y="350" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">output Bₙ</text>
+      <line x1="530" y1="354" x2="530" y2="372" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M526 368 L530 376 L534 368" fill="#2C2C2C"/>
+
+      <!-- END -->
+      <rect x="470" y="376" width="120" height="24" rx="12" fill="#728C69" opacity="0.8"/>
+      <text x="530" y="392" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD" font-weight="500">OUTPUT Bₙ</text>
+
+      <!-- The loop annotation -->
+      <rect x="404" y="170" width="30" height="130" rx="2" fill="#8B6914" opacity="0.06" stroke="#8B6914" stroke-width="0.8" stroke-dasharray="3,2"/>
+      <text x="394" y="240" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914" transform="rotate(-90, 394, 240)">← LOOP</text>
+
+      <!-- ── BERNOULLI TABLE (right) ── -->
+      <rect x="720" y="30" width="440" height="380" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="720" y="30" width="440" height="28" fill="#2E4057" opacity="0.08"/>
+      <text x="940" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">BERNOULLI NUMBERS — ENGINE OUTPUT</text>
+
+      <!-- Table -->
+      <rect x="730" y="64" width="420" height="30" fill="#EEECE6"/>
+      <g font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#888880" letter-spacing="0.08em" text-anchor="middle">
+        <text x="780" y="83">n</text>
+        <text x="870" y="83">Bₙ (fraction)</text>
+        <text x="1010" y="83">Bₙ (decimal)</text>
+        <text x="1110" y="83">STEPS</text>
+      </g>
+      <line x1="730" y1="94" x2="1150" y2="94" stroke="#D8D6CE" stroke-width="0.5"/>
+      <line x1="820" y1="64" x2="820" y2="380" stroke="#E8E6DF" stroke-width="0.5"/>
+      <line x1="950" y1="64" x2="950" y2="380" stroke="#E8E6DF" stroke-width="0.5"/>
+      <line x1="1070" y1="64" x2="1070" y2="380" stroke="#E8E6DF" stroke-width="0.5"/>
+
+      <!-- Data rows -->
+      <g font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">
+        <rect x="730" y="94" width="420" height="28" fill="#FDFDFD"/>
+        <text x="780" y="112" fill="#6E6E6E">0</text>
+        <text x="870" y="112" fill="#2C2C2C">1</text>
+        <text x="1010" y="112" fill="#2C2C2C">1.000000</text>
+        <text x="1110" y="112" fill="#888880">—</text>
+
+        <rect x="730" y="122" width="420" height="28" fill="#F8F7F3"/>
+        <text x="780" y="140" fill="#6E6E6E">1</text>
+        <text x="870" y="140" fill="#2C2C2C">−1/2</text>
+        <text x="1010" y="140" fill="#C82A2A">−0.500000</text>
+        <text x="1110" y="140" fill="#2E4057">4</text>
+
+        <rect x="730" y="150" width="420" height="28" fill="#FDFDFD"/>
+        <text x="780" y="168" fill="#6E6E6E">2</text>
+        <text x="870" y="168" fill="#2C2C2C">1/6</text>
+        <text x="1010" y="168" fill="#2C2C2C">0.166667</text>
+        <text x="1110" y="168" fill="#2E4057">12</text>
+
+        <rect x="730" y="178" width="420" height="28" fill="#F8F7F3"/>
+        <text x="780" y="196" fill="#6E6E6E">3</text>
+        <text x="870" y="196" fill="#888880">0</text>
+        <text x="1010" y="196" fill="#888880">0.000000</text>
+        <text x="1110" y="196" fill="#888880">—</text>
+
+        <rect x="730" y="206" width="420" height="28" fill="#FDFDFD"/>
+        <text x="780" y="224" fill="#6E6E6E">4</text>
+        <text x="870" y="224" fill="#2C2C2C">−1/30</text>
+        <text x="1010" y="224" fill="#C82A2A">−0.033333</text>
+        <text x="1110" y="224" fill="#2E4057">24</text>
+
+        <rect x="730" y="234" width="420" height="28" fill="#F8F7F3"/>
+        <text x="780" y="252" fill="#6E6E6E">6</text>
+        <text x="870" y="252" fill="#2C2C2C">1/42</text>
+        <text x="1010" y="252" fill="#2C2C2C">0.023810</text>
+        <text x="1110" y="252" fill="#2E4057">44</text>
+
+        <rect x="730" y="262" width="420" height="28" fill="#FDFDFD"/>
+        <text x="780" y="280" fill="#6E6E6E">8</text>
+        <text x="870" y="280" fill="#2C2C2C">−1/30</text>
+        <text x="1010" y="280" fill="#C82A2A">−0.033333</text>
+        <text x="1110" y="280" fill="#2E4057">72</text>
+
+        <rect x="730" y="290" width="420" height="28" fill="#F8F7F3"/>
+        <text x="780" y="308" fill="#6E6E6E">10</text>
+        <text x="870" y="308" fill="#2C2C2C">5/66</text>
+        <text x="1010" y="308" fill="#2C2C2C">0.075758</text>
+        <text x="1110" y="308" fill="#2E4057">108</text>
+      </g>
+      <line x1="730" y1="318" x2="1150" y2="318" stroke="#D8D6CE" stroke-width="0.5"/>
+
+      <!-- Insight panel -->
+      <rect x="730" y="328" width="420" height="72" fill="#2E4057" opacity="0.04"/>
+      <text x="740" y="350" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Ada recognised three key concepts:</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="740" y="368">① Looping — repeat until a condition is false</text>
+        <text x="740" y="384">② Variables — named storage for intermediate values</text>
+        <text x="740" y="400">③ Subroutines — reusable operation sequences</text>
+      </g>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="410" width="1200" height="30" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="430" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 0.4-C · Ada Lovelace's Note G (1843). Left: manuscript with algorithm description. Centre: flowchart reconstruction — the loop structure is the first documented algorithm with conditional repetition. Right: the Bernoulli number output table with operation counts.</text>
+      <text x="1140" y="430" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 0.4</text>
+    </svg></div>
+        <figcaption class="fig-caption">
+          <strong id="fig-4_3-title">Figure 4.3 &mdash; Ada Lovelace's Note G — The First Algorithm, 1843</strong> Ada Lovelace's Note G (1843) — the first published algorithm intended for machine execution. Left: manuscript style notes with the recursive Bernoulli formula and a fragment of her operation table. Centre: flowchart reconstruction showing the loop structure — Ada explicitly described the need for the engine to repeat a sequence of operations until a condition changes, which is the first documented algorithmic loop. Right: the output — Bernoulli numbers with operation counts showing the computational cost grows with n. Ada identified looping, variables, and subroutines as the three essential programming concepts, 100 years before those words were coined.
+        </figcaption>
+      </figure>
+      <p class="body">Ada understood something Babbage never fully articulated: the Engine&rsquo;s operations were not fundamentally about <em>numbers</em> &mdash; they were about <em>symbols</em> that could represent anything. This insight took the field another century to catch up to.</p>
+
+      <div class="callout callout-insight" role="note" aria-label="Key Insight">
+        <div class="callout-label"><span aria-hidden="true">&#9670;</span> Key Insight</div>
+        <p>Ada&rsquo;s algorithm for Bernoulli numbers uses variables stored in the Store (memory locations), arithmetic operations in the Mill (the <abbr title="Arithmetic Logic Unit">ALU</abbr>), a looping structure (repeating a set of operations), and a sequence of operation cards (the program). It is, by every meaningful definition, a program. The person who wrote it was, by every meaningful definition, a programmer.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="sect-concept4">
+      <h2 class="section-head" id="sect-concept4">The Concept &mdash; Calculator vs Computer</h2>
+      <p class="body no-indent">The Difference Engine was not a computer. It was a sophisticated calculator &mdash; it could do one thing (polynomial tabulation) and could not be redirected to a different task.</p>
+      <p class="body">The Analytical Engine <em>was</em> a computer. It had input, storage, processing, output, conditional execution, and loops. The decisive feature is conditional execution: the ability to take different actions based on the result of a computation. That is what separates a machine that follows a fixed path from a machine that can <em>reason about its own output</em>.</p>
+
+      <figure class="fig-block wide" id="fig-4_4" aria-labelledby="fig-4_4-title">
+        <span class="fig-label">Figure 4.4</span>
+        <span class="fig-rule" role="separator"></span>
+        <div class="fig-frame"><svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:270px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+
+      <!-- Left: Analytical Engine -->
+      <rect x="40" y="30" width="520" height="250" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="30" width="520" height="28" fill="#8B6914" opacity="0.12"/>
+      <text x="300" y="50" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#8B6914">Analytical Engine — 1837</text>
+
+      <!-- Four boxes -->
+      <rect x="60" y="75" width="120" height="80" rx="1" fill="#EEECE6" stroke="#8B6914" stroke-width="1.5"/>
+      <text x="120" y="110" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914">THE MILL</text>
+      <text x="120" y="126" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">+−×÷</text>
+      <text x="120" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">gear wheels</text>
+
+      <rect x="220" y="75" width="140" height="80" rx="1" fill="#EEECE6" stroke="#728C69" stroke-width="1.5"/>
+      <text x="290" y="110" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69">THE STORE</text>
+      <text x="290" y="126" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">1000 × 50-digit</text>
+      <text x="290" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">brass registers</text>
+
+      <rect x="60" y="185" width="120" height="72" rx="1" fill="#EEECE6" stroke="#8B6914" stroke-width="1"/>
+      <text x="120" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914">READER</text>
+      <text x="120" y="226" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">punch cards</text>
+      <text x="120" y="240" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">op + var cards</text>
+
+      <rect x="220" y="185" width="140" height="72" rx="1" fill="#EEECE6" stroke="#C82A2A" stroke-width="1"/>
+      <text x="290" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A">PRINTER</text>
+      <text x="290" y="226" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">stereo press</text>
+      <text x="290" y="240" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">paper output</text>
+
+      <!-- Feature list -->
+      <rect x="390" y="68" width="155" height="190" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="468" y="88" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#888880" letter-spacing="0.1em">FEATURES</text>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="400" y="108">✓ Conditional branch</text>
+        <text x="400" y="124">✓ Loop control</text>
+        <text x="400" y="140">✓ Subroutines</text>
+        <text x="400" y="156">✓ Separate I/O</text>
+        <text x="400" y="172">✓ General purpose</text>
+        <text x="400" y="188">✗ Never built</text>
+        <text x="400" y="204">✗ 25,000 parts</text>
+        <text x="400" y="220">✗ 8 tonnes</text>
+        <text x="400" y="236">✗ Hand-cranked</text>
+      </g>
+
+      <!-- VS divider -->
+      <line x1="600" y1="30" x2="600" y2="280" stroke="#D8D6CE" stroke-width="1"/>
+      <circle cx="600" cy="155" r="22" fill="#F4EFE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="600" y="151" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#888880">186</text>
+      <text x="600" y="165" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">years</text>
+
+      <!-- Right: Modern CPU -->
+      <rect x="640" y="30" width="520" height="250" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="640" y="30" width="520" height="28" fill="#2E4057" opacity="0.12"/>
+      <text x="900" y="50" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">Von Neumann CPU — 2024</text>
+
+      <!-- Four equivalent boxes -->
+      <rect x="660" y="75" width="120" height="80" rx="1" fill="#EEECE6" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="720" y="110" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057">ALU / FPU</text>
+      <text x="720" y="126" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">+−×÷ &amp; logic</text>
+      <text x="720" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">transistors</text>
+
+      <rect x="820" y="75" width="140" height="80" rx="1" fill="#EEECE6" stroke="#728C69" stroke-width="1.5"/>
+      <text x="890" y="110" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69">RAM / CACHE</text>
+      <text x="890" y="126" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">64GB+ addressable</text>
+      <text x="890" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">DRAM / SRAM</text>
+
+      <rect x="660" y="185" width="120" height="72" rx="1" fill="#EEECE6" stroke="#8B6914" stroke-width="1"/>
+      <text x="720" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914">I/O CONTROLLER</text>
+      <text x="720" y="226" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">USB, PCIe</text>
+      <text x="720" y="240" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">keyboard, disk</text>
+
+      <rect x="820" y="185" width="140" height="72" rx="1" fill="#EEECE6" stroke="#C82A2A" stroke-width="1"/>
+      <text x="890" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A">GPU / DISPLAY</text>
+      <text x="890" y="226" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">pixels, video</text>
+      <text x="890" y="240" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">screen output</text>
+
+      <!-- Feature list -->
+      <rect x="990" y="68" width="155" height="190" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="1068" y="88" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#888880" letter-spacing="0.1em">FEATURES</text>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="1000" y="108">✓ Conditional branch</text>
+        <text x="1000" y="124">✓ Loop control</text>
+        <text x="1000" y="140">✓ Subroutines</text>
+        <text x="1000" y="156">✓ Separate I/O</text>
+        <text x="1000" y="172">✓ General purpose</text>
+        <text x="1000" y="188">✓ Built, running</text>
+        <text x="1000" y="204">✓ 10¹⁰ transistors</text>
+        <text x="1000" y="220">✓ 5 nanometres</text>
+        <text x="1000" y="236">✓ 3 GHz clock</text>
+      </g>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="290" width="1200" height="30" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="310" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 0.4-D · Babbage's Analytical Engine (1837) vs a modern Von Neumann CPU (2024). The architectural mapping is exact: Mill = ALU, Store = RAM, Reader = I/O, Printer = output. The concept is identical; the implementation differs by 186 years of technology.</text>
+      <text x="1140" y="310" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 0.4</text>
+    </svg></div>
+        <figcaption class="fig-caption">
+          <strong id="fig-4_4-title">Figure 4.4 &mdash; Babbage's Analytical Engine vs Modern Von Neumann CPU — 186 Years Apart</strong> Direct architectural comparison between Babbage's 1837 design and a 2024 CPU. Every major component maps exactly: The Mill (gear-based arithmetic) → ALU/FPU (transistor-based arithmetic). The Store (brass registers) → RAM/Cache (DRAM/SRAM). The Reader (punch card input) → I/O Controller (USB/PCIe). The Printer (stereotype press) → GPU/Display. The logical structure Babbage described in the 1830s is the same structure inside every computer today. What changed is purely physical — metal gears became silicon transistors.
+        </figcaption>
+      </figure>
+      <h3 class="sub-head">What &ldquo;Algorithm&rdquo; Means</h3>
+      <p class="body no-indent">Ada used this word &mdash; from al-Khwarizmi, the ninth-century Persian mathematician whose name gave us &ldquo;algorithm&rdquo; &mdash; to describe a precise, finite, unambiguous sequence of steps that can be followed mechanically to produce a result.</p>
+      <p class="body">An algorithm is: <strong>finite</strong> (it terminates); <strong>precise</strong> (each step is unambiguous); <strong>general</strong> (it works for any valid input, not just one specific case); and <strong>effective</strong> (each step can actually be carried out). This definition has not changed in 185 years. Every function you will ever write is an algorithm.</p>
+
+      <div class="pull-quote">
+        &ldquo;The Analytical Engine has no power of originating anything. It can only do what we know how to order it to perform.&rdquo;
+        <cite>&mdash; Ada Lovelace, Note G, 1843</cite>
+      </div>
+
+      <div class="callout callout-future" role="note" aria-label="Future Connection">
+        <div class="callout-label"><span aria-hidden="true">&rarr;</span> Future Connection &mdash; Level 3: Machine Architecture</div>
+        <p>Babbage&rsquo;s Store + Mill + conditional branch is the Von Neumann architecture (1945), a century before Von Neumann wrote it down. When you study Module 3.2 (The Fetch-Decode-Execute Cycle), you will be learning the electronic implementation of what Babbage drew in mechanical gears. The architecture did not change &mdash; only the medium.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="sect-sim4">
+      <h2 class="section-head" id="sect-sim4">Hands-On Exercise</h2>
+      <p class="body no-indent">The simulation implements a simplified virtual Analytical Engine with two tools: a Difference Engine that steps through polynomial calculations, and a minimal Analytical Engine emulator with a Store, Mill, and operation card editor. Ada&rsquo;s Bernoulli algorithm is pre-loaded as an example.</p>
+
+      <figure class="sim-figure" aria-labelledby="sim4-cap">
+        <span class="sim-figure-badge">Interactive</span>
+        <span class="sim-figure-label">Figure 4.5 &mdash; Virtual Analytical Engine</span>
+        <div class="sim-figure-frame">
+          <div class="sim-preview-header">
+            <div><div class="sim-preview-title">Virtual Analytical Engine</div><div class="sim-preview-subtitle">Difference Engine &middot; Analytical Engine emulator &middot; Ada&rsquo;s algorithm</div></div>
+          </div>
+          <div class="sim-tabs-preview" aria-hidden="true">
+            <div class="sim-tab-p active">Difference Engine</div>
+            <div class="sim-tab-p">Analytical Engine</div>
+            <div class="sim-tab-p">Ada&rsquo;s Algorithm</div>
+          </div>
+          <div style="margin:10px 0;border:1px solid var(--ghost);border-radius:2px;overflow:hidden;"><svg viewBox="0 0 1200 340" xmlns="http://www.w3.org/2000/svg" style="height:290px">
+      <rect width="1200" height="340" fill="#F4EFE6"/>
+
+      <!-- Simulation state panels for 4 steps -->
+      <!-- STEP 0 -->
+      <rect x="40" y="30" width="240" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="30" width="240" height="26" fill="#EEECE6"/>
+      <text x="160" y="48" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">INITIAL STATE  x=0</text>
+      <!-- Column displays -->
+      <g font-family="'JetBrains Mono',monospace">
+        <!-- f(x) column -->
+        <rect x="58" y="68" width="60" height="22" fill="#2C2C2C"/>
+        <text x="88" y="83" text-anchor="middle" font-size="16" fill="#F4EFE6">0</text>
+        <text x="88" y="102" text-anchor="middle" font-size="9" fill="#888880">f(x)</text>
+
+        <!-- Δ¹ column -->
+        <rect x="140" y="68" width="60" height="22" fill="#2C2C2C"/>
+        <text x="170" y="83" text-anchor="middle" font-size="16" fill="#F4EFE6">1</text>
+        <text x="170" y="102" text-anchor="middle" font-size="9" fill="#888880">Δ¹</text>
+
+        <!-- Δ² column -->
+        <rect x="58" y="120" width="60" height="22" fill="#2E4057" opacity="0.8"/>
+        <text x="88" y="135" text-anchor="middle" font-size="16" fill="#F4EFE6">2</text>
+        <text x="88" y="154" text-anchor="middle" font-size="9" fill="#888880">Δ² = const</text>
+      </g>
+      <text x="160" y="188" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880">Output: f(0) = 0</text>
+      <rect x="58" y="198" width="204" height="22" fill="#EEECE6"/>
+      <text x="160" y="213" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#6E6E6E">0</text>
+      <text x="160" y="246" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" font-style="italic">printed so far</text>
+
+      <!-- Step arrows -->
+      <path d="M284 150 L316 150" stroke="#C82A2A" stroke-width="2" fill="none" marker-end="url(#sarr)"/>
+      <text x="300" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">step 1</text>
+      <defs>
+        <marker id="sarr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+      </defs>
+
+      <!-- STEP 1: x=1 -->
+      <rect x="320" y="30" width="240" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="320" y="30" width="240" height="26" fill="#EEECE6"/>
+      <text x="440" y="48" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">STEP 1  x=1</text>
+      <g font-family="'JetBrains Mono',monospace">
+        <rect x="338" y="68" width="60" height="22" fill="#2C2C2C"/>
+        <text x="368" y="83" text-anchor="middle" font-size="16" fill="#F4EFE6">1</text>
+        <text x="368" y="102" text-anchor="middle" font-size="9" fill="#C82A2A">f(x) ← 0+1</text>
+
+        <rect x="420" y="68" width="60" height="22" fill="#2C2C2C"/>
+        <text x="450" y="83" text-anchor="middle" font-size="16" fill="#F4EFE6">3</text>
+        <text x="450" y="102" text-anchor="middle" font-size="9" fill="#C82A2A">Δ¹ ← 1+2</text>
+
+        <rect x="338" y="120" width="60" height="22" fill="#2E4057" opacity="0.8"/>
+        <text x="368" y="135" text-anchor="middle" font-size="16" fill="#F4EFE6">2</text>
+        <text x="368" y="154" text-anchor="middle" font-size="9" fill="#888880">Δ² unchanged</text>
+      </g>
+      <text x="440" y="188" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880">Output: f(1) = 1</text>
+      <rect x="338" y="198" width="204" height="22" fill="#EEECE6"/>
+      <text x="440" y="213" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#6E6E6E">0, 1</text>
+      <text x="440" y="246" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" font-style="italic">printed so far</text>
+
+      <!-- Step arrows -->
+      <path d="M564 150 L596 150" stroke="#C82A2A" stroke-width="2" fill="none" marker-end="url(#sarr)"/>
+      <text x="580" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">step 2</text>
+
+      <!-- STEP 2: x=2 -->
+      <rect x="600" y="30" width="240" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="600" y="30" width="240" height="26" fill="#EEECE6"/>
+      <text x="720" y="48" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">STEP 2  x=2</text>
+      <g font-family="'JetBrains Mono',monospace">
+        <rect x="618" y="68" width="60" height="22" fill="#2C2C2C"/>
+        <text x="648" y="83" text-anchor="middle" font-size="16" fill="#F4EFE6">4</text>
+        <text x="648" y="102" text-anchor="middle" font-size="9" fill="#C82A2A">f(x) ← 1+3</text>
+
+        <rect x="700" y="68" width="60" height="22" fill="#2C2C2C"/>
+        <text x="730" y="83" text-anchor="middle" font-size="16" fill="#F4EFE6">5</text>
+        <text x="730" y="102" text-anchor="middle" font-size="9" fill="#C82A2A">Δ¹ ← 3+2</text>
+
+        <rect x="618" y="120" width="60" height="22" fill="#2E4057" opacity="0.8"/>
+        <text x="648" y="135" text-anchor="middle" font-size="16" fill="#F4EFE6">2</text>
+        <text x="648" y="154" text-anchor="middle" font-size="9" fill="#888880">Δ² unchanged</text>
+      </g>
+      <text x="720" y="188" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880">Output: f(2) = 4</text>
+      <rect x="618" y="198" width="204" height="22" fill="#EEECE6"/>
+      <text x="720" y="213" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#6E6E6E">0, 1, 4</text>
+      <text x="720" y="246" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" font-style="italic">printed so far</text>
+
+      <!-- Step arrows -->
+      <path d="M844 150 L876 150" stroke="#C82A2A" stroke-width="2" fill="none" marker-end="url(#sarr)"/>
+      <text x="860" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">step 3</text>
+
+      <!-- STEP 3: x=3 -->
+      <rect x="880" y="30" width="280" height="240" rx="1" fill="#FDFDFD" stroke="#8B6914" stroke-width="1.5"/>
+      <rect x="880" y="30" width="280" height="26" fill="#8B6914" opacity="0.1"/>
+      <text x="1020" y="48" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914" letter-spacing="0.1em">STEP 3  x=3</text>
+      <g font-family="'JetBrains Mono',monospace">
+        <rect x="898" y="68" width="60" height="22" fill="#2C2C2C"/>
+        <text x="928" y="83" text-anchor="middle" font-size="16" fill="#F4EFE6">9</text>
+        <text x="928" y="102" text-anchor="middle" font-size="9" fill="#8B6914">f(x) ← 4+5</text>
+
+        <rect x="980" y="68" width="60" height="22" fill="#2C2C2C"/>
+        <text x="1010" y="83" text-anchor="middle" font-size="16" fill="#F4EFE6">7</text>
+        <text x="1010" y="102" text-anchor="middle" font-size="9" fill="#8B6914">Δ¹ ← 5+2</text>
+
+        <rect x="898" y="120" width="60" height="22" fill="#2E4057" opacity="0.8"/>
+        <text x="928" y="135" text-anchor="middle" font-size="16" fill="#F4EFE6">2</text>
+        <text x="928" y="154" text-anchor="middle" font-size="9" fill="#888880">Δ² unchanged</text>
+      </g>
+      <text x="1020" y="188" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#8B6914">Output: f(3) = 9 ✓</text>
+      <rect x="898" y="198" width="244" height="22" fill="#8B6914" opacity="0.06"/>
+      <text x="1020" y="213" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8B6914">0, 1, 4, 9</text>
+      <text x="1020" y="246" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" font-style="italic">printed so far</text>
+
+      <!-- Process summary below -->
+      <rect x="40" y="288" width="1120" height="32" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="288" width="3" height="32" fill="#C82A2A"/>
+      <text x="58" y="304" font-family="'Inter',sans-serif" font-size="11" fill="#2C2C2C">Each step:</text>
+      <text x="145" y="304" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">Δ² → Δ¹  (add 2 to Δ¹)</text>
+      <text x="420" y="304" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">Δ¹ → f(x)  (add new Δ¹ to f)</text>
+      <text x="720" y="304" font-family="'Inter',sans-serif" font-size="11" fill="#888880">Two additions per step. No multiplication. Prints exact values for x².</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="310" width="1200" height="30" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="330" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 0.4-E · Simulation: Difference Engine stepping through f(x) = x². Initial state, then three steps. Each step: add Δ² to Δ¹, then add updated Δ¹ to f(x). The Δ² column never changes for a quadratic.</text>
+      <text x="1140" y="330" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 0.4</text>
+    </svg></div>
+
+          <div class="sim-link-row">
+            <a href="../../course/level-0-before-computers/module-0-4-babbage-ada/simulation.html" class="sim-open-btn" target="_blank" rel="noopener noreferrer">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 2h8v8M10 2L2 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Open Simulation
+            </a>
+            <p class="sim-note">Opens in a new tab &middot; No installation required</p>
+          </div>
+        </div>
+        <figcaption class="sim-figure-caption" id="sim4-cap">Figure 4.5 &mdash; Virtual Analytical Engine. Difference Engine tab: enter polynomial coefficients and step through successive differences. Analytical Engine tab: write operation card sequences and watch the Store update step by step. Ada&rsquo;s Algorithm tab: run the pre-loaded Bernoulli number program and observe each Store variable change.</figcaption>
+      </figure>
+
+      <div class="callout callout-sim" role="note" aria-label="Walkthrough">
+        <div class="callout-label"><span aria-hidden="true">&#9655;</span> Step-by-Step Walkthrough</div>
+        <p><strong>Step 1 &mdash; Difference Engine.</strong> Enter coefficients for <em>f</em>(<em>n</em>) = <em>n</em>&sup2; (a = 1, b = 0, c = 0). Step through the calculation. Observe that after two steps, the second differences are always 2 &mdash; the engine computes the next value using only addition from that point on.</p>
+        <p style="margin-top:8px"><strong>Step 2 &mdash; Analytical Engine.</strong> The Store has 10 variables (V0&ndash;V9). Write a simple two-instruction program: ADD V0 V1 &rarr; V2 (add V0 and V1 and store in V2). Set V0=5, V1=7. Run. Verify V2=12.</p>
+        <p style="margin-top:8px"><strong>Step 3.</strong> Observe the critical difference: the Difference Engine computed only what its initial setup determined. The Analytical Engine can be <em>reprogrammed</em> by changing the operation cards. That is the difference between a calculator and a computer.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="sect-deeper4">
+      <h2 class="section-head" id="sect-deeper4">Going Deeper</h2>
+      <div class="callout callout-deep" role="note" aria-label="Deep Dive">
+        <div class="callout-label"><span aria-hidden="true">&nabla;</span> Why the Analytical Engine Matters Despite Never Being Built</div>
+        <p>Babbage&rsquo;s machine was never built. So why does it matter? First: it proved the concept was coherent. When the Science Museum built the Difference Engine from Babbage&rsquo;s drawings in 1991, it worked. The Analytical Engine would have worked too &mdash; just extremely slowly and at enormous cost.</p>
+        <p style="margin-top:var(--space-sm)">Second: it established the architecture. The Store + Mill + input/output + conditional branch is the Von Neumann architecture, a century before Von Neumann wrote it down. Every computer you have ever used is a descendant of this structure.</p>
+        <p style="margin-top:var(--space-sm)">Third: Ada named the abstraction. By writing the first algorithm and articulating that the Engine worked on symbols (not just numbers), she defined programming as a discipline separate from hardware construction. The first person to understand what software <em>is</em> understood it in 1843, about a punch-card-driven mechanical engine that was never built.</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="challenge-04" class="challenge-section">
+      <header class="challenge-header">
+        <div class="challenge-num" aria-hidden="true">0.4</div>
+        <div class="challenge-title-block">
+          <p class="challenge-overline">Challenge</p>
+          <h2 class="challenge-title" id="challenge-04">Differences and Operation Cards</h2>
+          <div class="challenge-meta">
+            <span class="challenge-meta-item">Calculation + emulator exercise</span>
+            <span class="challenge-meta-item">25&ndash;30 minutes</span>
+          </div>
+        </div>
+      </header>
+      <div class="challenge-setup">
+        <p class="challenge-setup-label">Setup</p>
+        <p>Use the simulation for Part B. Part A is pen-and-paper.</p>
+      </div>
+      <div class="challenge-part">
+        <p class="challenge-part-label"><span>Part A</span> Finite Differences</p>
+        <ol class="challenge-questions">
+          <li data-sub="1"><p>For <em>f</em>(<em>n</em>) = 2<em>n</em>&sup2; + 3<em>n</em> + 1, compute values at <em>n</em> = 0, 1, 2, 3, 4. Then compute first differences and second differences. At what order do the differences become constant?</p></li>
+          <li data-sub="2"><p>Use the Difference Engine simulation to tabulate the same polynomial. Does the machine match your manual calculation?</p></li>
+        </ol>
+      </div>
+      <div class="challenge-part">
+        <p class="challenge-part-label"><span>Part B</span> Operation Cards</p>
+        <ol class="challenge-questions" style="counter-reset: q-counter 2">
+          <li data-sub="3"><p>In the Analytical Engine emulator, write a 5-step operation card sequence that computes <em>a</em>&sup2; + <em>b</em>&sup2; given <em>a</em> and <em>b</em> stored in V0 and V1. Hint: you will need MUL and ADD operations. Trace the Store state after each step.</p></li>
+          <li data-sub="4"><p>In two sentences: what does Ada&rsquo;s observation &mdash; &ldquo;the Engine might act upon other things besides number&rdquo; &mdash; mean in modern terms? Give one example of a non-numerical computation.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section aria-labelledby="summary-04" class="chapter-summary">
+      <h2 class="section-head" id="summary-04" style="border-top:none;padding-top:0;margin-top:0;">Summary</h2>
+      <p class="body no-indent">Babbage designed a general-purpose computer in 1837. Ada programmed it in 1843. Neither could build it. But the ideas were complete.</p>
+      <p class="body">Store, Mill, conditional branch, loop, output: these five concepts define a computer. Every processor since 1945 implements them. The names have changed. The architecture has not. When you write <code>if</code>, <code>while</code>, a variable assignment, and a function call, you are using Babbage&rsquo;s Analytical Engine &mdash; built from silicon rather than brass, executing in nanoseconds rather than minutes, but structurally the same machine.</p>
+      <div class="section-break" role="separator" aria-hidden="true"><div class="sb-line"></div><div class="sb-dot"></div><div class="sb-dot"></div><div class="sb-dot"></div><div class="sb-line"></div></div>
+      <div class="chapter-nav">
+        <div class="nav-prev"><p class="nav-label">Previous &mdash; Module 0.3</p><p class="nav-title">&larr; The Loom That Taught Computers</p></div>
+        <div class="nav-next"><p class="nav-label">Next &mdash; Module 0.5</p><p class="nav-title">Hollerith and the Punch Card Era &rarr;</p></div>
+      </div>
+    </section>
+
+  </main>
+  <footer class="page-footer" role="contentinfo">
+    <span class="page-footer-series">AoPS &mdash; Volume 0</span>
+    <span class="page-num">6</span>
+  </footer>
+</article>
+<script>
+function toggleHint(btn){{
+  const id=btn.getAttribute('aria-controls');
+  const box=document.getElementById(id);
+  if(!box)return;
+  const open=box.classList.toggle('open');
+  btn.setAttribute('aria-expanded',open);
+  const arr=btn.querySelector('.hint-toggle-arrow');
+  if(arr)arr.textContent=open?'&uarr;':'&darr;';
+}}
+</script>
+</body>
+</html>
