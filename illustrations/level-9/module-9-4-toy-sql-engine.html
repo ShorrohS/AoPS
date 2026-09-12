@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 9.4 — Building a Toy SQL Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 9 — Databases</div>
+  <div class="page-title">Module 9.4 — Building a Toy SQL Engine</div>
+  <div class="page-sub">3 figures · SQL Parsing Pipeline · Volcano Execution Model · Query Optimisation</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 9.4-A  SQL Parsing Pipeline -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 9.4-A</span>
+    <span class="fig-title">SQL Parsing Pipeline — From Text to Execution Plan</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <defs><linearGradient id="sqlBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="380" fill="url(#sqlBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">SQL ENGINE PIPELINE: TEXT → TOKENS → AST → LOGICAL PLAN → PHYSICAL PLAN → RESULT</text>
+
+      <!-- Input SQL -->
+      <rect x="40" y="48" width="1120" height="28" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <text x="600" y="66" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#728C69">SELECT name, age FROM users WHERE age &gt; 25 ORDER BY age DESC</text>
+
+      <!-- Pipeline stages (horizontal) -->
+      <!-- Lexer -->
+      <rect x="40" y="98" width="155" height="60" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="117" y="122" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Lexer</text>
+      <text x="117" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">tokenise</text>
+      <path d="M195 128 L221 128" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <path d="M217 124 L225 128 L217 132" fill="#2C2C2C"/>
+
+      <rect x="225" y="98" width="155" height="60" fill="#2E4057" opacity="0.7" rx="1"/>
+      <text x="302" y="122" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Parser</text>
+      <text x="302" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">→ AST</text>
+      <path d="M380 128 L406 128" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <path d="M402 124 L410 128 L402 132" fill="#2C2C2C"/>
+
+      <rect x="410" y="98" width="155" height="60" fill="#8B6914" opacity="0.7" rx="1"/>
+      <text x="487" y="122" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Analyser</text>
+      <text x="487" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">resolve names</text>
+      <path d="M565 128 L591 128" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <path d="M587 124 L595 128 L587 132" fill="#2C2C2C"/>
+
+      <rect x="595" y="98" width="155" height="60" fill="#C82A2A" opacity="0.7" rx="1"/>
+      <text x="672" y="122" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Planner</text>
+      <text x="672" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">logical plan</text>
+      <path d="M750 128 L776 128" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <path d="M772 124 L780 128 L772 132" fill="#2C2C2C"/>
+
+      <rect x="780" y="98" width="155" height="60" fill="#C82A2A" opacity="0.55" rx="1"/>
+      <text x="857" y="122" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Optimiser</text>
+      <text x="857" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">physical plan</text>
+      <path d="M935 128 L961 128" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <path d="M957 124 L965 128 L957 132" fill="#2C2C2C"/>
+
+      <rect x="965" y="98" width="195" height="60" fill="#728C69" opacity="0.8" rx="1"/>
+      <text x="1062" y="122" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Executor</text>
+      <text x="1062" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">produce rows</text>
+
+      <!-- Token output -->
+      <rect x="40" y="178" width="320" height="60" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <text x="56" y="196" font-family="'Inter',sans-serif" font-size="8" fill="#888880">TOKENS:</text>
+      <text x="56" y="212" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">SELECT name age FROM</text>
+      <text x="56" y="228" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">users WHERE age &gt; 25 ...</text>
+
+      <!-- AST node -->
+      <rect x="380" y="178" width="320" height="60" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <text x="396" y="196" font-family="'Inter',sans-serif" font-size="8" fill="#888880">AST (simplified):</text>
+      <text x="396" y="212" font-family="'JetBrains Mono',monospace" font-size="9" fill="#8B6914">SelectStmt {</text>
+      <text x="396" y="228" font-family="'JetBrains Mono',monospace" font-size="9" fill="#8B6914">  cols:[name,age], tbl:users</text>
+
+      <!-- Physical plan -->
+      <rect x="720" y="178" width="440" height="60" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <text x="736" y="196" font-family="'Inter',sans-serif" font-size="8" fill="#888880">PHYSICAL PLAN:</text>
+      <text x="736" y="212" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">Sort(age DESC)</text>
+      <text x="736" y="228" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">  Filter(age &gt; 25)</text>
+      <text x="936" y="212" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">    IndexScan(users.age_idx)</text>
+
+      <!-- Result -->
+      <rect x="40" y="264" width="1120" height="80" fill="#FDFDFD" stroke="#728C69" stroke-width="1"/>
+      <rect x="40" y="264" width="1120" height="24" fill="#728C69" opacity="0.1"/>
+      <text x="600" y="280" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69" letter-spacing="0.1em">RESULT SET</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <text x="300" y="308" fill="#888880">name</text><text x="560" y="308" fill="#888880">age</text>
+        <line x1="80" y1="312" x2="700" y2="312" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="300" y="330" fill="#2C2C2C">carol</text><text x="560" y="330" fill="#2C2C2C">34</text>
+        <text x="900" y="320" fill="#888880" font-family="'Inter',sans-serif" font-size="10">rows returned, in order</text>
+        <text x="900" y="336" fill="#888880" font-family="'Inter',sans-serif" font-size="10">by executor via Volcano model</text>
+      </g>
+
+      <rect x="0" y="362" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="375" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 9.4-A · SQL pipeline: lex → parse → analyse (resolve column names to table columns) → plan → optimise (choose indexes, join order) → execute → return rows.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">SQL engine pipeline from text string to result rows. The lexer tokenises the SQL string into keywords, identifiers, operators, and literals. The parser uses a grammar to build an Abstract Syntax Tree (AST) representing the query structure. The analyser resolves names — "age" becomes "users.age" by checking the schema catalog. The planner generates a logical plan (abstract operations). The optimiser rewrites the plan to use indexes and optimal join ordering based on table statistics. The executor evaluates the physical plan using the Volcano iterator model, streaming rows from leaf operators (index scan) through intermediate operators (filter, sort) to the client. A toy SQL engine implementing this pipeline in ~500 lines of Python teaches more about databases than any number of SQL tutorials.</div>
+</div>
+
+<!-- FIG 9.4-B  Volcano Model -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Architecture Diagram</span>
+    <span class="fig-id">FIG 9.4-B</span>
+    <span class="fig-title">Volcano Execution Model — Iterator Chain Pull Model</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">VOLCANO MODEL — EACH OPERATOR IS AN ITERATOR WITH open/next/close</text>
+
+      <!-- Operator tree: Sort → Filter → SeqScan -->
+      <!-- Sort -->
+      <rect x="480" y="48" width="240" height="60" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="600" y="75" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">Sort(age DESC)</text>
+      <text x="600" y="94" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">open() / next() / close()</text>
+
+      <!-- Call down arrow -->
+      <path d="M600 108 L600 138" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M596 134 L600 142 L604 134" fill="#C82A2A"/>
+      <text x="618" y="128" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">calls next()</text>
+
+      <!-- Filter -->
+      <rect x="480" y="142" width="240" height="60" fill="#728C69" opacity="0.8" rx="1"/>
+      <text x="600" y="169" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">Filter(age &gt; 25)</text>
+      <text x="600" y="188" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#DDDDD5">skip rows not matching</text>
+
+      <path d="M600 202 L600 232" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M596 228 L600 236 L604 228" fill="#C82A2A"/>
+      <text x="618" y="222" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">calls next()</text>
+
+      <!-- SeqScan -->
+      <rect x="480" y="236" width="240" height="60" fill="#8B6914" opacity="0.75" rx="1"/>
+      <text x="600" y="263" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">SeqScan(users)</text>
+      <text x="600" y="282" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#DDDDD5">reads from heap pages</text>
+
+      <!-- Interface definition -->
+      <rect x="40" y="60" width="360" height="140" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="60" width="360" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="220" y="77" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">ITERATOR INTERFACE</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">
+        <text x="56" y="102" fill="#728C69">open()</text><text x="130" y="102" fill="#888880">  — initialise, open children</text>
+        <text x="56" y="122" fill="#C82A2A">next()</text><text x="130" y="122" fill="#888880">  — return 1 row (or EOF)</text>
+        <text x="56" y="142" fill="#888880">close()</text><text x="130" y="142" fill="#888880"> — release resources</text>
+        <line x1="56" y1="152" x2="384" y2="152" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="56" y="170" fill="#888880" font-size="9">Each op. pulls from child via next().</text>
+        <text x="56" y="186" fill="#888880" font-size="9">Lazy evaluation — rows flow on demand.</text>
+      </g>
+
+      <!-- Execution trace -->
+      <rect x="800" y="60" width="360" height="240" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="800" y="60" width="360" height="24" fill="#728C69" opacity="0.1"/>
+      <text x="980" y="77" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69" letter-spacing="0.1em">EXECUTION TRACE</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">
+        <text x="816" y="100">client: Sort.open()</text>
+        <text x="816" y="116">Sort: Filter.open()</text>
+        <text x="816" y="132">Filter: SeqScan.open()</text>
+        <line x1="816" y1="142" x2="1144" y2="142" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="816" y="158">client: Sort.next()</text>
+        <text x="816" y="176" fill="#888880">Sort: calls Filter.next() until all rows</text>
+        <text x="816" y="192" fill="#888880">Filter: calls SeqScan.next(), checks age</text>
+        <text x="816" y="208" fill="#888880">SeqScan: returns row {alice,23} — filtered OUT</text>
+        <text x="816" y="224" fill="#888880">SeqScan: returns row {carol,34} — passed</text>
+        <text x="816" y="240" fill="#728C69">Sort: eventually returns {carol,34}</text>
+        <line x1="816" y1="250" x2="1144" y2="250" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="816" y="268" fill="#888880" font-size="9">Volcano = pull model: consumer pulls rows</text>
+        <text x="816" y="282" fill="#888880" font-size="9">from producer on demand.</text>
+      </g>
+
+      <rect x="0" y="304" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="316" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 9.4-B · Volcano model: Sort pulls from Filter, Filter pulls from SeqScan. Each calls next() on its child. Rows flow lazily from leaves to root. Used in PostgreSQL, SQLite, MySQL.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The Volcano (iterator) execution model — the architecture used by PostgreSQL, SQLite, MySQL, and most SQL databases. Each physical operator implements three methods: open() initialises the operator and opens its children, next() returns the next output row (or EOF), and close() releases resources. The query tree is evaluated lazily: the client calls Sort.next(), which calls Filter.next(), which calls SeqScan.next(). Rows flow upward from leaves (data sources) to the root (output). This pull-based model is elegant and composable — adding a new operator requires implementing just three methods. Modern databases add batching (vectorised execution, returning 1024 rows per next() call) and compilation (JIT-compiling the operator pipeline) for performance.</div>
+</div>
+
+<!-- FIG 9.4-C  Query Optimisation -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Concept Diagram</span>
+    <span class="fig-id">FIG 9.4-C</span>
+    <span class="fig-title">Query Optimisation — Predicate Pushdown and Join Reordering</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:220px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">QUERY OPTIMISATION: PREDICATE PUSHDOWN — FILTER BEFORE JOIN, NOT AFTER</text>
+
+      <!-- Before optimisation -->
+      <text x="240" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">Naive Plan (slow)</text>
+      <!-- Tree: Join at top, Filter below, both full tables -->
+      <rect x="160" y="64" width="160" height="40" fill="#C82A2A" opacity="0.7" rx="1"/>
+      <text x="240" y="84" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Filter(age&gt;25)</text>
+      <text x="240" y="98" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">applied AFTER join</text>
+      <line x1="240" y1="104" x2="240" y2="124" stroke="#C82A2A" stroke-width="1.5"/>
+      <rect x="100" y="124" width="280" height="40" fill="#C82A2A" opacity="0.5" rx="1"/>
+      <text x="240" y="148" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Join(users ⋈ orders)</text>
+      <line x1="160" y1="164" x2="100" y2="196" stroke="#888880" stroke-width="1"/>
+      <line x1="320" y1="164" x2="380" y2="196" stroke="#888880" stroke-width="1"/>
+      <rect x="52" y="196" width="96" height="32" fill="#888880" opacity="0.4" rx="1"/>
+      <text x="100" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">users(1M)</text>
+      <rect x="332" y="196" width="100" height="32" fill="#888880" opacity="0.4" rx="1"/>
+      <text x="382" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">orders(5M)</text>
+      <text x="240" y="248" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">Join 1M × 5M rows, then filter</text>
+      <text x="240" y="264" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">produces 5M rows just to discard most</text>
+
+      <!-- Arrow -->
+      <rect x="480" y="128" width="60" height="32" fill="#728C69" opacity="0.2" rx="1"/>
+      <text x="510" y="148" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">optimise</text>
+      <path d="M540 144 L580 144" stroke="#728C69" stroke-width="2" fill="none"/>
+      <path d="M576 140 L584 144 L576 148" fill="#728C69"/>
+
+      <!-- After optimisation -->
+      <text x="840" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">Optimised Plan (fast)</text>
+      <!-- Filter pushed down into scan -->
+      <rect x="760" y="124" width="160" height="40" fill="#728C69" opacity="0.7" rx="1"/>
+      <text x="840" y="148" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Join(⋈ on user_id)</text>
+      <line x1="800" y1="164" x2="700" y2="196" stroke="#888880" stroke-width="1"/>
+      <line x1="880" y1="164" x2="980" y2="196" stroke="#888880" stroke-width="1"/>
+      <!-- Filter pushed into users scan -->
+      <rect x="596" y="196" width="208" height="32" fill="#728C69" opacity="0.5" rx="1"/>
+      <text x="700" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">Filter→users(age&gt;25)</text>
+      <rect x="932" y="196" width="100" height="32" fill="#888880" opacity="0.4" rx="1"/>
+      <text x="982" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">orders(5M)</text>
+      <!-- Result annotation -->
+      <text x="840" y="248" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Filter FIRST: users(1M) → 50K rows, then join</text>
+      <text x="840" y="264" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">100× fewer rows through the join → 100× faster</text>
+
+      <rect x="0" y="270" width="1200" height="10" fill="rgba(44,64,87,0.04)"/>
+    </svg>
+  </div>
+  <div class="fig-caption">Predicate pushdown — the single most impactful query optimisation. A naive execution plan joins users and orders first (producing up to 5 million joined rows), then applies the WHERE age > 25 filter. The optimiser recognises that the filter only references columns from the users table and can be pushed below the join: first filter users down to ~50,000 rows (age > 25), then join only those 50,000 rows with orders. This reduces the input to the join by 20×, making the overall query ~100× faster. Query optimisers apply dozens of such algebraic rewriting rules (predicate pushdown, join reordering, subquery flattening, constant folding) automatically — the reason declarative SQL ("what you want") outperforms hand-written imperative code for complex queries.</div>
+</div>
+
+</div>
+</body>
+</html>

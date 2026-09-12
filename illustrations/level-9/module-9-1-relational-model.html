@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 9.1 — The Relational Model and SQL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 9 — Databases</div>
+  <div class="page-title">Module 9.1 — The Relational Model and SQL</div>
+  <div class="page-sub">3 figures · Relational Model Concepts · SQL JOIN Types · Query Execution Plan</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 9.1-A  Relational Model -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 9.1-A</span>
+    <span class="fig-title">Relational Model — Tables, Keys, and Foreign Key Relationships</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" style="height:360px">
+      <defs><linearGradient id="relBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="420" fill="url(#relBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">RELATIONAL MODEL — TABLES WITH PRIMARY KEYS AND FOREIGN KEYS</text>
+
+      <!-- Users table -->
+      <text x="200" y="52" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">users</text>
+      <rect x="40" y="60" width="320" height="28" fill="#2E4057" opacity="0.85"/>
+      <g font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#FDFDFD" text-anchor="middle">
+        <text x="120" y="78">user_id (PK)</text>
+        <text x="224" y="78">username</text>
+        <text x="316" y="78">email</text>
+      </g>
+      <g stroke="#D8D6CE" stroke-width="0.5"><line x1="160" y1="60" x2="160" y2="220"/><line x1="270" y1="60" x2="270" y2="220"/></g>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <rect x="40" y="88" width="320" height="32" fill="#2E4057" opacity="0.15" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="100" y="108" fill="#C82A2A">1</text><text x="216" y="108" fill="#2C2C2C">alice</text><text x="328" y="108" fill="#2C2C2C">a@ex.com</text>
+        <rect x="40" y="120" width="320" height="32" fill="#FDFDFD" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="100" y="140" fill="#C82A2A">2</text><text x="216" y="140" fill="#2C2C2C">bob</text><text x="328" y="140" fill="#2C2C2C">b@ex.com</text>
+        <rect x="40" y="152" width="320" height="32" fill="#2E4057" opacity="0.08" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="100" y="172" fill="#C82A2A">3</text><text x="216" y="172" fill="#2C2C2C">carol</text><text x="328" y="172" fill="#2C2C2C">c@ex.com</text>
+        <rect x="40" y="184" width="320" height="32" fill="#FDFDFD" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="100" y="204" fill="#C82A2A">4</text><text x="216" y="204" fill="#2C2C2C">dave</text><text x="328" y="204" fill="#2C2C2C">d@ex.com</text>
+      </g>
+      <!-- PK annotation -->
+      <text x="100" y="232" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">↑ PRIMARY KEY (unique, not null)</text>
+
+      <!-- Orders table -->
+      <text x="760" y="52" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">orders</text>
+      <rect x="560" y="60" width="600" height="28" fill="#728C69" opacity="0.8"/>
+      <g font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#FDFDFD" text-anchor="middle">
+        <text x="630" y="78">order_id (PK)</text>
+        <text x="740" y="78">user_id (FK)</text>
+        <text x="850" y="78">product</text>
+        <text x="1000" y="78">total</text>
+        <text x="1110" y="78">date</text>
+      </g>
+      <g stroke="#D8D6CE" stroke-width="0.5">
+        <line x1="680" y1="60" x2="680" y2="290"/>
+        <line x1="800" y1="60" x2="800" y2="290"/>
+        <line x1="900" y1="60" x2="900" y2="290"/>
+        <line x1="1060" y1="60" x2="1060" y2="290"/>
+      </g>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <rect x="560" y="88" width="600" height="32" fill="#728C69" opacity="0.12" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="622" y="108" fill="#C82A2A">101</text><text x="742" y="108" fill="#8B6914">1</text><text x="852" y="108" fill="#2C2C2C">Laptop</text><text x="1002" y="108" fill="#2C2C2C">999.00</text><text x="1112" y="108" fill="#2C2C2C">2024-01-15</text>
+        <rect x="560" y="120" width="600" height="32" fill="#FDFDFD" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="622" y="140" fill="#C82A2A">102</text><text x="742" y="140" fill="#8B6914">2</text><text x="852" y="140" fill="#2C2C2C">Phone</text><text x="1002" y="140" fill="#2C2C2C">599.00</text><text x="1112" y="140" fill="#2C2C2C">2024-01-16</text>
+        <rect x="560" y="152" width="600" height="32" fill="#728C69" opacity="0.08" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="622" y="172" fill="#C82A2A">103</text><text x="742" y="172" fill="#8B6914">1</text><text x="852" y="172" fill="#2C2C2C">Tablet</text><text x="1002" y="172" fill="#2C2C2C">399.00</text><text x="1112" y="172" fill="#2C2C2C">2024-01-17</text>
+        <rect x="560" y="184" width="600" height="32" fill="#FDFDFD" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="622" y="204" fill="#C82A2A">104</text><text x="742" y="204" fill="#8B6914">3</text><text x="852" y="204" fill="#2C2C2C">Keyboard</text><text x="1002" y="204" fill="#2C2C2C">129.00</text><text x="1112" y="204" fill="#2C2C2C">2024-01-18</text>
+        <rect x="560" y="216" width="600" height="32" fill="#728C69" opacity="0.08" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="622" y="236" fill="#C82A2A">105</text><text x="742" y="236" fill="#8B6914">1</text><text x="852" y="236" fill="#2C2C2C">Monitor</text><text x="1002" y="236" fill="#2C2C2C">499.00</text><text x="1112" y="236" fill="#2C2C2C">2024-01-19</text>
+        <rect x="560" y="248" width="600" height="32" fill="#FDFDFD" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="622" y="268" fill="#C82A2A">106</text><text x="742" y="268" fill="#8B6914">2</text><text x="852" y="268" fill="#2C2C2C">Mouse</text><text x="1002" y="268" fill="#2C2C2C">49.00</text><text x="1112" y="268" fill="#2C2C2C">2024-01-20</text>
+      </g>
+      <text x="742" y="302" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">↑ FOREIGN KEY (references users.user_id)</text>
+
+      <!-- FK relationship arrow -->
+      <path d="M360 108 Q420 108 560 140" stroke="#8B6914" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+      <path d="M556 137 L564 141 L556 145" fill="#8B6914"/>
+      <path d="M360 124 Q430 130 560 172" stroke="#8B6914" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+      <text x="460" y="148" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">FK constraint:</text>
+      <text x="460" y="162" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">user_id must exist in users</text>
+
+      <!-- Vocabulary panel -->
+      <rect x="40" y="320" width="1120" height="70" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="60" y="340" fill="#2E4057" font-weight="500">Relation</text><text x="120" y="340">= table  </text>
+        <text x="220" y="340" fill="#2E4057" font-weight="500">Tuple</text><text x="270" y="340">= row  </text>
+        <text x="360" y="340" fill="#2E4057" font-weight="500">Attribute</text><text x="430" y="340">= column  </text>
+        <text x="540" y="340" fill="#2E4057" font-weight="500">Domain</text><text x="600" y="340">= allowed values  </text>
+        <text x="720" y="340" fill="#2E4057" font-weight="500">Degree</text><text x="780" y="340">= # of columns  </text>
+        <text x="880" y="340" fill="#2E4057" font-weight="500">Cardinality</text><text x="980" y="340">= # of rows</text>
+        <text x="60" y="360" fill="#C82A2A" font-weight="500">PK</text><text x="86" y="360">: uniquely identifies each row, never NULL  </text>
+        <text x="400" y="360" fill="#8B6914" font-weight="500">FK</text><text x="424" y="360">: references PK in another table, enforces referential integrity  </text>
+        <text x="800" y="360" fill="#728C69" font-weight="500">Index</text><text x="844" y="360">: data structure for fast lookups by column value</text>
+      </g>
+
+      <rect x="0" y="402" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="415" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 9.1-A · Relational model: users and orders tables linked by foreign key user_id. Alice (id=1) placed orders 101, 103, and 105. Foreign key constraint prevents orders with non-existent user_ids.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The relational model organises data into tables (relations) where each row (tuple) represents one entity and each column (attribute) holds a typed value. The primary key uniquely identifies each row and cannot be NULL. A foreign key is a column whose value must exist as a primary key in another table — this enforces referential integrity: you cannot create an order for a user that doesn't exist, and you cannot delete a user who has orders (without cascading). The relational model was proposed by E.F. Codd in 1970 and remains the dominant data model for transactional systems 50+ years later because its mathematical foundation (set theory and first-order logic) enables powerful, declarative querying via SQL.</div>
+</div>
+
+<!-- FIG 9.1-B  SQL JOIN Types -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type B — Reference Diagram</span>
+    <span class="fig-id">FIG 9.1-B</span>
+    <span class="fig-title">SQL JOIN Types — INNER, LEFT, RIGHT, FULL OUTER</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 340" xmlns="http://www.w3.org/2000/svg" style="height:280px">
+      <rect width="1200" height="340" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">SQL JOIN TYPES — VENN DIAGRAM + RESULT SETS: users JOIN orders</text>
+
+      <!-- INNER JOIN -->
+      <text x="140" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">INNER JOIN</text>
+      <circle cx="110" cy="110" r="55" fill="#2E4057" opacity="0.2" stroke="#2E4057" stroke-width="1.5"/>
+      <circle cx="170" cy="110" r="55" fill="#728C69" opacity="0.2" stroke="#728C69" stroke-width="1.5"/>
+      <ellipse cx="140" cy="110" rx="25" ry="40" fill="#2E4057" opacity="0.45"/>
+      <text x="110" y="95" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#2E4057">users</text>
+      <text x="170" y="95" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">orders</text>
+      <text x="140" y="114" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">matched</text>
+      <text x="140" y="186" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2C2C2C">only rows that match in both</text>
+      <text x="140" y="198" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">dave (no orders) excluded</text>
+
+      <!-- LEFT JOIN -->
+      <text x="380" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">LEFT JOIN</text>
+      <circle cx="350" cy="110" r="55" fill="#2E4057" opacity="0.5" stroke="#2E4057" stroke-width="1.5"/>
+      <circle cx="410" cy="110" r="55" fill="#728C69" opacity="0.15" stroke="#728C69" stroke-width="1.5"/>
+      <text x="340" y="114" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">all left</text>
+      <text x="380" y="186" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2C2C2C">all users, matched orders</text>
+      <text x="380" y="198" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">dave → NULL in order cols</text>
+
+      <!-- RIGHT JOIN -->
+      <text x="620" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">RIGHT JOIN</text>
+      <circle cx="590" cy="110" r="55" fill="#2E4057" opacity="0.15" stroke="#2E4057" stroke-width="1.5"/>
+      <circle cx="650" cy="110" r="55" fill="#728C69" opacity="0.5" stroke="#728C69" stroke-width="1.5"/>
+      <text x="660" y="114" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">all right</text>
+      <text x="620" y="186" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2C2C2C">all orders, matched users</text>
+      <text x="620" y="198" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">(rare — use LEFT JOIN instead)</text>
+
+      <!-- FULL OUTER JOIN -->
+      <text x="880" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">FULL OUTER JOIN</text>
+      <circle cx="845" cy="110" r="55" fill="#2E4057" opacity="0.35" stroke="#2E4057" stroke-width="1.5"/>
+      <circle cx="915" cy="110" r="55" fill="#728C69" opacity="0.35" stroke="#728C69" stroke-width="1.5"/>
+      <text x="845" y="114" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">left</text>
+      <text x="915" y="114" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">right</text>
+      <text x="880" y="186" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2C2C2C">all rows from both, NULLs</text>
+      <text x="880" y="198" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">where no match exists</text>
+
+      <!-- SQL examples -->
+      <rect x="40" y="222" width="1120" height="90" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">
+        <text x="56" y="244" fill="#728C69">SELECT</text><text x="120" y="244"> u.username, o.product, o.total</text>
+        <text x="56" y="262" fill="#C82A2A">FROM</text><text x="108" y="262"> users u</text>
+        <text x="56" y="280" fill="#C82A2A">LEFT JOIN</text><text x="136" y="280"> orders o </text><text x="232" y="280" fill="#8B6914">ON</text><text x="260" y="280"> u.user_id = o.user_id</text>
+        <text x="56" y="298" fill="#888880">-- Returns all users including dave with NULL order columns</text>
+        <text x="600" y="262" fill="#728C69">SELECT</text><text x="664" y="262"> u.username, COUNT(o.order_id) AS order_count</text>
+        <text x="600" y="280" fill="#C82A2A">FROM</text><text x="652" y="280"> users u </text><text x="700" y="280" fill="#C82A2A">LEFT JOIN</text><text x="776" y="280"> orders o ON u.user_id = o.user_id</text>
+        <text x="600" y="298" fill="#C82A2A">GROUP BY</text><text x="690" y="298"> u.user_id, u.username</text>
+      </g>
+
+      <rect x="0" y="322" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="335" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 9.1-B · JOIN types. INNER: only matched rows. LEFT: all from left table, NULLs for unmatched right. RIGHT: inverse. FULL OUTER: all rows from both, NULLs where no match.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">SQL JOIN types visualised as Venn diagrams. INNER JOIN returns only rows where the join condition matches in both tables — user Dave (no orders) is excluded. LEFT JOIN returns all rows from the left table (users) and matching rows from the right (orders); unmatched rows get NULL in the order columns — Dave appears with NULL order columns. RIGHT JOIN mirrors LEFT JOIN (rarely used in practice — rewrite as LEFT JOIN with tables swapped). FULL OUTER JOIN returns all rows from both tables with NULLs filling gaps. The LEFT JOIN is the most practically important: it answers "show me all X and any matching Y" — essential for reports that must include entities with no related records.</div>
+</div>
+
+<!-- FIG 9.1-C  Query Execution Plan -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 9.1-C</span>
+    <span class="fig-title">SQL Query Execution Plan — SELECT with WHERE, JOIN, ORDER BY</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">QUERY EXECUTION PLAN — DATABASE ENGINE STAGES FOR SELECT + JOIN + WHERE</text>
+
+      <!-- Query -->
+      <rect x="40" y="42" width="1120" height="28" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <text x="600" y="60" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">SELECT u.username, SUM(o.total) FROM users u JOIN orders o ON u.user_id = o.user_id WHERE o.date &gt; '2024-01-01' GROUP BY u.username ORDER BY 2 DESC</text>
+
+      <!-- Pipeline steps -->
+      <g>
+        <!-- Parse -->
+        <rect x="40" y="84" width="130" height="50" fill="#2E4057" opacity="0.8" rx="1"/>
+        <text x="105" y="106" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Parse</text>
+        <text x="105" y="122" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">→ AST</text>
+        <path d="M170 109 L196 109" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+        <path d="M192 105 L200 109 L192 113" fill="#2C2C2C"/>
+
+        <!-- Plan -->
+        <rect x="200" y="84" width="130" height="50" fill="#2E4057" opacity="0.65" rx="1"/>
+        <text x="265" y="106" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Plan</text>
+        <text x="265" y="122" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">join order</text>
+        <path d="M330 109 L356 109" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+        <path d="M352 105 L360 109 L352 113" fill="#2C2C2C"/>
+
+        <!-- Optimise -->
+        <rect x="360" y="84" width="130" height="50" fill="#8B6914" opacity="0.7" rx="1"/>
+        <text x="425" y="106" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Optimise</text>
+        <text x="425" y="122" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">choose indexes</text>
+        <path d="M490 109 L516 109" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+        <path d="M512 105 L520 109 L512 113" fill="#2C2C2C"/>
+
+        <!-- Scan/Filter -->
+        <rect x="520" y="84" width="140" height="50" fill="#728C69" opacity="0.7" rx="1"/>
+        <text x="590" y="106" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Scan+Filter</text>
+        <text x="590" y="122" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">WHERE date &gt; …</text>
+        <path d="M660 109 L686 109" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+        <path d="M682 105 L690 109 L682 113" fill="#2C2C2C"/>
+
+        <!-- Hash Join -->
+        <rect x="690" y="84" width="130" height="50" fill="#C82A2A" opacity="0.65" rx="1"/>
+        <text x="755" y="106" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Hash Join</text>
+        <text x="755" y="122" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">ON user_id</text>
+        <path d="M820 109 L846 109" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+        <path d="M842 105 L850 109 L842 113" fill="#2C2C2C"/>
+
+        <!-- Aggregate -->
+        <rect x="850" y="84" width="130" height="50" fill="#2E4057" opacity="0.5" rx="1"/>
+        <text x="915" y="106" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Aggregate</text>
+        <text x="915" y="122" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">GROUP BY, SUM</text>
+        <path d="M980 109 L1006 109" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+        <path d="M1002 105 L1010 109 L1002 113" fill="#2C2C2C"/>
+
+        <!-- Sort + Return -->
+        <rect x="1010" y="84" width="150" height="50" fill="#728C69" opacity="0.6" rx="1"/>
+        <text x="1085" y="106" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Sort + Return</text>
+        <text x="1085" y="122" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">ORDER BY DESC</text>
+      </g>
+
+      <!-- Cost annotation -->
+      <g font-family="'Inter',sans-serif" font-size="8" fill="#888880" text-anchor="middle">
+        <text x="105" y="148">O(1)</text>
+        <text x="265" y="148">O(tables³)</text>
+        <text x="425" y="148">stat-based</text>
+        <text x="590" y="148">O(n) or O(log n)</text>
+        <text x="755" y="148">O(n) avg</text>
+        <text x="915" y="148">O(n)</text>
+        <text x="1085" y="148">O(n log n)</text>
+      </g>
+
+      <!-- EXPLAIN output -->
+      <rect x="40" y="172" width="1120" height="96" fill="#2C2C2C" opacity="0.85" rx="1"/>
+      <text x="60" y="192" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8B6914">EXPLAIN ANALYZE output (PostgreSQL):</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#BBBBB5">
+        <text x="60" y="212">Sort (cost=245.50..247.25 rows=700 width=36) (actual rows=3 loops=1)</text>
+        <text x="76" y="228">  HashAggregate (cost=200.00..207.00 rows=700) (actual rows=3)</text>
+        <text x="92" y="244">    Hash Join (cost=100.00..175.00 rows=1000) (actual rows=6)</text>
+        <text x="108" y="258">      Seq Scan on orders  (cost=0.00..50.00 rows=1000) Filter: (date &gt; '2024-01-01'::date)</text>
+      </g>
+
+      <rect x="0" y="284" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="296" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 9.1-C · Query execution pipeline: parse → plan → optimise (pick indexes/join algorithm) → execute (scan, join, aggregate, sort) → return result. EXPLAIN ANALYZE shows actual execution stats.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">SQL query execution pipeline. The parser converts SQL text into an Abstract Syntax Tree. The planner generates possible execution plans (which indexes to use, which join algorithm). The optimiser uses table statistics (row counts, value distributions) to estimate the cost of each plan and select the cheapest. Execution: scan or index-lookup to find matching rows, apply the WHERE filter, perform the join (hash join, nested-loop, or merge join), aggregate with GROUP BY, sort with ORDER BY. EXPLAIN ANALYZE reveals the actual execution plan and real row counts — the essential tool for identifying slow queries. An index on orders.date and orders.user_id can eliminate sequential scans entirely for this query.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 11.4 — Neural Networks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 11 — AI &amp; Machine Learning</div>
+  <div class="page-title">Module 11.4 — Neural Networks</div>
+  <div class="page-sub">3 figures · Feedforward Network Architecture · Activation Functions · Forward Pass Computation</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 11.4-A  Network Architecture -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 11.4-A</span>
+    <span class="fig-title">Feedforward Neural Network — Layers, Neurons, Weights, Activations</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" style="height:340px">
+      <defs><linearGradient id="nnBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="400" fill="url(#nnBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">FEEDFORWARD NEURAL NETWORK — 3 INPUTS · 4 HIDDEN (×2) · 2 OUTPUTS</text>
+
+      <!-- Layer labels -->
+      <text x="120" y="54" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">INPUT (3)</text>
+      <text x="360" y="54" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057" letter-spacing="0.1em">HIDDEN 1 (4)</text>
+      <text x="600" y="54" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057" letter-spacing="0.1em">HIDDEN 2 (4)</text>
+      <text x="840" y="54" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69" letter-spacing="0.1em">OUTPUT (2)</text>
+
+      <!-- Neuron positions: input [120, y] for y in [100,190,280] -->
+      <!-- hidden1 [360, y] for y in [80,155,230,305] -->
+      <!-- hidden2 [600, y] same -->
+      <!-- output [840, y] for y in [145, 240] -->
+
+      <!-- Connections (draw first, neurons on top) -->
+      <!-- Input to Hidden1 -->
+      <g stroke="#D8D6CE" stroke-width="0.8" opacity="0.6">
+        <line x1="140" y1="100" x2="340" y2="80"/>
+        <line x1="140" y1="100" x2="340" y2="155"/>
+        <line x1="140" y1="100" x2="340" y2="230"/>
+        <line x1="140" y1="100" x2="340" y2="305"/>
+        <line x1="140" y1="190" x2="340" y2="80"/>
+        <line x1="140" y1="190" x2="340" y2="155"/>
+        <line x1="140" y1="190" x2="340" y2="230"/>
+        <line x1="140" y1="190" x2="340" y2="305"/>
+        <line x1="140" y1="280" x2="340" y2="80"/>
+        <line x1="140" y1="280" x2="340" y2="155"/>
+        <line x1="140" y1="280" x2="340" y2="230"/>
+        <line x1="140" y1="280" x2="340" y2="305"/>
+      </g>
+      <!-- Hidden1 to Hidden2 -->
+      <g stroke="#D8D6CE" stroke-width="0.8" opacity="0.6">
+        <line x1="380" y1="80" x2="580" y2="80"/>
+        <line x1="380" y1="80" x2="580" y2="155"/>
+        <line x1="380" y1="80" x2="580" y2="230"/>
+        <line x1="380" y1="80" x2="580" y2="305"/>
+        <line x1="380" y1="155" x2="580" y2="80"/>
+        <line x1="380" y1="155" x2="580" y2="155"/>
+        <line x1="380" y1="155" x2="580" y2="230"/>
+        <line x1="380" y1="155" x2="580" y2="305"/>
+        <line x1="380" y1="230" x2="580" y2="80"/>
+        <line x1="380" y1="230" x2="580" y2="155"/>
+        <line x1="380" y1="230" x2="580" y2="230"/>
+        <line x1="380" y1="230" x2="580" y2="305"/>
+        <line x1="380" y1="305" x2="580" y2="80"/>
+        <line x1="380" y1="305" x2="580" y2="155"/>
+        <line x1="380" y1="305" x2="580" y2="230"/>
+        <line x1="380" y1="305" x2="580" y2="305"/>
+      </g>
+      <!-- Hidden2 to Output -->
+      <g stroke="#2E4057" stroke-width="1" opacity="0.5">
+        <line x1="620" y1="80" x2="820" y2="145"/>
+        <line x1="620" y1="80" x2="820" y2="240"/>
+        <line x1="620" y1="155" x2="820" y2="145"/>
+        <line x1="620" y1="155" x2="820" y2="240"/>
+        <line x1="620" y1="230" x2="820" y2="145"/>
+        <line x1="620" y1="230" x2="820" y2="240"/>
+        <line x1="620" y1="305" x2="820" y2="145"/>
+        <line x1="620" y1="305" x2="820" y2="240"/>
+      </g>
+
+      <!-- Neurons -->
+      <!-- Input -->
+      <g>
+        <circle cx="120" cy="100" r="20" fill="#888880" opacity="0.7" stroke="#888880" stroke-width="1"/>
+        <text x="120" y="105" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">x₁</text>
+        <circle cx="120" cy="190" r="20" fill="#888880" opacity="0.7" stroke="#888880" stroke-width="1"/>
+        <text x="120" y="195" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">x₂</text>
+        <circle cx="120" cy="280" r="20" fill="#888880" opacity="0.7" stroke="#888880" stroke-width="1"/>
+        <text x="120" y="285" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">x₃</text>
+      </g>
+      <!-- Hidden 1 -->
+      <g>
+        <circle cx="360" cy="80" r="20" fill="#2E4057" opacity="0.8" stroke="#2E4057" stroke-width="1"/>
+        <circle cx="360" cy="155" r="20" fill="#2E4057" opacity="0.8" stroke="#2E4057" stroke-width="1"/>
+        <circle cx="360" cy="230" r="20" fill="#2E4057" opacity="0.8" stroke="#2E4057" stroke-width="1"/>
+        <circle cx="360" cy="305" r="20" fill="#2E4057" opacity="0.8" stroke="#2E4057" stroke-width="1"/>
+      </g>
+      <!-- Hidden 2 -->
+      <g>
+        <circle cx="600" cy="80" r="20" fill="#2E4057" opacity="0.65" stroke="#2E4057" stroke-width="1"/>
+        <circle cx="600" cy="155" r="20" fill="#2E4057" opacity="0.65" stroke="#2E4057" stroke-width="1"/>
+        <circle cx="600" cy="230" r="20" fill="#2E4057" opacity="0.65" stroke="#2E4057" stroke-width="1"/>
+        <circle cx="600" cy="305" r="20" fill="#2E4057" opacity="0.65" stroke="#2E4057" stroke-width="1"/>
+      </g>
+      <!-- Output -->
+      <g>
+        <circle cx="840" cy="145" r="24" fill="#728C69" opacity="0.85" stroke="#728C69" stroke-width="1.5"/>
+        <text x="840" y="142" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">ŷ₁</text>
+        <text x="840" y="155" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">0.82</text>
+        <circle cx="840" cy="240" r="24" fill="#728C69" opacity="0.7" stroke="#728C69" stroke-width="1.5"/>
+        <text x="840" y="237" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">ŷ₂</text>
+        <text x="840" y="250" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">0.18</text>
+      </g>
+
+      <!-- Neuron zoom-in -->
+      <rect x="950" y="60" width="220" height="200" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1" rx="1"/>
+      <rect x="950" y="60" width="220" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="1060" y="76" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">SINGLE NEURON</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">
+        <text x="966" y="108">z = w₁x₁ + w₂x₂ + b</text>
+        <text x="966" y="128">a = σ(z)</text>
+        <line x1="966" y1="138" x2="1154" y2="138" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="966" y="158" fill="#888880" font-size="10">w: weights (learnable)</text>
+        <text x="966" y="176" fill="#888880" font-size="10">b: bias (learnable)</text>
+        <text x="966" y="194" fill="#728C69" font-size="10">σ: activation function</text>
+        <text x="966" y="212" fill="#728C69" font-size="10">a: activation (output)</text>
+        <line x1="966" y1="222" x2="1154" y2="222" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="966" y="242" fill="#888880" font-size="9">Total params:</text>
+        <text x="966" y="254" fill="#2E4057" font-size="9">3×4 + 4×4 + 4×2 = 36 weights</text>
+      </g>
+
+      <rect x="0" y="382" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="395" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 11.4-A · Feedforward network. Input features propagate left to right. Each neuron computes z=Wx+b then applies activation σ(z). Backpropagation adjusts all weights via gradient descent.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Feedforward neural network with 3 input features, two hidden layers of 4 neurons each, and 2 outputs (e.g., binary class probabilities). Every neuron computes a weighted sum of its inputs (z = Σwᵢxᵢ + b) then applies an activation function (z → a). Information flows strictly left to right during forward pass. Connections between every pair of adjacent-layer neurons make this "fully connected" or "dense". The network has 3×4 + 4×4 + 4×2 = 36 weights plus 10 biases = 46 learnable parameters. During training, backpropagation computes gradients of the loss with respect to every parameter, and gradient descent updates all 46 parameters simultaneously.</div>
+</div>
+
+<!-- FIG 11.4-B  Activation Functions -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Comparison</span>
+    <span class="fig-id">FIG 11.4-B</span>
+    <span class="fig-title">Activation Functions — Sigmoid, Tanh, ReLU, Leaky ReLU</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">ACTIVATION FUNCTIONS — INTRODUCING NONLINEARITY INTO NEURAL NETWORKS</text>
+
+      <!-- 4 activation function plots -->
+      <!-- Sigmoid -->
+      <text x="120" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#C82A2A">Sigmoid σ(z)</text>
+      <line x1="40" y1="170" x2="220" y2="170" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="130" y1="64" x2="130" y2="240" stroke="#D8D6CE" stroke-width="1"/>
+      <path d="M40 232 Q80 228 110 210 Q125 196 130 180 Q135 164 150 148 Q175 120 220 108" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <line x1="40" y1="108" x2="220" y2="108" stroke="#D8D6CE" stroke-width="0.5" stroke-dasharray="3,3"/>
+      <text x="228" y="112" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">1</text>
+      <text x="228" y="175" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">0.5</text>
+      <text x="228" y="237" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">0</text>
+      <text x="120" y="256" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">output: (0,1)</text>
+      <text x="120" y="270" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">vanishing gradient</text>
+      <text x="120" y="284" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">used in final layer</text>
+
+      <!-- Tanh -->
+      <text x="400" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2E4057">Tanh(z)</text>
+      <line x1="310" y1="170" x2="490" y2="170" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="400" y1="64" x2="400" y2="240" stroke="#D8D6CE" stroke-width="1"/>
+      <path d="M310 232 Q340 230 370 210 Q390 195 400 170 Q410 145 430 120 Q460 96 490 92" stroke="#2E4057" stroke-width="2" fill="none"/>
+      <text x="498" y="96" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">+1</text>
+      <text x="498" y="237" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">-1</text>
+      <text x="400" y="256" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#2E4057">output: (-1,1)</text>
+      <text x="400" y="270" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">zero-centred (better)</text>
+      <text x="400" y="284" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">still vanishes at extremes</text>
+
+      <!-- ReLU -->
+      <text x="680" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#728C69">ReLU(z) = max(0,z)</text>
+      <line x1="590" y1="200" x2="770" y2="200" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="680" y1="64" x2="680" y2="240" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- ReLU: flat 0 for z<0, linear for z>0 -->
+      <path d="M590 200 L680 200 L770 100" stroke="#728C69" stroke-width="2.5" fill="none"/>
+      <text x="680" y="256" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">output: [0, ∞)</text>
+      <text x="680" y="270" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">no vanishing gradient+</text>
+      <text x="680" y="284" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">dead neurons if always 0</text>
+
+      <!-- Leaky ReLU -->
+      <text x="1000" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#8B6914">Leaky ReLU</text>
+      <line x1="870" y1="200" x2="1100" y2="200" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="985" y1="64" x2="985" y2="240" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- Leaky ReLU: small slope for z<0 -->
+      <path d="M870 220 L985 200 L1100 100" stroke="#8B6914" stroke-width="2.5" fill="none"/>
+      <text x="1000" y="256" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">αz if z&lt;0 (α=0.01)</text>
+      <text x="1000" y="270" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">prevents dead neurons</text>
+      <text x="1000" y="284" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">most popular in practice</text>
+
+      <rect x="0" y="293" fill="none" width="0" height="0"/>
+    </svg>
+  </div>
+  <div class="fig-caption">Activation functions introduce nonlinearity — without them, a neural network of any depth would collapse to a single linear transformation. Sigmoid squashes to (0,1) — useful for final layer binary classification, but its gradient vanishes near 0 and 1, slowing deep network training. Tanh is zero-centred (outputs range -1 to 1), which helps gradient flow but still vanishes at extremes. ReLU (Rectified Linear Unit) max(0,z) is piecewise linear: no saturation for positive inputs, near-zero gradient cost, but "dead neurons" (units stuck at zero forever) are a risk. Leaky ReLU allows a small negative slope (α=0.01) for z<0, preventing dead neurons. ReLU and its variants dominate hidden layers in modern networks; sigmoid and softmax are used in output layers for probability outputs.</div>
+</div>
+
+<!-- FIG 11.4-C  Forward Pass -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 11.4-C</span>
+    <span class="fig-title">Forward Pass — Layer-by-Layer Matrix Multiply + Activation</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:220px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">FORWARD PASS — MATRIX OPERATIONS AT EACH LAYER</text>
+
+      <!-- Step 1: Input -->
+      <text x="80" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">INPUT x</text>
+      <rect x="40" y="64" width="80" height="120" fill="#888880" opacity="0.3" stroke="#888880" stroke-width="1" rx="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <text x="80" y="104" fill="#2C2C2C">0.5</text>
+        <text x="80" y="128" fill="#2C2C2C">0.3</text>
+        <text x="80" y="152" fill="#2C2C2C">0.8</text>
+      </g>
+      <text x="80" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">(3×1)</text>
+
+      <!-- × W¹ -->
+      <text x="178" y="124" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="16" fill="#888880">×</text>
+      <text x="250" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" letter-spacing="0.1em">W¹ weights</text>
+      <rect x="200" y="64" width="100" height="120" fill="#2E4057" opacity="0.2" stroke="#2E4057" stroke-width="1" rx="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle" fill="#888880">
+        <text x="250" y="86">0.2 0.5 0.1</text>
+        <text x="250" y="104">0.4 0.1 0.7</text>
+        <text x="250" y="122">0.3 0.8 0.2</text>
+        <text x="250" y="140">0.6 0.2 0.4</text>
+      </g>
+      <text x="250" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">(4×3)</text>
+
+      <!-- + b¹ -->
+      <text x="326" y="124" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="16" fill="#888880">+</text>
+      <text x="380" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">bias b¹</text>
+      <rect x="350" y="84" width="60" height="80" fill="#888880" opacity="0.15" stroke="#888880" stroke-width="0.5" rx="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle" fill="#888880">
+        <text x="380" y="104">0.1</text><text x="380" y="120">0.1</text>
+        <text x="380" y="136">0.1</text><text x="380" y="152">0.1</text>
+      </g>
+      <text x="380" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">(4×1)</text>
+
+      <!-- = z¹ -->
+      <text x="436" y="124" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="16" fill="#888880">=</text>
+      <text x="490" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914" letter-spacing="0.1em">z¹ (pre-act)</text>
+      <rect x="460" y="84" width="60" height="80" fill="#8B6914" opacity="0.2" stroke="#8B6914" stroke-width="1" rx="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle" fill="#8B6914">
+        <text x="490" y="104">0.56</text><text x="490" y="120">0.94</text>
+        <text x="490" y="136">0.41</text><text x="490" y="152">0.72</text>
+      </g>
+      <text x="490" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#8B6914">(4×1)</text>
+
+      <!-- ReLU activation -->
+      <text x="556" y="124" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#728C69">ReLU</text>
+      <text x="556" y="140" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">→</text>
+      <text x="640" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" letter-spacing="0.1em">a¹ (activation)</text>
+      <rect x="610" y="84" width="60" height="80" fill="#728C69" opacity="0.25" stroke="#728C69" stroke-width="1" rx="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle" fill="#728C69">
+        <text x="640" y="104">0.56</text><text x="640" y="120">0.94</text>
+        <text x="640" y="136">0.41</text><text x="640" y="152">0.72</text>
+      </g>
+      <text x="640" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">max(0, z)</text>
+
+      <!-- Next layer arrow -->
+      <path d="M680 128 L720 128" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <path d="M716 124 L724 128 L716 132" fill="#2C2C2C"/>
+      <text x="702" y="118" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">repeat</text>
+      <text x="702" y="142" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">for each layer</text>
+
+      <!-- Summary -->
+      <rect x="740" y="52" width="420" height="200" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="740" y="52" width="420" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="950" y="68" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">FORWARD PASS SUMMARY</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">
+        <text x="756" y="96">Layer 1: z¹ = W¹x + b¹</text>
+        <text x="756" y="116">         a¹ = ReLU(z¹)</text>
+        <text x="756" y="136">Layer 2: z² = W²a¹ + b²</text>
+        <text x="756" y="156">         a² = ReLU(z²)</text>
+        <text x="756" y="176">Output:  ŷ  = softmax(W³a²+b³)</text>
+        <line x1="756" y1="188" x2="1144" y2="188" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="756" y="208" fill="#728C69" font-size="10">Loss = CrossEntropy(ŷ, y)</text>
+        <text x="756" y="228" fill="#C82A2A" font-size="10">Backprop: compute ∂Loss/∂W</text>
+        <text x="756" y="242" fill="#C82A2A" font-size="10">Update: W ← W - α×gradient</text>
+      </g>
+
+      <rect x="0" y="264" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="276" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 11.4-C · Forward pass: z = Wx + b (linear transform), a = activation(z) (nonlinearity). Repeated per layer. Loss computed at output. Backprop computes gradients for all W and b.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The forward pass computes network output layer by layer. Each layer applies a linear transformation (z = Wx + b — a matrix multiply plus bias) followed by a nonlinear activation (a = ReLU(z)). The final layer uses softmax for multi-class classification, which normalises logits to a probability distribution summing to 1. The loss function (cross-entropy for classification, MSE for regression) measures the discrepancy between predicted and true values. Backpropagation then efficiently computes the gradient of the loss with respect to every weight in the network using the chain rule, enabling gradient descent to update all parameters simultaneously.</div>
+</div>
+
+</div>
+</body>
+</html>

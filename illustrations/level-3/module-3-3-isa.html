@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 3.3 Illustrations — Instruction Set Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 3 — Machine Architecture</div>
+  <div class="page-title">Module 3.3 — Instruction Set Architecture</div>
+  <div class="page-sub">3 figures · Instruction Encoding · Toy ISA Table · RISC vs CISC</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 3.3-A  Instruction Encoding -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 3.3-A</span>
+    <span class="fig-title">Instruction Encoding — How an Instruction Becomes Bits</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" style="height:370px">
+      <defs>
+        <linearGradient id="isaBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="420" fill="url(#isaBg)"/>
+
+      <!-- Assembly instruction (top) -->
+      <rect x="400" y="24" width="400" height="52" rx="1" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="600" y="44" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">ASSEMBLY MNEMONIC</text>
+      <text x="600" y="66" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="20" fill="#2E4057">ADD R1, R2, R3</text>
+
+      <!-- Down arrow -->
+      <line x1="600" y1="76" x2="600" y2="108" stroke="#2C2C2C" stroke-width="2" marker-end="url(#i_arr)"/>
+      <text x="620" y="96" font-family="'Inter',sans-serif" font-size="9" fill="#888880">assembler translates</text>
+      <defs>
+        <marker id="i_arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#2C2C2C"/>
+        </marker>
+      </defs>
+
+      <!-- 32-bit instruction word -->
+      <rect x="80" y="110" width="1040" height="70" rx="1" fill="#FDFDFD" stroke="#2C2C2C" stroke-width="1.5"/>
+
+      <!-- Field divisions (RISC-style 32-bit format) -->
+      <!-- Opcode: bits 31-26 (6 bits) -->
+      <rect x="80" y="110" width="195" height="70" fill="#C82A2A" opacity="0.15" stroke="#C82A2A" stroke-width="1"/>
+      <text x="177" y="132" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" letter-spacing="0.08em">OPCODE (6 bits)</text>
+      <text x="177" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="16" fill="#C82A2A">000010</text>
+      <text x="177" y="168" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">bits 31–26</text>
+
+      <!-- RS: bits 25-21 (5 bits) -->
+      <rect x="275" y="110" width="163" height="70" fill="#2E4057" opacity="0.12" stroke="#2E4057" stroke-width="1"/>
+      <text x="356" y="132" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" letter-spacing="0.08em">RS (5 bits)</text>
+      <text x="356" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="16" fill="#2E4057">00001</text>
+      <text x="356" y="168" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">= R1, bits 25–21</text>
+
+      <!-- RT: bits 20-16 (5 bits) -->
+      <rect x="438" y="110" width="163" height="70" fill="#2E4057" opacity="0.08" stroke="#2E4057" stroke-width="1"/>
+      <text x="519" y="132" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" letter-spacing="0.08em">RT (5 bits)</text>
+      <text x="519" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="16" fill="#2E4057">00010</text>
+      <text x="519" y="168" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">= R2, bits 20–16</text>
+
+      <!-- RD: bits 15-11 (5 bits) -->
+      <rect x="601" y="110" width="163" height="70" fill="#728C69" opacity="0.12" stroke="#728C69" stroke-width="1"/>
+      <text x="682" y="132" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" letter-spacing="0.08em">RD (5 bits)</text>
+      <text x="682" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="16" fill="#728C69">00011</text>
+      <text x="682" y="168" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">= R3, bits 15–11</text>
+
+      <!-- Shamt: bits 10-6 (5 bits) -->
+      <rect x="764" y="110" width="163" height="70" fill="#8B6914" opacity="0.08" stroke="#8B6914" stroke-width="1"/>
+      <text x="845" y="132" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">SHAMT (5 bits)</text>
+      <text x="845" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="16" fill="#888880">00000</text>
+      <text x="845" y="168" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">bits 10–6</text>
+
+      <!-- Funct: bits 5-0 (6 bits) -->
+      <rect x="927" y="110" width="193" height="70" fill="#888880" opacity="0.1" stroke="#888880" stroke-width="1"/>
+      <text x="1023" y="132" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">FUNCT (6 bits)</text>
+      <text x="1023" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="16" fill="#888880">100000</text>
+      <text x="1023" y="168" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">bits 5–0 = ADD</text>
+
+      <!-- Full binary representation -->
+      <rect x="80" y="192" width="1040" height="36" rx="1" fill="#2C2C2C" opacity="0.04" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="600" y="215" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2C2C2C" letter-spacing="0.05em">00001000010001000010000000100000</text>
+      <text x="600" y="234" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">32-bit machine code word</text>
+
+      <!-- Hex representation -->
+      <rect x="440" y="248" width="320" height="36" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="600" y="268" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Hexadecimal:</text>
+      <text x="600" y="279" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="16" fill="#2E4057">0x00422020</text>
+
+      <!-- Three addressing modes panel -->
+      <rect x="80" y="300" width="1040" height="90" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="80" y="300" width="1040" height="26" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="317" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">COMMON INSTRUCTION FORMATS</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11">
+        <text x="100" y="346" fill="#C82A2A">R-type:</text><text x="180" y="346" fill="#2C2C2C">opcode | rs | rt | rd | shamt | funct</text>
+        <text x="100" y="366" fill="#8B6914">I-type:</text><text x="180" y="366" fill="#2C2C2C">opcode | rs | rt | immediate(16-bit)</text>
+        <text x="100" y="386" fill="#2E4057">J-type:</text><text x="180" y="386" fill="#2C2C2C">opcode | target(26-bit)</text>
+        <text x="600" y="346" fill="#888880">register operation (ADD, SUB, AND…)</text>
+        <text x="600" y="366" fill="#888880">load/store, branches (ADDI, LW, BEQ…)</text>
+        <text x="600" y="386" fill="#888880">unconditional jump (J, JAL…)</text>
+      </g>
+
+      <rect x="0" y="398" width="1200" height="22" fill="rgba(44,64,87,0.04)"/>
+      <text x="600" y="415" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 3.3-A · MIPS-style R-type instruction encoding. ADD R1,R2,R3 encodes opcode, source registers, destination, and function code into a single 32-bit word (0x00422020).</text>
+      <text x="1140" y="415" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 3.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">MIPS-style 32-bit instruction encoding for ADD R1, R2, R3. The instruction word is divided into fields: opcode (6 bits, identifies instruction type), RS and RT (source registers, 5 bits each — can address 32 registers), RD (destination register), SHAMT (shift amount for shift instructions, zero here), and FUNCT (refinement of opcode for R-type instructions). The entire instruction fits in one 32-bit word = 0x00422020 = four bytes in memory. The three instruction formats (R, I, J) cover all MIPS instructions — the simplicity is intentional and is the defining characteristic of RISC design.</div>
+</div>
+
+<!-- FIG 3.3-B  RISC vs CISC -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Comparison</span>
+    <span class="fig-id">FIG 3.3-B</span>
+    <span class="fig-title">RISC vs CISC — Two Design Philosophies</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+
+      <!-- CISC left -->
+      <rect x="40" y="20" width="520" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="20" width="520" height="26" fill="#2E4057" opacity="0.08"/>
+      <text x="300" y="37" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">CISC — Complex Instruction Set Computer</text>
+      <text x="300" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">x86, x86-64 (Intel / AMD)</text>
+
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="60" y="78">✓ Many instruction types (600+ in x86-64)</text>
+        <text x="60" y="96">✓ Variable-length instructions (1–15 bytes)</text>
+        <text x="60" y="114">✓ Instructions do multiple operations</text>
+        <text x="60" y="132">✗ Complex decoder hardware</text>
+        <text x="60" y="150">✗ Harder to pipeline</text>
+      </g>
+      <!-- Example CISC instruction -->
+      <rect x="60" y="168" width="480" height="56" rx="1" fill="#EEECE6"/>
+      <text x="70" y="184" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2E4057">MOVSX EAX, WORD PTR [RBX + RCX*2 + 8]</text>
+      <text x="70" y="200" font-family="'Inter',sans-serif" font-size="9" fill="#888880">One instruction: compute address, read 16-bit value,</text>
+      <text x="70" y="214" font-family="'Inter',sans-serif" font-size="9" fill="#888880">sign-extend to 32 bits, store in EAX</text>
+
+      <!-- RISC right -->
+      <rect x="640" y="20" width="520" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="640" y="20" width="520" height="26" fill="#728C69" opacity="0.1"/>
+      <text x="900" y="37" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">RISC — Reduced Instruction Set Computer</text>
+      <text x="900" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">ARM, MIPS, RISC-V, Apple Silicon</text>
+
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="660" y="78">✓ Few instruction types (~50–100)</text>
+        <text x="660" y="96">✓ Fixed-length instructions (4 bytes)</text>
+        <text x="660" y="114">✓ Each instruction does one operation</text>
+        <text x="660" y="132">✓ Simple decoder, easy to pipeline</text>
+        <text x="660" y="150">✗ More instructions needed per task</text>
+      </g>
+      <!-- Example RISC sequence -->
+      <rect x="660" y="168" width="480" height="56" rx="1" fill="#EEECE6"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">
+        <text x="670" y="184">LSL  R0, R2, #1       ; R2*2</text>
+        <text x="670" y="198">ADD  R0, R0, R1       ; +R1</text>
+        <text x="670" y="212">LDRSH R0, [R0, #8]   ; load halfword</text>
+      </g>
+
+      <!-- VS -->
+      <line x1="565" y1="20" x2="565" y2="260" stroke="#D8D6CE" stroke-width="1"/>
+      <circle cx="602" cy="140" r="26" fill="#F4EFE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="602" y="136" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="10" fill="#888880">RISC</text>
+      <text x="602" y="150" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="10" fill="#888880">vs</text>
+      <text x="602" y="164" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="10" fill="#888880">CISC</text>
+
+      <rect x="0" y="274" width="1200" height="26" fill="rgba(44,64,87,0.04)"/>
+      <text x="600" y="292" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 3.3-B · CISC (x86) provides complex variable-length instructions. RISC (ARM/MIPS) provides simple fixed-width instructions — easier to decode, pipeline, and scale. Modern chips blur this: x86 CPUs internally translate CISC to micro-ops (RISC-like) before execution.</text>
+      <text x="1140" y="292" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 3.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">RISC vs CISC design philosophies. CISC (x86-64, left): a single MOVSX instruction computes an address with a scaled index and offset, reads a 16-bit value, and sign-extends it — four logical operations in one binary instruction. RISC (ARM, right): the same operation requires three instructions, but each is exactly 4 bytes and does exactly one thing. RISC designs are easier to decode in parallel and pipeline. Modern x86 CPUs resolve the debate pragmatically — the frontend decodes complex x86 instructions into simple micro-operations (μops) before issuing to an internal RISC-like execution engine.</div>
+</div>
+
+<!-- FIG 3.3-C  RISC vs CISC Philosophy Comparison -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Comparison</span>
+    <span class="fig-id">FIG 3.3-C</span>
+    <span class="fig-title">RISC vs CISC — Two Philosophies for Designing an ISA</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <rect width="1200" height="360" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="34" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">RISC vs CISC — INSTRUCTION SET ARCHITECTURE PHILOSOPHY</text>
+      <!-- RISC column -->
+      <rect x="40" y="44" width="520" height="290" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="40" y="44" width="520" height="26" fill="#728C69" opacity="0.1"/>
+      <text x="300" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#728C69">RISC — Reduced Instruction Set Computer</text>
+      <!-- RISC properties -->
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="60" y="96" font-weight="500" fill="#728C69">Design Goal:</text><text x="155" y="96"> Few, simple, fixed-length instructions</text>
+        <line x1="60" y1="104" x2="540" y2="104" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="60" y="122" font-weight="500" fill="#728C69">Instruction size:</text><text x="170" y="122" font-family="'JetBrains Mono',monospace"> Fixed (e.g. 32 bits)</text>
+        <text x="60" y="140" font-weight="500" fill="#728C69">Cycle count:</text><text x="148" y="140" font-family="'JetBrains Mono',monospace"> 1 instruction ≈ 1 cycle</text>
+        <text x="60" y="158" font-weight="500" fill="#728C69">Memory ops:</text><text x="148" y="158"> LOAD/STORE only — arithmetic only on registers</text>
+        <text x="60" y="176" font-weight="500" fill="#728C69">Registers:</text><text x="130" y="176"> Many (e.g. 32 general-purpose)</text>
+        <line x1="60" y1="184" x2="540" y2="184" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="60" y="202" font-weight="500" fill="#728C69">Pipeline:</text><text x="120" y="202"> Easy — uniform instruction width, 1-cycle ops</text>
+        <text x="60" y="220" font-weight="500" fill="#728C69">Examples:</text><text x="120" y="220"> ARM (phones), RISC-V (open), MIPS</text>
+      </g>
+      <!-- RISC code example -->
+      <rect x="60" y="238" width="480" height="68" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="70" y="254" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">ADD R0, [0x100] in RISC:</text>
+      <text x="70" y="272" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">LOAD  R1, [0x100]  ; 1 cycle</text>
+      <text x="70" y="288" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">ADD   R0, R0, R1   ; 1 cycle</text>
+      <text x="70" y="300" font-family="'Inter',sans-serif" font-size="9" fill="#888880">2 instructions · 2 cycles · explicit memory access</text>
+      <!-- CISC column -->
+      <rect x="640" y="44" width="520" height="290" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5"/>
+      <rect x="640" y="44" width="520" height="26" fill="#2E4057" opacity="0.08"/>
+      <text x="900" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2E4057">CISC — Complex Instruction Set Computer</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="660" y="96" font-weight="500" fill="#2E4057">Design Goal:</text><text x="755" y="96"> Many powerful instructions close to HLL</text>
+        <line x1="660" y1="104" x2="1140" y2="104" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="660" y="122" font-weight="500" fill="#2E4057">Instruction size:</text><text x="770" y="122" font-family="'JetBrains Mono',monospace"> Variable (1–15 bytes)</text>
+        <text x="660" y="140" font-weight="500" fill="#2E4057">Cycle count:</text><text x="748" y="140" font-family="'JetBrains Mono',monospace"> 1 instruction = many cycles</text>
+        <text x="660" y="158" font-weight="500" fill="#2E4057">Memory ops:</text><text x="748" y="158"> Instructions can directly access memory</text>
+        <text x="660" y="176" font-weight="500" fill="#2E4057">Registers:</text><text x="730" y="176"> Fewer (e.g. x86 originally had 8)</text>
+        <line x1="660" y1="184" x2="1140" y2="184" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="660" y="202" font-weight="500" fill="#2E4057">Pipeline:</text><text x="720" y="202"> Harder — variable instruction length, multi-cycle</text>
+        <text x="660" y="220" font-weight="500" fill="#2E4057">Examples:</text><text x="720" y="220"> x86 / x86-64 (all PCs), VAX</text>
+      </g>
+      <!-- CISC code example -->
+      <rect x="660" y="238" width="480" height="68" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="670" y="254" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">ADD R0, [0x100] in CISC (x86):</text>
+      <text x="670" y="272" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">ADD  EAX, [0x100]  ; 1 instruction</text>
+      <text x="670" y="288" font-family="'JetBrains Mono',monospace" font-size="11" fill="#888880">; internally: load + add (micro-ops)</text>
+      <text x="670" y="300" font-family="'Inter',sans-serif" font-size="9" fill="#888880">1 instruction · multi-cycle · implicit memory access</text>
+      <!-- Footer -->
+      <rect x="0" y="346" width="1200" height="14" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="356" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 3.3-C · RISC favours simplicity and regularity enabling aggressive pipelining. CISC favours programmer expressiveness. Modern x86 CPUs achieve both by translating CISC instructions to RISC-like micro-ops internally.</text>
+      <text x="1140" y="356" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · 3.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The RISC-CISC design spectrum. RISC (ARM, RISC-V) uses uniform-width, single-cycle instructions — simple to pipeline and decode but requires more instructions per task. CISC (x86) provides powerful multi-cycle instructions — compact programs but complex decoders. The apparent conflict resolved itself in practice: modern x86 processors internally translate variable-length CISC instructions into fixed-length micro-operations and execute them on a RISC-style pipeline. The ISA is CISC; the microarchitecture is RISC.</div>
+</div>
+
+</div>
+</body>
+</html>

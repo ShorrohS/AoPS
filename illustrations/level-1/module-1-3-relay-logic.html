@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 1.3 Illustrations — Relay Logic: Building Decisions from Metal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--text-sumi:#1C1C1C;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057; }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);color:var(--text-sumi);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:var(--accent-red);color:var(--accent-red);background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 1 — Physical Computing</div>
+  <div class="page-title">Module 1.3 — Relay Logic: Building Decisions from Metal</div>
+  <div class="page-sub">4 figures · AND/OR/NOT Relay Circuits · Boolean Algebra · Half Adder · Shannon Connection</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 1.3-A  AND / OR / NOT relay circuits -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 1.3-A</span>
+    <span class="fig-title">AND, OR, NOT — Three Relay Circuits, Three Logical Operations</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 460" xmlns="http://www.w3.org/2000/svg" style="height:400px">
+      <defs>
+        <linearGradient id="rlBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+        <marker id="rla" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#2C2C2C"/>
+        </marker>
+      </defs>
+      <rect width="1200" height="460" fill="url(#rlBg)"/>
+
+      <!-- Column dividers -->
+      <line x1="400" y1="20" x2="400" y2="420" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="800" y1="20" x2="800" y2="420" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- ══ AND GATE (left) ══ -->
+      <text x="200" y="44" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="16" fill="#2C2C2C">AND Gate</text>
+      <text x="200" y="62" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#888880">A AND B = Q</text>
+
+      <!-- Battery -->
+      <rect x="50" y="170" width="20" height="60" rx="1" fill="#EDE8DC" stroke="#A8A090" stroke-width="1"/>
+      <line x1="60" y1="170" x2="60" y2="163" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="53" y1="160" x2="67" y2="160" stroke="#2C2C2C" stroke-width="2.5"/>
+      <!-- Top wire -->
+      <path d="M60 160 L60 130 L340 130 L340 200" stroke="#2C2C2C" stroke-width="2.5" fill="none"/>
+
+      <!-- Relay A (series) -->
+      <rect x="130" y="124" width="30" height="70" rx="1" fill="#C8C0B4" stroke="#A8A09A" stroke-width="1"/>
+      <g fill="none" stroke="#B89848" stroke-width="1.2">
+        <path d="M133 132 Q145 128 157 132"/><path d="M133 140 Q145 136 157 140"/>
+        <path d="M133 148 Q145 144 157 148"/><path d="M133 156 Q145 152 157 156"/>
+        <path d="M133 164 Q145 160 157 164"/>
+      </g>
+      <!-- A contact (series) -->
+      <line x1="160" y1="175" x2="220" y2="175" stroke="#2C2C2C" stroke-width="2.5"/>
+      <line x1="220" y1="163" x2="255" y2="175" stroke="#2C2C2C" stroke-width="2"/><!-- open armature -->
+      <circle cx="220" cy="175" r="5" fill="#D4B060" stroke="#A88840" stroke-width="1"/>
+      <circle cx="255" cy="175" r="5" fill="#D4B060" stroke="#A88840" stroke-width="1"/>
+      <text x="145" y="210" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">A</text>
+
+      <!-- Relay B (series) -->
+      <rect x="255" y="124" width="30" height="70" rx="1" fill="#C8C0B4" stroke="#A8A09A" stroke-width="1"/>
+      <g fill="none" stroke="#B89848" stroke-width="1.2">
+        <path d="M258 132 Q270 128 282 132"/><path d="M258 140 Q270 136 282 140"/>
+        <path d="M258 148 Q270 144 282 148"/><path d="M258 156 Q270 152 282 156"/>
+        <path d="M258 164 Q270 160 282 164"/>
+      </g>
+      <!-- B contact (series) -->
+      <line x1="285" y1="175" x2="340" y2="175" stroke="#2C2C2C" stroke-width="2.5"/>
+      <line x1="325" y1="163" x2="340" y2="175" stroke="#2C2C2C" stroke-width="2"/><!-- open -->
+      <circle cx="325" cy="175" r="5" fill="#D4B060" stroke="#A88840" stroke-width="1"/>
+      <circle cx="340" cy="175" r="5" fill="#D4B060" stroke="#A88840" stroke-width="1"/>
+      <text x="270" y="210" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">B</text>
+
+      <!-- Bulb (output Q) -->
+      <circle cx="340" cy="230" r="22" fill="#F0ECE4" stroke="#C8C4BC" stroke-width="1.5"/>
+      <path d="M333 234 Q337 222 340 228 Q343 234 347 224" stroke="#C8C4BC" stroke-width="1.5" fill="none"/>
+      <text x="340" y="262" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#888880">Q</text>
+
+      <!-- Bottom wire -->
+      <path d="M340 252 L340 310 L60 310 L60 230" stroke="#2C2C2C" stroke-width="2.5" fill="none"/>
+
+      <!-- AND truth table -->
+      <rect x="40" y="320" width="320" height="88" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="320" width="320" height="20" fill="#EEECE6"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <text x="120" y="335" fill="#888880">A</text><text x="200" y="335" fill="#888880">B</text><text x="320" y="335" fill="#888880">Q = A AND B</text>
+        <line x1="44" y1="340" x2="356" y2="340" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="120" y="358" fill="#2C2C2C">0</text><text x="200" y="358" fill="#2C2C2C">0</text><text x="320" y="358" fill="#888880">0</text>
+        <text x="120" y="374" fill="#2C2C2C">0</text><text x="200" y="374" fill="#2C2C2C">1</text><text x="320" y="374" fill="#888880">0</text>
+        <text x="120" y="390" fill="#2C2C2C">1</text><text x="200" y="390" fill="#2C2C2C">0</text><text x="320" y="390" fill="#888880">0</text>
+        <text x="120" y="406" fill="#728C69" font-weight="500">1</text><text x="200" y="406" fill="#728C69" font-weight="500">1</text><text x="320" y="406" fill="#728C69" font-weight="500">1</text>
+      </g>
+      <text x="200" y="434" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">series relays — BOTH must close</text>
+
+      <!-- ══ OR GATE (centre) ══ -->
+      <text x="600" y="44" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="16" fill="#2C2C2C">OR Gate</text>
+      <text x="600" y="62" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#888880">A OR B = Q</text>
+
+      <!-- Battery -->
+      <rect x="450" y="170" width="20" height="60" rx="1" fill="#EDE8DC" stroke="#A8A090" stroke-width="1"/>
+      <line x1="460" y1="170" x2="460" y2="163" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="453" y1="160" x2="467" y2="160" stroke="#2C2C2C" stroke-width="2.5"/>
+      <path d="M460 160 L460 130 L740 130 L740 200" stroke="#2C2C2C" stroke-width="2.5" fill="none"/>
+
+      <!-- Relay A parallel branch -->
+      <rect x="530" y="124" width="30" height="70" rx="1" fill="#C8C0B4" stroke="#A8A09A" stroke-width="1"/>
+      <g fill="none" stroke="#B89848" stroke-width="1.2">
+        <path d="M533 132 Q545 128 557 132"/><path d="M533 140 Q545 136 557 140"/>
+        <path d="M533 148 Q545 144 557 148"/><path d="M533 156 Q545 152 557 156"/>
+      </g>
+      <!-- Split wire for parallel -->
+      <line x1="530" y1="175" x2="460" y2="175" stroke="#2C2C2C" stroke-width="2.5"/>
+      <line x1="560" y1="175" x2="600" y2="175" stroke="#2C2C2C" stroke-width="2.5"/>
+      <!-- A armature -->
+      <line x1="545" y1="163" x2="560" y2="175" stroke="#2C2C2C" stroke-width="2"/>
+      <circle cx="545" cy="175" r="5" fill="#D4B060" stroke="#A88840" stroke-width="1"/>
+      <circle cx="560" cy="175" r="5" fill="#D4B060" stroke="#A88840" stroke-width="1"/>
+      <text x="545" y="210" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">A</text>
+
+      <!-- Relay B parallel branch -->
+      <rect x="655" y="124" width="30" height="70" rx="1" fill="#C8C0B4" stroke="#A8A09A" stroke-width="1"/>
+      <g fill="none" stroke="#B89848" stroke-width="1.2">
+        <path d="M658 132 Q670 128 682 132"/><path d="M658 140 Q670 136 682 140"/>
+        <path d="M658 148 Q670 144 682 148"/><path d="M658 156 Q670 152 682 156"/>
+      </g>
+      <line x1="655" y1="175" x2="600" y2="175" stroke="#2C2C2C" stroke-width="2.5"/>
+      <line x1="685" y1="175" x2="740" y2="175" stroke="#2C2C2C" stroke-width="2.5"/>
+      <line x1="670" y1="163" x2="685" y2="175" stroke="#2C2C2C" stroke-width="2"/>
+      <circle cx="670" cy="175" r="5" fill="#D4B060" stroke="#A88840" stroke-width="1"/>
+      <circle cx="685" cy="175" r="5" fill="#D4B060" stroke="#A88840" stroke-width="1"/>
+      <text x="670" y="210" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">B</text>
+
+      <!-- OR bulb -->
+      <circle cx="740" cy="230" r="22" fill="#F0ECE4" stroke="#C8C4BC" stroke-width="1.5"/>
+      <path d="M733 234 Q737 222 740 228 Q743 234 747 224" stroke="#C8C4BC" stroke-width="1.5" fill="none"/>
+      <text x="740" y="262" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#888880">Q</text>
+      <path d="M740 252 L740 310 L460 310 L460 230" stroke="#2C2C2C" stroke-width="2.5" fill="none"/>
+
+      <!-- OR truth table -->
+      <rect x="440" y="320" width="320" height="88" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="440" y="320" width="320" height="20" fill="#EEECE6"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <text x="520" y="335" fill="#888880">A</text><text x="600" y="335" fill="#888880">B</text><text x="720" y="335" fill="#888880">Q = A OR B</text>
+        <line x1="444" y1="340" x2="756" y2="340" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="520" y="358" fill="#2C2C2C">0</text><text x="600" y="358" fill="#2C2C2C">0</text><text x="720" y="358" fill="#888880">0</text>
+        <text x="520" y="374" fill="#2C2C2C">0</text><text x="600" y="374" fill="#728C69" font-weight="500">1</text><text x="720" y="374" fill="#728C69" font-weight="500">1</text>
+        <text x="520" y="390" fill="#728C69" font-weight="500">1</text><text x="600" y="390" fill="#2C2C2C">0</text><text x="720" y="390" fill="#728C69" font-weight="500">1</text>
+        <text x="520" y="406" fill="#728C69" font-weight="500">1</text><text x="600" y="406" fill="#728C69" font-weight="500">1</text><text x="720" y="406" fill="#728C69" font-weight="500">1</text>
+      </g>
+      <text x="600" y="434" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">parallel relays — EITHER can close</text>
+
+      <!-- ══ NOT GATE (right) ══ -->
+      <text x="1000" y="44" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="16" fill="#2C2C2C">NOT Gate</text>
+      <text x="1000" y="62" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#888880">NOT A = Q</text>
+
+      <!-- Battery -->
+      <rect x="850" y="170" width="20" height="60" rx="1" fill="#EDE8DC" stroke="#A8A090" stroke-width="1"/>
+      <line x1="860" y1="170" x2="860" y2="163" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="853" y1="160" x2="867" y2="160" stroke="#2C2C2C" stroke-width="2.5"/>
+      <path d="M860 160 L860 130 L1130 130 L1130 200" stroke="#2C2C2C" stroke-width="2.5" fill="none"/>
+
+      <!-- NOT relay — normally-closed contact -->
+      <rect x="940" y="124" width="30" height="70" rx="1" fill="#C8C0B4" stroke="#A8A09A" stroke-width="1"/>
+      <g fill="none" stroke="#B89848" stroke-width="1.2">
+        <path d="M943 132 Q955 128 967 132"/><path d="M943 140 Q955 136 967 140"/>
+        <path d="M943 148 Q955 144 967 148"/><path d="M943 156 Q955 152 967 156"/>
+      </g>
+      <!-- NC contact — wire with slash showing normally closed -->
+      <line x1="970" y1="175" x2="1050" y2="175" stroke="#2C2C2C" stroke-width="2.5"/>
+      <line x1="1050" y1="175" x2="1130" y2="175" stroke="#2C2C2C" stroke-width="2.5"/>
+      <!-- Normally closed armature (flat = closed) -->
+      <line x1="1010" y1="175" x2="1050" y2="175" stroke="#728C69" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="1010" cy="175" r="5" fill="#D4B060" stroke="#A88840" stroke-width="1"/>
+      <circle cx="1050" cy="175" r="5" fill="#D4B060" stroke="#A88840" stroke-width="1"/>
+      <!-- NC indicator -->
+      <line x1="1020" y1="168" x2="1040" y2="182" stroke="#728C69" stroke-width="1.5"/>
+      <text x="955" y="210" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">A=0</text>
+      <text x="1090" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">NC (normally closed)</text>
+
+      <!-- NOT bulb (lit when A=0) -->
+      <circle cx="1130" cy="230" r="22" fill="#FFFCE8" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="1130" cy="230" r="12" fill="#FFECB0" opacity="0.7"/>
+      <path d="M1123 234 Q1127 222 1130 228 Q1133 234 1137 224" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <text x="1130" y="262" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">Q=1</text>
+      <path d="M1130 252 L1130 310 L860 310 L860 230" stroke="#2C2C2C" stroke-width="2.5" fill="none"/>
+
+      <!-- NOT truth table -->
+      <rect x="840" y="320" width="320" height="68" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="840" y="320" width="320" height="20" fill="#EEECE6"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <text x="960" y="335" fill="#888880">A</text><text x="1100" y="335" fill="#888880">Q = NOT A</text>
+        <line x1="844" y1="340" x2="1156" y2="340" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="960" y="358" fill="#2C2C2C">0</text><text x="1100" y="358" fill="#728C69" font-weight="500">1</text>
+        <text x="960" y="374" fill="#728C69" font-weight="500">1</text><text x="1100" y="374" fill="#888880">0</text>
+      </g>
+      <text x="1000" y="402" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">normally-closed relay — inverts input</text>
+
+      <rect x="0" y="428" width="1200" height="32" fill="rgba(44,64,87,0.06)"/>
+      <text x="600" y="449" text-anchor="middle" font-family="'Inter',sans-serif" font-size="12" fill="#6E6E6E">Fig 1.3-A · AND (series), OR (parallel), NOT (normally-closed) — the three fundamental relay logic circuits and their truth tables. All Boolean logic is combinations of these three.</text>
+      <text x="1140" y="449" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 1.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The three fundamental relay logic circuits. AND gate (left): two relays in series — both A and B must be energised for current to reach the output. Truth table shows output is 1 only when A=1 AND B=1. OR gate (centre): two relays in parallel — either path can complete the circuit. Output is 1 when A=1 OR B=1 (or both). NOT gate (right): a normally-closed relay — the contact is closed by default and opens when the coil is energised, inverting the input. These three operations are the complete basis of all digital logic.</div>
+</div>
+
+<!-- FIG 1.3-B  Relay Half Adder -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Concept Diagram</span>
+    <span class="fig-id">FIG 1.3-B</span>
+    <span class="fig-title">Relay Half Adder — Adding Two Bits with Metal and Wire</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <rect width="1200" height="380" fill="#F4EFE6"/>
+
+      <!-- Header -->
+      <rect x="0" y="0" width="1200" height="36" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="23" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2C2C2C">Half Adder: SUM = A XOR B  ·  CARRY = A AND B</text>
+
+      <!-- Left: circuit blocks -->
+      <!-- XOR = (A OR B) AND NOT(A AND B) -->
+      <rect x="40" y="56" width="500" height="260" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="56" width="500" height="26" fill="#EEECE6"/>
+      <text x="290" y="74" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">RELAY CIRCUIT — HALF ADDER</text>
+
+      <!-- A and B inputs -->
+      <text x="70" y="108" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2E4057">A</text>
+      <line x1="80" y1="110" x2="120" y2="110" stroke="#2C2C2C" stroke-width="2"/>
+      <text x="70" y="148" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2E4057">B</text>
+      <line x1="80" y1="150" x2="120" y2="150" stroke="#2C2C2C" stroke-width="2"/>
+
+      <!-- AND block -->
+      <rect x="120" y="94" width="80" height="72" rx="2" fill="#EEECE6" stroke="#8B6914" stroke-width="1.5"/>
+      <text x="160" y="128" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#8B6914">AND</text>
+      <text x="160" y="144" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">series</text>
+      <!-- CARRY output from AND -->
+      <line x1="200" y1="130" x2="290" y2="130" stroke="#8B6914" stroke-width="2"/>
+      <!-- CARRY label -->
+      <rect x="290" y="118" width="100" height="24" rx="1" fill="#8B6914" opacity="0.12"/>
+      <text x="340" y="134" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#8B6914">CARRY</text>
+
+      <!-- OR block -->
+      <rect x="120" y="184" width="80" height="72" rx="2" fill="#EEECE6" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="160" y="218" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#2E4057">OR</text>
+      <text x="160" y="234" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">parallel</text>
+      <line x1="80" y1="110" x2="80" y2="220" stroke="#2C2C2C" stroke-width="1" stroke-dasharray="3,2"/>
+      <line x1="80" y1="220" x2="120" y2="220" stroke="#2C2C2C" stroke-width="2"/>
+
+      <!-- NOT(AND) block -->
+      <rect x="250" y="184" width="80" height="72" rx="2" fill="#EEECE6" stroke="#C82A2A" stroke-width="1.5"/>
+      <text x="290" y="218" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#C82A2A">NOT</text>
+      <text x="290" y="234" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">NC relay</text>
+      <!-- CARRY feeds into NOT -->
+      <line x1="200" y1="130" x2="235" y2="130" stroke="#8B6914" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <line x1="235" y1="130" x2="235" y2="220" stroke="#8B6914" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <line x1="235" y1="220" x2="250" y2="220" stroke="#8B6914" stroke-width="1.5"/>
+
+      <!-- Final AND block (OR AND NOT_AND) -->
+      <rect x="380" y="184" width="80" height="72" rx="2" fill="#EEECE6" stroke="#2C2C2C" stroke-width="1.5"/>
+      <text x="420" y="218" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#2C2C2C">AND</text>
+      <line x1="200" y1="220" x2="380" y2="220" stroke="#2E4057" stroke-width="2"/>
+      <line x1="330" y1="220" x2="380" y2="220" stroke="#C82A2A" stroke-width="2"/>
+
+      <!-- SUM output -->
+      <line x1="460" y1="220" x2="500" y2="220" stroke="#C82A2A" stroke-width="2"/>
+      <rect x="500" y="208" width="100" height="24" rx="1" fill="#C82A2A" opacity="0.1"/>
+      <text x="550" y="224" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#C82A2A">SUM</text>
+
+      <!-- Right: truth table -->
+      <rect x="600" y="56" width="560" height="280" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="600" y="56" width="560" height="26" fill="#EEECE6"/>
+      <text x="880" y="74" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">HALF ADDER TRUTH TABLE</text>
+
+      <!-- Column headers -->
+      <g font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">
+        <text x="670" y="100" fill="#888880">A</text>
+        <text x="730" y="100" fill="#888880">B</text>
+        <text x="830" y="100" fill="#888880">A+B decimal</text>
+        <text x="1000" y="100" fill="#C82A2A">SUM</text>
+        <text x="1100" y="100" fill="#8B6914">CARRY</text>
+      </g>
+      <line x1="608" y1="106" x2="1152" y2="106" stroke="#E8E6DF" stroke-width="0.5"/>
+
+      <!-- Data rows -->
+      <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle">
+        <rect x="600" y="107" width="560" height="38" fill="#F8F7F3"/>
+        <text x="670" y="133" fill="#2C2C2C">0</text><text x="730" y="133" fill="#2C2C2C">0</text>
+        <text x="830" y="133" fill="#888880">0</text>
+        <text x="1000" y="133" fill="#888880">0</text><text x="1100" y="133" fill="#888880">0</text>
+
+        <rect x="600" y="145" width="560" height="38" fill="#FDFDFD"/>
+        <text x="670" y="171" fill="#2C2C2C">0</text><text x="730" y="171" fill="#728C69">1</text>
+        <text x="830" y="171" fill="#888880">1</text>
+        <text x="1000" y="171" fill="#728C69">1</text><text x="1100" y="171" fill="#888880">0</text>
+
+        <rect x="600" y="183" width="560" height="38" fill="#F8F7F3"/>
+        <text x="670" y="209" fill="#728C69">1</text><text x="730" y="209" fill="#2C2C2C">0</text>
+        <text x="830" y="209" fill="#888880">1</text>
+        <text x="1000" y="209" fill="#728C69">1</text><text x="1100" y="209" fill="#888880">0</text>
+
+        <rect x="600" y="221" width="560" height="38" fill="#FDFDFD"/>
+        <text x="670" y="247" fill="#728C69">1</text><text x="730" y="247" fill="#728C69">1</text>
+        <text x="830" y="247" fill="#C82A2A">2</text>
+        <text x="1000" y="247" fill="#888880">0</text><text x="1100" y="247" fill="#C82A2A">1</text>
+      </g>
+
+      <!-- Insight: carry = overflow -->
+      <rect x="608" y="268" width="544" height="56" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="880" y="288" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">1+1=2, but binary has no digit 2.</text>
+      <text x="880" y="306" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880">The result overflows to the next column: SUM=0, CARRY=1</text>
+      <text x="880" y="320" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">1 + 1 = 10 (binary two)</text>
+
+      <rect x="0" y="348" width="1200" height="32" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="368" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 1.3-B · Relay half adder: XOR produces the SUM bit, AND produces the CARRY bit. 1+1 overflows to carry — the first binary arithmetic result.</text>
+      <text x="1140" y="368" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 1.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">A relay half adder built from AND, OR, and NOT relay circuits. SUM = A XOR B (computed as (A OR B) AND NOT(A AND B)). CARRY = A AND B. The critical insight from the truth table: 1+1 in binary produces SUM=0 and CARRY=1 — the carry represents the overflow into the next column. Chaining two half adders with an OR gate for carries produces a full adder, which is the foundation of every arithmetic unit ever built.</div>
+</div>
+
+<!-- FIG 1.3-C  Shannon's Theorem -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Concept Diagram</span>
+    <span class="fig-id">FIG 1.3-C</span>
+    <span class="fig-title">Shannon 1937 — Circuits Are Boolean Algebra</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+
+      <!-- Left: Boolean expression -->
+      <rect x="40" y="30" width="320" height="200" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="30" width="320" height="26" fill="#2E4057" opacity="0.08"/>
+      <text x="200" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">BOOLEAN EXPRESSION</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="14" fill="#2C2C2C">
+        <text x="60" y="86">f(A,B) =</text>
+        <text x="60" y="114">  (A AND B)</text>
+        <text x="60" y="142">  OR</text>
+        <text x="60" y="170">  (NOT A AND B)</text>
+      </g>
+      <text x="200" y="208" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#C82A2A">= B</text>
+      <text x="200" y="224" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">(simplified)</text>
+
+      <!-- Arrow: expression → circuit -->
+      <path d="M364 130 L400 130" stroke="#C82A2A" stroke-width="2" fill="none" marker-end="url(#sha)"/>
+      <text x="382" y="120" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">direct</text>
+      <text x="382" y="133" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">mapping</text>
+      <defs>
+        <marker id="sha" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+      </defs>
+
+      <!-- Centre: relay circuit representation -->
+      <rect x="400" y="30" width="360" height="200" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="400" y="30" width="360" height="26" fill="#2E4057" opacity="0.08"/>
+      <text x="580" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">RELAY CIRCUIT</text>
+      <!-- Simplified relay network sketch -->
+      <line x1="420" y1="130" x2="460" y2="130" stroke="#2C2C2C" stroke-width="2"/>
+      <!-- AND branch (upper) -->
+      <path d="M460 130 L460 100 L560 100" stroke="#2C2C2C" stroke-width="2"/>
+      <rect x="465" y="90" width="30" height="20" rx="1" fill="#C8C0B4" stroke="#A8A09A" stroke-width="1"/><!-- A -->
+      <text x="480" y="103" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">A</text>
+      <rect x="505" y="90" width="30" height="20" rx="1" fill="#C8C0B4" stroke="#A8A09A" stroke-width="1"/><!-- B -->
+      <text x="520" y="103" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">B</text>
+      <!-- NOT-A AND B branch (lower) -->
+      <path d="M460 130 L460 160 L560 160" stroke="#2C2C2C" stroke-width="2"/>
+      <rect x="465" y="150" width="30" height="20" rx="1" fill="#C8C0B4" stroke="#C82A2A" stroke-width="1"/><!-- NOT-A -->
+      <text x="480" y="163" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">¬A</text>
+      <rect x="505" y="150" width="30" height="20" rx="1" fill="#C8C0B4" stroke="#A8A09A" stroke-width="1"/><!-- B -->
+      <text x="520" y="163" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">B</text>
+      <!-- Merge and output -->
+      <path d="M560 100 L600 100 L600 130 L620 130" stroke="#2C2C2C" stroke-width="2"/>
+      <path d="M560 160 L600 160 L600 130" stroke="#2C2C2C" stroke-width="2"/>
+      <line x1="620" y1="130" x2="680" y2="130" stroke="#728C69" stroke-width="2"/>
+      <text x="700" y="134" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">B</text>
+
+      <!-- Arrow: circuit → algebra rule -->
+      <path d="M764 130 L800 130" stroke="#C82A2A" stroke-width="2" fill="none" marker-end="url(#sha)"/>
+      <text x="782" y="120" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">simplify</text>
+
+      <!-- Right: key laws -->
+      <rect x="800" y="30" width="360" height="200" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="800" y="30" width="360" height="26" fill="#2E4057" opacity="0.08"/>
+      <text x="980" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">SHANNON'S INSIGHT — 1937</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="820" y="74">Series contacts → AND</text>
+        <text x="820" y="92">Parallel contacts → OR</text>
+        <text x="820" y="110">Normally-closed → NOT</text>
+        <line x1="820" y1="120" x2="1140" y2="120" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="820" y="140" fill="#2E4057" font-weight="500">Therefore:</text>
+        <text x="820" y="158">Any Boolean expression</text>
+        <text x="820" y="176">can be implemented as a</text>
+        <text x="820" y="194">relay (or transistor) circuit</text>
+        <text x="820" y="212" fill="#C82A2A" font-family="'JetBrains Mono',monospace" font-size="10">⟹ circuits ARE algebra</text>
+      </g>
+
+      <!-- Bottom -->
+      <rect x="0" y="248" width="1200" height="32" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="268" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 1.3-C · Shannon's 1937 thesis: Boolean expressions map directly to relay circuits. Series = AND, parallel = OR, normally-closed = NOT. Every circuit can be analysed and simplified algebraically — the birth of digital circuit design.</text>
+      <text x="1140" y="268" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 1.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Claude Shannon's 1937 master's thesis established that relay switching circuits implement Boolean algebra. Series relay contacts correspond to the AND operation. Parallel paths correspond to OR. Normally-closed contacts correspond to NOT. This means any Boolean expression can be directly translated into a relay circuit, and any relay circuit can be analysed and minimised using Boolean algebra. This thesis — submitted when Shannon was 21 — is arguably the most important master's thesis ever written, because it gave engineers a mathematical language to design digital systems.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 8.2 — Network Layer and IP Routing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 8 — Networks &amp; Protocols</div>
+  <div class="page-title">Module 8.2 — Network Layer and IP Routing</div>
+  <div class="page-sub">3 figures · IPv4 Header · Routing Table Lookup · Subnetting and CIDR</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 8.2-A  IPv4 Header -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 8.2-A</span>
+    <span class="fig-title">IPv4 Packet Header — All 13 Fields with Bit Widths</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <defs><linearGradient id="ipBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="380" fill="url(#ipBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">IPv4 HEADER — 20 BYTES MINIMUM — BIT-LEVEL FIELD LAYOUT</text>
+
+      <!-- Bit ruler -->
+      <text x="40" y="52" font-family="'Inter',sans-serif" font-size="9" fill="#888880">bit offset:</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880" text-anchor="middle">
+        <text x="100" y="52">0</text><text x="390" y="52">8</text>
+        <text x="680" y="52">16</text><text x="970" y="52">24</text>
+        <text x="1120" y="52">31</text>
+      </g>
+      <line x1="80" y1="55" x2="1160" y2="55" stroke="#D8D6CE" stroke-width="0.5"/>
+
+      <!-- Row 1: Version | IHL | DSCP | ECN | Total Length -->
+      <rect x="80" y="60" width="144" height="34" fill="#2E4057" opacity="0.75" stroke="#2E4057" stroke-width="0.5"/>
+      <text x="152" y="73" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">Version</text>
+      <text x="152" y="86" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#BBBBB5">4 bits = "4"</text>
+      <rect x="224" y="60" width="144" height="34" fill="#2E4057" opacity="0.6" stroke="#2E4057" stroke-width="0.5"/>
+      <text x="296" y="73" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">IHL</text>
+      <text x="296" y="86" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#BBBBB5">4 bits</text>
+      <rect x="368" y="60" width="216" height="34" fill="#8B6914" opacity="0.6" stroke="#8B6914" stroke-width="0.5"/>
+      <text x="476" y="73" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">DSCP / ECN</text>
+      <text x="476" y="86" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#DDDDD5">8 bits (QoS)</text>
+      <rect x="584" y="60" width="576" height="34" fill="#728C69" opacity="0.6" stroke="#728C69" stroke-width="0.5"/>
+      <text x="872" y="73" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">Total Length</text>
+      <text x="872" y="86" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#DDDDD5">16 bits — header + payload in bytes</text>
+
+      <!-- Row 2: Identification | Flags | Fragment Offset -->
+      <rect x="80" y="98" width="432" height="34" fill="#C82A2A" opacity="0.5" stroke="#C82A2A" stroke-width="0.5"/>
+      <text x="296" y="111" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">Identification</text>
+      <text x="296" y="124" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#DDDDD5">16 bits — fragment group ID</text>
+      <rect x="512" y="98" width="108" height="34" fill="#C82A2A" opacity="0.7" stroke="#C82A2A" stroke-width="0.5"/>
+      <text x="566" y="111" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">Flags</text>
+      <text x="566" y="124" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#DDDDD5">3 bits</text>
+      <rect x="620" y="98" width="540" height="34" fill="#C82A2A" opacity="0.45" stroke="#C82A2A" stroke-width="0.5"/>
+      <text x="890" y="111" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">Fragment Offset</text>
+      <text x="890" y="124" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#DDDDD5">13 bits</text>
+
+      <!-- Row 3: TTL | Protocol | Header Checksum -->
+      <rect x="80" y="136" width="216" height="34" fill="#8B6914" opacity="0.75" stroke="#8B6914" stroke-width="0.5"/>
+      <text x="188" y="149" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">TTL</text>
+      <text x="188" y="162" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#DDDDD5">8 bits — hops remaining</text>
+      <rect x="296" y="136" width="216" height="34" fill="#8B6914" opacity="0.55" stroke="#8B6914" stroke-width="0.5"/>
+      <text x="404" y="149" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">Protocol</text>
+      <text x="404" y="162" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#DDDDD5">8 bits (6=TCP, 17=UDP)</text>
+      <rect x="512" y="136" width="648" height="34" fill="#888880" opacity="0.4" stroke="#888880" stroke-width="0.5"/>
+      <text x="836" y="149" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2C2C2C">Header Checksum</text>
+      <text x="836" y="162" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">16 bits — header integrity only</text>
+
+      <!-- Row 4: Source IP -->
+      <rect x="80" y="174" width="1080" height="34" fill="#2E4057" opacity="0.8" stroke="#2E4057" stroke-width="1"/>
+      <text x="620" y="187" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">Source IP Address</text>
+      <text x="620" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">32 bits — e.g. 192.168.1.2</text>
+
+      <!-- Row 5: Dest IP -->
+      <rect x="80" y="212" width="1080" height="34" fill="#2E4057" opacity="0.65" stroke="#2E4057" stroke-width="1"/>
+      <text x="620" y="225" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">Destination IP Address</text>
+      <text x="620" y="238" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">32 bits — e.g. 93.184.216.34</text>
+
+      <!-- Options row (variable) -->
+      <rect x="80" y="250" width="1080" height="30" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5" stroke-dasharray="4,2"/>
+      <text x="620" y="270" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Options (0–40 bytes, rarely used) + Padding</text>
+
+      <!-- Key field notes -->
+      <rect x="80" y="296" width="1080" height="60" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="96" y="316" fill="#8B6914" font-weight="500">TTL</text><text x="120" y="316">: set to 64 or 128 by OS. Decremented at every router. If hits 0 → ICMP "Time Exceeded" sent back → prevents infinite loops.</text>
+        <text x="96" y="336" fill="#C82A2A" font-weight="500">Flags</text><text x="130" y="336">: DF (Don't Fragment) bit — if set, router drops and sends ICMP "Fragmentation Needed" → used by Path MTU Discovery.</text>
+        <text x="96" y="352" fill="#2E4057" font-weight="500">Protocol</text><text x="148" y="352">: 1=ICMP (ping), 6=TCP, 17=UDP, 41=IPv6 tunnelled, 89=OSPF routing.</text>
+      </g>
+
+      <rect x="0" y="362" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="375" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 8.2-A · IPv4 header is 20 bytes minimum, 60 bytes maximum (with options). Each row is 32 bits (one word). Source and destination IP addresses are the routing key at every hop.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">IPv4 packet header — 20 bytes minimum in 5 rows of 32 bits each. The most critical fields: Source and Destination IP (32 bits each) are the addresses every router uses to forward the packet. TTL (Time to Live) prevents routing loops — each router decrements it by 1; at 0 the packet is dropped and an ICMP Time Exceeded message is sent back. Protocol identifies the payload type (6=TCP, 17=UDP) so the receiving host knows how to parse the payload. IHL (Internet Header Length) specifies the header length in 32-bit words — necessary because the Options field makes the header variable-length. The Fragmentation fields allow large packets to be split by routers with smaller MTUs.</div>
+</div>
+
+<!-- FIG 8.2-B  Routing Table Lookup -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 8.2-B</span>
+    <span class="fig-title">Routing Table — Longest Prefix Match for 192.168.5.100</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">ROUTING TABLE LOOKUP — LONGEST PREFIX MATCH FOR DEST 192.168.5.100</text>
+
+      <!-- Routing table -->
+      <rect x="40" y="44" width="640" height="244" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="44" width="640" height="24" fill="#2E4057" opacity="0.08"/>
+      <g font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.08em" text-anchor="middle">
+        <text x="160" y="60">DESTINATION</text>
+        <text x="340" y="60">NEXT HOP</text>
+        <text x="480" y="60">INTERFACE</text>
+        <text x="610" y="60">METRIC</text>
+      </g>
+      <g stroke="#E8E6DF" stroke-width="0.5">
+        <line x1="260" y1="44" x2="260" y2="288"/><line x1="420" y1="44" x2="420" y2="288"/>
+        <line x1="540" y1="44" x2="540" y2="288"/>
+      </g>
+      <!-- Route rows -->
+      <g font-family="'JetBrains Mono',monospace" font-size="12">
+        <!-- Default route -->
+        <rect x="40" y="68" width="640" height="36" fill="#F8F7F3"/>
+        <text x="160" y="92" text-anchor="middle" fill="#888880">0.0.0.0/0</text>
+        <text x="340" y="92" text-anchor="middle" fill="#888880">10.0.0.1</text>
+        <text x="480" y="92" text-anchor="middle" fill="#888880">eth0</text>
+        <text x="610" y="92" text-anchor="middle" fill="#888880">100</text>
+        <!-- /8 route -->
+        <rect x="40" y="104" width="640" height="36" fill="#FDFDFD"/>
+        <text x="160" y="128" text-anchor="middle" fill="#8B6914">192.0.0.0/8</text>
+        <text x="340" y="128" text-anchor="middle" fill="#8B6914">10.0.0.2</text>
+        <text x="480" y="128" text-anchor="middle" fill="#8B6914">eth0</text>
+        <text x="610" y="128" text-anchor="middle" fill="#8B6914">50</text>
+        <!-- /16 route -->
+        <rect x="40" y="140" width="640" height="36" fill="#8B6914" opacity="0.08"/>
+        <text x="160" y="164" text-anchor="middle" fill="#8B6914">192.168.0.0/16</text>
+        <text x="340" y="164" text-anchor="middle" fill="#8B6914">10.0.0.3</text>
+        <text x="480" y="164" text-anchor="middle" fill="#8B6914">eth1</text>
+        <text x="610" y="164" text-anchor="middle" fill="#8B6914">30</text>
+        <!-- /24 route — WINNER -->
+        <rect x="40" y="176" width="640" height="36" fill="#728C69" opacity="0.25" stroke="#728C69" stroke-width="1.5"/>
+        <text x="160" y="200" text-anchor="middle" fill="#728C69" font-weight="500">192.168.5.0/24</text>
+        <text x="340" y="200" text-anchor="middle" fill="#728C69" font-weight="500">10.0.1.1</text>
+        <text x="480" y="200" text-anchor="middle" fill="#728C69" font-weight="500">eth2</text>
+        <text x="610" y="200" text-anchor="middle" fill="#728C69" font-weight="500">10</text>
+        <text x="690" y="200" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">← WINNER (longest match)</text>
+        <!-- /32 host route -->
+        <rect x="40" y="212" width="640" height="36" fill="#FDFDFD"/>
+        <text x="160" y="236" text-anchor="middle" fill="#C82A2A">10.5.5.5/32</text>
+        <text x="340" y="236" text-anchor="middle" fill="#888880">10.0.0.9</text>
+        <text x="480" y="236" text-anchor="middle" fill="#888880">eth0</text>
+        <text x="610" y="236" text-anchor="middle" fill="#888880">5</text>
+        <!-- Loopback -->
+        <rect x="40" y="248" width="640" height="36" fill="#F8F7F3"/>
+        <text x="160" y="272" text-anchor="middle" fill="#888880">127.0.0.0/8</text>
+        <text x="340" y="272" text-anchor="middle" fill="#888880">—</text>
+        <text x="480" y="272" text-anchor="middle" fill="#888880">lo</text>
+        <text x="610" y="272" text-anchor="middle" fill="#888880">0</text>
+      </g>
+
+      <!-- Explanation panel -->
+      <rect x="720" y="44" width="440" height="244" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="720" y="44" width="440" height="24" fill="#728C69" opacity="0.1"/>
+      <text x="940" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69" letter-spacing="0.1em">LONGEST PREFIX MATCH ALGORITHM</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="736" y="86">Dest: 192.168.5.100</text>
+        <text x="736" y="104" fill="#888880" font-size="10">Binary: 11000000.10101000.00000101.01100100</text>
+        <line x1="736" y1="114" x2="1144" y2="114" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="736" y="134">Match /0 prefix:</text><text x="920" y="134" fill="#728C69">✓ (always matches)</text>
+        <text x="736" y="154">Match /8 192.x.x.x:</text><text x="930" y="154" fill="#728C69">✓ 192 matches</text>
+        <text x="736" y="174">Match /16 192.168.x.x:</text><text x="960" y="174" fill="#728C69">✓ 192.168 matches</text>
+        <text x="736" y="194" fill="#728C69" font-weight="500">Match /24 192.168.5.x:</text><text x="990" y="194" fill="#728C69">✓ BEST MATCH</text>
+        <text x="736" y="214">Match /32 10.5.5.5:</text><text x="930" y="214" fill="#C82A2A">✗ no match</text>
+        <line x1="736" y1="224" x2="1144" y2="224" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="736" y="244" fill="#728C69">→ Forward to 10.0.1.1 via eth2</text>
+        <text x="736" y="262" fill="#888880" font-size="9">Most specific prefix wins.</text>
+        <text x="736" y="278" fill="#888880" font-size="9">Longer prefix = more specific = preferred.</text>
+      </g>
+
+      <rect x="0" y="302" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="315" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 8.2-B · Longest prefix match: routers find all matching prefixes for the destination IP, then forward via the entry with the most bits matching (most specific route). /24 beats /16 beats /8 beats /0.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Routing table lookup using longest prefix match. For destination 192.168.5.100, the router tests every entry: the default route /0 always matches, /8 matches on the first octet, /16 matches on the first two octets, and /24 matches on the first three octets. The /24 entry (192.168.5.0/24) is the most specific match — more bits agree with the destination — so the packet is forwarded to next-hop 10.0.1.1 on interface eth2. This algorithm runs on every router for every packet. Modern routers implement it in hardware using TCAM (Ternary Content-Addressable Memory) at line rate — billions of lookups per second.</div>
+</div>
+
+<!-- FIG 8.2-C  Subnetting and CIDR -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type B — Concept Diagram</span>
+    <span class="fig-id">FIG 8.2-C</span>
+    <span class="fig-title">Subnetting and CIDR — How IP Addresses Are Allocated in Blocks</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:220px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">CIDR NOTATION: 192.168.1.0/24 — NETWORK BITS AND HOST BITS</text>
+
+      <!-- IP address breakdown -->
+      <text x="60" y="56" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">ADDRESS: 192.168.1.42</text>
+      <!-- Bit-level breakdown -->
+      <g font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">
+        <!-- Octet 1: 192 = 11000000 -->
+        <rect x="60" y="64" width="200" height="36" fill="#2E4057" opacity="0.8"/>
+        <text x="160" y="78" fill="#FDFDFD" font-size="10">192</text>
+        <text x="160" y="92" fill="#BBBBB5" font-size="9">1100 0000</text>
+        <!-- Octet 2: 168 = 10101000 -->
+        <rect x="264" y="64" width="200" height="36" fill="#2E4057" opacity="0.65"/>
+        <text x="364" y="78" fill="#FDFDFD" font-size="10">168</text>
+        <text x="364" y="92" fill="#BBBBB5" font-size="9">1010 1000</text>
+        <!-- Octet 3: 1 = 00000001 -->
+        <rect x="468" y="64" width="200" height="36" fill="#2E4057" opacity="0.5"/>
+        <text x="568" y="78" fill="#FDFDFD" font-size="10">1</text>
+        <text x="568" y="92" fill="#BBBBB5" font-size="9">0000 0001</text>
+        <!-- Octet 4: 42 = 00101010 — host bits -->
+        <rect x="672" y="64" width="200" height="36" fill="#C82A2A" opacity="0.65"/>
+        <text x="772" y="78" fill="#FDFDFD" font-size="10">42</text>
+        <text x="772" y="92" fill="#DDDDD5" font-size="9">0010 1010</text>
+      </g>
+      <!-- Network / host labels -->
+      <rect x="60" y="100" width="608" height="20" fill="#2E4057" opacity="0.15"/>
+      <text x="364" y="115" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">NETWORK BITS (/24 = first 24 bits fixed)</text>
+      <rect x="672" y="100" width="200" height="20" fill="#C82A2A" opacity="0.15"/>
+      <text x="772" y="115" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">HOST BITS (8 bits free)</text>
+
+      <!-- Subnet mask -->
+      <text x="60" y="148" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">SUBNET MASK /24 = 255.255.255.0 = 1111...11100...0</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">
+        <rect x="60" y="156" width="200" height="28" fill="#2E4057" opacity="0.5"/>
+        <text x="160" y="175" fill="#FDFDFD">255</text>
+        <rect x="264" y="156" width="200" height="28" fill="#2E4057" opacity="0.5"/>
+        <text x="364" y="175" fill="#FDFDFD">255</text>
+        <rect x="468" y="156" width="200" height="28" fill="#2E4057" opacity="0.5"/>
+        <text x="568" y="175" fill="#FDFDFD">255</text>
+        <rect x="672" y="156" width="200" height="28" fill="#888880" opacity="0.3"/>
+        <text x="772" y="175" fill="#888880">0</text>
+      </g>
+
+      <!-- Key facts panel -->
+      <rect x="920" y="52" width="240" height="180" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="920" y="52" width="240" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="1040" y="68" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">CIDR BLOCKS</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">
+        <text x="936" y="94">/32 = 1 host</text>
+        <text x="936" y="112">/30 = 4 hosts (2 usable)</text>
+        <text x="936" y="130">/24 = 256 hosts (254)</text>
+        <text x="936" y="148">/16 = 65536 hosts</text>
+        <text x="936" y="166">/8  = 16M hosts</text>
+        <text x="936" y="184">/0  = all addresses</text>
+        <text x="936" y="204" fill="#888880" font-size="9">2^(32-prefix) addresses</text>
+        <text x="936" y="220" fill="#C82A2A" font-size="9">-2 for network + broadcast</text>
+      </g>
+
+      <!-- Network address / broadcast -->
+      <rect x="60" y="206" width="820" height="44" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11">
+        <text x="80" y="226" fill="#2E4057">Network addr: 192.168.1.0</text>
+        <text x="80" y="242" fill="#888880" font-family="'Inter',sans-serif" font-size="9">(host bits all 0 — reserved)</text>
+        <text x="460" y="226" fill="#C82A2A">Broadcast:    192.168.1.255</text>
+        <text x="460" y="242" fill="#888880" font-family="'Inter',sans-serif" font-size="9">(host bits all 1 — sent to all hosts)</text>
+      </g>
+
+      <rect x="0" y="264" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="276" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 8.2-C · /24 subnet = 256 addresses. First (network) and last (broadcast) reserved. 254 usable hosts. IP AND subnet-mask isolates network bits for routing decisions.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">CIDR (Classless Inter-Domain Routing) notation specifies how many leading bits are the network address. 192.168.1.0/24 means the first 24 bits (the first three octets) are fixed — they identify the network — and the remaining 8 bits identify individual hosts within that network. The subnet mask (255.255.255.0) is a bitmask with 1s for network bits and 0s for host bits; bitwise AND of any address with the mask yields the network address. The first address (all host bits 0) is the network identifier and the last (all host bits 1) is the broadcast address — both are reserved. This gives 254 usable host addresses in a /24. CIDR replaced the older class-based (A/B/C) allocation, allowing arbitrary prefix lengths and much more efficient address allocation.</div>
+</div>
+
+</div>
+</body>
+</html>

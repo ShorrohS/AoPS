@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 12.1 — Large Language Model Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 12 — Advanced AI</div>
+  <div class="page-title">Module 12.1 — Large Language Model Architecture</div>
+  <div class="page-sub">3 figures · Tokenisation · Transformer Architecture · Self-Attention Mechanism</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 12.1-A  Tokenisation -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 12.1-A</span>
+    <span class="fig-title">Tokenisation — Text to Token IDs via Byte Pair Encoding</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <defs><linearGradient id="llmBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="380" fill="url(#llmBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">TOKENISATION — TEXT SPLIT INTO SUBWORD UNITS, MAPPED TO INTEGER IDs</text>
+
+      <!-- Input text -->
+      <text x="60" y="58" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">INPUT TEXT:</text>
+      <rect x="60" y="66" width="1080" height="36" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <text x="600" y="89" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#728C69">"The transformer architecture changed everything about NLP."</text>
+
+      <!-- BPE tokenisation step -->
+      <text x="60" y="126" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">BPE TOKENISATION (GPT-2 vocabulary ~50K tokens):</text>
+      <!-- Coloured token blocks -->
+      <g font-family="'JetBrains Mono',monospace" font-size="12">
+        <rect x="60" y="136" width="72" height="36" fill="#2E4057" opacity="0.75" rx="1"/><text x="96" y="158" text-anchor="middle" fill="#FDFDFD">The</text>
+        <rect x="136" y="136" width="15" height="36" fill="#888880" opacity="0.4" rx="1"/><text x="143" y="158" text-anchor="middle" fill="#888880" font-size="8">▁</text>
+        <rect x="155" y="136" width="140" height="36" fill="#728C69" opacity="0.75" rx="1"/><text x="225" y="158" text-anchor="middle" fill="#FDFDFD">transform</text>
+        <rect x="299" y="136" width="56" height="36" fill="#728C69" opacity="0.55" rx="1"/><text x="327" y="158" text-anchor="middle" fill="#FDFDFD">er</text>
+        <rect x="359" y="136" width="15" height="36" fill="#888880" opacity="0.4" rx="1"/>
+        <rect x="378" y="136" width="130" height="36" fill="#C82A2A" opacity="0.65" rx="1"/><text x="443" y="158" text-anchor="middle" fill="#FDFDFD">architect</text>
+        <rect x="512" y="136" width="60" height="36" fill="#C82A2A" opacity="0.5" rx="1"/><text x="542" y="158" text-anchor="middle" fill="#FDFDFD">ure</text>
+        <rect x="576" y="136" width="15" height="36" fill="#888880" opacity="0.4" rx="1"/>
+        <rect x="595" y="136" width="100" height="36" fill="#8B6914" opacity="0.65" rx="1"/><text x="645" y="158" text-anchor="middle" fill="#FDFDFD">changed</text>
+        <rect x="699" y="136" width="15" height="36" fill="#888880" opacity="0.4" rx="1"/>
+        <rect x="718" y="136" width="100" height="36" fill="#8B6914" opacity="0.5" rx="1"/><text x="768" y="158" text-anchor="middle" fill="#FDFDFD">everyth</text>
+        <rect x="822" y="136" width="50" height="36" fill="#8B6914" opacity="0.4" rx="1"/><text x="847" y="158" text-anchor="middle" fill="#FDFDFD">ing</text>
+        <rect x="876" y="136" width="15" height="36" fill="#888880" opacity="0.4" rx="1"/>
+        <rect x="895" y="136" width="60" height="36" fill="#2E4057" opacity="0.5" rx="1"/><text x="925" y="158" text-anchor="middle" fill="#FDFDFD">about</text>
+        <rect x="959" y="136" width="15" height="36" fill="#888880" opacity="0.4" rx="1"/>
+        <rect x="978" y="136" width="60" height="36" fill="#2E4057" opacity="0.5" rx="1"/><text x="1008" y="158" text-anchor="middle" fill="#FDFDFD">NLP</text>
+        <rect x="1042" y="136" width="30" height="36" fill="#888880" opacity="0.35" rx="1"/><text x="1057" y="158" text-anchor="middle" fill="#FDFDFD">.</text>
+      </g>
+
+      <!-- Token IDs -->
+      <text x="60" y="198" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">TOKEN IDs (integers):</text>
+      <rect x="60" y="206" width="1080" height="32" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5" rx="1"/>
+      <text x="600" y="226" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">[ 464, 220, 5143, 263, 220, 10112, 495, 220, 3939, 220, 2279, 1996, 220, 1399, 220, 44, 19930, 13 ]</text>
+
+      <!-- BPE explanation -->
+      <rect x="60" y="258" width="1080" height="96" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="60" y="258" width="4" height="96" fill="#728C69"/>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="78" y="278" font-weight="500" fill="#728C69">Byte Pair Encoding (BPE)</text>
+        <text x="78" y="298">Start with individual characters. Iteratively merge the most frequent adjacent pair.</text>
+        <text x="78" y="316">Result: vocabulary of ~50,000 subword tokens. Common words = 1 token ("the"). Rare words = multiple tokens ("transf"+"orm"+"er").</text>
+        <text x="78" y="334" fill="#888880">Why not words?: OOV problem — new words (names, code, URLs) must be representable. BPE handles any text.</text>
+        <text x="78" y="350" fill="#888880">Why not characters?: sequence too long — a 1000-char text needs 1000 attention steps. BPE ≈ 250 tokens — 4× shorter.</text>
+      </g>
+
+      <rect x="0" y="362" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="375" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 12.1-A · BPE splits text into subword tokens, each mapped to an integer ID. The LLM never sees characters or words — only these integer sequences. Vocabulary ~50K for GPT-2, ~100K for GPT-4.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Tokenisation converts raw text into integer sequences that the model processes. Byte Pair Encoding (BPE) starts with a character-level vocabulary and iteratively merges the most frequent adjacent pair of tokens until a target vocabulary size is reached (~50,000 for GPT-2). Common words like "the" map to a single token. Rare words and neologisms are split into subword pieces ("transform" + "er"). This balances vocabulary size against sequence length — pure character tokenisation produces sequences 4-10× longer, dramatically increasing attention computation. Token IDs are the actual inputs to the model, which first looks them up in an embedding table to get continuous vector representations.</div>
+</div>
+
+<!-- FIG 12.1-B  Transformer Architecture -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type B — Architecture Diagram</span>
+    <span class="fig-id">FIG 12.1-B</span>
+    <span class="fig-title">Transformer Decoder Block — Attention, FFN, Residuals, Layer Norm</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <rect width="1200" height="360" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">TRANSFORMER DECODER BLOCK — REPEATED N TIMES IN GPT-STYLE LLM</text>
+
+      <!-- Single decoder block (left) -->
+      <text x="280" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">One Transformer Block</text>
+
+      <!-- Input -->
+      <text x="280" y="80" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">x (token embeddings + positional)</text>
+      <path d="M280 86 L280 100" stroke="#888880" stroke-width="1.5" fill="none"/>
+
+      <!-- Layer Norm 1 -->
+      <rect x="190" y="100" width="180" height="28" fill="#888880" opacity="0.3" rx="1"/>
+      <text x="280" y="118" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#2C2C2C">Layer Norm</text>
+      <path d="M280 128 L280 142" stroke="#888880" stroke-width="1.5" fill="none"/>
+
+      <!-- Causal Self-Attention -->
+      <rect x="160" y="142" width="240" height="40" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="280" y="162" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Causal Self-Attention</text>
+      <text x="280" y="176" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">Q, K, V projections · masked</text>
+      <path d="M280 182 L280 196" stroke="#888880" stroke-width="1.5" fill="none"/>
+
+      <!-- Residual add -->
+      <circle cx="280" cy="200" r="10" fill="#C82A2A" opacity="0.75"/>
+      <text x="280" y="204" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">+</text>
+      <!-- Residual skip arrow -->
+      <path d="M130 100 L130 200 L270 200" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="4,2"/>
+      <text x="90" y="155" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A" transform="rotate(-90,90,155)">residual</text>
+      <path d="M280 210 L280 224" stroke="#888880" stroke-width="1.5" fill="none"/>
+
+      <!-- Layer Norm 2 -->
+      <rect x="190" y="224" width="180" height="28" fill="#888880" opacity="0.3" rx="1"/>
+      <text x="280" y="242" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#2C2C2C">Layer Norm</text>
+      <path d="M280 252 L280 266" stroke="#888880" stroke-width="1.5" fill="none"/>
+
+      <!-- FFN -->
+      <rect x="160" y="266" width="240" height="40" fill="#728C69" opacity="0.75" rx="1"/>
+      <text x="280" y="286" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Feed-Forward Network</text>
+      <text x="280" y="300" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">d_model → 4×d_model → d_model</text>
+      <path d="M280 306 L280 320" stroke="#888880" stroke-width="1.5" fill="none"/>
+
+      <!-- Residual 2 -->
+      <circle cx="280" cy="324" r="10" fill="#C82A2A" opacity="0.75"/>
+      <text x="280" y="328" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">+</text>
+      <path d="M430 224 L430 324 L290 324" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="4,2"/>
+
+      <!-- Output -->
+      <text x="280" y="352" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">output (same shape as input)</text>
+
+      <!-- Right: GPT stack -->
+      <rect x="580" y="52" width="580" height="280" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="580" y="52" width="580" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="870" y="68" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">GPT-STYLE LLM FULL STACK</text>
+      <!-- Token embedding -->
+      <rect x="596" y="84" width="548" height="28" fill="#888880" opacity="0.3" rx="1"/>
+      <text x="870" y="102" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2C2C2C">Token Embedding + Positional Encoding</text>
+      <!-- Repeated blocks -->
+      <g>
+        <rect x="596" y="116" width="548" height="24" fill="#2E4057" opacity="0.65" rx="1"/>
+        <text x="870" y="132" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">Transformer Block 1</text>
+        <rect x="596" y="144" width="548" height="24" fill="#2E4057" opacity="0.6" rx="1"/>
+        <text x="870" y="160" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">Transformer Block 2</text>
+        <rect x="596" y="172" width="548" height="8" fill="#D8D6CE" rx="1"/>
+        <text x="870" y="194" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">... N blocks total ...</text>
+        <rect x="596" y="200" width="548" height="24" fill="#2E4057" opacity="0.55" rx="1"/>
+        <text x="870" y="216" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">Transformer Block N</text>
+      </g>
+      <!-- Output head -->
+      <rect x="596" y="228" width="548" height="28" fill="#728C69" opacity="0.65" rx="1"/>
+      <text x="870" y="246" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">Layer Norm + Linear → vocab (logits)</text>
+      <rect x="596" y="260" width="548" height="28" fill="#C82A2A" opacity="0.65" rx="1"/>
+      <text x="870" y="278" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">Softmax → P(next token | context)</text>
+      <!-- Scale note -->
+      <rect x="596" y="296" width="548" height="26" fill="#EEECE6"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle" fill="#888880">
+        <text x="870" y="307">GPT-2: 12 blocks · 768 d_model · 117M params</text>
+        <text x="870" y="319">GPT-3: 96 blocks · 12288 d_model · 175B params</text>
+      </g>
+
+      <rect x="0" y="342" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="355" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 12.1-B · One transformer block: LayerNorm → Self-Attention → residual add → LayerNorm → FFN → residual add. Residuals enable training very deep stacks. GPT stacks 12–96 blocks.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Transformer decoder block — the architectural unit stacked N times in GPT-style language models. Pre-layer normalisation stabilises training. Causal self-attention (masked so each token can only attend to previous tokens) captures context. The feed-forward network (two linear layers with GELU activation, expanding to 4× the model dimension internally) applies position-wise transformations. Residual connections ("skip connections") allow gradients to flow directly through the network without vanishing, enabling stacks of 96+ blocks. The final linear layer projects to vocabulary size (~50,000), and softmax converts logits to a probability distribution over the next token. Training: predict the next token at every position simultaneously (teacher forcing), minimise cross-entropy loss over the entire training corpus.</div>
+</div>
+
+<!-- FIG 12.1-C  Self-Attention -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 12.1-C</span>
+    <span class="fig-title">Self-Attention Mechanism — Q, K, V Matrices and Attention Scores</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">SELF-ATTENTION: EACH TOKEN ASKS "WHICH OTHER TOKENS ARE RELEVANT TO ME?"</text>
+
+      <!-- Formula chain (top) -->
+      <rect x="40" y="44" width="1120" height="34" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <text x="600" y="66" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#728C69">Attention(Q, K, V) = softmax( Q×Kᵀ / √dₖ ) × V</text>
+
+      <!-- Step by step -->
+      <!-- Q K V projections -->
+      <text x="60" y="104" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">STEP 1: Project each token to Q (query), K (key), V (value) vectors</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <rect x="40" y="112" width="100" height="28" fill="#C82A2A" opacity="0.6" rx="1"/><text x="90" y="130" fill="#FDFDFD">Q = xWq</text>
+        <rect x="160" y="112" width="100" height="28" fill="#8B6914" opacity="0.6" rx="1"/><text x="210" y="130" fill="#FDFDFD">K = xWk</text>
+        <rect x="280" y="112" width="100" height="28" fill="#728C69" opacity="0.6" rx="1"/><text x="330" y="130" fill="#FDFDFD">V = xWv</text>
+      </g>
+      <text x="230" y="160" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">learned linear projections (3 weight matrices Wq, Wk, Wv)</text>
+
+      <!-- Attention scores -->
+      <text x="430" y="104" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">STEP 2: Compute scores = Q×Kᵀ / √dₖ, then softmax</text>
+      <!-- Attention heatmap (4×4 tokens) -->
+      <g>
+        <text x="430" y="120" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">     T1   T2   T3   T4</text>
+        <text x="430" y="138" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">T1</text>
+        <rect x="460" y="126" width="28" height="18" fill="#2E4057" opacity="0.85"/><text x="474" y="138" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#FDFDFD">.7</text>
+        <rect x="490" y="126" width="28" height="18" fill="#2E4057" opacity="0.25"/><text x="504" y="138" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#FDFDFD">.2</text>
+        <rect x="520" y="126" width="28" height="18" fill="#2E4057" opacity="0.1"/><text x="534" y="138" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">.1</text>
+        <rect x="550" y="126" width="28" height="18" fill="#888880" opacity="0.2"/><text x="564" y="138" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">0</text>
+        <text x="430" y="154" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">T2</text>
+        <rect x="460" y="142" width="28" height="18" fill="#2E4057" opacity="0.5"/>
+        <rect x="490" y="142" width="28" height="18" fill="#2E4057" opacity="0.7"/>
+        <rect x="520" y="142" width="28" height="18" fill="#2E4057" opacity="0.15"/>
+        <rect x="550" y="142" width="28" height="18" fill="#888880" opacity="0.2"/>
+        <text x="430" y="170" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">T3</text>
+        <rect x="460" y="158" width="28" height="18" fill="#2E4057" opacity="0.3"/>
+        <rect x="490" y="158" width="28" height="18" fill="#2E4057" opacity="0.45"/>
+        <rect x="520" y="158" width="28" height="18" fill="#2E4057" opacity="0.8"/>
+        <rect x="550" y="158" width="28" height="18" fill="#888880" opacity="0.2"/>
+        <text x="430" y="186" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">T4</text>
+        <rect x="460" y="174" width="28" height="18" fill="#2E4057" opacity="0.2"/>
+        <rect x="490" y="174" width="28" height="18" fill="#2E4057" opacity="0.35"/>
+        <rect x="520" y="174" width="28" height="18" fill="#2E4057" opacity="0.5"/>
+        <rect x="550" y="174" width="28" height="18" fill="#2E4057" opacity="0.85"/>
+      </g>
+      <text x="500" y="214" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">attention weight matrix</text>
+      <text x="500" y="226" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">(causal: upper triangle = 0)</text>
+
+      <!-- Step 3: Weighted sum of V -->
+      <text x="700" y="104" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">STEP 3: Output = attention weights × V (weighted sum)</text>
+      <rect x="690" y="112" width="480" height="140" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1" rx="1"/>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="706" y="136">Each output token is a weighted average of all</text>
+        <text x="706" y="154">Value vectors. Weights = attention scores.</text>
+        <line x1="706" y1="164" x2="1154" y2="164" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="706" y="184" fill="#728C69">High score: "I really need this token's info"</text>
+        <text x="706" y="202" fill="#888880">Low score: "This token is irrelevant here"</text>
+        <line x1="706" y1="212" x2="1154" y2="212" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="706" y="232" fill="#2E4057">Multi-head: run H parallel attention</text>
+        <text x="706" y="248" fill="#2E4057">heads, concat + project outputs</text>
+      </g>
+
+      <rect x="0" y="282" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="295" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 12.1-C · Self-attention: Q queries "what do I need?", K keys answer "what do I have?", V values contain "what to return". Attention(Q,K,V) = softmax(QKᵀ/√dₖ)V. Each token attends to all previous tokens.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Self-attention is the core operation of the Transformer. Each input token is projected into three vectors: Query (what information am I looking for?), Key (what information do I contain?), and Value (what information should I provide?). Attention scores are computed as dot products of queries with all keys, scaled by √dₖ to prevent extremely small gradients, then normalised with softmax to form attention weights. The output is a weighted sum of value vectors — each token's output is a mixture of all other tokens' values, weighted by how relevant those tokens are. Causal masking sets attention weights to zero for future tokens, enabling autoregressive generation. Multi-head attention runs H parallel attention operations with different projections, allowing the model to capture different types of relationships simultaneously.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 10.4 — Full-Stack Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 10 — Web &amp; Application Development</div>
+  <div class="page-title">Module 10.4 — Full-Stack Architecture</div>
+  <div class="page-sub">3 figures · Three-Tier Architecture · Request Lifecycle · Authentication Flow</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 10.4-A  Three-Tier Architecture -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 10.4-A</span>
+    <span class="fig-title">Three-Tier Architecture — Client, Application Server, Database</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <defs><linearGradient id="fsBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="380" fill="url(#fsBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">THREE-TIER ARCHITECTURE — SEPARATION OF CONCERNS ACROSS LAYERS</text>
+
+      <!-- Tier 1: Presentation -->
+      <rect x="40" y="52" width="280" height="280" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5" rx="1"/>
+      <rect x="40" y="52" width="280" height="30" fill="#728C69" opacity="0.85" rx="1"/>
+      <text x="180" y="72" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">Tier 1 — Client</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="60" y="104">Technologies:</text>
+        <text x="60" y="124" fill="#728C69">HTML / CSS / JavaScript</text>
+        <text x="60" y="144">React, Vue, Angular</text>
+        <text x="60" y="164">Native mobile apps</text>
+        <line x1="56" y1="174" x2="304" y2="174" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="60" y="194">Responsibility:</text>
+        <text x="60" y="214" fill="#888880">Render UI from data</text>
+        <text x="60" y="234" fill="#888880">Handle user interactions</text>
+        <text x="60" y="254" fill="#888880">Call API for data</text>
+        <line x1="56" y1="264" x2="304" y2="264" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="60" y="284" fill="#888880" font-size="9">Runs in browser/device</text>
+        <text x="60" y="298" fill="#888880" font-size="9">No direct database access</text>
+        <text x="60" y="312" fill="#888880" font-size="9">Stateless between pages</text>
+      </g>
+
+      <!-- Arrow 1→2 -->
+      <path d="M320 192 Q380 192 420 192" stroke="#2C2C2C" stroke-width="2" fill="none"/>
+      <path d="M416 188 L424 192 L416 196" fill="#2C2C2C"/>
+      <text x="370" y="180" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">HTTP/S</text>
+      <path d="M420 210 Q380 210 320 210" stroke="#728C69" stroke-width="2" fill="none" stroke-dasharray="4,2"/>
+      <path d="M324 206 L316 210 L324 214" fill="#728C69"/>
+      <text x="370" y="226" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">JSON</text>
+
+      <!-- Tier 2: Application -->
+      <rect x="424" y="52" width="352" height="280" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5" rx="1"/>
+      <rect x="424" y="52" width="352" height="30" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="600" y="72" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">Tier 2 — Application Server</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="440" y="104">Technologies:</text>
+        <text x="440" y="124" fill="#2E4057">Node.js, Django, Rails, Spring</text>
+        <text x="440" y="144">REST / GraphQL API</text>
+        <text x="440" y="164">Auth, validation, business logic</text>
+        <line x1="436" y1="174" x2="760" y2="174" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="440" y="194">Responsibility:</text>
+        <text x="440" y="214" fill="#888880">Parse HTTP requests</text>
+        <text x="440" y="234" fill="#888880">Authenticate / authorise</text>
+        <text x="440" y="254" fill="#888880">Apply business rules</text>
+        <text x="440" y="274" fill="#888880">Query database</text>
+        <line x1="436" y1="284" x2="760" y2="284" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="440" y="300" fill="#888880" font-size="9">Horizontally scalable (stateless)</text>
+        <text x="440" y="314" fill="#888880" font-size="9">Never trusts client input</text>
+      </g>
+
+      <!-- Arrow 2→3 -->
+      <path d="M776 192 Q820 192 856 192" stroke="#2C2C2C" stroke-width="2" fill="none"/>
+      <path d="M852 188 L860 192 L852 196" fill="#2C2C2C"/>
+      <text x="818" y="180" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">SQL/ORM</text>
+      <path d="M856 210 Q820 210 776 210" stroke="#8B6914" stroke-width="2" fill="none" stroke-dasharray="4,2"/>
+      <path d="M780 206 L772 210 L780 214" fill="#8B6914"/>
+      <text x="818" y="226" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">rows</text>
+
+      <!-- Tier 3: Data -->
+      <rect x="860" y="52" width="300" height="280" fill="#FDFDFD" stroke="#8B6914" stroke-width="1.5" rx="1"/>
+      <rect x="860" y="52" width="300" height="30" fill="#8B6914" opacity="0.85" rx="1"/>
+      <text x="1010" y="72" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">Tier 3 — Data</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="876" y="104">Technologies:</text>
+        <text x="876" y="124" fill="#8B6914">PostgreSQL, MySQL, MongoDB</text>
+        <text x="876" y="144">Redis (cache), S3 (files)</text>
+        <text x="876" y="164">Elasticsearch (search)</text>
+        <line x1="872" y1="174" x2="1144" y2="174" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="876" y="194">Responsibility:</text>
+        <text x="876" y="214" fill="#888880">Persist data reliably</text>
+        <text x="876" y="234" fill="#888880">Enforce data integrity</text>
+        <text x="876" y="254" fill="#888880">Efficient query execution</text>
+        <line x1="872" y1="264" x2="1144" y2="264" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="876" y="284" fill="#888880" font-size="9">Never directly accessible</text>
+        <text x="876" y="298" fill="#888880" font-size="9">from client tier</text>
+        <text x="876" y="312" fill="#888880" font-size="9">ACID transactions</text>
+      </g>
+
+      <rect x="0" y="360" width="1200" height="20" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="374" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 10.4-A · Three-tier architecture. Client (browser) never touches the database directly — all access goes through the application server API. Each tier can scale independently.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Three-tier architecture — the dominant pattern for web applications. The Client tier (browser, mobile app) only renders UI and makes HTTP requests; it never has direct database access. The Application Server tier handles all business logic — authentication, validation, business rules, database queries — and exposes a clean REST or GraphQL API. The Data tier persists state. This separation enables each tier to scale independently: add more app servers behind a load balancer without changing the client or database. It also enforces security: the client cannot bypass business logic to make direct database queries, and the database is not exposed to the public internet. An application server crash doesn't lose data; a database crash doesn't affect the app server's availability for cached responses.</div>
+</div>
+
+<!-- FIG 10.4-B  Request Lifecycle -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 10.4-B</span>
+    <span class="fig-title">Full-Stack Request Lifecycle — Browser to CDN to Load Balancer to App to DB</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:220px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">REQUEST LIFECYCLE: BROWSER → CDN → LOAD BALANCER → APP SERVER → CACHE → DATABASE</text>
+
+      <!-- Stages -->
+      <g>
+        <!-- Browser -->
+        <rect x="20" y="60" width="110" height="60" fill="#2E4057" opacity="0.8" rx="1"/>
+        <text x="75" y="87" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Browser</text>
+        <text x="75" y="103" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">user clicks</text>
+        <path d="M130 90 L156 90" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+        <path d="M152 86 L160 90 L152 94" fill="#2C2C2C"/>
+
+        <!-- CDN -->
+        <rect x="160" y="60" width="110" height="60" fill="#728C69" opacity="0.7" rx="1"/>
+        <text x="215" y="87" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">CDN</text>
+        <text x="215" y="103" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">static assets</text>
+        <text x="215" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">cache hit → return</text>
+        <text x="215" y="152" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">miss → forward</text>
+        <path d="M270 90 L296 90" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+        <path d="M292 86 L300 90 L292 94" fill="#2C2C2C"/>
+
+        <!-- Load Balancer -->
+        <rect x="300" y="60" width="130" height="60" fill="#8B6914" opacity="0.7" rx="1"/>
+        <text x="365" y="83" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Load</text>
+        <text x="365" y="97" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Balancer</text>
+        <text x="365" y="112" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">round-robin</text>
+        <path d="M430 90 L456 90" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+        <path d="M452 86 L460 90 L452 94" fill="#2C2C2C"/>
+
+        <!-- App Server (multiple) -->
+        <rect x="460" y="44" width="120" height="36" fill="#2E4057" opacity="0.75" rx="1"/>
+        <text x="520" y="66" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">App-1</text>
+        <rect x="460" y="84" width="120" height="36" fill="#2E4057" opacity="0.65" rx="1"/>
+        <text x="520" y="106" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">App-2</text>
+        <rect x="460" y="124" width="120" height="36" fill="#2E4057" opacity="0.55" rx="1"/>
+        <text x="520" y="146" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">App-3</text>
+        <text x="520" y="178" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">stateless replicas</text>
+        <!-- Arrow from app -->
+        <path d="M580 90 L606 90" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+        <path d="M602 86 L610 90 L602 94" fill="#2C2C2C"/>
+
+        <!-- Redis Cache -->
+        <rect x="610" y="60" width="110" height="60" fill="#C82A2A" opacity="0.65" rx="1"/>
+        <text x="665" y="87" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Redis</text>
+        <text x="665" y="103" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">in-memory cache</text>
+        <text x="665" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">hit → &lt;1ms</text>
+        <text x="665" y="152" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">miss → DB query</text>
+        <path d="M720 90 L746 90" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+        <path d="M742 86 L750 90 L742 94" fill="#2C2C2C"/>
+
+        <!-- Database -->
+        <rect x="750" y="60" width="120" height="60" fill="#8B6914" opacity="0.75" rx="1"/>
+        <text x="810" y="87" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">PostgreSQL</text>
+        <text x="810" y="103" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">primary DB</text>
+        <!-- DB replica -->
+        <path d="M870 90 L900 90" stroke="#8B6914" stroke-width="1" stroke-dasharray="3,2" fill="none"/>
+        <rect x="900" y="60" width="100" height="60" fill="#8B6914" opacity="0.4" rx="1"/>
+        <text x="950" y="87" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">Read</text>
+        <text x="950" y="103" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">Replica</text>
+        <text x="935" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">async replication</text>
+      </g>
+
+      <!-- Latency bar -->
+      <rect x="20" y="198" width="980" height="60" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle" fill="#888880">
+        <text x="75" y="218">browser</text><text x="75" y="232">~0ms</text>
+        <text x="215" y="218">CDN hit</text><text x="215" y="232">&lt;5ms</text>
+        <text x="365" y="218">LB</text><text x="365" y="232">&lt;1ms</text>
+        <text x="520" y="218">app</text><text x="520" y="232">1-50ms</text>
+        <text x="665" y="218" fill="#C82A2A">cache hit</text><text x="665" y="232" fill="#C82A2A">&lt;1ms</text>
+        <text x="810" y="218">DB query</text><text x="810" y="232">1-100ms</text>
+        <text x="950" y="218">read replica</text><text x="950" y="232">lag: &lt;100ms</text>
+      </g>
+      <text x="600" y="264" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">P95 target: full request &lt; 200ms. CDN serves ~80% of requests (static assets). Redis cache reduces DB load 10-100×.</text>
+
+      <rect x="0" y="278" stroke-width="0"/>
+    </svg>
+  </div>
+  <div class="fig-caption">Production request lifecycle for a scaled web application. The browser's request first hits a CDN — for static assets (JS, CSS, images) the CDN responds from edge cache in ~5ms. Dynamic API requests pass through a load balancer that distributes across stateless app server replicas (round-robin or least-connections). Each app server checks Redis for a cached result (~1ms) before querying the primary database. Read-heavy queries may hit a read replica to scale reads independently. The 80/20 rule of web performance: 80% of requests are static assets served by CDN; optimising CDN cache-hit rate has more impact than database tuning.</div>
+</div>
+
+<!-- FIG 10.4-C  Authentication Flow -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type E — Comparison</span>
+    <span class="fig-id">FIG 10.4-C</span>
+    <span class="fig-title">Authentication — Session Cookies vs JWT Tokens</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">SESSION COOKIES vs JWT TOKENS — TWO APPROACHES TO STATEFUL AUTHENTICATION</text>
+
+      <!-- Session cookies (left) -->
+      <rect x="40" y="44" width="520" height="224" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5" rx="1"/>
+      <rect x="40" y="44" width="520" height="26" fill="#2E4057" opacity="0.12"/>
+      <text x="300" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">Session Cookies — Server-Side State</text>
+      <!-- Flow -->
+      <text x="60" y="90" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">FLOW:</text>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="60" y="110">① POST /login {user, pass}</text>
+        <text x="60" y="128">② Server verifies, creates session in DB/Redis</text>
+        <text x="60" y="146">③ Server returns Set-Cookie: session_id=abc123</text>
+        <text x="60" y="164">④ Browser sends cookie on every request</text>
+        <text x="60" y="182">⑤ Server looks up session in store → user identity</text>
+        <line x1="56" y1="192" x2="544" y2="192" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="60" y="212" fill="#728C69">✓ Simple revocation (delete from store)</text>
+        <text x="60" y="230" fill="#728C69">✓ Small cookie (just an ID)</text>
+        <text x="60" y="248" fill="#C82A2A">✗ Requires session store (DB/Redis lookup per request)</text>
+        <text x="60" y="264" fill="#C82A2A">✗ Harder to scale across multiple servers</text>
+      </g>
+
+      <!-- JWT (right) -->
+      <rect x="640" y="44" width="520" height="224" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5" rx="1"/>
+      <rect x="640" y="44" width="520" height="26" fill="#728C69" opacity="0.12"/>
+      <text x="900" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">JWT Tokens — Stateless</text>
+      <text x="660" y="90" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">FLOW:</text>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="660" y="110">① POST /login {user, pass}</text>
+        <text x="660" y="128">② Server verifies, creates signed JWT token</text>
+        <text x="660" y="146">③ Server returns {access_token: "eyJh..."}</text>
+        <text x="660" y="164">④ Client sends: Authorization: Bearer eyJh...</text>
+        <text x="660" y="182">⑤ Server verifies signature → user identity. No DB lookup.</text>
+        <line x1="656" y1="192" x2="1144" y2="192" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="660" y="212" fill="#728C69">✓ Stateless — no session store needed</text>
+        <text x="660" y="230" fill="#728C69">✓ Works across multiple services (microservices)</text>
+        <text x="660" y="248" fill="#C82A2A">✗ Revocation is hard (token valid until expiry)</text>
+        <text x="660" y="264" fill="#C82A2A">✗ Larger payload (base64-encoded claims)</text>
+      </g>
+
+      <rect x="0" y="282" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="295" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 10.4-C · Sessions: server stores state, easy to revoke, requires DB lookup. JWTs: stateless, scales horizontally, hard to revoke before expiry. Use short-lived JWTs (15min) + refresh tokens.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Two approaches to stateful authentication in stateless HTTP. Session cookies store an opaque ID in the client cookie jar; the server looks up the session record on every request. Simple and revocable (delete the session from the store to log out any session), but requires a shared session store accessible to all app server replicas. JWT (JSON Web Token) embeds the user's identity and claims in a cryptographically signed token — any server that knows the signing key can verify it without a database lookup. This scales horizontally without a shared store but makes revocation hard: a valid JWT remains valid until its expiry time regardless of logout. The industry pattern: short-lived JWT access tokens (15 minutes) plus long-lived refresh tokens stored server-side (supporting revocation). OAuth 2.0 uses this pattern for third-party authentication (Sign in with Google).</div>
+</div>
+
+</div>
+</body>
+</html>

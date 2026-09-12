@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 4.4 Illustrations — Memory Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 4 — Software Foundations</div>
+  <div class="page-title">Module 4.4 — Memory Management</div>
+  <div class="page-sub">2 figures · Virtual Memory Address Space · Page Table Translation</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 4.4-A  Virtual Memory -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 4.4-A</span>
+    <span class="fig-title">Virtual Memory — Every Process Gets Its Own 48-bit Address Space</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 440" xmlns="http://www.w3.org/2000/svg" style="height:390px">
+      <defs>
+        <linearGradient id="vmBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="440" fill="url(#vmBg)"/>
+
+      <!-- Process A virtual space -->
+      <rect x="60" y="30" width="220" height="360" rx="1" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5"/>
+      <rect x="60" y="30" width="220" height="24" fill="#2E4057" opacity="0.1"/>
+      <text x="170" y="46" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" letter-spacing="0.1em">PROCESS A (PID 100)</text>
+      <!-- Segments top-down -->
+      <rect x="64" y="56" width="212" height="30" fill="#888880" opacity="0.15"/><text x="170" y="75" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">kernel</text>
+      <rect x="64" y="88" width="212" height="50" fill="#C82A2A" opacity="0.15"/><text x="170" y="117" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">stack (grows ↓)</text>
+      <rect x="64" y="140" width="212" height="40" fill="#888880" opacity="0.06"/><text x="170" y="163" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">gap</text>
+      <rect x="64" y="182" width="212" height="60" fill="#8B6914" opacity="0.15"/><text x="170" y="215" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#8B6914">heap (grows ↑)</text>
+      <rect x="64" y="244" width="212" height="40" fill="#728C69" opacity="0.15"/><text x="170" y="267" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">.bss</text>
+      <rect x="64" y="286" width="212" height="40" fill="#728C69" opacity="0.2"/><text x="170" y="309" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">.data</text>
+      <rect x="64" y="328" width="212" height="40" fill="#2E4057" opacity="0.15"/><text x="170" y="351" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">.text (code)</text>
+      <!-- Addresses -->
+      <text x="54" y="60" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="7" fill="#888880">0xFFFF…</text>
+      <text x="54" y="372" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="7" fill="#888880">0x0000…</text>
+
+      <!-- Process B virtual space -->
+      <rect x="320" y="30" width="220" height="360" rx="1" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+      <rect x="320" y="30" width="220" height="24" fill="#C82A2A" opacity="0.08"/>
+      <text x="430" y="46" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" letter-spacing="0.1em">PROCESS B (PID 200)</text>
+      <rect x="324" y="56" width="212" height="30" fill="#888880" opacity="0.15"/><text x="430" y="75" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">kernel</text>
+      <rect x="324" y="88" width="212" height="80" fill="#C82A2A" opacity="0.15"/><text x="430" y="132" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">stack</text>
+      <rect x="324" y="170" width="212" height="30" fill="#888880" opacity="0.06"/>
+      <rect x="324" y="202" width="212" height="50" fill="#8B6914" opacity="0.15"/><text x="430" y="230" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#8B6914">heap</text>
+      <rect x="324" y="254" width="212" height="40" fill="#728C69" opacity="0.15"/>
+      <rect x="324" y="296" width="212" height="40" fill="#728C69" opacity="0.2"/>
+      <rect x="324" y="338" width="212" height="30" fill="#2E4057" opacity="0.15"/><text x="430" y="357" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">.text</text>
+
+      <!-- MMU / Page table (centre) -->
+      <rect x="580" y="120" width="120" height="180" rx="2" fill="#8B6914" opacity="0.8"/>
+      <text x="640" y="160" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD" transform="rotate(-90,640,210)">PAGE TABLE</text>
+      <text x="640" y="318" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="rgba(255,255,255,0.7)">MMU</text>
+
+      <!-- Arrows: virtual → physical -->
+      <path d="M282 168 L580 200" stroke="#2E4057" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#vm_arr)"/>
+      <path d="M542 244 L700 244" stroke="#8B6914" stroke-width="2" fill="none" marker-end="url(#vm_arr2)"/>
+      <path d="M282 310 L580 280" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#vm_arr)"/>
+      <defs>
+        <marker id="vm_arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#8B6914"/>
+        </marker>
+        <marker id="vm_arr2" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#8B6914"/>
+        </marker>
+      </defs>
+
+      <!-- Physical RAM -->
+      <rect x="760" y="30" width="360" height="360" rx="1" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="760" y="30" width="360" height="24" fill="#728C69" opacity="0.1"/>
+      <text x="940" y="46" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" letter-spacing="0.1em">PHYSICAL RAM (16GB)</text>
+      <!-- Physical frames (coloured by which process owns them) -->
+      <g>
+        <rect x="764" y="56" width="352" height="28" fill="#888880" opacity="0.15"/><text x="940" y="74" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">kernel pages (shared)</text>
+        <rect x="764" y="86" width="352" height="28" fill="#2E4057" opacity="0.2"/><text x="940" y="104" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2E4057">Process A: .text frame 0</text>
+        <rect x="764" y="116" width="352" height="28" fill="#C82A2A" opacity="0.15"/><text x="940" y="134" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#C82A2A">Process B: stack frame 0</text>
+        <rect x="764" y="146" width="352" height="28" fill="#2E4057" opacity="0.15"/><text x="940" y="164" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2E4057">Process A: stack frame 0</text>
+        <rect x="764" y="176" width="352" height="28" fill="#8B6914" opacity="0.15"/><text x="940" y="194" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#8B6914">Process A: heap frame 0</text>
+        <rect x="764" y="206" width="352" height="28" fill="#C82A2A" opacity="0.12"/><text x="940" y="224" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#C82A2A">Process B: .text frame 0</text>
+        <rect x="764" y="236" width="352" height="28" fill="#888880" opacity="0.08"/><text x="940" y="254" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">FREE</text>
+        <rect x="764" y="266" width="352" height="28" fill="#8B6914" opacity="0.12"/><text x="940" y="284" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#8B6914">Process B: heap frame 0</text>
+        <rect x="764" y="296" width="352" height="28" fill="#888880" opacity="0.08"/><text x="940" y="314" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">FREE</text>
+        <rect x="764" y="326" width="352" height="28" fill="#2E4057" opacity="0.12"/><text x="940" y="344" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2E4057">Process A: data frame 0</text>
+        <rect x="764" y="356" width="352" height="28" fill="#C82A2A" opacity="0.1"/><text x="940" y="374" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#C82A2A">Process B: data frame 0</text>
+      </g>
+      <!-- Physical address labels -->
+      <text x="754" y="60" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="7" fill="#888880">0x3FFFF…</text>
+      <text x="754" y="384" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="7" fill="#888880">0x00000…</text>
+
+      <rect x="0" y="408" width="1200" height="32" fill="rgba(44,64,87,0.06)"/>
+      <text x="600" y="429" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Fig 4.4-A · Both processes see a private 48-bit address space (same layout). The MMU/page table maps each virtual page to a physical frame — frames are scattered in RAM and interleaved between processes. Processes are isolated: they cannot see each other's physical frames.</text>
+      <text x="1140" y="429" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 4.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Virtual memory gives each process a private, contiguous-looking address space regardless of where its pages actually live in physical RAM. Both Process A and Process B see the same virtual address layout (kernel at top, stack below, heap above code). The MMU (Memory Management Unit) hardware — guided by each process's page table — transparently translates every virtual address to a physical frame address. Physical frames are scattered and interleaved between processes with no visible correlation to virtual addresses. A process cannot access another process's frames because it has no valid page table entries pointing to them — attempts cause a page fault (segmentation fault in user terms).</div>
+</div>
+
+<!-- FIG 4.4-B  Page Table Walk — Virtual to Physical Address Translation -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 4.4-B</span>
+    <span class="fig-title">Virtual Address Translation — 2-Level Page Table Walk</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <rect width="1200" height="360" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">VIRTUAL ADDRESS → PHYSICAL ADDRESS: 2-LEVEL PAGE TABLE WALK</text>
+      <!-- Virtual address breakdown -->
+      <text x="60" y="54" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">VIRTUAL ADDRESS: 0x00403010 (32-bit example)</text>
+      <!-- Bit field boxes -->
+      <rect x="60" y="60" width="140" height="36" fill="#2E4057" opacity="0.8"/>
+      <text x="130" y="74" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">bits 31–22</text>
+      <text x="130" y="88" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">0x001 (PD idx)</text>
+      <rect x="200" y="60" width="140" height="36" fill="#728C69" opacity="0.8"/>
+      <text x="270" y="74" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">bits 21–12</text>
+      <text x="270" y="88" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">0x003 (PT idx)</text>
+      <rect x="340" y="60" width="140" height="36" fill="#8B6914" opacity="0.75"/>
+      <text x="410" y="74" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">bits 11–0</text>
+      <text x="410" y="88" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">0x010 (offset)</text>
+      <!-- Step 1: CR3 → Page Directory -->
+      <path d="M130 96 L130 130" stroke="#2E4057" stroke-width="1.5" fill="none"/>
+      <path d="M126 126 L130 134 L134 126" fill="#2E4057"/>
+      <rect x="60" y="134" width="180" height="80" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5"/>
+      <rect x="60" y="134" width="180" height="22" fill="#2E4057" opacity="0.12"/>
+      <text x="150" y="150" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">PAGE DIRECTORY</text>
+      <text x="70" y="174" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">entry[0]: phys 0x1000</text>
+      <rect x="64" y="180" width="168" height="16" fill="#2E4057" opacity="0.15"/>
+      <text x="70" y="193" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">entry[1]: phys 0x2000 ←</text>
+      <text x="70" y="208" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">entry[2]: 0x3000</text>
+      <text x="86" y="222" font-family="'Inter',sans-serif" font-size="8" fill="#2E4057">CR3 (= phys base) ↑</text>
+      <!-- Step 2: PD entry → Page Table -->
+      <path d="M240 198 L290 198" stroke="#728C69" stroke-width="1.5" fill="none"/>
+      <path d="M286 194 L294 198 L286 202" fill="#728C69"/>
+      <rect x="294" y="134" width="180" height="80" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="294" y="134" width="180" height="22" fill="#728C69" opacity="0.12"/>
+      <text x="384" y="150" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69" letter-spacing="0.1em">PAGE TABLE @ 0x2000</text>
+      <text x="304" y="174" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">entry[0]: phys 0xA000</text>
+      <text x="304" y="190" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">entry[1]: phys 0xB000</text>
+      <text x="304" y="206" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">entry[2]: phys 0xC000</text>
+      <rect x="298" y="206" width="168" height="16" fill="#728C69" opacity="0.15"/>
+      <text x="304" y="218" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">entry[3]: phys 0xD000 ←</text>
+      <!-- Step 3: PT entry + offset → Physical -->
+      <path d="M474 210 L524 210" stroke="#8B6914" stroke-width="1.5" fill="none"/>
+      <path d="M520 206 L528 210 L520 214" fill="#8B6914"/>
+      <!-- + offset -->
+      <path d="M410 96 L410 110 L534 110 L534 134" stroke="#8B6914" stroke-width="1.5" fill="none" stroke-dasharray="4,2"/>
+      <path d="M530 130 L534 138 L538 130" fill="#8B6914"/>
+      <text x="475" y="105" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">+ offset 0x010</text>
+      <!-- Physical address result -->
+      <rect x="528" y="170" width="220" height="80" fill="#FDFDFD" stroke="#8B6914" stroke-width="2"/>
+      <rect x="528" y="170" width="220" height="22" fill="#8B6914" opacity="0.12"/>
+      <text x="638" y="186" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#8B6914" letter-spacing="0.1em">PHYSICAL ADDRESS</text>
+      <text x="638" y="218" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="18" fill="#8B6914">0xD010</text>
+      <text x="638" y="240" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">page base 0xD000 + offset 0x010</text>
+      <!-- TLB cache explanation -->
+      <rect x="790" y="134" width="370" height="180" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1"/>
+      <rect x="790" y="134" width="370" height="24" fill="#C82A2A" opacity="0.07"/>
+      <text x="975" y="151" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">TLB — TRANSLATION LOOKASIDE BUFFER</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="806" y="178">The page table walk requires 2 memory</text>
+        <text x="806" y="196">accesses. At 4GHz this is a critical cost.</text>
+        <text x="806" y="218" fill="#C82A2A" font-weight="500">TLB: hardware cache of recent virt→phys</text>
+        <text x="806" y="236" fill="#C82A2A">translations. Typically 64–1024 entries.</text>
+        <line x1="806" y1="246" x2="1140" y2="246" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="806" y="264">TLB HIT: translation in 1 cycle</text>
+        <text x="806" y="282">TLB MISS: full page table walk (~20 cycles)</text>
+        <text x="806" y="300" fill="#888880">Context switch: TLB must be flushed</text>
+      </g>
+      <!-- Footer -->
+      <rect x="0" y="330" width="1200" height="30" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="349" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Fig 4.4-B</text>
+      <text x="120" y="349" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">2-level page table walk: virtual address split into PD index, PT index, and byte offset. Two memory reads locate the physical page; the offset is added to find the exact byte. TLB caches recent translations.</text>
+      <text x="1140" y="349" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 4.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Two-level page table walk for virtual-to-physical address translation. The 32-bit virtual address is split into three fields: a 10-bit Page Directory index, a 10-bit Page Table index, and a 12-bit byte offset (supporting 4KB pages). The MMU uses CR3 to find the Page Directory, reads the entry at PD[1] to locate the Page Table at physical address 0x2000, then reads PT[3] to find the physical page frame at 0xD000. Adding the offset (0x010) gives the final physical address 0xD010. The Translation Lookaside Buffer (TLB) caches recent translations to avoid this expensive two-memory-access walk on every instruction.</div>
+</div>
+
+<!-- FIG 4.4-C  Memory Segmentation Fault — Why It Happens -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type B — Concept Diagram</span>
+    <span class="fig-id">FIG 4.4-C</span>
+    <span class="fig-title">Segmentation Fault — Accessing a Non-Mapped Virtual Address</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:250px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">VIRTUAL ADDRESS SPACE — MAPPED vs UNMAPPED REGIONS</text>
+      <!-- Virtual address space column -->
+      <text x="180" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">VIRTUAL ADDRESS SPACE (process view)</text>
+      <!-- Address space blocks (bottom = 0, top = 0xFFFFFFFF) -->
+      <!-- High addresses: kernel space -->
+      <rect x="60" y="62" width="240" height="40" fill="#2E4057" opacity="0.25" stroke="#2E4057" stroke-width="1"/>
+      <text x="180" y="87" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Kernel Space (off-limits)</text>
+      <!-- Stack -->
+      <rect x="60" y="102" width="240" height="36" fill="#728C69" opacity="0.3" stroke="#728C69" stroke-width="1"/>
+      <text x="180" y="124" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Stack (mapped, R/W)</text>
+      <!-- Unmapped gap -->
+      <rect x="60" y="138" width="240" height="40" fill="#F8F7F3" stroke="#C82A2A" stroke-width="1" stroke-dasharray="4,2"/>
+      <text x="180" y="162" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">UNMAPPED — SEGFAULT ZONE</text>
+      <!-- Heap -->
+      <rect x="60" y="178" width="240" height="36" fill="#8B6914" opacity="0.25" stroke="#8B6914" stroke-width="1"/>
+      <text x="180" y="200" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914">Heap (mapped, R/W)</text>
+      <!-- .bss / .data -->
+      <rect x="60" y="214" width="240" height="28" fill="#2E4057" opacity="0.15" stroke="#2E4057" stroke-width="0.5"/>
+      <text x="180" y="232" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">.data / .bss</text>
+      <!-- .text -->
+      <rect x="60" y="242" width="240" height="28" fill="#2E4057" opacity="0.4" stroke="#2E4057" stroke-width="1"/>
+      <text x="180" y="261" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">.text (code, R/X)</text>
+      <!-- Divider -->
+      <line x1="380" y1="44" x2="380" y2="290" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- Right: How segfault works -->
+      <text x="780" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">SEGMENTATION FAULT SEQUENCE</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="400" y="84">① Program accesses virtual address in unmapped region</text>
+        <text x="420" y="100" font-family="'JetBrains Mono',monospace" font-size="10" fill="#C82A2A">  int *p = NULL;  *p = 42;  // writes to addr 0x0</text>
+        <line x1="400" y1="112" x2="1140" y2="112" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="400" y="130">② MMU checks page table — no valid entry for that address</text>
+        <text x="420" y="146" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">  page table entry = NOT PRESENT bit set</text>
+        <line x1="400" y1="158" x2="1140" y2="158" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="400" y="176">③ MMU raises a Page Fault exception</text>
+        <line x1="400" y1="188" x2="1140" y2="188" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="400" y="206">④ OS kernel handles the fault</text>
+        <text x="420" y="222">If address is legitimately unmapped → send SIGSEGV</text>
+        <text x="420" y="238">If address is in swap → load from disk (valid page fault)</text>
+        <line x1="400" y1="250" x2="1140" y2="250" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="400" y="268">⑤ SIGSEGV terminates process: "Segmentation fault (core dumped)"</text>
+      </g>
+      <!-- Footer -->
+      <rect x="0" y="280" width="1200" height="20" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="294" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 4.4-C · Segmentation fault: process accesses an unmapped virtual address → MMU raises page fault → OS checks: unmapped region → sends SIGSEGV → process terminates.</text>
+      <text x="1140" y="294" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · 4.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The anatomy of a segmentation fault, explained from hardware upward. Every process has a virtual address space divided into mapped regions (stack, heap, code, data) and unmapped regions. When a program accesses an address in an unmapped region — the classic case being a null pointer dereference — the MMU finds no valid page table entry and raises a hardware Page Fault exception. The OS kernel handles this fault: if the address should be in swap space, it loads the page from disk (a valid soft fault). If the address is truly unmapped, the kernel sends SIGSEGV to the process, which terminates it. Virtual memory hardware is what makes this safe containment possible.</div>
+</div>
+
+</div>
+</body>
+</html>

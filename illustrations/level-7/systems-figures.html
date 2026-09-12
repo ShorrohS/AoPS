@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level 7 — Systems Programming Figure Set</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:900px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 7 — Systems Programming</div>
+  <div class="page-title">Level 7 — Systems Programming Figure Set</div>
+  <div class="page-sub">3 figures · Threads vs Processes · Mutex/Deadlock · Client-Server Socket</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 7-A  Threads vs Processes -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 7-A</span>
+    <span class="fig-title">Threads vs Processes — Shared vs Isolated Memory</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:330px">
+      <defs>
+        <linearGradient id="sysBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="380" fill="url(#sysBg)"/>
+
+      <!-- Left: Two separate PROCESSES -->
+      <rect x="30" y="20" width="500" height="320" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="30" y="20" width="500" height="22" fill="#2E4057" opacity="0.08"/>
+      <text x="280" y="36" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">Two Processes — Isolated Memory Spaces</text>
+
+      <!-- Process A -->
+      <rect x="50" y="50" width="200" height="260" rx="1" fill="#2E4057" opacity="0.08" stroke="#2E4057" stroke-width="1"/>
+      <text x="150" y="67" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057" letter-spacing="0.08em">PROCESS A</text>
+      <rect x="62" y="75" width="176" height="30" rx="1" fill="#C82A2A" opacity="0.12"/><text x="150" y="94" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">stack (private)</text>
+      <rect x="62" y="108" width="176" height="30" rx="1" fill="#8B6914" opacity="0.12"/><text x="150" y="127" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#8B6914">heap (private)</text>
+      <rect x="62" y="141" width="176" height="30" rx="1" fill="#728C69" opacity="0.12"/><text x="150" y="160" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">code (private)</text>
+      <!-- Thread in process A -->
+      <rect x="72" y="188" width="156" height="40" rx="1" fill="#2E4057" opacity="0.2" stroke="#2E4057" stroke-width="1"/>
+      <text x="150" y="211" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Thread 1</text>
+      <text x="150" y="224" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">own stack+regs</text>
+
+      <!-- Process B -->
+      <rect x="300" y="50" width="200" height="260" rx="1" fill="#2E4057" opacity="0.06" stroke="#2E4057" stroke-width="1"/>
+      <text x="400" y="67" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057" letter-spacing="0.08em">PROCESS B</text>
+      <rect x="312" y="75" width="176" height="30" rx="1" fill="#C82A2A" opacity="0.1"/><text x="400" y="94" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">stack (private)</text>
+      <rect x="312" y="108" width="176" height="30" rx="1" fill="#8B6914" opacity="0.1"/><text x="400" y="127" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#8B6914">heap (private)</text>
+      <rect x="312" y="141" width="176" height="30" rx="1" fill="#728C69" opacity="0.1"/><text x="400" y="160" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">code (private)</text>
+      <rect x="322" y="188" width="156" height="40" rx="1" fill="#2E4057" opacity="0.15" stroke="#2E4057" stroke-width="1"/>
+      <text x="400" y="211" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4027">Thread 1</text>
+
+      <!-- Barrier between processes -->
+      <text x="280" y="296" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#C82A2A">No shared memory</text>
+      <text x="280" y="314" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">IPC needed: pipes, sockets, shared mem API</text>
+      <!-- Crossed-out arrow -->
+      <line x1="250" y1="140" x2="300" y2="140" stroke="#C82A2A" stroke-width="2" stroke-dasharray="4,2"/>
+      <text x="275" y="130" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">✗ no direct access</text>
+
+      <!-- VS -->
+      <line x1="548" y1="20" x2="548" y2="340" stroke="#D8D6CE" stroke-width="1.5"/>
+
+      <!-- Right: THREADS within one process -->
+      <rect x="640" y="20" width="520" height="320" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="640" y="20" width="520" height="22" fill="#728C69" opacity="0.09"/>
+      <text x="900" y="36" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">Threads within One Process — Shared Memory</text>
+
+      <!-- One process containing 3 threads -->
+      <rect x="660" y="48" width="480" height="260" rx="1" fill="#728C69" opacity="0.06" stroke="#728C69" stroke-width="1.5"/>
+      <text x="900" y="65" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69" letter-spacing="0.08em">PROCESS (PID 1234)</text>
+
+      <!-- Shared segments -->
+      <rect x="672" y="72" width="456" height="25" rx="1" fill="#8B6914" opacity="0.15"/><text x="900" y="88" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#8B6914">shared heap (all threads read/write)</text>
+      <rect x="672" y="100" width="456" height="25" rx="1" fill="#728C69" opacity="0.15"/><text x="900" y="116" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">shared code segment</text>
+      <rect x="672" y="128" width="456" height="25" rx="1" fill="#728C69" opacity="0.1"/><text x="900" y="144" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">shared globals / file descriptors</text>
+
+      <!-- Three threads -->
+      <rect x="672" y="162" width="140" height="60" rx="1" fill="#2E4057" opacity="0.2" stroke="#2E4057" stroke-width="1"/>
+      <text x="742" y="186" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Thread 1</text>
+      <text x="742" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">own stack</text>
+      <text x="742" y="214" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">own registers</text>
+
+      <rect x="820" y="162" width="140" height="60" rx="1" fill="#2E4057" opacity="0.15" stroke="#2E4057" stroke-width="1"/>
+      <text x="890" y="186" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Thread 2</text>
+      <text x="890" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">own stack</text>
+      <text x="890" y="214" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">own registers</text>
+
+      <rect x="968" y="162" width="140" height="60" rx="1" fill="#2E4057" opacity="0.1" stroke="#2E4057" stroke-width="1"/>
+      <text x="1038" y="186" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Thread 3</text>
+      <text x="1038" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">own stack</text>
+      <text x="1038" y="214" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">own registers</text>
+
+      <!-- Shared heap arrow all 3 can access -->
+      <path d="M742 162 L742 97 L820 97" stroke="#728C69" stroke-width="1" fill="none" stroke-dasharray="3,2"/>
+      <path d="M890 162 L890 109" stroke="#728C69" stroke-width="1" fill="none" stroke-dasharray="3,2"/>
+      <path d="M1038 162 L1038 97 L968 97" stroke="#728C69" stroke-width="1" fill="none" stroke-dasharray="3,2"/>
+      <text x="900" y="250" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#728C69">Shared memory → faster, but needs sync</text>
+      <text x="900" y="268" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Race conditions, deadlocks possible without mutexes</text>
+
+      <rect x="0" y="352" width="1200" height="28" fill="rgba(44,64,87,0.06)"/>
+      <text x="600" y="371" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Fig 7-A · Processes are isolated — no shared memory, IPC required. Threads within a process share heap, globals, and file descriptors but each has its own stack and register set. Threads are cheaper to create (~10μs) vs processes (~1ms) but sharing means race conditions.</text>
+      <text x="1140" y="371" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Level 7</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Processes vs threads. Two separate processes (left) each have completely private virtual address spaces — they cannot read or write each other's memory. Communication requires explicit IPC mechanisms (pipes, sockets, shared memory via mmap). Threads within one process (right) share the heap, code segment, global variables, and open file descriptors, but each thread has its own stack and register state. This sharing makes threads faster to create and communicate with, but it introduces the need for synchronisation primitives (mutexes, semaphores) to prevent race conditions.</div>
+</div>
+
+<!-- FIG 7-B  Deadlock -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Concept Diagram</span>
+    <span class="fig-id">FIG 7-B</span>
+    <span class="fig-title">Deadlock — The Four Coffman Conditions</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:280px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+
+      <!-- Deadlock scenario visual (left) -->
+      <rect x="40" y="20" width="480" height="260" rx="1" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+      <rect x="40" y="20" width="480" height="22" fill="#C82A2A" opacity="0.08"/>
+      <text x="280" y="36" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">Deadlock — Thread A and Thread B stuck</text>
+
+      <!-- Thread A -->
+      <rect x="60" y="60" width="160" height="60" rx="1" fill="#2E4057" opacity="0.15" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="140" y="86" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#2E4057" font-weight="500">Thread A</text>
+      <text x="140" y="102" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">holds mutex1</text>
+      <text x="140" y="115" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">wants mutex2</text>
+
+      <!-- Thread B -->
+      <rect x="300" y="60" width="160" height="60" rx="1" fill="#C82A2A" opacity="0.12" stroke="#C82A2A" stroke-width="1.5"/>
+      <text x="380" y="86" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#C82A2A" font-weight="500">Thread B</text>
+      <text x="380" y="102" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">holds mutex2</text>
+      <text x="380" y="115" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">wants mutex1</text>
+
+      <!-- Mutex boxes -->
+      <rect x="100" y="180" width="100" height="40" rx="1" fill="#8B6914" opacity="0.3" stroke="#8B6914" stroke-width="1.5"/>
+      <text x="150" y="204" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8B6914">mutex1</text>
+      <rect x="320" y="180" width="100" height="40" rx="1" fill="#8B6914" opacity="0.3" stroke="#8B6914" stroke-width="1.5"/>
+      <text x="370" y="204" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8B6914">mutex2</text>
+
+      <!-- Arrows: A holds mutex1, wants mutex2 -->
+      <line x1="150" y1="180" x2="140" y2="120" stroke="#2E4057" stroke-width="2"/>
+      <text x="95" y="155" font-family="'Inter',sans-serif" font-size="8" fill="#2E4057">holds</text>
+      <path d="M240" y1="90" fill="none"/>
+      <path d="M200 90 Q300 90 320 180" stroke="#2E4057" stroke-width="1.5" fill="none" stroke-dasharray="4,2" marker-end="url(#dl_arr)"/>
+      <text x="260" y="130" font-family="'Inter',sans-serif" font-size="8" fill="#2E4057">wants</text>
+
+      <!-- Arrows: B holds mutex2, wants mutex1 -->
+      <line x1="370" y1="180" x2="380" y2="120" stroke="#C82A2A" stroke-width="2"/>
+      <text x="390" y="155" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">holds</text>
+      <path d="M320 90 Q220 90 200 180" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="4,2" marker-end="url(#dl_red)"/>
+      <text x="245" y="160" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">wants</text>
+      <defs>
+        <marker id="dl_arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#2E4057"/>
+        </marker>
+        <marker id="dl_red" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+      </defs>
+
+      <!-- Circular wait caption -->
+      <text x="280" y="248" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#C82A2A">Circular wait → neither can proceed</text>
+      <text x="280" y="266" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">System hangs until one thread is killed or times out</text>
+
+      <!-- Right: Four conditions -->
+      <rect x="600" y="20" width="560" height="260" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="600" y="20" width="560" height="22" fill="#2E4057" opacity="0.07"/>
+      <text x="880" y="36" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">COFFMAN CONDITIONS (all 4 must hold)</text>
+
+      <g font-family="'Inter',sans-serif" font-size="11">
+        <rect x="616" y="50" width="528" height="44" rx="1" fill="#C82A2A" opacity="0.07"/>
+        <text x="630" y="70" fill="#C82A2A" font-weight="500">① Mutual Exclusion</text>
+        <text x="630" y="86" fill="#3A3A3A">Resource can only be held by one thread at a time</text>
+
+        <rect x="616" y="100" width="528" height="44" rx="1" fill="#C82A2A" opacity="0.05"/>
+        <text x="630" y="120" fill="#C82A2A" font-weight="500">② Hold and Wait</text>
+        <text x="630" y="136" fill="#3A3A3A">Thread holds a resource while waiting for another</text>
+
+        <rect x="616" y="150" width="528" height="44" rx="1" fill="#C82A2A" opacity="0.04"/>
+        <text x="630" y="170" fill="#C82A2A" font-weight="500">③ No Preemption</text>
+        <text x="630" y="186" fill="#3A3A3A">Resources can't be forcibly taken from a thread</text>
+
+        <rect x="616" y="200" width="528" height="44" rx="1" fill="#C82A2A" opacity="0.03"/>
+        <text x="630" y="220" fill="#C82A2A" font-weight="500">④ Circular Wait</text>
+        <text x="630" y="236" fill="#3A3A3A">Chain of threads each waiting for the next one's resource</text>
+      </g>
+
+      <text x="880" y="268" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Prevention: break any ONE condition → no deadlock possible</text>
+
+      <rect x="0" y="294" width="1200" height="26" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="312" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 7-B · Deadlock requires all four Coffman conditions simultaneously. Break any one: release locks before acquiring new ones (break ②), use lock ordering (break ④), or try-lock with timeout (break ③).</text>
+      <text x="1140" y="312" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · L7</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Deadlock occurs when Thread A holds mutex1 and waits for mutex2, while Thread B holds mutex2 and waits for mutex1 — a circular dependency with no exit. Deadlock requires all four Coffman conditions simultaneously: mutual exclusion (only one holder), hold-and-wait (holding while waiting), no preemption (cannot be forced to release), and circular wait. Prevention strategy: impose a global lock ordering (always acquire mutex1 before mutex2) — this breaks the circular wait condition. Other strategies: trylock with timeout (breaks no-preemption), or lock-free data structures (breaks mutual exclusion).</div>
+</div>
+
+<!-- FIG 7-C  Client-Server Socket -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 7-C</span>
+    <span class="fig-title">TCP Socket Communication — Server and Client Handshake</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+
+      <!-- Server column -->
+      <rect x="40" y="20" width="280" height="230" rx="1" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5"/>
+      <rect x="40" y="20" width="280" height="22" fill="#2E4057" opacity="0.09"/>
+      <text x="180" y="36" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2E4057">SERVER</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">
+        <text x="56" y="64">socket()</text>
+        <text x="56" y="84">bind(port 8080)</text>
+        <text x="56" y="104">listen()</text>
+        <text x="56" y="124" fill="#8B6914">accept()  ← BLOCKS</text>
+        <text x="56" y="144">recv(data)</text>
+        <text x="56" y="164" fill="#728C69">send(response)</text>
+        <text x="56" y="184">close()</text>
+      </g>
+
+      <!-- Client column -->
+      <rect x="880" y="20" width="280" height="230" rx="1" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+      <rect x="880" y="20" width="280" height="22" fill="#C82A2A" opacity="0.07"/>
+      <text x="1020" y="36" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#C82A2A">CLIENT</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">
+        <text x="896" y="64">socket()</text>
+        <text x="896" y="104">connect(server:8080)</text>
+        <text x="896" y="124" fill="#728C69">send("GET / HTTP/1.1")</text>
+        <text x="896" y="144" fill="#8B6914">recv()  ← BLOCKS</text>
+        <text x="896" y="164">process response</text>
+        <text x="896" y="184">close()</text>
+      </g>
+
+      <!-- Network arrows -->
+      <!-- TCP 3-way handshake -->
+      <path d="M323 114 L877 104" stroke="#2E4057" stroke-width="1.5" fill="none" marker-end="url(#sc_arr2)"/>
+      <text x="600" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">SYN →</text>
+      <defs>
+        <marker id="sc_arr2" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#2E4057"/>
+        </marker>
+        <marker id="sc_arr3" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#728C69"/>
+        </marker>
+        <marker id="sc_arr4" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+      </defs>
+      <path d="M877 119 L323 129" stroke="#2E4057" stroke-width="1.5" fill="none" marker-end="url(#sc_arr2)"/>
+      <text x="600" y="117" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">← SYN-ACK</text>
+      <!-- Data exchange -->
+      <path d="M877 124 L323 133" stroke="#C82A2A" stroke-width="2" fill="none" marker-end="url(#sc_arr4)"/>
+      <text x="600" y="133" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">← GET request</text>
+      <!-- Response -->
+      <path d="M323 154 L877 144" stroke="#728C69" stroke-width="2" fill="none" marker-end="url(#sc_arr3)"/>
+      <text x="600" y="154" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">200 OK + body →</text>
+
+      <!-- Summary bar -->
+      <rect x="380" y="196" width="440" height="40" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="600" y="215" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#2C2C2C">TCP provides reliable, ordered, bidirectional byte stream</text>
+      <text x="600" y="230" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Sockets = file descriptors: read/write same API as files</text>
+
+      <rect x="0" y="258" width="1200" height="22" fill="rgba(44,64,87,0.04)"/>
+      <text x="1140" y="272" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · L7</text>
+    </svg>
+  </div>
+  <div class="fig-caption">TCP socket client-server communication. The server creates a socket, binds to port 8080, and blocks on accept() waiting for connections. The client creates a socket and calls connect(), which triggers the TCP 3-way handshake (SYN → SYN-ACK → ACK). Once connected, the client sends a request and the server processes it and sends a response. Sockets use the same read/write/close API as file descriptors — everything is a file in Unix. Blocking calls (accept, recv) are typically paired with threads or non-blocking I/O (select/epoll) in production servers.</div>
+</div>
+
+</div>
+</body>
+</html>

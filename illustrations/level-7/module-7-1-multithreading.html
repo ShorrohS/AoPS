@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 7.1 — Multithreading and Concurrency</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 7 — Systems Programming</div>
+  <div class="page-title">Module 7.1 — Multithreading and Concurrency</div>
+  <div class="page-sub">3 figures · Thread vs Process Memory · Race Condition Trace · CPU Thread Scheduling</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 7.1-A  Thread vs Process -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 7.1-A</span>
+    <span class="fig-title">Threads vs Processes — Shared Memory vs Isolated Address Spaces</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" style="height:360px">
+      <defs><linearGradient id="tBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="420" fill="url(#tBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">TWO PROCESSES (ISOLATED) vs ONE PROCESS WITH TWO THREADS (SHARED)</text>
+
+      <!-- LEFT: Two separate processes -->
+      <text x="260" y="52" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Two Processes</text>
+      <!-- Process A box -->
+      <rect x="40" y="64" width="220" height="300" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5" rx="1"/>
+      <rect x="40" y="64" width="220" height="26" fill="#C82A2A" opacity="0.12"/>
+      <text x="150" y="81" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#C82A2A">Process A</text>
+      <!-- Stack A -->
+      <rect x="58" y="98" width="186" height="40" fill="#2E4057" opacity="0.15" stroke="#2E4057" stroke-width="0.5"/>
+      <text x="150" y="123" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Stack</text>
+      <!-- Heap A -->
+      <rect x="58" y="144" width="186" height="40" fill="#8B6914" opacity="0.15" stroke="#8B6914" stroke-width="0.5"/>
+      <text x="150" y="169" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914">Heap</text>
+      <!-- .data A -->
+      <rect x="58" y="190" width="186" height="30" fill="#728C69" opacity="0.15" stroke="#728C69" stroke-width="0.5"/>
+      <text x="150" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">.data / .bss</text>
+      <!-- .text A -->
+      <rect x="58" y="226" width="186" height="30" fill="#2E4057" opacity="0.4" stroke="#2E4057" stroke-width="0.5"/>
+      <text x="150" y="246" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">.text (code)</text>
+      <!-- PID label -->
+      <text x="150" y="278" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">PID 1001</text>
+      <text x="150" y="296" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">fd table: own</text>
+      <text x="150" y="314" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">virt addr: own</text>
+      <text x="150" y="350" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">✗ cannot read B's memory</text>
+
+      <!-- Process B box -->
+      <rect x="280" y="64" width="220" height="300" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5" rx="1"/>
+      <rect x="280" y="64" width="220" height="26" fill="#C82A2A" opacity="0.12"/>
+      <text x="390" y="81" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#C82A2A">Process B</text>
+      <rect x="298" y="98" width="186" height="40" fill="#2E4057" opacity="0.15" stroke="#2E4057" stroke-width="0.5"/>
+      <text x="390" y="123" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Stack</text>
+      <rect x="298" y="144" width="186" height="40" fill="#8B6914" opacity="0.15" stroke="#8B6914" stroke-width="0.5"/>
+      <text x="390" y="169" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914">Heap</text>
+      <rect x="298" y="190" width="186" height="30" fill="#728C69" opacity="0.15" stroke="#728C69" stroke-width="0.5"/>
+      <text x="390" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">.data / .bss</text>
+      <rect x="298" y="226" width="186" height="30" fill="#2E4057" opacity="0.4" stroke="#2E4057" stroke-width="0.5"/>
+      <text x="390" y="246" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">.text (code)</text>
+      <text x="390" y="278" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">PID 1002</text>
+      <text x="390" y="296" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">fd table: own</text>
+      <text x="390" y="314" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">virt addr: own</text>
+      <text x="390" y="350" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">✗ cannot read A's memory</text>
+
+      <!-- IPC arrow -->
+      <path d="M260 230 L280 230" stroke="#888880" stroke-width="1.5" stroke-dasharray="4,2" fill="none"/>
+      <text x="270" y="222" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">IPC</text>
+      <text x="270" y="248" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">only</text>
+
+      <!-- Divider -->
+      <line x1="545" y1="44" x2="545" y2="390" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- RIGHT: Process with two threads -->
+      <text x="880" y="52" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">One Process, Two Threads</text>
+      <!-- Process container -->
+      <rect x="580" y="64" width="580" height="300" fill="#FDFDFD" stroke="#728C69" stroke-width="2" rx="1"/>
+      <rect x="580" y="64" width="580" height="26" fill="#728C69" opacity="0.12"/>
+      <text x="870" y="81" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#728C69">Process (PID 2001)</text>
+
+      <!-- Shared regions (span full width) -->
+      <rect x="598" y="190" width="544" height="34" fill="#8B6914" opacity="0.2" stroke="#8B6914" stroke-width="0.5"/>
+      <text x="870" y="212" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914">Shared Heap — both threads read/write</text>
+      <rect x="598" y="228" width="544" height="30" fill="#728C69" opacity="0.2" stroke="#728C69" stroke-width="0.5"/>
+      <text x="870" y="248" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Shared .data / globals</text>
+      <rect x="598" y="262" width="544" height="30" fill="#2E4057" opacity="0.35" stroke="#2E4057" stroke-width="0.5"/>
+      <text x="870" y="282" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">Shared .text (code) — same executable</text>
+
+      <!-- Thread A private stack -->
+      <rect x="598" y="98" width="260" height="80" fill="#2E4057" opacity="0.15" stroke="#2E4057" stroke-width="1"/>
+      <rect x="598" y="98" width="260" height="20" fill="#2E4057" opacity="0.3"/>
+      <text x="728" y="113" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">Thread A — private stack</text>
+      <text x="728" y="140" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2E4057">local vars, return addrs</text>
+      <text x="728" y="158" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2E4057">registers (in TCB)</text>
+
+      <!-- Thread B private stack -->
+      <rect x="880" y="98" width="262" height="80" fill="#728C69" opacity="0.2" stroke="#728C69" stroke-width="1"/>
+      <rect x="880" y="98" width="262" height="20" fill="#728C69" opacity="0.4"/>
+      <text x="1011" y="113" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">Thread B — private stack</text>
+      <text x="1011" y="140" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">local vars, return addrs</text>
+      <text x="1011" y="158" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">registers (in TCB)</text>
+
+      <!-- Shared annotation arrows -->
+      <path d="M728 178 L728 190" stroke="#8B6914" stroke-width="1.5" fill="none"/>
+      <path d="M1011 178 L1011 190" stroke="#8B6914" stroke-width="1.5" fill="none"/>
+
+      <!-- Shared label -->
+      <text x="870" y="310" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">✓ can read/write each other's heap and globals instantly</text>
+      <text x="870" y="328" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">⚠ shared mutable state requires synchronisation</text>
+
+      <!-- Footer -->
+      <rect x="0" y="398" width="1200" height="22" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="413" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 7.1-A</text>
+      <text x="120" y="413" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Processes are isolated — separate virtual address spaces, communicate only via IPC. Threads within one process share heap, globals, and code; each has its own private stack and registers.</text>
+      <text x="1140" y="413" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 7.1</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The fundamental distinction between processes and threads. Each process receives its own isolated virtual address space — process A cannot access process B's memory; communication requires explicit IPC (pipes, sockets, shared memory segments). Threads within a single process share the heap, global data, open file descriptors, and code segment — any thread can read or write any shared variable instantly. This sharing is both the strength (cheap communication, low creation cost) and the hazard (race conditions when multiple threads write the same location without synchronisation). Thread creation is ~10× cheaper than process creation; context switching between threads is ~3× faster than between processes.</div>
+</div>
+
+<!-- FIG 7.1-B  Race Condition -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 7.1-B</span>
+    <span class="fig-title">Race Condition — Two Threads Incrementing a Counter</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <rect width="1200" height="360" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">RACE CONDITION: counter++ INTERLEAVED — EXPECTED 2, GOT 1</text>
+
+      <!-- Timeline header -->
+      <text x="200" y="54" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">THREAD A</text>
+      <text x="600" y="54" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69" letter-spacing="0.1em">counter (shared)</text>
+      <text x="1000" y="54" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">THREAD B</text>
+
+      <!-- Time axis -->
+      <line x1="600" y1="62" x2="600" y2="330" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="400" y1="62" x2="400" y2="330" stroke="#E8E6DF" stroke-width="0.5" stroke-dasharray="3,3"/>
+      <line x1="800" y1="62" x2="800" y2="330" stroke="#E8E6DF" stroke-width="0.5" stroke-dasharray="3,3"/>
+
+      <!-- Step 1: A reads counter=0 -->
+      <rect x="60" y="72" width="320" height="34" fill="#2E4057" opacity="0.2" rx="1"/>
+      <text x="220" y="94" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">1. READ counter → reg_A = 0</text>
+      <path d="M380 89 L560 89" stroke="#2E4057" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+      <path d="M556 85 L564 89 L556 93" fill="#2E4057"/>
+      <!-- counter value -->
+      <rect x="565" y="72" width="70" height="34" fill="#2E4057" opacity="0.8"/>
+      <text x="600" y="94" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">0</text>
+
+      <!-- Step 2: B reads counter=0 (before A writes) -->
+      <rect x="820" y="114" width="320" height="34" fill="#C82A2A" opacity="0.2" rx="1"/>
+      <text x="980" y="136" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">2. READ counter → reg_B = 0</text>
+      <path d="M820 131 L640 131" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+      <path d="M644 127 L636 131 L644 135" fill="#C82A2A"/>
+      <!-- counter still 0 -->
+      <rect x="565" y="114" width="70" height="34" fill="#2E4057" opacity="0.8"/>
+      <text x="600" y="136" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">0</text>
+
+      <!-- Step 3: A increments reg_A -->
+      <rect x="60" y="156" width="320" height="34" fill="#2E4057" opacity="0.2" rx="1"/>
+      <text x="220" y="178" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">3. ADD  reg_A = 0 + 1 = 1</text>
+      <!-- counter still 0 -->
+      <rect x="565" y="156" width="70" height="34" fill="#2E4057" opacity="0.8"/>
+      <text x="600" y="178" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">0</text>
+
+      <!-- Step 4: A writes 1 -->
+      <rect x="60" y="198" width="320" height="34" fill="#2E4057" opacity="0.3" rx="1"/>
+      <text x="220" y="220" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">4. WRITE counter = 1</text>
+      <path d="M380 215 L560 215" stroke="#2E4057" stroke-width="2" fill="none"/>
+      <path d="M556 211 L564 215 L556 219" fill="#2E4057"/>
+      <!-- counter becomes 1 -->
+      <rect x="565" y="198" width="70" height="34" fill="#728C69" opacity="0.8"/>
+      <text x="600" y="220" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">1</text>
+
+      <!-- Step 5: B increments reg_B (stale 0) -->
+      <rect x="820" y="240" width="320" height="34" fill="#C82A2A" opacity="0.2" rx="1"/>
+      <text x="980" y="262" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">5. ADD  reg_B = 0 + 1 = 1</text>
+      <rect x="565" y="240" width="70" height="34" fill="#728C69" opacity="0.8"/>
+      <text x="600" y="262" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">1</text>
+
+      <!-- Step 6: B writes 1 (OVERWRITES A's work) -->
+      <rect x="820" y="282" width="320" height="34" fill="#C82A2A" opacity="0.5" stroke="#C82A2A" stroke-width="1.5" rx="1"/>
+      <text x="980" y="304" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">6. WRITE counter = 1  ← BUG!</text>
+      <path d="M820 299 L640 299" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M644 295 L636 299 L644 303" fill="#C82A2A"/>
+      <!-- counter still 1 — BUG -->
+      <rect x="565" y="282" width="70" height="34" fill="#C82A2A" opacity="0.85" stroke="#C82A2A" stroke-width="1.5"/>
+      <text x="600" y="304" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">1</text>
+      <text x="600" y="328" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">Expected 2, got 1 — lost update!</text>
+
+      <!-- Footer -->
+      <rect x="0" y="342" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="355" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 7.1-B · Race condition on counter++. Both threads read 0 before either writes. Thread A writes 1; Thread B (with stale 0) also writes 1 — overwriting A's increment. Expected 2, actual 1.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Race condition on a shared counter. The C expression counter++ compiles to three machine instructions: READ (load counter into register), ADD (increment register), WRITE (store register back). When Thread A and Thread B interleave — both reading the value 0 before either writes back — both compute 0+1=1 and write 1. The second write overwrites the first, losing one increment entirely. The expected final value is 2 but the actual result is 1. This is a lost update. The fix is a mutex: only one thread at a time may execute the read-add-write sequence (the critical section). Alternatively, atomic hardware instructions (LOCK XADD on x86) perform the three-step operation indivisibly.</div>
+</div>
+
+<!-- FIG 7.1-C  Thread Scheduling -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Simulation Figure</span>
+    <span class="fig-id">FIG 7.1-C</span>
+    <span class="fig-title">CPU Thread Scheduling — Time-Slice Context Switching</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">SINGLE CPU — 3 THREADS — PREEMPTIVE TIME-SLICE SCHEDULING (10ms QUANTA)</text>
+
+      <!-- CPU timeline bar -->
+      <text x="40" y="58" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">CPU:</text>
+      <!-- Time slices -->
+      <g font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">
+        <rect x="60" y="64" width="120" height="32" fill="#2E4057" opacity="0.8"/><text x="120" y="84" fill="#FDFDFD">T1 (10ms)</text>
+        <rect x="182" y="64" width="4" height="32" fill="#888880" opacity="0.3"/><!-- context switch -->
+        <rect x="186" y="64" width="120" height="32" fill="#728C69" opacity="0.8"/><text x="246" y="84" fill="#FDFDFD">T2 (10ms)</text>
+        <rect x="308" y="64" width="4" height="32" fill="#888880" opacity="0.3"/>
+        <rect x="312" y="64" width="120" height="32" fill="#C82A2A" opacity="0.7"/><text x="372" y="84" fill="#FDFDFD">T3 (10ms)</text>
+        <rect x="434" y="64" width="4" height="32" fill="#888880" opacity="0.3"/>
+        <rect x="438" y="64" width="120" height="32" fill="#2E4057" opacity="0.8"/><text x="498" y="84" fill="#FDFDFD">T1 (10ms)</text>
+        <rect x="560" y="64" width="4" height="32" fill="#888880" opacity="0.3"/>
+        <rect x="564" y="64" width="60" height="32" fill="#728C69" opacity="0.6"/><text x="594" y="84" fill="#FDFDFD">T2 I/O</text>
+        <!-- T2 blocks on I/O -->
+        <rect x="626" y="64" width="120" height="32" fill="#C82A2A" opacity="0.7"/><text x="686" y="84" fill="#FDFDFD">T3 (10ms)</text>
+        <rect x="748" y="64" width="4" height="32" fill="#888880" opacity="0.3"/>
+        <rect x="752" y="64" width="120" height="32" fill="#2E4057" opacity="0.8"/><text x="812" y="84" fill="#FDFDFD">T1 (10ms)</text>
+        <rect x="874" y="64" width="4" height="32" fill="#888880" opacity="0.3"/>
+        <!-- T2 wakes from I/O -->
+        <rect x="878" y="64" width="120" height="32" fill="#728C69" opacity="0.8"/><text x="938" y="84" fill="#FDFDFD">T2 woke</text>
+        <rect x="1000" y="64" width="4" height="32" fill="#888880" opacity="0.3"/>
+        <rect x="1004" y="64" width="120" height="32" fill="#C82A2A" opacity="0.7"/><text x="1064" y="84" fill="#FDFDFD">T3 (10ms)</text>
+        <rect x="1126" y="64" width="4" height="32" fill="#888880" opacity="0.3"/>
+        <rect x="1130" y="64" width="40" height="32" fill="#2E4057" opacity="0.5"/><text x="1150" y="84" fill="#FDFDFD">T1</text>
+      </g>
+      <!-- Time ruler -->
+      <line x1="60" y1="104" x2="1180" y2="104" stroke="#D8D6CE" stroke-width="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880" text-anchor="middle">
+        <text x="60" y="118">0</text><text x="186" y="118">10</text><text x="312" y="118">20</text>
+        <text x="438" y="118">30</text><text x="564" y="118">40</text><text x="688" y="118">50</text>
+        <text x="814" y="118">60</text><text x="940" y="118">70</text><text x="1066" y="118">80</text>
+        <text x="1180" y="118">90ms</text>
+      </g>
+
+      <!-- Thread state timeline -->
+      <text x="40" y="152" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">THREAD STATE LEGEND:</text>
+      <rect x="200" y="140" width="20" height="14" fill="#2E4057" opacity="0.8"/>
+      <text x="228" y="152" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">RUNNING</text>
+      <rect x="320" y="140" width="20" height="14" fill="#728C69" opacity="0.5"/>
+      <text x="348" y="152" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">READY (waiting for CPU)</text>
+      <rect x="540" y="140" width="20" height="14" fill="#8B6914" opacity="0.5"/>
+      <text x="568" y="152" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">WAITING (blocked on I/O)</text>
+      <rect x="780" y="140" width="14" height="14" fill="#888880" opacity="0.5"/>
+      <text x="802" y="152" font-family="'Inter',sans-serif" font-size="9" fill="#888880">context switch (~1–5µs)</text>
+
+      <!-- Context switch cost box -->
+      <rect x="60" y="172" width="1100" height="80" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="60" y="172" width="4" height="80" fill="#2E4057"/>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="78" y="194">Context switch cost: save all registers + program counter of current thread into TCB (Thread Control Block).</text>
+        <text x="78" y="214">Load registers from next thread's TCB. If threads belong to different processes, also flush TLB (expensive).</text>
+        <text x="78" y="234" fill="#728C69">Same-process thread switch: ~1–5 µs.  Cross-process switch: ~5–20 µs.</text>
+        <text x="78" y="248" fill="#C82A2A">T2 blocks on I/O at t=40ms → CPU given to T3 immediately (no busy-wait).</text>
+      </g>
+
+      <!-- Footer -->
+      <rect x="0" y="282" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="295" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 7.1-C · Preemptive time-slice scheduling. Each thread runs for 10ms then yields. When T2 blocks on I/O, CPU immediately gives its slot to T3 — no wasted cycles.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Preemptive time-slice scheduling with three threads on a single CPU. The OS scheduler allocates 10ms quanta, cycling through runnable threads. When Thread 2 blocks on I/O at t=40ms, the CPU immediately switches to Thread 3 — no busy-waiting. Thread 2 is moved to the WAITING state and only returns to READY when the I/O interrupt fires (at ~t=65ms), resuming in the next available slot. Context switching saves and restores the entire thread state (registers, program counter, stack pointer) from the Thread Control Block. The illusion of simultaneous execution emerges from rapid switching — at 10ms quanta, three threads appear to run in parallel to a human observer.</div>
+</div>
+
+</div>
+</body>
+</html>

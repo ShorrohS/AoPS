@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 2.4 Illustrations — Combinational Circuits</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:var(--accent-red);color:var(--accent-red);background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 2 — Digital Foundations</div>
+  <div class="page-title">Module 2.4 — Combinational Circuits</div>
+  <div class="page-sub">3 figures · Half/Full Adder · 4-bit Ripple Carry Adder · Multiplexer</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 2.4-A  Half + Full Adder -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 2.4-A</span>
+    <span class="fig-title">Half Adder → Full Adder — Adding Bits with Gates</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" style="height:370px">
+      <defs>
+        <linearGradient id="combBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="420" fill="url(#combBg)"/>
+
+      <!-- LEFT: Half Adder -->
+      <rect x="40" y="30" width="480" height="360" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="30" width="480" height="28" fill="#2E4057" opacity="0.09"/>
+      <text x="280" y="50" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2C2C2C">Half Adder</text>
+
+      <!-- Inputs -->
+      <text x="70" y="134" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2E4057">A</text>
+      <text x="70" y="214" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2E4057">B</text>
+      <line x1="82" y1="132" x2="160" y2="132" stroke="#2E4057" stroke-width="2"/>
+      <line x1="82" y1="212" x2="160" y2="212" stroke="#2E4057" stroke-width="2"/>
+
+      <!-- XOR gate (SUM) -->
+      <g transform="translate(160,152)">
+        <line x1="0" y1="-20" x2="20" y2="-20" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="0" y1="20" x2="20" y2="20" stroke="#2C2C2C" stroke-width="2"/>
+        <path d="M14 -28 Q24 -18 14 0 Q24 18 14 28" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+        <path d="M20 -28 Q30 -28 52 0 Q30 28 20 28 L20 -28" fill="#EEECE6" stroke="#2C2C2C" stroke-width="1.5"/>
+        <path d="M20 -28 Q44 -28 72 0 Q44 28 20 28" fill="#EEECE6" stroke="#2C2C2C" stroke-width="1.5"/>
+        <line x1="72" y1="0" x2="92" y2="0" stroke="#2C2C2C" stroke-width="2"/>
+        <text x="96" y="5" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">SUM</text>
+      </g>
+
+      <!-- AND gate (CARRY) -->
+      <g transform="translate(160,242)">
+        <line x1="0" y1="-20" x2="18" y2="-20" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="0" y1="20" x2="18" y2="20" stroke="#2C2C2C" stroke-width="2"/>
+        <rect x="18" y="-28" width="26" height="56" rx="0" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+        <path d="M44 -28 Q72 -28 72 0 Q72 28 44 28 L44 -28" fill="#EEECE6" stroke="#2C2C2C" stroke-width="1.5"/>
+        <line x1="72" y1="0" x2="92" y2="0" stroke="#2C2C2C" stroke-width="2"/>
+        <text x="96" y="5" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">CARRY</text>
+      </g>
+
+      <!-- Feed lines -->
+      <line x1="82" y1="132" x2="82" y2="132" stroke="none"/>
+      <line x1="160" y1="132" x2="160" y2="132" stroke="none"/>
+
+      <!-- Half adder truth table -->
+      <rect x="380" y="90" width="120" height="200" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="380" y="90" width="120" height="22" fill="#2E4057" opacity="0.08"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <text x="420" y="106" fill="#888880">A B</text><text x="475" y="106" fill="#728C69">S</text><text x="493" y="106" fill="#C82A2A">C</text>
+        <line x1="384" y1="112" x2="496" y2="112" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="420" y="130" fill="#2C2C2C">0 0</text><text x="475" y="130" fill="#888880">0</text><text x="493" y="130" fill="#888880">0</text>
+        <text x="420" y="152" fill="#2C2C2C">0 1</text><text x="475" y="152" fill="#728C69">1</text><text x="493" y="152" fill="#888880">0</text>
+        <text x="420" y="174" fill="#2C2C2C">1 0</text><text x="475" y="174" fill="#728C69">1</text><text x="493" y="174" fill="#888880">0</text>
+        <text x="420" y="196" fill="#2C2C2C">1 1</text><text x="475" y="196" fill="#888880">0</text><text x="493" y="196" fill="#C82A2A">1</text>
+      </g>
+      <text x="440" y="232" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">S=XOR</text>
+      <text x="440" y="244" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">C=AND</text>
+      <text x="280" y="356" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880">Half adder: no carry input</text>
+      <text x="280" y="374" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880">Can only add two 1-bit inputs</text>
+
+      <!-- RIGHT: Full Adder -->
+      <rect x="640" y="30" width="520" height="360" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="640" y="30" width="520" height="28" fill="#2E4057" opacity="0.09"/>
+      <text x="900" y="50" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2C2C2C">Full Adder (two half adders + OR)</text>
+
+      <!-- Full adder schematic -->
+      <!-- Inputs -->
+      <text x="658" y="114" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2E4057">A</text>
+      <text x="658" y="154" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2E4057">B</text>
+      <text x="658" y="194" font-family="'JetBrains Mono',monospace" font-size="13" fill="#C82A2A">Cin</text>
+
+      <!-- Half adder 1 box -->
+      <rect x="710" y="86" width="100" height="80" rx="1" fill="#EEECE6" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="760" y="132" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Half</text>
+      <text x="760" y="146" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Adder 1</text>
+      <!-- HA1 inputs/outputs -->
+      <line x1="670" y1="112" x2="710" y2="112" stroke="#2E4057" stroke-width="2"/>
+      <line x1="670" y1="152" x2="710" y2="152" stroke="#2E4057" stroke-width="2"/>
+      <line x1="810" y1="112" x2="850" y2="112" stroke="#728C69" stroke-width="1.5"/>
+      <text x="815" y="108" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">S1</text>
+      <line x1="810" y1="152" x2="870" y2="152" stroke="#C82A2A" stroke-width="1.5"/>
+      <text x="815" y="148" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">C1</text>
+
+      <!-- Half adder 2 box -->
+      <rect x="850" y="86" width="100" height="80" rx="1" fill="#EEECE6" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="900" y="132" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Half</text>
+      <text x="900" y="146" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Adder 2</text>
+      <!-- HA2 inputs/outputs -->
+      <line x1="670" y1="192" x2="840" y2="192" stroke="#C82A2A" stroke-width="2" stroke-dasharray="4,2"/>
+      <line x1="840" y1="192" x2="840" y2="126" stroke="#C82A2A" stroke-width="2" stroke-dasharray="4,2"/>
+      <line x1="840" y1="126" x2="850" y2="126" stroke="#C82A2A" stroke-width="2"/>
+      <!-- SUM output -->
+      <line x1="950" y1="112" x2="1020" y2="112" stroke="#728C69" stroke-width="2"/>
+      <text x="1025" y="116" font-family="'JetBrains Mono',monospace" font-size="12" fill="#728C69">SUM</text>
+      <line x1="950" y1="152" x2="990" y2="152" stroke="#C82A2A" stroke-width="1.5"/>
+
+      <!-- OR gate for carry out -->
+      <g transform="translate(990,182)">
+        <line x1="0" y1="-30" x2="16" y2="-30" stroke="#2C2C2C" stroke-width="1.5"/>
+        <line x1="0" y1="10" x2="16" y2="10" stroke="#2C2C2C" stroke-width="1.5"/>
+        <path d="M16 -38 Q26 -28 16 -10 Q26 8 16 18 L16 -38" fill="#EEECE6" stroke="#2C2C2C" stroke-width="1.5"/>
+        <path d="M16 -38 Q40 -38 62 -10 Q40 18 16 18" fill="#EEECE6" stroke="#2C2C2C" stroke-width="1.5"/>
+        <line x1="62" y1="-10" x2="80" y2="-10" stroke="#2C2C2C" stroke-width="1.5"/>
+        <text x="84" y="-5" font-family="'JetBrains Mono',monospace" font-size="12" fill="#C82A2A">Cout</text>
+      </g>
+      <!-- Wire C1 to OR -->
+      <line x1="990" y1="152" x2="990" y2="152" stroke="none"/>
+      <!-- C2 wire -->
+      <line x1="950" y1="152" x2="972" y2="152" stroke="#C82A2A" stroke-width="1.5"/>
+      <line x1="972" y1="152" x2="972" y2="170" stroke="#C82A2A" stroke-width="1.5"/>
+      <line x1="972" y1="170" x2="990" y2="170" stroke="#C82A2A" stroke-width="1.5"/>
+
+      <!-- Full adder truth table -->
+      <rect x="660" y="240" width="480" height="130" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="660" y="240" width="480" height="22" fill="#2E4057" opacity="0.08"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <text x="710" y="256" fill="#888880">A</text><text x="740" y="256" fill="#888880">B</text><text x="780" y="256" fill="#C82A2A">Cin</text>
+        <text x="850" y="256" fill="#728C69">SUM</text><text x="930" y="256" fill="#C82A2A">Cout</text>
+        <text x="1070" y="256" fill="#888880">Dec</text>
+        <line x1="668" y1="262" x2="1132" y2="262" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="710" y="280" fill="#2C2C2C">0</text><text x="740" y="280" fill="#2C2C2C">0</text><text x="780" y="280" fill="#2C2C2C">0</text>
+        <text x="850" y="280" fill="#888880">0</text><text x="930" y="280" fill="#888880">0</text><text x="1070" y="280" fill="#888880">0</text>
+        <text x="710" y="298" fill="#2C2C2C">0</text><text x="740" y="298" fill="#2C2C2C">1</text><text x="780" y="298" fill="#2C2C2C">0</text>
+        <text x="850" y="298" fill="#728C69">1</text><text x="930" y="298" fill="#888880">0</text><text x="1070" y="298" fill="#888880">1</text>
+        <text x="710" y="316" fill="#2C2C2C">1</text><text x="740" y="316" fill="#2C2C2C">1</text><text x="780" y="316" fill="#2C2C2C">0</text>
+        <text x="850" y="316" fill="#888880">0</text><text x="930" y="316" fill="#C82A2A">1</text><text x="1070" y="316" fill="#888880">2</text>
+        <text x="710" y="334" fill="#728C69">1</text><text x="740" y="334" fill="#728C69">1</text><text x="780" y="334" fill="#728C69">1</text>
+        <text x="850" y="334" fill="#728C69">1</text><text x="930" y="334" fill="#C82A2A">1</text><text x="1070" y="334" fill="#C82A2A">3</text>
+      </g>
+
+      <rect x="0" y="400" width="1200" height="20" fill="rgba(44,64,87,0.04)"/>
+    </svg>
+  </div>
+  <div class="fig-caption">Half adder (left) and full adder (right). The half adder adds two 1-bit inputs using XOR (sum) and AND (carry out) — no carry input. The full adder extends this by chaining two half adders with an OR gate. It accepts three inputs: A, B, and a carry-in (Cin) from the previous column. The carry-out is generated by ORing the carry outputs of both half adders. Full adders can be chained to add multi-bit numbers — four full adders build a 4-bit ripple carry adder.</div>
+</div>
+
+<!-- FIG 2.4-B  4-Bit Ripple Carry Adder -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type F — Simulation Figure</span>
+    <span class="fig-id">FIG 2.4-B</span>
+    <span class="fig-title">4-Bit Ripple Carry Adder — Carry Propagation Chain</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+
+      <!-- Header -->
+      <rect x="0" y="0" width="1200" height="36" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="23" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2C2C2C">4-bit ripple carry adder: 0111 + 0001 = 1000 (7 + 1 = 8)</text>
+
+      <!-- 4 Full Adder cells -->
+      <!-- C0 input = 0 -->
+      <text x="60" y="150" font-family="'JetBrains Mono',monospace" font-size="12" fill="#888880">C0=0</text>
+      <line x1="100" y1="148" x2="140" y2="148" stroke="#888880" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+      <!-- FA bit 0 -->
+      <rect x="140" y="80" width="120" height="140" rx="1" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="140" y="80" width="120" height="24" fill="#728C69" opacity="0.1"/>
+      <text x="200" y="97" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69">FA  bit 0</text>
+      <text x="145" y="118" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">A₀=1</text>
+      <text x="145" y="136" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">B₀=1</text>
+      <text x="145" y="154" font-family="'JetBrains Mono',monospace" font-size="11" fill="#888880">Ci=0</text>
+      <line x1="200" y1="220" x2="200" y2="250" stroke="#C82A2A" stroke-width="2"/>
+      <text x="200" y="270" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#C82A2A">S₀=0</text>
+      <!-- Carry out -->
+      <line x1="260" y1="148" x2="300" y2="148" stroke="#C82A2A" stroke-width="2"/>
+      <text x="274" y="140" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">C1=1</text>
+
+      <!-- FA bit 1 -->
+      <rect x="300" y="80" width="120" height="140" rx="1" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="300" y="80" width="120" height="24" fill="#728C69" opacity="0.1"/>
+      <text x="360" y="97" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69">FA  bit 1</text>
+      <text x="305" y="118" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">A₁=1</text>
+      <text x="305" y="136" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">B₁=0</text>
+      <text x="305" y="154" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">Ci=1</text>
+      <line x1="360" y1="220" x2="360" y2="250" stroke="#C82A2A" stroke-width="2"/>
+      <text x="360" y="270" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#C82A2A">S₁=0</text>
+      <line x1="420" y1="148" x2="460" y2="148" stroke="#C82A2A" stroke-width="2"/>
+      <text x="434" y="140" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">C2=1</text>
+
+      <!-- FA bit 2 -->
+      <rect x="460" y="80" width="120" height="140" rx="1" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="460" y="80" width="120" height="24" fill="#728C69" opacity="0.1"/>
+      <text x="520" y="97" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69">FA  bit 2</text>
+      <text x="465" y="118" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">A₂=1</text>
+      <text x="465" y="136" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">B₂=0</text>
+      <text x="465" y="154" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">Ci=1</text>
+      <line x1="520" y1="220" x2="520" y2="250" stroke="#C82A2A" stroke-width="2"/>
+      <text x="520" y="270" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#C82A2A">S₂=0</text>
+      <line x1="580" y1="148" x2="620" y2="148" stroke="#C82A2A" stroke-width="2"/>
+      <text x="594" y="140" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">C3=1</text>
+
+      <!-- FA bit 3 -->
+      <rect x="620" y="80" width="120" height="140" rx="1" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="620" y="80" width="120" height="24" fill="#728C69" opacity="0.1"/>
+      <text x="680" y="97" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69">FA  bit 3</text>
+      <text x="625" y="118" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">A₃=0</text>
+      <text x="625" y="136" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">B₃=0</text>
+      <text x="625" y="154" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">Ci=1</text>
+      <line x1="680" y1="220" x2="680" y2="250" stroke="#728C69" stroke-width="2"/>
+      <text x="680" y="270" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#728C69">S₃=1</text>
+      <!-- Carry out = 0 -->
+      <line x1="740" y1="148" x2="780" y2="148" stroke="#888880" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <text x="792" y="144" font-family="'Inter',sans-serif" font-size="8" fill="#888880">Cout=0</text>
+
+      <!-- Result -->
+      <rect x="860" y="80" width="280" height="140" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="860" y="80" width="280" height="24" fill="#2E4057" opacity="0.08"/>
+      <text x="1000" y="97" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">RESULT</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle">
+        <text x="1000" y="128" fill="#888880">  0111  (7)</text>
+        <text x="1000" y="150" fill="#888880">+ 0001  (1)</text>
+        <line x1="878" y1="158" x2="1132" y2="158" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="1000" y="180" fill="#728C69">= 1000  (8)</text>
+      </g>
+      <text x="1000" y="204" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">"ripple" = carry must</text>
+      <text x="1000" y="218" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">propagate through all bits</text>
+
+      <!-- Carry propagation timing annotation -->
+      <path d="M152 60 L740 60" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#cpa)"/>
+      <text x="446" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">carry ripples left→right through all 4 adders</text>
+      <defs>
+        <marker id="cpa" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+      </defs>
+
+      <rect x="0" y="280" width="1200" height="20" fill="rgba(44,64,87,0.04)"/>
+      <text x="1140" y="294" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · 2.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">4-bit ripple carry adder computing 0111 + 0001 = 1000 (7 + 1 = 8). Each full adder processes one bit column with a carry-in from the previous. The carry propagates through all four stages — bit 0 generates carry 1, which propagates through bits 1 and 2 (producing sum 0 each time), until bit 3 produces the final sum bit 1. The "ripple" refers to this sequential carry propagation: the adder cannot produce the final result until all carries have settled. This O(n) delay motivated the invention of carry lookahead adders, which compute all carries in parallel in O(log n) time.</div>
+</div>
+
+<!-- FIG 2.4-C  Multiplexer and Decoder — Data Routing Primitives -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 2.4-C</span>
+    <span class="fig-title">Multiplexer and Decoder — Selecting and Routing Binary Data</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" style="height:340px">
+      <rect width="1200" height="400" fill="#F4EFE6"/>
+      <line x1="600" y1="20" x2="600" y2="370" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- LEFT: 4-to-1 Multiplexer -->
+      <text x="300" y="36" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.12em">4-TO-1 MULTIPLEXER (MUX)</text>
+      <!-- MUX trapezoid body -->
+      <path d="M200 60 L400 80 L400 280 L200 300 Z" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5"/>
+      <!-- MUX label -->
+      <text x="300" y="182" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2E4057">MUX</text>
+      <text x="300" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">4→1</text>
+      <!-- 4 inputs left side -->
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">
+        <line x1="120" y1="110" x2="202" y2="110" stroke="#2C2C2C" stroke-width="1.5"/>
+        <text x="110" y="114" text-anchor="end">D0</text>
+        <line x1="120" y1="156" x2="202" y2="156" stroke="#2C2C2C" stroke-width="1.5"/>
+        <text x="110" y="160" text-anchor="end">D1</text>
+        <line x1="120" y1="202" x2="202" y2="202" stroke="#2C2C2C" stroke-width="1.5"/>
+        <text x="110" y="206" text-anchor="end">D2</text>
+        <line x1="120" y1="248" x2="202" y2="248" stroke="#2C2C2C" stroke-width="1.5"/>
+        <text x="110" y="252" text-anchor="end">D3</text>
+      </g>
+      <!-- 2 select lines bottom -->
+      <line x1="250" y1="318" x2="250" y2="298" stroke="#C82A2A" stroke-width="1.5"/>
+      <line x1="350" y1="318" x2="350" y2="298" stroke="#C82A2A" stroke-width="1.5"/>
+      <text x="250" y="334" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">S0</text>
+      <text x="350" y="334" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">S1</text>
+      <text x="300" y="355" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">select lines</text>
+      <!-- Output right -->
+      <line x1="400" y1="180" x2="490" y2="180" stroke="#728C69" stroke-width="2"/>
+      <text x="500" y="184" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">Y (output)</text>
+      <!-- Truth table inset -->
+      <rect x="50" y="340" width="500" height="46" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="55" y="357" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">S1 S0 | Y</text>
+      <line x1="50" y1="360" x2="550" y2="360" stroke="#E8E6DF" stroke-width="0.5"/>
+      <text x="55" y="376" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C"> 0  0 | D0     0  1 | D1     1  0 | D2     1  1 | D3</text>
+      <!-- RIGHT: 2-to-4 Decoder -->
+      <text x="900" y="36" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.12em">2-TO-4 DECODER</text>
+      <!-- Decoder rectangle -->
+      <rect x="750" y="80" width="200" height="220" fill="#FDFDFD" stroke="#8B6914" stroke-width="1.5"/>
+      <text x="850" y="192" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#8B6914">DEC</text>
+      <text x="850" y="210" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">2→4</text>
+      <!-- 2 inputs left -->
+      <line x1="680" y1="160" x2="752" y2="160" stroke="#C82A2A" stroke-width="1.5"/>
+      <text x="670" y="164" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">A0</text>
+      <line x1="680" y1="220" x2="752" y2="220" stroke="#C82A2A" stroke-width="1.5"/>
+      <text x="670" y="224" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">A1</text>
+      <!-- 4 outputs right -->
+      <g font-family="'JetBrains Mono',monospace" font-size="11">
+        <line x1="950" y1="110" x2="1050" y2="110" stroke="#2C2C2C" stroke-width="1.5"/>
+        <text x="1060" y="114" fill="#888880">Y0</text>
+        <line x1="950" y1="156" x2="1050" y2="156" stroke="#2C2C2C" stroke-width="1.5"/>
+        <text x="1060" y="160" fill="#888880">Y1</text>
+        <line x1="950" y1="202" x2="1050" y2="202" stroke="#2C2C2C" stroke-width="1.5"/>
+        <text x="1060" y="206" fill="#888880">Y2</text>
+        <line x1="950" y1="248" x2="1050" y2="248" stroke="#2C2C2C" stroke-width="1.5"/>
+        <text x="1060" y="252" fill="#888880">Y3</text>
+      </g>
+      <!-- Decoder truth table inset -->
+      <rect x="630" y="320" width="500" height="66" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="636" y="337" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">A1 A0 | Y0 Y1 Y2 Y3</text>
+      <line x1="630" y1="342" x2="1130" y2="342" stroke="#E8E6DF" stroke-width="0.5"/>
+      <text x="636" y="356" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C"> 0  0 |  1  0  0  0</text>
+      <text x="636" y="370" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C"> 0  1 |  0  1  0  0     1  0 |  0  0  1  0     1  1 |  0  0  0  1</text>
+      <!-- Active output highlight for S=10 case -->
+      <rect x="1000" y="196" width="56" height="14" fill="#728C69" opacity="0.2"/>
+      <!-- Footer -->
+      <rect x="0" y="386" width="1200" height="14" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="396" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 2.4-C · MUX: select one of N inputs to route to output. Decoder: activate exactly one of N outputs from an N-bit address. Both are found in every processor memory system.</text>
+      <text x="1140" y="396" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · 2.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Two fundamental combinational building blocks: the multiplexer (MUX) and the decoder. A 4-to-1 MUX routes one of four data inputs to a single output, selected by two control lines — used in CPU datapaths to choose between ALU operands. A 2-to-4 decoder converts a 2-bit binary address into four one-hot outputs (exactly one high at a time) — used in memory address decoding to select which memory bank or register to activate. Both circuits appear repeatedly at every level of computer architecture.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 7.4 — Building a Shell</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 7 — Systems Programming</div>
+  <div class="page-title">Module 7.4 — Building a Shell</div>
+  <div class="page-sub">3 figures · Shell Read-Parse-Execute Loop · fork/exec/wait · Pipelines</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 7.4-A  Shell Loop -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 7.4-A</span>
+    <span class="fig-title">Shell Internals — The Read-Parse-Fork-Exec-Wait Cycle</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" style="height:340px">
+      <defs><linearGradient id="shBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="400" fill="url(#shBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">SHELL MAIN LOOP — EVERY COMMAND YOU TYPE GOES THROUGH THIS CYCLE</text>
+
+      <!-- Loop stages as horizontal flow -->
+      <!-- Stage 1: READ -->
+      <rect x="40" y="80" width="160" height="80" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="120" y="116" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">READ</text>
+      <text x="120" y="136" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#BBBBB5">prompt, getline()</text>
+      <text x="120" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" letter-spacing="0.1em">①</text>
+
+      <!-- Arrow -->
+      <path d="M200 120 L240 120" stroke="#2C2C2C" stroke-width="2" fill="none"/>
+      <path d="M236 116 L244 120 L236 124" fill="#2C2C2C"/>
+
+      <!-- Stage 2: PARSE -->
+      <rect x="244" y="80" width="160" height="80" fill="#2E4057" opacity="0.65" rx="1"/>
+      <text x="324" y="116" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">PARSE</text>
+      <text x="324" y="136" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#BBBBB5">tokenise, AST</text>
+      <text x="324" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" letter-spacing="0.1em">②</text>
+
+      <!-- Arrow -->
+      <path d="M404 120 L444 120" stroke="#2C2C2C" stroke-width="2" fill="none"/>
+      <path d="M440 116 L448 120 L440 124" fill="#2C2C2C"/>
+
+      <!-- Stage 3: FORK -->
+      <rect x="448" y="80" width="160" height="80" fill="#728C69" opacity="0.8" rx="1"/>
+      <text x="528" y="116" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">FORK</text>
+      <text x="528" y="136" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">clone process</text>
+      <text x="528" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" letter-spacing="0.1em">③</text>
+
+      <!-- Arrow -->
+      <path d="M608 120 L648 120" stroke="#2C2C2C" stroke-width="2" fill="none"/>
+      <path d="M644 116 L652 120 L644 124" fill="#2C2C2C"/>
+
+      <!-- Stage 4: EXEC -->
+      <rect x="652" y="80" width="160" height="80" fill="#8B6914" opacity="0.8" rx="1"/>
+      <text x="732" y="116" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">EXEC</text>
+      <text x="732" y="136" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">replace image</text>
+      <text x="732" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914" letter-spacing="0.1em">④</text>
+
+      <!-- Arrow -->
+      <path d="M812 120 L852 120" stroke="#2C2C2C" stroke-width="2" fill="none"/>
+      <path d="M848 116 L856 120 L848 124" fill="#2C2C2C"/>
+
+      <!-- Stage 5: WAIT -->
+      <rect x="856" y="80" width="160" height="80" fill="#C82A2A" opacity="0.75" rx="1"/>
+      <text x="936" y="116" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">WAIT</text>
+      <text x="936" y="136" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">waitpid(child)</text>
+      <text x="936" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" letter-spacing="0.1em">⑤</text>
+
+      <!-- Loop back arrow -->
+      <path d="M1016 120 L1060 120 L1060 240 L120 240 L120 162" stroke="#2C2C2C" stroke-width="1.5" fill="none" stroke-dasharray="6,3"/>
+      <path d="M116 158 L120 150 L124 158" fill="#2C2C2C"/>
+      <text x="590" y="260" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">loop back → print new prompt</text>
+
+      <!-- Code panel -->
+      <rect x="40" y="290" width="1120" height="90" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#BBBBB5">
+        <text x="56" y="314">while (1) {</text>
+        <text x="56" y="332">  print_prompt();   line = readline();</text>
+        <text x="56" y="350">  tokens = parse(line);</text>
+        <text x="56" y="368" fill="#728C69">  pid = fork();  // duplicate this process</text>
+      </g>
+      <g font-family="'JetBrains Mono',monospace" font-size="11">
+        <text x="600" y="314" fill="#BBBBB5">  if (pid == 0) {</text>
+        <text x="600" y="332" fill="#8B6914">    execvp(tokens[0], tokens); // child: become the command</text>
+        <text x="600" y="350" fill="#BBBBB5">  } else {</text>
+        <text x="600" y="368" fill="#C82A2A">    waitpid(pid, NULL, 0);     // parent: wait for child</text>
+      </g>
+
+      <rect x="0" y="382" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="395" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 7.4-A · Every shell command goes through this 5-step loop. The shell itself never becomes the command — it forks a child and exec replaces the child's image with the requested program.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The shell's core loop: read a line from the terminal, tokenise and parse it into a command and arguments, fork a child process (an identical copy of the shell), call exec in the child (replacing the child's memory image with the requested program), then wait for the child to finish before printing the next prompt. The shell itself is never replaced — it always returns to the top of the loop. This fork-exec separation is elegant: between fork() and exec(), the child can redirect file descriptors, set environment variables, or set up pipes — before the new program ever starts. This is how shell redirection (>, <, |) is implemented.</div>
+</div>
+
+<!-- FIG 7.4-B  fork/exec/wait -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 7.4-B</span>
+    <span class="fig-title">fork() / exec() / wait() — Process Tree After Each System Call</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 340" xmlns="http://www.w3.org/2000/svg" style="height:280px">
+      <rect width="1200" height="340" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">FORK/EXEC/WAIT — PROCESS TREE STATE AT EACH STEP</text>
+
+      <!-- Step 1: Before fork — only shell -->
+      <text x="120" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">BEFORE FORK</text>
+      <rect x="60" y="60" width="120" height="50" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="120" y="84" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">shell</text>
+      <text x="120" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#BBBBB5">PID 100</text>
+      <text x="120" y="126" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">running</text>
+
+      <!-- Arrow 1→2 -->
+      <path d="M200 85 L250 85" stroke="#728C69" stroke-width="2" fill="none"/>
+      <path d="M246 81 L254 85 L246 89" fill="#728C69"/>
+      <text x="225" y="76" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">fork()</text>
+
+      <!-- Step 2: After fork — two processes -->
+      <text x="380" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">AFTER FORK</text>
+      <!-- Parent (shell) -->
+      <rect x="258" y="60" width="120" height="50" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="318" y="84" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">shell</text>
+      <text x="318" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#BBBBB5">PID 100</text>
+      <!-- Child (shell copy) -->
+      <rect x="398" y="60" width="120" height="50" fill="#728C69" opacity="0.75" rx="1"/>
+      <text x="458" y="78" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">shell copy</text>
+      <text x="458" y="95" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#DDDDD5">PID 101</text>
+      <text x="458" y="108" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">fork() = 0</text>
+      <!-- fork returns label -->
+      <text x="318" y="126" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">fork()=101</text>
+      <!-- Parent/child line -->
+      <line x1="318" y1="110" x2="318" y2="124" stroke="#D8D6CE" stroke-width="0.5"/>
+      <line x1="458" y1="110" x2="458" y2="130" stroke="#D8D6CE" stroke-width="0.5"/>
+      <line x1="318" y1="138" x2="458" y2="138" stroke="#D8D6CE" stroke-width="0.5" stroke-dasharray="3,3"/>
+      <text x="388" y="150" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">identical copies</text>
+
+      <!-- Arrow 2→3 -->
+      <path d="M520 85 L570 85" stroke="#8B6914" stroke-width="2" fill="none"/>
+      <path d="M566 81 L574 85 L566 89" fill="#8B6914"/>
+      <text x="545" y="76" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8B6914">exec()</text>
+      <text x="545" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">(child only)</text>
+
+      <!-- Step 3: After exec — child becomes ls -->
+      <text x="710" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">AFTER EXEC</text>
+      <!-- Parent (still shell, now waiting) -->
+      <rect x="578" y="60" width="120" height="50" fill="#2E4057" opacity="0.5" rx="1"/>
+      <text x="638" y="84" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">shell</text>
+      <text x="638" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#BBBBB5">waiting…</text>
+      <!-- Child (now ls) -->
+      <rect x="718" y="60" width="120" height="50" fill="#8B6914" opacity="0.8" rx="1"/>
+      <text x="778" y="78" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">ls</text>
+      <text x="778" y="95" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#DDDDD5">PID 101</text>
+      <text x="778" y="108" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">running</text>
+      <!-- Child replaced annotation -->
+      <text x="778" y="130" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">memory replaced</text>
+      <text x="778" y="142" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">by /bin/ls image</text>
+
+      <!-- Arrow 3→4 -->
+      <path d="M840 85 L890 85" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M886 81 L894 85 L886 89" fill="#C82A2A"/>
+      <text x="865" y="76" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#C82A2A">wait()</text>
+      <text x="865" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">ls finishes</text>
+
+      <!-- Step 4: After wait — back to shell -->
+      <text x="1060" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">AFTER WAIT</text>
+      <rect x="998" y="60" width="120" height="50" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="1058" y="84" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">shell</text>
+      <text x="1058" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#BBBBB5">PID 100</text>
+      <text x="1058" y="130" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">child exited, loop</text>
+
+      <!-- Key insight box -->
+      <rect x="40" y="180" width="1120" height="120" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="180" width="4" height="120" fill="#728C69"/>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="58" y="202" font-weight="500" fill="#728C69">Why fork then exec, not just exec?</text>
+        <text x="58" y="222">Between fork() and exec(), the child can safely modify its own environment without affecting the parent shell.</text>
+        <text x="58" y="242">This is how redirection works: child calls dup2(file_fd, STDOUT_FILENO) before exec — the new program writes to the file.</text>
+        <text x="58" y="262">Pipes: child1 writes to pipe write-end; child2 reads from pipe read-end — wired before exec in both children.</text>
+        <text x="58" y="282" fill="#888880">The Unix philosophy: composable tools connected by the kernel's pipe primitive, orchestrated by the shell's fork-exec model.</text>
+      </g>
+
+      <rect x="0" y="318" width="1200" height="22" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="334" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 7.4-B · fork() duplicates the process. exec() replaces the child's image. wait() reaps the child. Shell stays intact throughout. The window between fork and exec enables redirection and pipes.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The fork/exec/wait triad is the foundation of Unix process creation. fork() duplicates the calling process — both parent and child continue after the fork call, distinguished by the return value (0 in child, child PID in parent). exec() replaces the calling process's memory image with a new program — the PID is preserved but everything else changes. The parent calls waitpid() which suspends it until the child exits, preventing zombie processes. The crucial architectural insight: the gap between fork() and exec() lets the child rearrange its file descriptors (enabling redirection with dup2()) and set up pipe endpoints before the new program starts — without any cooperation from the new program itself.</div>
+</div>
+
+<!-- FIG 7.4-C  Pipelines -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 7.4-C</span>
+    <span class="fig-title">Shell Pipeline — ls | grep txt | wc -l</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">PIPELINE: ls | grep txt | wc -l — STDOUT CONNECTED TO STDIN VIA KERNEL PIPES</text>
+
+      <!-- Process 1: ls -->
+      <rect x="40" y="60" width="220" height="140" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5" rx="1"/>
+      <rect x="40" y="60" width="220" height="26" fill="#2E4057" opacity="0.12"/>
+      <text x="150" y="78" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">ls  (PID 201)</text>
+      <text x="60" y="108" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">stdin:  /dev/null</text>
+      <text x="60" y="126" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">stdout: pipe[0]-write</text>
+      <text x="60" y="148" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">lists files in CWD</text>
+      <text x="60" y="168" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2E4057">output:</text>
+      <text x="60" y="184" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">README.md</text>
+      <text x="60" y="198" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">notes.txt ...</text>
+
+      <!-- Pipe 1 -->
+      <rect x="264" y="100" width="140" height="60" fill="#728C69" opacity="0.2" stroke="#728C69" stroke-width="1" rx="1"/>
+      <text x="334" y="126" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">kernel pipe</text>
+      <text x="334" y="144" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">fd[0]=read</text>
+      <text x="334" y="157" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">fd[1]=write</text>
+      <path d="M260 130 L264 130" stroke="#728C69" stroke-width="2" fill="none"/>
+      <path d="M404 130 L440 130" stroke="#728C69" stroke-width="2" fill="none"/>
+      <path d="M436 126 L444 130 L436 134" fill="#728C69"/>
+
+      <!-- Process 2: grep -->
+      <rect x="444" y="60" width="260" height="140" fill="#FDFDFD" stroke="#8B6914" stroke-width="1.5" rx="1"/>
+      <rect x="444" y="60" width="260" height="26" fill="#8B6914" opacity="0.1"/>
+      <text x="574" y="78" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#8B6914">grep txt  (PID 202)</text>
+      <text x="460" y="108" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">stdin:  pipe[0]-read</text>
+      <text x="460" y="126" font-family="'JetBrains Mono',monospace" font-size="10" fill="#C82A2A">stdout: pipe[1]-write</text>
+      <text x="460" y="148" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">filters lines matching "txt"</text>
+      <text x="460" y="168" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8B6914">output:</text>
+      <text x="460" y="184" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">notes.txt</text>
+      <text x="460" y="198" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">todo.txt</text>
+
+      <!-- Pipe 2 -->
+      <rect x="708" y="100" width="140" height="60" fill="#C82A2A" opacity="0.12" stroke="#C82A2A" stroke-width="1" rx="1"/>
+      <text x="778" y="126" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">kernel pipe</text>
+      <text x="778" y="144" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">fd[2]=read</text>
+      <text x="778" y="157" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">fd[3]=write</text>
+      <path d="M704 130 L708 130" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M848 130 L884 130" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M880 126 L888 130 L880 134" fill="#C82A2A"/>
+
+      <!-- Process 3: wc -->
+      <rect x="888" y="60" width="260" height="140" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5" rx="1"/>
+      <rect x="888" y="60" width="260" height="26" fill="#C82A2A" opacity="0.1"/>
+      <text x="1018" y="78" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">wc -l  (PID 203)</text>
+      <text x="904" y="108" font-family="'JetBrains Mono',monospace" font-size="10" fill="#C82A2A">stdin:  pipe[1]-read</text>
+      <text x="904" y="126" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">stdout: terminal</text>
+      <text x="904" y="148" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">counts lines</text>
+      <text x="904" y="172" font-family="'JetBrains Mono',monospace" font-size="14" fill="#C82A2A">2</text>
+      <text x="960" y="172" font-family="'Inter',sans-serif" font-size="9" fill="#888880">← printed to terminal</text>
+
+      <!-- Bottom note -->
+      <rect x="40" y="224" width="1120" height="40" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="600" y="244" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">Shell forks 3 children. Before each exec, child sets up its stdin/stdout with dup2(). All 3 run concurrently — ls writes to pipe as grep reads. Kernel buffers data. wc reads from grep's output pipe.</text>
+      <text x="600" y="258" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">pipe() system call creates a unidirectional byte stream in kernel memory — no files on disk, no network.</text>
+
+      <rect x="0" y="282" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="295" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 7.4-C · Pipeline wires 3 processes via 2 kernel pipes. ls stdout → pipe1 → grep stdin. grep stdout → pipe2 → wc stdin. All 3 run concurrently. Result: 2 (two .txt files).</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Shell pipeline ls | grep txt | wc -l implemented with two kernel pipes and three child processes. The shell calls pipe() twice to create two kernel pipe file descriptors, then forks three children. Before each child calls exec(), it uses dup2() to redirect: ls's stdout to pipe1's write end, grep's stdin from pipe1's read end and stdout to pipe2's write end, wc's stdin from pipe2's read end. All three processes run concurrently — ls writes output as grep reads it, grep filters and writes as wc reads. The kernel pipe buffer (typically 64KB) decouples their speeds. The shell waits for all three children to exit, then prints the next prompt. This is the Unix philosophy in hardware: small programs connected by pipes, with the kernel's pipe primitive doing all the work.</div>
+</div>
+
+</div>
+</body>
+</html>

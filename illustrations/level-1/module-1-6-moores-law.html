@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 1.6 Illustrations — From Transistors to Chips: Moore's Law</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 1 — Physical Computing</div>
+  <div class="page-title">Module 1.6 — From Transistors to Chips: Moore's Law</div>
+  <div class="page-sub">3 figures · Moore's Law Timeline Chart · Exponential Growth Visualisation · Physical Limits</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 1.6-A  Moore's Law Timeline -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 1.6-A</span>
+    <span class="fig-title">Moore's Law — Transistor Count Doubles Every Two Years, 1971–2024</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 520" xmlns="http://www.w3.org/2000/svg" style="height:460px">
+      <defs>
+        <linearGradient id="mlBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="520" fill="url(#mlBg)"/>
+
+      <!-- Chart area -->
+      <rect x="100" y="40" width="1000" height="380" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- Y-axis label (log scale) -->
+      <text x="44" y="240" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" transform="rotate(-90,44,240)">Transistor Count (log scale)</text>
+
+      <!-- Y-axis grid lines and labels -->
+      <g stroke="#E8E6DF" stroke-width="0.5" stroke-dasharray="4,3">
+        <!-- 1K -->
+        <line x1="100" y1="400" x2="1100" y2="400"/>
+        <text x="90" y="404" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">10³</text>
+        <!-- 1M -->
+        <line x1="100" y1="340" x2="1100" y2="340"/>
+        <text x="90" y="344" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">10⁶</text>
+        <!-- 1B -->
+        <line x1="100" y1="220" x2="1100" y2="220"/>
+        <text x="90" y="224" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">10⁹</text>
+        <!-- 1T -->
+        <line x1="100" y1="100" x2="1100" y2="100"/>
+        <text x="90" y="104" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">10¹²</text>
+      </g>
+
+      <!-- Moore's Law ideal line (doubling every 2 years) -->
+      <path d="M100 400 L1100 60" stroke="#D8D6CE" stroke-width="1.5" stroke-dasharray="6,4" fill="none"/>
+      <text x="1060" y="56" font-family="'Inter',sans-serif" font-size="9" fill="#888880" font-style="italic">Moore's Law (×2 / 2yr)</text>
+
+      <!-- Data points — major chips on log scale -->
+      <!-- Intel 4004: 1971, 2300 transistors -->
+      <circle cx="140" cy="396" r="5" fill="#2E4057"/>
+      <line x1="140" y1="391" x2="140" y2="365" stroke="#2E4057" stroke-width="1" stroke-dasharray="2,2"/>
+      <text x="142" y="360" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2E4057">4004</text>
+      <text x="142" y="370" font-family="'JetBrains Mono',monospace" font-size="7" fill="#888880">2,300</text>
+      <text x="140" y="416" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">1971</text>
+
+      <!-- Intel 8086: 1978, 29000 -->
+      <circle cx="230" cy="388" r="5" fill="#2E4057"/>
+      <text x="232" y="383" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2E4057">8086</text>
+      <text x="230" y="416" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">1978</text>
+
+      <!-- 80286: 1982, 134000 -->
+      <circle cx="285" cy="381" r="5" fill="#2E4057"/>
+      <text x="230" y="416" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880"></text>
+
+      <!-- 386: 1985, 275000 -->
+      <circle cx="325" cy="377" r="5" fill="#2E4057"/>
+
+      <!-- 486: 1989, 1.2M -->
+      <circle cx="380" cy="368" r="5" fill="#2E4057"/>
+      <text x="382" y="362" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2E4057">486</text>
+      <text x="380" y="416" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">1989</text>
+
+      <!-- Pentium: 1993, 3.1M -->
+      <circle cx="430" cy="362" r="5" fill="#8B6914"/>
+      <text x="432" y="356" font-family="'JetBrains Mono',monospace" font-size="8" fill="#8B6914">Pentium</text>
+      <text x="430" y="416" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">1993</text>
+
+      <!-- PentiumIII: 1999, 9.5M -->
+      <circle cx="510" cy="354" r="5" fill="#8B6914"/>
+      <text x="512" y="348" font-family="'JetBrains Mono',monospace" font-size="8" fill="#8B6914">P3</text>
+
+      <!-- Core2: 2006, 291M -->
+      <circle cx="605" cy="328" r="5" fill="#C82A2A"/>
+      <text x="607" y="322" font-family="'JetBrains Mono',monospace" font-size="8" fill="#C82A2A">Core2</text>
+      <text x="605" y="416" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">2006</text>
+
+      <!-- Core i7: 2010, 1.17B -->
+      <circle cx="660" cy="316" r="6" fill="#C82A2A"/>
+      <line x1="660" y1="310" x2="660" y2="288" stroke="#C82A2A" stroke-width="1" stroke-dasharray="2,2"/>
+      <text x="662" y="283" font-family="'JetBrains Mono',monospace" font-size="8" fill="#C82A2A">Core i7</text>
+      <text x="662" y="293" font-family="'JetBrains Mono',monospace" font-size="7" fill="#888880">1.17B</text>
+      <text x="660" y="416" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">2010</text>
+
+      <!-- Xeon Broadwell: 2015, 7.2B -->
+      <circle cx="730" cy="296" r="6" fill="#C82A2A"/>
+      <text x="732" y="290" font-family="'JetBrains Mono',monospace" font-size="8" fill="#C82A2A">Broadwell</text>
+      <text x="730" y="416" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">2015</text>
+
+      <!-- Apple M1: 2020, 16B -->
+      <circle cx="810" cy="272" r="7" fill="#2E4057"/>
+      <line x1="810" y1="265" x2="810" y2="240" stroke="#2E4057" stroke-width="1" stroke-dasharray="2,2"/>
+      <text x="812" y="235" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2E4057">Apple M1</text>
+      <text x="812" y="246" font-family="'JetBrains Mono',monospace" font-size="7" fill="#888880">16B</text>
+      <text x="810" y="416" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">2020</text>
+
+      <!-- Apple M3: 2023, 25B -->
+      <circle cx="880" cy="258" r="7" fill="#2E4057"/>
+      <line x1="880" y1="251" x2="880" y2="225" stroke="#2E4057" stroke-width="1" stroke-dasharray="2,2"/>
+      <text x="882" y="220" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2E4057">M3 (25B)</text>
+      <text x="880" y="416" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">2023</text>
+
+      <!-- NVIDIA H100: 2023, 80B -->
+      <circle cx="930" cy="235" r="8" fill="#C82A2A"/>
+      <line x1="930" y1="227" x2="930" y2="200" stroke="#C82A2A" stroke-width="1.5" stroke-dasharray="2,2"/>
+      <text x="932" y="196" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A" font-weight="500">H100 GPU</text>
+      <text x="932" y="208" font-family="'JetBrains Mono',monospace" font-size="8" fill="#C82A2A">80B</text>
+      <text x="930" y="416" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">2023</text>
+
+      <!-- Best-fit trend line through points -->
+      <path d="M140 396 L230 388 L325 377 L430 362 L510 354 L605 328 L660 316 L730 296 L810 272 L930 235" stroke="#2E4057" stroke-width="2" fill="none" opacity="0.6"/>
+
+      <!-- X-axis labels -->
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880" text-anchor="middle">
+        <text x="140" y="435">1971</text>
+        <text x="280" y="435">1980</text>
+        <text x="420" y="435">1990</text>
+        <text x="560" y="435">2000</text>
+        <text x="700" y="435">2010</text>
+        <text x="840" y="435">2020</text>
+        <text x="980" y="435">2030</text>
+      </g>
+      <!-- X-axis tick marks -->
+      <g stroke="#D8D6CE" stroke-width="0.5">
+        <line x1="140" y1="420" x2="140" y2="430"/>
+        <line x1="280" y1="420" x2="280" y2="430"/>
+        <line x1="420" y1="420" x2="420" y2="430"/>
+        <line x1="560" y1="420" x2="560" y2="430"/>
+        <line x1="700" y1="420" x2="700" y2="430"/>
+        <line x1="840" y1="420" x2="840" y2="430"/>
+        <line x1="980" y1="420" x2="980" y2="430"/>
+      </g>
+
+      <!-- Eras annotation -->
+      <rect x="100" y="450" width="290" height="20" fill="#2E4057" opacity="0.06"/>
+      <text x="245" y="464" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">μm scale (microprocessors)</text>
+      <rect x="394" y="450" width="306" height="20" fill="#8B6914" opacity="0.06"/>
+      <text x="547" y="464" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">100nm → 10nm transition</text>
+      <rect x="704" y="450" width="396" height="20" fill="#C82A2A" opacity="0.06"/>
+      <text x="902" y="464" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">sub-10nm — FinFET / GAA era</text>
+
+      <!-- Moore's Law statement -->
+      <rect x="0" y="484" width="1200" height="36" fill="rgba(44,64,87,0.06)"/>
+      <text x="600" y="506" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Moore's Law (1965): transistor count doubles approximately every 2 years · 53 years of validity · ~7 orders of magnitude growth</text>
+      <text x="1140" y="506" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 1.6</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Moore's Law chart on a logarithmic scale, 1971–2023. The dashed line shows the ideal doubling-every-2-years trajectory. Real chip counts follow it with remarkable fidelity across 7 orders of magnitude — from 2,300 transistors (Intel 4004, 1971) to 80 billion (NVIDIA H100, 2023). Three eras are marked: micron-scale microprocessors (1970s–1990s), the submicron transition (2000s), and the sub-10nm FinFET/GAA era (2010s–present). The logarithmic scale makes linear growth on this chart correspond to exponential growth in reality.</div>
+</div>
+
+<!-- FIG 1.6-B  Physical Limits -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Concept Diagram</span>
+    <span class="fig-id">FIG 1.6-B</span>
+    <span class="fig-title">Physical Limits — When Does Transistor Scaling End?</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <rect width="1200" height="360" fill="#F4EFE6"/>
+
+      <!-- Scale comparison bar -->
+      <rect x="40" y="30" width="1120" height="50" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="600" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.12em">TRANSISTOR SIZE SCALE — RELATIVE COMPARISON</text>
+
+      <!-- Human hair: 70,000nm -->
+      <rect x="56" y="62" width="500" height="10" rx="1" fill="#C82A2A" opacity="0.3"/>
+      <text x="310" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">Human hair: 70,000 nm</text>
+
+      <!-- Red blood cell: 8000nm -->
+      <rect x="56" y="62" width="57" height="10" rx="1" fill="#8B6914" opacity="0.5"/>
+      <text x="85" y="86" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">RBC: 8000nm</text>
+
+      <!-- Virus: ~100nm -->
+      <rect x="56" y="62" width="4" height="10" fill="#728C69"/>
+
+      <!-- 7nm transistor mark -->
+      <line x1="56" y1="58" x2="56" y2="76" stroke="#2E4057" stroke-width="2"/>
+      <text x="56" y="54" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2E4057">5nm</text>
+
+      <!-- Scale ruler -->
+      <line x1="56" y1="80" x2="1144" y2="80" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="56" y="93" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">0</text>
+      <text x="1144" y="93" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">70,000 nm</text>
+
+      <!-- ── LIMITS TIMELINE ── -->
+      <line x1="80" y1="160" x2="1100" y2="160" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M1095 155 L1105 160 L1095 165" fill="#2C2C2C"/>
+
+      <!-- Physical limits markers -->
+      <!-- 10nm: tunnelling starts -->
+      <circle cx="200" cy="160" r="7" fill="#8B6914"/>
+      <line x1="200" y1="153" x2="200" y2="118" stroke="#8B6914" stroke-width="1"/>
+      <rect x="140" y="100" width="120" height="18" fill="#FDFDFD" stroke="#8B6914" stroke-width="1"/>
+      <text x="200" y="113" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">10nm: tunnelling</text>
+      <text x="200" y="176" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#8B6914">2016</text>
+
+      <!-- 5nm: current -->
+      <circle cx="380" cy="160" r="9" fill="#C82A2A"/>
+      <line x1="380" y1="151" x2="380" y2="118" stroke="#C82A2A" stroke-width="1.5"/>
+      <rect x="310" y="100" width="140" height="18" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+      <text x="380" y="113" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">5nm: state of art</text>
+      <text x="380" y="178" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">2020–now</text>
+
+      <!-- 2nm: theoretical -->
+      <circle cx="560" cy="160" r="7" fill="#2E4057"/>
+      <line x1="560" y1="153" x2="560" y2="118" stroke="#2E4057" stroke-width="1"/>
+      <rect x="490" y="100" width="140" height="18" fill="#FDFDFD" stroke="#2E4057" stroke-width="1"/>
+      <text x="560" y="113" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">2nm: prototype</text>
+      <text x="560" y="176" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">~2025</text>
+
+      <!-- 1nm: atomic limit -->
+      <circle cx="700" cy="160" r="7" fill="#728C69"/>
+      <line x1="700" y1="153" x2="700" y2="118" stroke="#728C69" stroke-width="1"/>
+      <rect x="630" y="100" width="140" height="18" fill="#FDFDFD" stroke="#728C69" stroke-width="1"/>
+      <text x="700" y="113" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">1nm: near-atomic</text>
+      <text x="700" y="176" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">~2028?</text>
+
+      <!-- Si atom: 0.28nm absolute floor -->
+      <circle cx="840" cy="160" r="7" fill="#888880"/>
+      <line x1="840" y1="153" x2="840" y2="118" stroke="#888880" stroke-width="1"/>
+      <rect x="760" y="100" width="160" height="18" fill="#FDFDFD" stroke="#888880" stroke-width="1"/>
+      <text x="840" y="113" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Si atom: 0.28nm</text>
+      <text x="840" y="176" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">absolute floor</text>
+
+      <!-- Post-CMOS region -->
+      <rect x="900" y="120" width="180" height="56" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1" stroke-dasharray="4,2"/>
+      <text x="990" y="143" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Post-CMOS era?</text>
+      <text x="990" y="157" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">quantum / optical</text>
+      <text x="990" y="171" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">/ neuromorphic</text>
+
+      <!-- Insight panels bottom -->
+      <rect x="60" y="200" width="340" height="120" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="60" y="200" width="4" height="120" fill="#C82A2A"/>
+      <text x="80" y="220" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Quantum tunnelling</text>
+      <text x="80" y="240" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Below ~7nm, electrons can</text>
+      <text x="80" y="258" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">"tunnel through" the gate</text>
+      <text x="80" y="276" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">even when OFF → leakage</text>
+      <text x="80" y="294" font-family="'Inter',sans-serif" font-size="11" fill="#C82A2A">→ logic errors + heat</text>
+      <text x="80" y="312" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">quantum mechanics intrudes</text>
+
+      <rect x="430" y="200" width="340" height="120" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="430" y="200" width="4" height="120" fill="#8B6914"/>
+      <text x="450" y="220" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Heat density</text>
+      <text x="450" y="240" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">More transistors per mm²</text>
+      <text x="450" y="258" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">= more heat per mm²</text>
+      <text x="450" y="276" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Modern CPUs: 100 W/cm²</text>
+      <text x="450" y="294" font-family="'Inter',sans-serif" font-size="11" fill="#8B6914">→ cooling is a hard wall</text>
+      <text x="450" y="312" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">thermodynamics intrudes</text>
+
+      <rect x="800" y="200" width="360" height="120" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="800" y="200" width="4" height="120" fill="#2E4057"/>
+      <text x="820" y="220" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Alternative scaling</text>
+      <text x="820" y="240" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">3D chip stacking (TSMC SoIC)</text>
+      <text x="820" y="258" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">More cores, not faster cores</text>
+      <text x="820" y="276" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Specialised AI accelerators</text>
+      <text x="820" y="294" font-family="'Inter',sans-serif" font-size="11" fill="#2E4057">→ "More-than-Moore" era</text>
+      <text x="820" y="312" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">architecture intrudes</text>
+
+      <rect x="0" y="332" width="1200" height="28" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="351" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 1.6-B · Physical limits of transistor scaling. Three hard walls: quantum tunnelling (below 7nm), heat density (thermodynamics), and atomic size (silicon atoms are 0.28nm wide). Alternative paths: 3D stacking, specialised silicon, new materials.</text>
+      <text x="1140" y="351" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 1.6</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The physical limits of transistor scaling. The top bar shows relative size from 5nm transistors to a human hair at 70,000nm — the scale compression is extraordinary. Three fundamental limits are approaching: quantum tunnelling (electrons pass through the gate even when off, causing leakage and errors), heat density (more transistors per mm² generates more heat, currently around 100W/cm² for high-performance chips), and the silicon atomic floor (a silicon atom is 0.28nm wide — you cannot build a transistor smaller than the atoms it's made of). The industry response is architectural: 3D chip stacking, specialised accelerators, and new materials like gallium nitride.</div>
+
+<!-- FIG 1.6-C  Consequences of Moore's Law — What Exponential Growth Means for Society -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Comparison / Consequence</span>
+    <span class="fig-id">FIG 1.6-C</span>
+    <span class="fig-title">Consequences of Moore's Law — Why 53 Years of Doubling Changed Everything</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" style="height:360px">
+      <rect width="1200" height="420" fill="#F4EFE6"/>
+      <!-- Header -->
+      <rect x="0" y="0" width="1200" height="34" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">IF MOORES LAW APPLIED TO OTHER DOMAINS — THOUGHT EXPERIMENT</text>
+      <!-- Left panel: Linear progress for contrast -->
+      <rect x="40" y="50" width="340" height="300" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="50" width="340" height="26" fill="#888880" opacity="0.1"/>
+      <text x="210" y="67" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">LINEAR PROGRESS (MOST DOMAINS)</text>
+      <!-- Linear chart -->
+      <rect x="60" y="90" width="300" height="200" fill="#F8F7F3" stroke="#E8E6DF" stroke-width="0.5"/>
+      <!-- axes -->
+      <line x1="80" y1="90" x2="80" y2="290" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="80" y1="290" x2="360" y2="290" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- linear line -->
+      <line x1="80" y1="270" x2="360" y2="120" stroke="#888880" stroke-width="2"/>
+      <!-- Y labels -->
+      <text x="68" y="275" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">1×</text>
+      <text x="68" y="212" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">50×</text>
+      <text x="68" y="148" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">100×</text>
+      <text x="68" y="95" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">150×</text>
+      <!-- X labels -->
+      <text x="80" y="302" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">1971</text>
+      <text x="220" y="302" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">1997</text>
+      <text x="360" y="302" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">2023</text>
+      <!-- Examples -->
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">
+        <text x="60" y="328">Car speed in 50 years: 120 → ~160 km/h</text>
+        <text x="60" y="346">Plane speed: 800 → ~900 km/h</text>
+        <text x="60" y="364">Human lifespan: 70 → ~80 years</text>
+      </g>
+      <!-- Centre: Exponential chart -->
+      <rect x="420" y="50" width="380" height="300" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+      <rect x="420" y="50" width="380" height="26" fill="#C82A2A" opacity="0.07"/>
+      <text x="610" y="67" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">MOORES LAW (EXPONENTIAL ×2 EVERY 2 YRS)</text>
+      <!-- Exponential chart -->
+      <rect x="440" y="90" width="340" height="200" fill="#F8F7F3" stroke="#E8E6DF" stroke-width="0.5"/>
+      <line x1="460" y1="90" x2="460" y2="290" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="460" y1="290" x2="780" y2="290" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- Exponential curve -->
+      <path d="M460 285 Q500 280 540 270 Q580 255 620 230 Q660 195 700 148 Q730 112 780 88" stroke="#C82A2A" stroke-width="2.5" fill="none"/>
+      <!-- Y labels (log implied) -->
+      <text x="448" y="292" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="7" fill="#888880">1×</text>
+      <text x="448" y="240" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="7" fill="#888880">10⁶</text>
+      <text x="448" y="160" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="7" fill="#888880">10⁹</text>
+      <text x="448" y="95" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="7" fill="#888880">10¹²</text>
+      <!-- Grid -->
+      <line x1="460" y1="240" x2="780" y2="240" stroke="#E8E6DF" stroke-width="0.5" stroke-dasharray="3,2"/>
+      <line x1="460" y1="160" x2="780" y2="160" stroke="#E8E6DF" stroke-width="0.5" stroke-dasharray="3,2"/>
+      <text x="460" y="304" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">1971</text>
+      <text x="620" y="304" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">1997</text>
+      <text x="780" y="304" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">2023</text>
+      <!-- Annotation boxes on curve -->
+      <circle cx="460" cy="285" r="4" fill="#2E4057"/>
+      <circle cx="620" cy="230" r="5" fill="#2E4057"/>
+      <circle cx="780" cy="88" r="6" fill="#C82A2A"/>
+      <text x="796" y="85" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">25B</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">
+        <text x="440" y="328">2300 transistors in 1971</text>
+        <text x="440" y="346">→ 25,000,000,000 by 2023</text>
+        <text x="440" y="364" fill="#C82A2A">= 10,869,565× improvement</text>
+      </g>
+      <!-- Right panel: real-world consequences -->
+      <rect x="840" y="50" width="320" height="300" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="840" y="50" width="320" height="26" fill="#728C69" opacity="0.1"/>
+      <text x="1000" y="67" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69" letter-spacing="0.1em">REAL-WORLD IMPACT</text>
+      <g font-family="'Inter',sans-serif" font-size="11">
+        <text x="858" y="104" fill="#888880" font-size="9" font-weight="500" letter-spacing="0.1em">COST</text>
+        <text x="858" y="120" fill="#6E6E6E">1971: $300 per transistor</text>
+        <text x="858" y="136" fill="#728C69">2023: $0.000000003 each</text>
+        <line x1="854" y1="148" x2="1144" y2="148" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="858" y="164" fill="#888880" font-size="9" font-weight="500" letter-spacing="0.1em">COMPUTING POWER</text>
+        <text x="858" y="180" fill="#6E6E6E">1971: simple calculator</text>
+        <text x="858" y="196" fill="#728C69">2023: AI language models</text>
+        <line x1="854" y1="208" x2="1144" y2="208" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="858" y="224" fill="#888880" font-size="9" font-weight="500" letter-spacing="0.1em">SIZE</text>
+        <text x="858" y="240" fill="#6E6E6E">1971: room-filling mainframes</text>
+        <text x="858" y="256" fill="#728C69">2023: chip in a watch</text>
+        <line x1="854" y1="268" x2="1144" y2="268" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="858" y="284" fill="#888880" font-size="9" font-weight="500" letter-spacing="0.1em">IMPLICATION</text>
+        <text x="858" y="300" fill="#2E4057">every 2 years: twice as much</text>
+        <text x="858" y="316" fill="#2E4057">for the same price</text>
+        <text x="858" y="334" fill="#C82A2A">→ compound effect for 53 years</text>
+      </g>
+      <!-- Footer -->
+      <rect x="0" y="390" width="1200" height="30" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="409" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Fig 1.6-C</text>
+      <text x="120" y="409" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Moore's Law versus linear progress. While most technologies improve linearly, transistor density has doubled every ~2 years for over five decades — a compound effect producing a 10-billion-fold improvement in cost and capability since 1971.</text>
+      <text x="1140" y="409" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 1.6</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The consequence of 53 years of exponential transistor growth. Compared against linear improvements in other technologies (cars, aircraft), Moore's Law doubling stands apart. Cost per transistor fell from roughly $300 in 1971 to fractions of a nanodollar today — a 100-billion-fold reduction. This is why a modern smartphone carries more computational power than the entire 1969 Apollo mission, and why AI systems that required rooms full of hardware in 2015 fit on a consumer GPU in 2024. Exponential compounding, sustained long enough, produces qualitatively different civilisations.</div>
+</div>
+
+</div>
+</body>
+</html>

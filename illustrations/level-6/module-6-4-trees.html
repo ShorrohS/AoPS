@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 6.4 — Trees: BST, AVL, Red-Black</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:#F4EFE6;border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 6 — Data Structures &amp; Algorithms</div>
+  <div class="page-title">Module 6.4 — Trees: BST, AVL, Red-Black</div>
+  <div class="page-sub">3 figures · BST Insert Sequence · AVL Rotations · BST vs AVL Height Comparison</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 6.4-A  BST Construction -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 6.4-A</span>
+    <span class="fig-title">Binary Search Tree — Inserting [5, 3, 7, 1, 4, 6, 8] in Sequence</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 460" xmlns="http://www.w3.org/2000/svg" style="height:400px">
+      <defs>
+        <linearGradient id="treeBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="460" fill="url(#treeBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">BST INSERT SEQUENCE: [5, 3, 7, 1, 4, 6, 8] → BALANCED TREE</text>
+
+      <!-- BST Rule reminder -->
+      <rect x="40" y="44" width="360" height="40" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="220" y="62" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">BST Property: left &lt; node &lt; right — at every node</text>
+      <text x="220" y="76" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">→ O(log n) search, insert, delete (balanced)</text>
+
+      <!-- Final tree (large, centre) -->
+      <!-- Root: 5 -->
+      <circle cx="600" cy="120" r="28" fill="#2E4057" opacity="0.85"/>
+      <text x="600" y="127" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="18" fill="#FDFDFD">5</text>
+      <text x="600" y="108" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">root</text>
+
+      <!-- Edges to level 2 -->
+      <line x1="576" y1="142" x2="440" y2="194" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="624" y1="142" x2="760" y2="194" stroke="#2C2C2C" stroke-width="1.5"/>
+
+      <!-- Left child: 3 -->
+      <circle cx="420" cy="210" r="28" fill="#2E4057" opacity="0.65"/>
+      <text x="420" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="18" fill="#FDFDFD">3</text>
+
+      <!-- Right child: 7 -->
+      <circle cx="780" cy="210" r="28" fill="#2E4057" opacity="0.65"/>
+      <text x="780" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="18" fill="#FDFDFD">7</text>
+
+      <!-- Edges to level 3 -->
+      <line x1="396" y1="232" x2="290" y2="298" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="444" y1="232" x2="550" y2="298" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="756" y1="232" x2="650" y2="298" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="804" y1="232" x2="910" y2="298" stroke="#2C2C2C" stroke-width="1.5"/>
+
+      <!-- Level 3: 1, 4, 6, 8 -->
+      <circle cx="270" cy="314" r="28" fill="#728C69" opacity="0.8"/>
+      <text x="270" y="321" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="18" fill="#FDFDFD">1</text>
+
+      <circle cx="570" cy="314" r="28" fill="#728C69" opacity="0.8"/>
+      <text x="570" y="321" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="18" fill="#FDFDFD">4</text>
+
+      <circle cx="630" cy="314" r="28" fill="#728C69" opacity="0.8"/>
+      <text x="630" y="321" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="18" fill="#FDFDFD">6</text>
+
+      <circle cx="930" cy="314" r="28" fill="#728C69" opacity="0.8"/>
+      <text x="930" y="321" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="18" fill="#FDFDFD">8</text>
+
+      <!-- Insert trace panel right -->
+      <rect x="900" y="44" width="260" height="220" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="900" y="44" width="260" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="1030" y="61" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">INSERT TRACE</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10">
+        <text x="916" y="84" fill="#2E4057">insert(5)</text><text x="1050" y="84" fill="#888880">→ root</text>
+        <text x="916" y="102" fill="#2E4057">insert(3)</text><text x="1050" y="102" fill="#888880">3&lt;5 → left</text>
+        <text x="916" y="120" fill="#2E4057">insert(7)</text><text x="1050" y="120" fill="#888880">7&gt;5 → right</text>
+        <text x="916" y="138" fill="#728C69">insert(1)</text><text x="1050" y="138" fill="#888880">1&lt;5→1&lt;3→left</text>
+        <text x="916" y="156" fill="#728C69">insert(4)</text><text x="1050" y="156" fill="#888880">4&lt;5→4&gt;3→right</text>
+        <text x="916" y="174" fill="#728C69">insert(6)</text><text x="1050" y="174" fill="#888880">6&gt;5→6&lt;7→left</text>
+        <text x="916" y="192" fill="#728C69">insert(8)</text><text x="1050" y="192" fill="#888880">8&gt;5→8&gt;7→right</text>
+        <line x1="916" y1="202" x2="1144" y2="202" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="916" y="218" fill="#888880">height = 3 (optimal)</text>
+        <text x="916" y="236" fill="#888880">search cost = O(log 7)</text>
+        <text x="916" y="248" fill="#888880">        ≈ 3 comparisons</text>
+      </g>
+
+      <!-- Search example annotation -->
+      <rect x="40" y="370" width="860" height="60" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="56" y="392" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057">Search for 4:</text>
+      <text x="170" y="392" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">  5? 4&lt;5 → go left →  3? 4&gt;3 → go right →  4? FOUND ✓  (3 comparisons)</text>
+      <text x="56" y="412" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A">Search for 9:</text>
+      <text x="170" y="412" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">  5? 9&gt;5 → go right → 7? 9&gt;7 → go right → 8? 9&gt;8 → NULL  NOT FOUND (3 comparisons)</text>
+
+      <!-- Footer -->
+      <rect x="0" y="438" width="1200" height="22" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="453" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 6.4-A</text>
+      <text x="120" y="453" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">BST built by inserting [5,3,7,1,4,6,8]. Each insert navigates left (smaller) or right (larger) at each node. This input happens to produce a balanced tree of height 3 — log₂(7) ≈ 2.8 optimal.</text>
+      <text x="1140" y="453" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 6.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">BST construction by inserting [5, 3, 7, 1, 4, 6, 8]. Each value navigates left if smaller than the current node, right if larger, until an empty slot is reached. This particular insertion order produces a balanced tree of height 3 — close to the theoretical minimum of ⌈log₂ 7⌉ = 3. The BST property (left subtree &lt; root &lt; right subtree at every node) guarantees that search, insert, and delete each require at most O(height) comparisons. The critical vulnerability: if keys arrive in sorted order, a BST degenerates into a linked list of height n, making all operations O(n). AVL and Red-Black trees prevent this.</div>
+</div>
+
+<!-- FIG 6.4-B  AVL Rotations -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 6.4-B</span>
+    <span class="fig-title">AVL Tree Rotations — LL, RR, LR, RL Cases</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" style="height:340px">
+      <rect width="1200" height="400" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">AVL ROTATIONS — RESTORING BALANCE AFTER INSERT (|balance_factor| ≤ 1)</text>
+
+      <!-- Helper: draw node -->
+      <!-- LL CASE -->
+      <text x="130" y="54" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">LL — Right Rotate</text>
+      <!-- Unbalanced: A with heavy left B with left C -->
+      <circle cx="150" cy="90" r="20" fill="#C82A2A" opacity="0.75"/>
+      <text x="150" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">A</text>
+      <text x="174" y="82" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">bf=-2</text>
+      <line x1="132" y1="106" x2="100" y2="134" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="82" cy="150" r="20" fill="#C82A2A" opacity="0.55"/>
+      <text x="82" y="157" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">B</text>
+      <text x="56" y="142" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">bf=-1</text>
+      <line x1="64" y1="166" x2="44" y2="194" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="34" cy="210" r="20" fill="#C82A2A" opacity="0.35"/>
+      <text x="34" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2C2C2C">C</text>
+      <!-- Arrow: rotate -->
+      <path d="M195 150 L230 150" stroke="#728C69" stroke-width="2" fill="none"/>
+      <path d="M226 146 L234 150 L226 154" fill="#728C69"/>
+      <text x="212" y="143" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">rotate R</text>
+      <!-- Balanced after -->
+      <circle cx="272" cy="150" r="20" fill="#728C69" opacity="0.8"/>
+      <text x="272" y="157" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">B</text>
+      <text x="250" y="140" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">bf=0</text>
+      <line x1="254" y1="165" x2="218" y2="193" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="290" y1="165" x2="326" y2="193" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="200" cy="210" r="20" fill="#728C69" opacity="0.6"/>
+      <text x="200" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">C</text>
+      <circle cx="344" cy="210" r="20" fill="#728C69" opacity="0.6"/>
+      <text x="344" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">A</text>
+
+      <!-- Dividers between cases -->
+      <line x1="390" y1="44" x2="390" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="690" y1="44" x2="690" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="940" y1="44" x2="940" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- RR CASE -->
+      <text x="540" y="54" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">RR — Left Rotate</text>
+      <!-- Mirror of LL -->
+      <circle cx="420" cy="90" r="20" fill="#C82A2A" opacity="0.75"/>
+      <text x="420" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">A</text>
+      <text x="396" y="82" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">bf=+2</text>
+      <line x1="438" y1="106" x2="468" y2="134" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="486" cy="150" r="20" fill="#C82A2A" opacity="0.55"/>
+      <text x="486" y="157" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">B</text>
+      <text x="510" y="142" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">bf=+1</text>
+      <line x1="504" y1="166" x2="524" y2="194" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="534" cy="210" r="20" fill="#C82A2A" opacity="0.35"/>
+      <text x="534" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2C2C2C">C</text>
+      <!-- Arrow rotate -->
+      <path d="M560" y1="150"/>
+      <path d="M440 150 L556 150" stroke="#728C69" stroke-width="2" fill="none"/>
+      <path d="M552 146 L560 150 L552 154" fill="#728C69"/>
+      <text x="498" y="143" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">rotate L</text>
+      <!-- Balanced -->
+      <circle cx="610" cy="150" r="20" fill="#728C69" opacity="0.8"/>
+      <text x="610" y="157" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">B</text>
+      <line x1="592" y1="165" x2="556" y2="193" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="628" y1="165" x2="664" y2="193" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="538" cy="210" r="20" fill="#728C69" opacity="0.6"/>
+      <text x="538" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">A</text>
+      <circle cx="682" cy="210" r="20" fill="#728C69" opacity="0.6"/>
+      <text x="682" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">C</text>
+
+      <!-- LR CASE -->
+      <text x="815" y="54" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914" letter-spacing="0.1em">LR — Left then Right Rotate</text>
+      <!-- Step 1: unbalanced -->
+      <circle cx="730" cy="90" r="20" fill="#8B6914" opacity="0.7"/>
+      <text x="730" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">A</text>
+      <line x1="712" y1="106" x2="682" y2="134" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="664" cy="150" r="20" fill="#8B6914" opacity="0.5"/>
+      <text x="664" y="157" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">B</text>
+      <line x1="682" y1="166" x2="712" y2="194" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="722" cy="210" r="20" fill="#8B6914" opacity="0.35"/>
+      <text x="722" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2C2C2C">C</text>
+      <!-- Two-step annotation -->
+      <text x="760" y="140" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">① Left rotate B</text>
+      <text x="760" y="158" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">② Right rotate A</text>
+      <!-- Result -->
+      <circle cx="880" cy="150" r="20" fill="#728C69" opacity="0.8"/>
+      <text x="880" y="157" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">C</text>
+      <line x1="862" y1="165" x2="840" y2="193" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="898" y1="165" x2="920" y2="193" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="824" cy="210" r="20" fill="#728C69" opacity="0.6"/>
+      <text x="824" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">B</text>
+      <circle cx="938" cy="210" r="20" fill="#728C69" opacity="0.6"/>
+      <text x="938" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">A</text>
+
+      <!-- RL CASE (compact) -->
+      <text x="1070" y="54" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914" letter-spacing="0.1em">RL — Mirror of LR</text>
+      <circle cx="980" cy="90" r="20" fill="#8B6914" opacity="0.7"/>
+      <text x="980" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">A</text>
+      <line x1="998" y1="106" x2="1028" y2="134" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="1046" cy="150" r="20" fill="#8B6914" opacity="0.5"/>
+      <text x="1046" y="157" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">B</text>
+      <line x1="1028" y1="166" x2="1006" y2="194" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="998" cy="210" r="20" fill="#8B6914" opacity="0.35"/>
+      <text x="998" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2C2C2C">C</text>
+      <text x="1100" y="140" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">① Right rotate B</text>
+      <text x="1100" y="158" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">② Left rotate A</text>
+      <circle cx="1150" cy="150" r="20" fill="#728C69" opacity="0.8"/>
+      <text x="1150" y="157" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">C</text>
+      <line x1="1132" y1="165" x2="1110" y2="193" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="1168" y1="165" x2="1190" y2="193" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="1092" cy="210" r="20" fill="#728C69" opacity="0.6"/>
+      <text x="1092" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">A</text>
+
+      <!-- Balance factor explanation -->
+      <rect x="40" y="260" width="1120" height="100" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="260" width="4" height="100" fill="#2E4057"/>
+      <text x="56" y="280" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">AVL Balance Factor</text>
+      <text x="56" y="300" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Each node stores: bf = height(left subtree) − height(right subtree). AVL invariant: |bf| ≤ 1 at every node.</text>
+      <text x="56" y="318" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">After any insert/delete, update balance factors bottom-up. If |bf| = 2, apply the appropriate rotation (1–2 rotations maximum).</text>
+      <text x="56" y="336" font-family="'Inter',sans-serif" font-size="11" fill="#2E4057">Guarantee: height ≤ 1.44 × log₂(n) — at most 44% taller than perfectly balanced. All operations O(log n) worst case.</text>
+      <rect x="0" y="376" width="1200" height="24" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="392" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 6.4-B</text>
+      <text x="120" y="392" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Four AVL rotation cases. LL and RR require one rotation each. LR and RL require two (a rotation at the child, then at the root). All produce a balanced subtree — the new root has balance factor 0.</text>
+      <text x="1140" y="392" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 6.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">AVL tree rotations — the four cases that restore the balance invariant after an insert or delete. The LL case (left-left heavy) requires a single right rotation: the left child B becomes the new root, A becomes B's right child. The RR case mirrors this with a left rotation. The LR and RL cases each require two rotations: first fix the inner imbalance at the child, then apply the outer rotation at the original root. At most two rotations per insert guarantees O(log n) amortized cost. Every rotation is O(1) — just three pointer reassignments.</div>
+</div>
+
+<!-- FIG 6.4-C  BST vs AVL Degeneration -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type E — Comparison</span>
+    <span class="fig-id">FIG 6.4-C</span>
+    <span class="fig-title">Sorted Input Catastrophe — BST Degenerates, AVL Stays Balanced</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <rect width="1200" height="360" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">INSERT [1, 2, 3, 4, 5, 6, 7] SORTED — BST vs AVL RESULT</text>
+
+      <!-- BST degenerated (left) -->
+      <text x="200" y="52" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">Plain BST — degenerates to linked list</text>
+      <!-- Sorted insert: 1→2→3→4→5→6→7 becomes right-skewed chain -->
+      <circle cx="80" cy="80" r="18" fill="#C82A2A" opacity="0.75"/>
+      <text x="80" y="87" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">1</text>
+      <line x1="96" y1="90" x2="118" y2="114" stroke="#C82A2A" stroke-width="1.5"/>
+      <circle cx="134" cy="130" r="18" fill="#C82A2A" opacity="0.65"/>
+      <text x="134" y="137" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">2</text>
+      <line x1="150" y1="140" x2="172" y2="164" stroke="#C82A2A" stroke-width="1.5"/>
+      <circle cx="188" cy="180" r="18" fill="#C82A2A" opacity="0.55"/>
+      <text x="188" y="187" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">3</text>
+      <line x1="204" y1="190" x2="226" y2="214" stroke="#C82A2A" stroke-width="1.5"/>
+      <circle cx="242" cy="230" r="18" fill="#C82A2A" opacity="0.45"/>
+      <text x="242" y="237" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">4</text>
+      <line x1="258" y1="240" x2="280" y2="264" stroke="#C82A2A" stroke-width="1.5"/>
+      <circle cx="296" cy="280" r="18" fill="#C82A2A" opacity="0.35"/>
+      <text x="296" y="287" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2C2C2C">5</text>
+      <!-- height annotation -->
+      <rect x="40" y="270" width="140" height="60" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1"/>
+      <text x="110" y="292" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">height = n</text>
+      <text x="110" y="310" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">search = O(n)</text>
+      <text x="110" y="324" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">(like a linked list!)</text>
+
+      <!-- Divider -->
+      <line x1="420" y1="44" x2="420" y2="340" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- AVL balanced (right) -->
+      <text x="800" y="52" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">AVL Tree — stays balanced via rotations</text>
+      <!-- After inserting 1-7 sorted with AVL rotations, result is balanced -->
+      <!-- Root 4 -->
+      <circle cx="760" cy="80" r="22" fill="#2E4057" opacity="0.85"/>
+      <text x="760" y="88" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">4</text>
+      <text x="789" y="72" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">bf=0</text>
+
+      <line x1="740" y1="100" x2="640" y2="148" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="780" y1="100" x2="880" y2="148" stroke="#2C2C2C" stroke-width="1.5"/>
+
+      <circle cx="620" cy="164" r="22" fill="#2E4057" opacity="0.65"/>
+      <text x="620" y="172" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">2</text>
+
+      <circle cx="900" cy="164" r="22" fill="#2E4057" opacity="0.65"/>
+      <text x="900" y="172" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">6</text>
+
+      <line x1="600" y1="184" x2="540" y2="232" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="640" y1="184" x2="700" y2="232" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="880" y1="184" x2="820" y2="232" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="920" y1="184" x2="980" y2="232" stroke="#2C2C2C" stroke-width="1.5"/>
+
+      <circle cx="520" cy="248" r="22" fill="#728C69" opacity="0.8"/>
+      <text x="520" y="256" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">1</text>
+      <circle cx="720" cy="248" r="22" fill="#728C69" opacity="0.8"/>
+      <text x="720" y="256" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">3</text>
+      <circle cx="800" cy="248" r="22" fill="#728C69" opacity="0.8"/>
+      <text x="800" y="256" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">5</text>
+      <circle cx="1000" cy="248" r="22" fill="#728C69" opacity="0.8"/>
+      <text x="1000" y="256" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">7</text>
+
+      <rect x="900" y="270" width="160" height="60" fill="#FDFDFD" stroke="#728C69" stroke-width="1"/>
+      <text x="980" y="292" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">height = 3</text>
+      <text x="980" y="310" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">search = O(log n)</text>
+      <text x="980" y="324" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">(3 rotations during insert)</text>
+
+      <!-- Footer -->
+      <rect x="0" y="342" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="355" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 6.4-C · Sorted input [1..7] produces a degenerate O(n) BST. The same input in an AVL tree triggers three rotations, yielding a perfectly balanced tree of height 3 = ⌊log₂ 7⌋.</text>
+      <text x="1140" y="355" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · 6.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The worst case for a plain BST: sorted or nearly-sorted input produces a degenerate right-skewed chain of height n — every operation degrades to O(n), the same as linear search. The AVL tree inserts the same sequence but applies rotations after insertions 3, 5, and 7, maintaining a tree of height 3. For n=1,000,000 sorted items, a BST requires up to one million comparisons to find a value; an AVL tree requires at most about 29 (⌈1.44 × log₂ 10⁶⌉). This motivates self-balancing trees: AVL for lookup-heavy workloads, Red-Black trees (used in Linux kernel and std::map) for insert-heavy workloads with slightly relaxed balance.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 11.1 — Search and Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 11 — AI &amp; Machine Learning</div>
+  <div class="page-title">Module 11.1 — Search and Intelligence</div>
+  <div class="page-sub">3 figures · State Space Search · A* Algorithm · Minimax Game Tree</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 11.1-A  State Space Search -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 11.1-A</span>
+    <span class="fig-title">State Space Search — BFS, DFS, and A* on a Grid Maze</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" style="height:340px">
+      <defs><linearGradient id="aiBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="400" fill="url(#aiBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">STATE SPACE SEARCH — THREE STRATEGIES ON THE SAME 5×5 GRID MAZE</text>
+
+      <!-- Grid helper function: draw 5x5 grid at (ox,oy) -->
+      <!-- BFS grid -->
+      <text x="130" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">BFS — Level by Level</text>
+      <!-- Grid cells: S=start(0,0), G=goal(4,4), walls at (1,1),(2,1),(3,2),(1,3),(2,3) -->
+      <g id="bfs-grid">
+        <!-- Row 0 -->
+        <rect x="40" y="64" width="44" height="44" fill="#C82A2A" opacity="0.7"/><text x="62" y="91" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">S</text>
+        <rect x="84" y="64" width="44" height="44" fill="#2E4057" opacity="0.3"/><text x="106" y="87" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">①</text>
+        <rect x="128" y="64" width="44" height="44" fill="#2E4057" opacity="0.2"/><text x="150" y="87" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">②</text>
+        <rect x="172" y="64" width="44" height="44" fill="#2E4057" opacity="0.15"/><text x="194" y="87" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">③</text>
+        <rect x="216" y="64" width="44" height="44" fill="#2E4057" opacity="0.1"/><text x="238" y="87" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">④</text>
+        <!-- Row 1 -->
+        <rect x="40" y="108" width="44" height="44" fill="#2E4057" opacity="0.3"/><text x="62" y="131" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">①</text>
+        <rect x="84" y="108" width="44" height="44" fill="#2C2C2C" opacity="0.6"/><!-- wall -->
+        <rect x="128" y="108" width="44" height="44" fill="#2C2C2C" opacity="0.6"/><!-- wall -->
+        <rect x="172" y="108" width="44" height="44" fill="#2E4057" opacity="0.1"/>
+        <rect x="216" y="108" width="44" height="44" fill="#2E4057" opacity="0.1"/>
+        <!-- Row 2 -->
+        <rect x="40" y="152" width="44" height="44" fill="#2E4057" opacity="0.2"/>
+        <rect x="84" y="152" width="44" height="44" fill="#2E4057" opacity="0.15"/>
+        <rect x="128" y="152" width="44" height="44" fill="#2E4057" opacity="0.15"/>
+        <rect x="172" y="152" width="44" height="44" fill="#2C2C2C" opacity="0.6"/><!-- wall -->
+        <rect x="216" y="152" width="44" height="44" fill="#2E4057" opacity="0.15"/>
+        <!-- Row 3 -->
+        <rect x="40" y="196" width="44" height="44" fill="#2E4057" opacity="0.15"/>
+        <rect x="84" y="196" width="44" height="44" fill="#2C2C2C" opacity="0.6"/><!-- wall -->
+        <rect x="128" y="196" width="44" height="44" fill="#2C2C2C" opacity="0.6"/><!-- wall -->
+        <rect x="172" y="196" width="44" height="44" fill="#2E4057" opacity="0.15"/>
+        <rect x="216" y="196" width="44" height="44" fill="#2E4057" opacity="0.1"/>
+        <!-- Row 4 -->
+        <rect x="40" y="240" width="44" height="44" fill="#2E4057" opacity="0.1"/>
+        <rect x="84" y="240" width="44" height="44" fill="#2E4057" opacity="0.1"/>
+        <rect x="128" y="240" width="44" height="44" fill="#2E4057" opacity="0.1"/>
+        <rect x="172" y="240" width="44" height="44" fill="#2E4057" opacity="0.1"/>
+        <rect x="216" y="240" width="44" height="44" fill="#728C69" opacity="0.8"/><text x="238" y="267" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">G</text>
+        <!-- Grid lines -->
+        <g stroke="#D8D6CE" stroke-width="0.5">
+          <line x1="40" y1="64" x2="260" y2="64"/><line x1="40" y1="108" x2="260" y2="108"/>
+          <line x1="40" y1="152" x2="260" y2="152"/><line x1="40" y1="196" x2="260" y2="196"/>
+          <line x1="40" y1="240" x2="260" y2="240"/><line x1="40" y1="284" x2="260" y2="284"/>
+          <line x1="40" y1="64" x2="40" y2="284"/><line x1="84" y1="64" x2="84" y2="284"/>
+          <line x1="128" y1="64" x2="128" y2="284"/><line x1="172" y1="64" x2="172" y2="284"/>
+          <line x1="216" y1="64" x2="216" y2="284"/><line x1="260" y1="64" x2="260" y2="284"/>
+        </g>
+      </g>
+      <text x="150" y="310" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">Explores all level-d nodes before level d+1</text>
+      <text x="150" y="326" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">Guaranteed shortest path (unweighted)</text>
+
+      <!-- A* grid -->
+      <text x="520" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914" letter-spacing="0.1em">A* — Heuristic Guided</text>
+      <g>
+        <!-- A* path highlighted in gold — only explores relevant cells -->
+        <rect x="430" y="64" width="44" height="44" fill="#C82A2A" opacity="0.7"/><text x="452" y="91" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">S</text>
+        <rect x="474" y="64" width="44" height="44" fill="#8B6914" opacity="0.5"/>
+        <rect x="518" y="64" width="44" height="44" fill="#8B6914" opacity="0.5"/>
+        <rect x="562" y="64" width="44" height="44" fill="#8B6914" opacity="0.5"/>
+        <rect x="606" y="64" width="44" height="44" fill="#8B6914" opacity="0.5"/>
+        <rect x="430" y="108" width="44" height="44" fill="#8B6914" opacity="0.3"/>
+        <rect x="474" y="108" width="44" height="44" fill="#2C2C2C" opacity="0.6"/>
+        <rect x="518" y="108" width="44" height="44" fill="#2C2C2C" opacity="0.6"/>
+        <rect x="562" y="108" width="44" height="44" fill="#8B6914" opacity="0.3"/>
+        <rect x="606" y="108" width="44" height="44" fill="#8B6914" opacity="0.6"/>
+        <rect x="430" y="152" width="44" height="44" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/>
+        <rect x="474" y="152" width="44" height="44" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/>
+        <rect x="518" y="152" width="44" height="44" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/>
+        <rect x="562" y="152" width="44" height="44" fill="#2C2C2C" opacity="0.6"/>
+        <rect x="606" y="152" width="44" height="44" fill="#8B6914" opacity="0.7"/>
+        <rect x="430" y="196" width="44" height="44" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/>
+        <rect x="474" y="196" width="44" height="44" fill="#2C2C2C" opacity="0.6"/>
+        <rect x="518" y="196" width="44" height="44" fill="#2C2C2C" opacity="0.6"/>
+        <rect x="562" y="196" width="44" height="44" fill="#8B6914" opacity="0.5"/>
+        <rect x="606" y="196" width="44" height="44" fill="#8B6914" opacity="0.7"/>
+        <rect x="430" y="240" width="44" height="44" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/>
+        <rect x="474" y="240" width="44" height="44" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/>
+        <rect x="518" y="240" width="44" height="44" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/>
+        <rect x="562" y="240" width="44" height="44" fill="#8B6914" opacity="0.5"/>
+        <rect x="606" y="240" width="44" height="44" fill="#728C69" opacity="0.8"/><text x="628" y="267" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">G</text>
+        <g stroke="#D8D6CE" stroke-width="0.5">
+          <line x1="430" y1="64" x2="650" y2="64"/><line x1="430" y1="108" x2="650" y2="108"/>
+          <line x1="430" y1="152" x2="650" y2="152"/><line x1="430" y1="196" x2="650" y2="196"/>
+          <line x1="430" y1="240" x2="650" y2="240"/><line x1="430" y1="284" x2="650" y2="284"/>
+          <line x1="430" y1="64" x2="430" y2="284"/><line x1="474" y1="64" x2="474" y2="284"/>
+          <line x1="518" y1="64" x2="518" y2="284"/><line x1="562" y1="64" x2="562" y2="284"/>
+          <line x1="606" y1="64" x2="606" y2="284"/><line x1="650" y1="64" x2="650" y2="284"/>
+        </g>
+        <!-- f(n) = g(n) + h(n) labels on explored cells -->
+        <text x="496" y="86" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#8B6914">f=5</text>
+        <text x="540" y="86" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#8B6914">f=4</text>
+        <text x="584" y="86" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#8B6914">f=3</text>
+      </g>
+      <text x="540" y="310" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">f(n) = g(n) + h(n): cost so far + heuristic estimate</text>
+      <text x="540" y="326" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">Explores fewest cells; optimal if heuristic ≤ actual cost</text>
+
+      <!-- Algorithm comparison panel -->
+      <rect x="720" y="64" width="440" height="280" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="720" y="64" width="440" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="940" y="80" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">SEARCH ALGORITHM COMPARISON</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10">
+        <text x="736" y="108" fill="#2E4057">BFS</text>
+        <text x="800" y="108" font-family="'Inter',sans-serif" fill="#888880"> Shortest path (unweighted)</text>
+        <text x="800" y="124" font-family="'Inter',sans-serif" fill="#888880"> O(b^d) space and time</text>
+        <line x1="736" y1="134" x2="1144" y2="134" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="736" y="154" fill="#C82A2A">DFS</text>
+        <text x="800" y="154" font-family="'Inter',sans-serif" fill="#888880"> Uses O(d) space</text>
+        <text x="800" y="170" font-family="'Inter',sans-serif" fill="#888880"> May find non-optimal path</text>
+        <line x1="736" y1="180" x2="1144" y2="180" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="736" y="200" fill="#8B6914">A*</text>
+        <text x="800" y="200" font-family="'Inter',sans-serif" fill="#8B6914"> Optimal + efficient</text>
+        <text x="800" y="216" font-family="'Inter',sans-serif" fill="#888880"> h(n) = Manhattan distance</text>
+        <text x="800" y="232" font-family="'Inter',sans-serif" fill="#888880"> Explores fewest nodes</text>
+        <line x1="736" y1="242" x2="1144" y2="242" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="736" y="262" fill="#728C69">Dijkstra</text>
+        <text x="830" y="262" font-family="'Inter',sans-serif" fill="#888880"> Weighted, A* with h=0</text>
+        <text x="830" y="278" font-family="'Inter',sans-serif" fill="#888880"> Used in GPS / routing</text>
+        <line x1="736" y1="288" x2="1144" y2="288" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="736" y="308" fill="#888880" font-size="9">b=branching factor, d=depth</text>
+        <text x="736" y="322" fill="#888880" font-size="9">h=heuristic (must be admissible: h ≤ actual cost)</text>
+      </g>
+
+      <rect x="0" y="380" width="1200" height="20" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="395" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 11.1-A</text>
+      <text x="120" y="395" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">BFS explores level by level (guaranteed shortest). A* guides search toward goal using heuristic f(n)=g(n)+h(n), exploring far fewer cells than BFS in practice.</text>
+      <text x="1140" y="395" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 11.1</text>
+    </svg>
+  </div>
+  <div class="fig-caption">State space search on a 5×5 grid maze. BFS (left) expands all cells at distance 1, then 2, then 3 — guaranteeing the shortest path but exploring many irrelevant cells. A* (right) uses a heuristic function f(n) = g(n) + h(n): the actual cost to reach n plus an estimate of the remaining cost (Manhattan distance to goal). By always expanding the node with lowest f(n), A* focuses exploration toward the goal and visits far fewer cells. A* is optimal when the heuristic is admissible (never overestimates the true remaining cost). Real applications: Google Maps routing (Dijkstra/A* on road graphs), game pathfinding (A* on grids), robot motion planning (configuration space search).</div>
+</div>
+
+<!-- FIG 11.1-B  Minimax -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 11.1-B</span>
+    <span class="fig-title">Minimax Game Tree — Two-Player Zero-Sum Search</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 340" xmlns="http://www.w3.org/2000/svg" style="height:280px">
+      <rect width="1200" height="340" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">MINIMAX — MAX PLAYER MAXIMISES SCORE, MIN PLAYER MINIMISES IT</text>
+
+      <!-- Tree structure -->
+      <!-- Root (MAX) -->
+      <circle cx="600" cy="72" r="28" fill="#2E4057" opacity="0.85"/>
+      <text x="600" y="68" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">MAX</text>
+      <text x="600" y="84" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">3</text>
+      <text x="636" y="72" font-family="'Inter',sans-serif" font-size="8" fill="#2E4057">← chosen</text>
+
+      <!-- Level 1 (MIN) -->
+      <line x1="572" y1="96" x2="360" y2="150" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="600" y1="100" x2="600" y2="150" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="628" y1="96" x2="840" y2="150" stroke="#2C2C2C" stroke-width="1.5"/>
+
+      <circle cx="320" cy="165" r="22" fill="#C82A2A" opacity="0.75"/>
+      <text x="320" y="161" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">MIN</text>
+      <text x="320" y="174" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">3</text>
+
+      <circle cx="600" cy="165" r="22" fill="#C82A2A" opacity="0.55"/>
+      <text x="600" y="161" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">MIN</text>
+      <text x="600" y="174" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">2</text>
+
+      <circle cx="880" cy="165" r="22" fill="#C82A2A" opacity="0.55"/>
+      <text x="880" y="161" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">MIN</text>
+      <text x="880" y="174" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">2</text>
+
+      <!-- Level 2 (leaf nodes with scores) -->
+      <line x1="300" y1="185" x2="200" y2="240" stroke="#888880" stroke-width="1"/>
+      <line x1="340" y1="185" x2="440" y2="240" stroke="#888880" stroke-width="1"/>
+      <line x1="580" y1="185" x2="520" y2="240" stroke="#888880" stroke-width="1"/>
+      <line x1="620" y1="185" x2="680" y2="240" stroke="#888880" stroke-width="1"/>
+      <line x1="860" y1="185" x2="800" y2="240" stroke="#888880" stroke-width="1"/>
+      <line x1="900" y1="185" x2="960" y2="240" stroke="#888880" stroke-width="1"/>
+
+      <!-- Leaf nodes -->
+      <g font-family="'JetBrains Mono',monospace" font-size="16" text-anchor="middle">
+        <rect x="172" y="240" width="56" height="40" fill="#728C69" opacity="0.7" rx="1"/><text x="200" y="266" fill="#FDFDFD">3</text>
+        <rect x="412" y="240" width="56" height="40" fill="#728C69" opacity="0.4" rx="1"/><text x="440" y="266" fill="#2C2C2C">5</text>
+        <rect x="492" y="240" width="56" height="40" fill="#888880" opacity="0.4" rx="1"/><text x="520" y="266" fill="#2C2C2C">2</text>
+        <rect x="652" y="240" width="56" height="40" fill="#888880" opacity="0.4" rx="1"/><text x="680" y="266" fill="#2C2C2C">9</text>
+        <rect x="772" y="240" width="56" height="40" fill="#888880" opacity="0.4" rx="1"/><text x="800" y="266" fill="#2C2C2C">2</text>
+        <rect x="932" y="240" width="56" height="40" fill="#888880" opacity="0.4" rx="1"/><text x="960" y="266" fill="#2C2C2C">8</text>
+      </g>
+
+      <!-- Propagation annotations -->
+      <text x="320" y="220" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">min(3,5)=3</text>
+      <text x="600" y="220" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">min(2,9)=2</text>
+      <text x="880" y="220" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">min(2,8)=2</text>
+      <text x="600" y="130" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#2E4057">max(3,2,2)=3</text>
+
+      <!-- Alpha-beta pruning note -->
+      <rect x="1020" y="64" width="160" height="100" fill="#FDFDFD" stroke="#8B6914" stroke-width="0.5" rx="1"/>
+      <text x="1100" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914" font-weight="500">Alpha-Beta</text>
+      <text x="1100" y="98" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">Pruning</text>
+      <text x="1036" y="118" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Skip branches</text>
+      <text x="1036" y="134" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">that can't</text>
+      <text x="1036" y="150" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">affect result</text>
+      <text x="1036" y="166" fill="#728C69" font-family="'JetBrains Mono',monospace" font-size="9">O(b^(d/2))</text>
+
+      <!-- Complexity note -->
+      <rect x="40" y="300" width="1120" height="24" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="600" y="316" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">MAX player picks move 1 (score=3). MIN would respond to minimise: move 2 (score=2) or move 3 (score=2). Minimax assumes opponent plays perfectly. Alpha-Beta pruning halves the effective branching factor.</text>
+
+      <rect x="0" y="326" width="1200" height="14" fill="rgba(44,64,87,0.04)"/>
+    </svg>
+  </div>
+  <div class="fig-caption">Minimax game tree for a two-player zero-sum game. MAX (AI) wants to maximise the score; MIN (opponent) wants to minimise it. At leaf nodes, a static evaluation function scores the position. Values propagate upward: MIN nodes take the minimum of their children (opponent plays best), MAX nodes take the maximum (AI plays best). The root's value (3) is MAX's guaranteed score with perfect play. Alpha-Beta pruning eliminates branches that cannot affect the final decision — if the MIN node has already found a value of 2 and the MAX parent already has 3, exploring further subtrees of that MIN node is unnecessary. This reduces the effective branching factor from b to √b, enabling chess engines to search millions of positions per second.</div>
+</div>
+
+<!-- FIG 11.1-C  Constraint Satisfaction -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 11.1-C</span>
+    <span class="fig-title">Constraint Satisfaction — N-Queens Backtracking Search</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:220px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">N-QUEENS CONSTRAINT SATISFACTION — PLACE N QUEENS SO NONE ATTACKS ANOTHER</text>
+
+      <!-- 4-Queens solution board -->
+      <text x="140" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69" letter-spacing="0.1em">SOLUTION (4-Queens)</text>
+      <g>
+        <!-- 4x4 board -->
+        <g fill="#F8F7F3">
+          <rect x="40" y="64" width="52" height="52"/><rect x="144" y="64" width="52" height="52"/>
+          <rect x="92" y="116" width="52" height="52"/><rect x="196" y="116" width="52" height="52"/>
+          <rect x="40" y="168" width="52" height="52"/><rect x="144" y="168" width="52" height="52"/>
+          <rect x="92" y="220" width="52" height="52"/><rect x="196" y="220" width="52" height="52"/>
+        </g>
+        <g fill="#EEECE6">
+          <rect x="92" y="64" width="52" height="52"/><rect x="196" y="64" width="52" height="52"/>
+          <rect x="40" y="116" width="52" height="52"/><rect x="144" y="116" width="52" height="52"/>
+          <rect x="92" y="168" width="52" height="52"/><rect x="196" y="168" width="52" height="52"/>
+          <rect x="40" y="220" width="52" height="52"/><rect x="144" y="220" width="52" height="52"/>
+        </g>
+        <!-- Queens placed -->
+        <text x="158" y="100" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="28" fill="#2E4057">♛</text>
+        <text x="210" y="152" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="28" fill="#2E4057">♛</text>
+        <text x="66" y="204" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="28" fill="#2E4057">♛</text>
+        <text x="118" y="256" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="28" fill="#2E4057">♛</text>
+        <!-- Board border -->
+        <rect x="40" y="64" width="208" height="208" fill="none" stroke="#D8D6CE" stroke-width="1.5"/>
+      </g>
+
+      <!-- Backtracking trace -->
+      <rect x="280" y="52" width="580" height="220" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="280" y="52" width="580" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="570" y="68" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">BACKTRACKING ALGORITHM</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">
+        <text x="296" y="96">Row 0: try col 0 → queen placed</text>
+        <text x="296" y="114">Row 1: try col 0 → conflict! try col 1 → conflict! try col 2 → ok</text>
+        <text x="296" y="132">Row 2: try col 0 → conflict! try col 1 → conflict! try col 2 → conflict!</text>
+        <text x="296" y="150" fill="#C82A2A">         try col 3 → conflict! → BACKTRACK to row 1</text>
+        <text x="296" y="168">Row 1: try col 3 → ok</text>
+        <text x="296" y="186">Row 2: try col 0 → conflict! try col 1 → ok</text>
+        <text x="296" y="204">Row 3: try col 0 → conflict! try col 1 → conflict! try col 2 → ok</text>
+        <text x="296" y="222" fill="#728C69">SOLUTION FOUND: [1,3,0,2] → queens at (row,col) pairs</text>
+        <text x="296" y="240" fill="#888880" font-size="9">Constraint: no two queens share row, column, or diagonal</text>
+        <text x="296" y="256" fill="#888880" font-size="9">check(queen1, queen2): rows differ AND cols differ AND |row diff| ≠ |col diff|</text>
+      </g>
+
+      <!-- Complexity / applications -->
+      <rect x="900" y="52" width="260" height="220" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="900" y="52" width="260" height="24" fill="#728C69" opacity="0.1"/>
+      <text x="1030" y="68" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69" letter-spacing="0.1em">CSP APPLICATIONS</text>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="916" y="96">N-Queens (n=8 has 92)</text>
+        <text x="916" y="114">Sudoku solver</text>
+        <text x="916" y="132">Graph colouring</text>
+        <text x="916" y="150">Scheduling / timetabling</text>
+        <text x="916" y="168">Circuit board layout</text>
+        <line x1="916" y1="178" x2="1144" y2="178" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="916" y="198" fill="#C82A2A">Naive: n^n candidates</text>
+        <text x="916" y="216" fill="#728C69">With backtrack: n!</text>
+        <text x="916" y="234" fill="#728C69">With constraint: ≪ n!</text>
+        <text x="916" y="252" fill="#888880" font-size="9">Arc consistency + forward</text>
+        <text x="916" y="266" fill="#888880" font-size="9">checking reduce further</text>
+      </g>
+
+      <rect x="0" y="268" stroke-width="0"/>
+    </svg>
+  </div>
+  <div class="fig-caption">Constraint satisfaction with N-Queens backtracking. For each row, try placing a queen in each column. After each placement, check all constraints (no shared row, column, or diagonal with any previously placed queen). If no valid column exists in the current row, backtrack to the previous row and try the next column there. The 4-Queens solution [1,3,0,2] places queens at (row 0, col 1), (row 1, col 3), (row 2, col 0), (row 3, col 2). Backtracking prunes the search tree dramatically — the naive approach would check 4⁴ = 256 configurations; backtracking discovers the solution in about 20 checks. Constraint propagation (forward checking, arc consistency) reduces the search further by eliminating values that provably cannot lead to solutions.</div>
+</div>
+
+</div>
+</body>
+</html>

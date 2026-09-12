@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 11.3 — Regression and Classification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 11 — AI &amp; Machine Learning</div>
+  <div class="page-title">Module 11.3 — Regression and Classification</div>
+  <div class="page-sub">3 figures · Linear Regression · Logistic Regression · Bias-Variance Tradeoff</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 11.3-A  Linear Regression -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 11.3-A</span>
+    <span class="fig-title">Linear Regression — Minimising Squared Residuals to Fit a Line</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <defs><linearGradient id="regBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="380" fill="url(#regBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">LINEAR REGRESSION — FIND LINE y = wx + b THAT MINIMISES MEAN SQUARED ERROR</text>
+
+      <!-- Scatter plot with regression line -->
+      <!-- Chart axes -->
+      <line x1="60" y1="320" x2="560" y2="320" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="60" y1="320" x2="60" y2="60" stroke="#2C2C2C" stroke-width="1.5"/>
+      <text x="310" y="348" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">x (feature)</text>
+      <text x="30" y="190" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" transform="rotate(-90,30,190)">y (target)</text>
+      <!-- Grid -->
+      <g stroke="#E8E6DF" stroke-width="0.5" stroke-dasharray="3,3">
+        <line x1="60" y1="250" x2="560" y2="250"/><line x1="60" y1="180" x2="560" y2="180"/>
+        <line x1="60" y1="110" x2="560" y2="110"/>
+        <line x1="160" y1="60" x2="160" y2="320"/><line x1="260" y1="60" x2="260" y2="320"/>
+        <line x1="360" y1="60" x2="360" y2="320"/><line x1="460" y1="60" x2="460" y2="320"/>
+      </g>
+      <!-- Regression line: y = 0.6x + 30 (mapped to pixels) -->
+      <line x1="60" y1="290" x2="560" y2="80" stroke="#2E4057" stroke-width="2.5"/>
+      <!-- Data points (scatter around the line) -->
+      <g fill="#C82A2A" opacity="0.8">
+        <circle cx="90" cy="285" r="6"/>
+        <circle cx="130" cy="260" r="6"/>
+        <circle cx="160" cy="230" r="6"/>
+        <circle cx="200" cy="245" r="6"/>
+        <circle cx="230" cy="210" r="6"/>
+        <circle cx="270" cy="195" r="6"/>
+        <circle cx="300" cy="180" r="6"/>
+        <circle cx="340" cy="168" r="6"/>
+        <circle cx="370" cy="150" r="6"/>
+        <circle cx="400" cy="140" r="6"/>
+        <circle cx="430" cy="125" r="6"/>
+        <circle cx="460" cy="110" r="6"/>
+        <circle cx="500" cy="100" r="6"/>
+        <circle cx="530" cy="88" r="6"/>
+      </g>
+      <!-- Residual lines (vertical from points to line) -->
+      <g stroke="#8B6914" stroke-width="1" stroke-dasharray="3,2">
+        <line x1="160" y1="230" x2="160" y2="248"/>
+        <line x1="270" y1="195" x2="270" y2="184"/>
+        <line x1="370" y1="150" x2="370" y2="155"/>
+        <line x1="460" y1="110" x2="460" y2="110"/>
+        <line x1="530" y1="88" x2="530" y2="94"/>
+      </g>
+      <text x="175" y="245" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">residual</text>
+
+      <!-- Equation -->
+      <rect x="90" y="80" width="240" height="70" fill="#FDFDFD" stroke="#2E4057" stroke-width="1" rx="1"/>
+      <text x="210" y="104" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2E4057">ŷ = wx + b</text>
+      <text x="210" y="124" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">w = slope (weight)</text>
+      <text x="210" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">b = intercept (bias)</text>
+
+      <!-- Loss function panel -->
+      <rect x="600" y="52" width="560" height="290" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="600" y="52" width="560" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="880" y="68" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">MEAN SQUARED ERROR (MSE) LOSS</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="12" fill="#2C2C2C">
+        <text x="620" y="96">MSE = (1/n) Σ (yᵢ - ŷᵢ)²</text>
+        <text x="620" y="116">     = (1/n) Σ (yᵢ - (wxᵢ+b))²</text>
+        <line x1="620" y1="126" x2="1144" y2="126" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="620" y="146" fill="#888880">Gradient descent minimises MSE:</text>
+        <text x="620" y="166" fill="#728C69">∂MSE/∂w = (-2/n) Σ xᵢ(yᵢ - ŷᵢ)</text>
+        <text x="620" y="186" fill="#728C69">∂MSE/∂b = (-2/n) Σ (yᵢ - ŷᵢ)</text>
+        <text x="620" y="206" fill="#C82A2A">w ← w - α × ∂MSE/∂w</text>
+        <text x="620" y="226" fill="#C82A2A">b ← b - α × ∂MSE/∂b</text>
+        <line x1="620" y1="236" x2="1144" y2="236" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="620" y="256" fill="#8B6914">α = learning rate (0.001 – 0.1)</text>
+        <text x="620" y="276" fill="#888880" font-size="10">Repeat until convergence (|ΔMSE| small)</text>
+        <text x="620" y="296" fill="#888880" font-size="10">Normal equation: w = (XᵀX)⁻¹ Xᵀy (closed form)</text>
+        <text x="620" y="316" fill="#888880" font-size="10">Use GD when n is large (matrix inversion is O(n³))</text>
+        <text x="620" y="334" fill="#888880" font-size="10">R² score: 1 - SS_res/SS_tot (1.0 = perfect fit)</text>
+      </g>
+
+      <rect x="0" y="362" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="375" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 11.3-A · Linear regression fits line ŷ=wx+b by minimising MSE. Residuals (data - prediction) shown as dashed lines. Gradient descent iteratively adjusts w and b toward minimum MSE.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Linear regression finds the line ŷ = wx + b that minimises the Mean Squared Error (MSE) — the average squared residual (vertical distance from each data point to the line). The closed-form normal equation (XᵀX)⁻¹Xᵀy solves the optimum in one shot but requires inverting a matrix — O(n³) in the number of features. For large datasets, gradient descent iterates: compute the MSE gradient with respect to w and b, then take a small step in the downhill direction. Learning rate α controls step size — too large and it diverges, too small and it converges slowly. Linear regression is the foundation of all supervised learning: neural networks are nonlinear regression models.</div>
+</div>
+
+<!-- FIG 11.3-B  Logistic Regression -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type B — Concept Diagram</span>
+    <span class="fig-id">FIG 11.3-B</span>
+    <span class="fig-title">Logistic Regression — Sigmoid Curve and Decision Boundary</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">LOGISTIC REGRESSION — SIGMOID MAPS LINEAR SCORE TO PROBABILITY [0,1]</text>
+
+      <!-- Sigmoid chart -->
+      <line x1="40" y1="280" x2="560" y2="280" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="300" y1="52" x2="300" y2="280" stroke="#2C2C2C" stroke-width="1.5"/>
+      <text x="300" y="46" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">z=0 → p=0.5</text>
+      <!-- Sigmoid curve σ(z) = 1/(1+e^(-z)) -->
+      <path d="M40 275 Q100 273 160 265 Q220 250 270 225 Q290 208 300 190 Q310 172 330 155 Q380 120 440 100 Q500 88 560 82" stroke="#C82A2A" stroke-width="2.5" fill="none"/>
+      <!-- Asymptotes -->
+      <line x1="40" y1="64" x2="560" y2="64" stroke="#D8D6CE" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="570" y="68" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">p=1</text>
+      <line x1="40" y1="275" x2="560" y2="275" stroke="#D8D6CE" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="570" y="280" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">p=0</text>
+      <!-- Decision boundary at 0.5 -->
+      <line x1="300" y1="190" x2="570" y2="190" stroke="#728C69" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="580" y="195" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">p=0.5 threshold</text>
+      <!-- X axis labels -->
+      <g font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle" fill="#888880">
+        <text x="100" y="295">-4</text><text x="180" y="295">-2</text>
+        <text x="300" y="295">0</text><text x="420" y="295">2</text>
+        <text x="500" y="295">4</text>
+        <text x="300" y="310">z = wx + b (linear score)</text>
+      </g>
+      <!-- Formula box -->
+      <rect x="60" y="60" width="200" height="60" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1" rx="1"/>
+      <text x="160" y="82" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#C82A2A">σ(z) = 1/(1+e^-z)</text>
+      <text x="160" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">P(y=1 | x)</text>
+      <text x="160" y="115" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">probability of class 1</text>
+
+      <!-- Binary classification scatter -->
+      <line x1="650" y1="280" x2="1160" y2="280" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="650" y1="280" x2="650" y2="52" stroke="#2C2C2C" stroke-width="1.5"/>
+      <text x="905" y="310" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">feature x₁</text>
+      <!-- Class 0 (negative) points -->
+      <g fill="#2E4057" opacity="0.7">
+        <circle cx="700" cy="240" r="7"/><circle cx="730" cy="210" r="7"/>
+        <circle cx="760" cy="230" r="7"/><circle cx="790" cy="200" r="7"/>
+        <circle cx="820" cy="220" r="7"/><circle cx="840" cy="190" r="7"/>
+        <circle cx="870" cy="210" r="7"/>
+      </g>
+      <!-- Class 1 (positive) points -->
+      <g fill="#C82A2A" opacity="0.7">
+        <circle cx="960" cy="130" r="7"/><circle cx="990" cy="110" r="7"/>
+        <circle cx="1020" cy="140" r="7"/><circle cx="1050" cy="100" r="7"/>
+        <circle cx="1080" cy="120" r="7"/><circle cx="1110" cy="90" r="7"/>
+        <circle cx="1140" cy="110" r="7"/>
+      </g>
+      <!-- Decision boundary line -->
+      <line x1="905" y1="60" x2="905" y2="280" stroke="#728C69" stroke-width="2.5" stroke-dasharray="6,3"/>
+      <text x="910" y="56" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">decision boundary</text>
+      <text x="910" y="68" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">σ(z) = 0.5 → z = 0</text>
+      <!-- Region labels -->
+      <text x="790" y="172" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">Class 0</text>
+      <text x="1020" y="172" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">Class 1</text>
+      <!-- Legend -->
+      <circle cx="660" cy="72" r="6" fill="#2E4057" opacity="0.7"/>
+      <text x="672" y="76" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">y=0 (negative)</text>
+      <circle cx="660" cy="92" r="6" fill="#C82A2A" opacity="0.7"/>
+      <text x="672" y="96" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">y=1 (positive)</text>
+
+      <rect x="0" y="302" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="315" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 11.3-B · Logistic regression: linear score z=wx+b passed through sigmoid σ(z) gives probability P(y=1). Predict class 1 if p &gt; 0.5. Trained with binary cross-entropy loss, not MSE.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Logistic regression extends linear regression to binary classification by passing the linear score z = wx + b through the sigmoid function σ(z) = 1/(1+e^{-z}), which squashes any real number to (0, 1) — a probability. The model predicts Class 1 when P(y=1|x) > 0.5, which corresponds to z > 0 — the decision boundary. The boundary is linear in feature space (a hyperplane). Training minimises binary cross-entropy loss: -[y log(p) + (1-y) log(1-p)], which penalises confident wrong predictions much more heavily than MSE would. Despite its name, logistic regression is a classification algorithm. It is still widely used because it is fast, interpretable, and naturally outputs calibrated probabilities.</div>
+</div>
+
+<!-- FIG 11.3-C  Bias-Variance Tradeoff -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type E — Comparison</span>
+    <span class="fig-id">FIG 11.3-C</span>
+    <span class="fig-title">Bias-Variance Tradeoff — Underfitting, Good Fit, Overfitting</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">BIAS-VARIANCE TRADEOFF — MODEL COMPLEXITY vs GENERALISATION</text>
+
+      <!-- Three panels -->
+      <!-- UNDERFIT -->
+      <text x="160" y="56" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">Underfitting (High Bias)</text>
+      <g>
+        <line x1="40" y1="240" x2="280" y2="240" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="40" y1="240" x2="40" y2="68" stroke="#D8D6CE" stroke-width="1"/>
+        <!-- True curve (faint) -->
+        <path d="M40 230 Q100 120 160 100 Q220 90 280 80" stroke="#D8D6CE" stroke-width="1" stroke-dasharray="4,3" fill="none"/>
+        <!-- Underfit: straight line -->
+        <line x1="40" y1="200" x2="280" y2="110" stroke="#C82A2A" stroke-width="2.5"/>
+        <!-- Scatter points -->
+        <g fill="#2E4057" opacity="0.7">
+          <circle cx="60" cy="225" r="5"/><circle cx="80" cy="195" r="5"/>
+          <circle cx="110" cy="150" r="5"/><circle cx="140" cy="120" r="5"/>
+          <circle cx="170" cy="105" r="5"/><circle cx="200" cy="98" r="5"/>
+          <circle cx="230" cy="92" r="5"/><circle cx="260" cy="88" r="5"/>
+        </g>
+        <text x="160" y="270" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">model too simple</text>
+        <text x="160" y="284" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">train error: high</text>
+      </g>
+
+      <!-- GOOD FIT -->
+      <text x="560" y="56" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">Good Fit</text>
+      <g>
+        <line x1="440" y1="240" x2="680" y2="240" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="440" y1="240" x2="440" y2="68" stroke="#D8D6CE" stroke-width="1"/>
+        <!-- Polynomial fit (quadratic, close to true) -->
+        <path d="M440 225 Q500 130 560 105 Q620 90 680 82" stroke="#728C69" stroke-width="2.5" fill="none"/>
+        <!-- Scatter -->
+        <g fill="#2E4057" opacity="0.7">
+          <circle cx="460" cy="222" r="5"/><circle cx="480" cy="190" r="5"/>
+          <circle cx="510" cy="148" r="5"/><circle cx="540" cy="118" r="5"/>
+          <circle cx="570" cy="103" r="5"/><circle cx="600" cy="96" r="5"/>
+          <circle cx="630" cy="90" r="5"/><circle cx="660" cy="86" r="5"/>
+        </g>
+        <text x="560" y="270" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">captures true pattern</text>
+        <text x="560" y="284" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">generalises to new data</text>
+      </g>
+
+      <!-- OVERFIT -->
+      <text x="960" y="56" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#8B6914">Overfitting (High Variance)</text>
+      <g>
+        <line x1="840" y1="240" x2="1080" y2="240" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="840" y1="240" x2="840" y2="68" stroke="#D8D6CE" stroke-width="1"/>
+        <!-- Overfit wiggly curve through all points -->
+        <path d="M840 222 Q856 180 868 192 Q880 148 898 142 Q916 118 926 104 Q940 90 958 98 Q972 92 988 88 Q1002 94 1014 85 Q1030 88 1048 80 Q1060 82 1080 80" stroke="#8B6914" stroke-width="2.5" fill="none"/>
+        <!-- Scatter (same as above but wiggle goes through them) -->
+        <g fill="#2E4057" opacity="0.7">
+          <circle cx="860" cy="222" r="5"/><circle cx="880" cy="190" r="5"/>
+          <circle cx="910" cy="148" r="5"/><circle cx="940" cy="118" r="5"/>
+          <circle cx="970" cy="103" r="5"/><circle cx="1000" cy="96" r="5"/>
+          <circle cx="1030" cy="90" r="5"/><circle cx="1060" cy="86" r="5"/>
+        </g>
+        <text x="960" y="270" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">memorises training data</text>
+        <text x="960" y="284" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">fails on new data</text>
+      </g>
+
+      <!-- Error curve bottom note -->
+
+      <rect x="0" y="294" width="1200" height="6" fill="rgba(44,64,87,0.04)"/>
+    </svg>
+  </div>
+  <div class="fig-caption">The bias-variance tradeoff — the central challenge of supervised learning. An underfitting model (high bias) is too simple to capture the true pattern, producing high error on both training and test data. An overfitting model (high variance) is so complex it memorises training noise — it fits every training point perfectly but fails to generalise, producing low training error but high test error. The "good fit" lies between these extremes: a model that captures the true signal without fitting noise. Solutions to overfitting: regularisation (L1/L2 penalties on weights), dropout (neural networks), early stopping, cross-validation to select model complexity, and more training data. Solutions to underfitting: increase model capacity, add features, train longer.</div>
+</div>
+
+</div>
+</body>
+</html>

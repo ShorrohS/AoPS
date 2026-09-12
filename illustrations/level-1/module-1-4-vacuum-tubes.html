@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 1.4 Illustrations — Vacuum Tubes: Faster Switching</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-type.hist{border-color:var(--zen-bamboo);color:var(--zen-bamboo);background:rgba(114,140,105,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 1 — Physical Computing</div>
+  <div class="page-title">Module 1.4 — Vacuum Tubes: Faster Switching</div>
+  <div class="page-sub">4 figures · Triode Anatomy · Electron Flow · ENIAC Scale · Relay vs Tube Comparison</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 1.4-A  Triode Anatomy Hero -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 1.4-A</span>
+    <span class="fig-title">The Triode Vacuum Tube — Electrons Controlled by a Grid</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 480" xmlns="http://www.w3.org/2000/svg" style="height:420px">
+      <defs>
+        <linearGradient id="tubeBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+        <radialGradient id="glassGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#F0EDE4" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#E0DCD4" stop-opacity="0.3"/>
+        </radialGradient>
+      </defs>
+      <rect width="1200" height="480" fill="url(#tubeBg)"/>
+
+      <!-- ── TRIODE TUBE (centre) ── -->
+      <!-- Glass envelope -->
+      <ellipse cx="340" cy="220" rx="120" ry="170" fill="none" stroke="#C8C4BC" stroke-width="2"/>
+      <ellipse cx="340" cy="220" rx="116" ry="166" fill="rgba(240,237,228,0.4)" stroke="none"/>
+      <!-- Glass base -->
+      <rect x="296" y="370" width="88" height="28" rx="2" fill="#C8C4BC" stroke="#A8A49C" stroke-width="1"/>
+      <!-- Pins -->
+      <g stroke="#A8A49C" stroke-width="2">
+        <line x1="316" y1="398" x2="316" y2="420"/>
+        <line x1="332" y1="398" x2="332" y2="420"/>
+        <line x1="348" y1="398" x2="348" y2="420"/>
+        <line x1="364" y1="398" x2="364" y2="420"/>
+      </g>
+      <!-- Vacuum indicator -->
+      <text x="340" y="120" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#B8B4AC">VACUUM</text>
+
+      <!-- CATHODE (bottom, heated) -->
+      <rect x="322" y="320" width="36" height="8" rx="1" fill="#C82A2A"/>
+      <text x="340" y="355" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" letter-spacing="0.08em">CATHODE</text>
+      <!-- Heater glow -->
+      <ellipse cx="340" cy="324" rx="22" ry="8" fill="#C82A2A" opacity="0.2"/>
+      <path d="M322 320 Q332 312 340 320 Q348 312 358 320" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+
+      <!-- Electron emission from cathode -->
+      <g fill="#2E4057" opacity="0.7">
+        <circle cx="330" cy="308" r="3"/><circle cx="340" cy="302" r="3"/>
+        <circle cx="350" cy="308" r="3"/><circle cx="335" cy="293" r="3"/>
+        <circle cx="345" cy="290" r="3"/><circle cx="340" cy="282" r="3"/>
+        <circle cx="332" cy="276" r="3"/><circle cx="348" cy="272" r="3"/>
+        <circle cx="340" cy="265" r="3"/>
+      </g>
+      <!-- Electron flow arrows upward -->
+      <g stroke="#2E4057" stroke-width="1" fill="none" opacity="0.5">
+        <path d="M340 320 L340 200" marker-end="url(#ea)"/>
+      </g>
+      <defs>
+        <marker id="ea" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+          <path d="M0,1 L5,3 L0,5 Z" fill="#2E4057"/>
+        </marker>
+      </defs>
+
+      <!-- GRID (middle) -->
+      <g stroke="#8B6914" stroke-width="1.5" fill="none">
+        <line x1="270" y1="240" x2="285" y2="240"/>
+        <line x1="295" y1="240" x2="310" y2="240"/>
+        <line x1="320" y1="240" x2="335" y2="240"/>
+        <line x1="345" y1="240" x2="360" y2="240"/>
+        <line x1="370" y1="240" x2="385" y2="240"/>
+        <line x1="395" y1="240" x2="410" y2="240"/>
+      </g>
+      <text x="340" y="260" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914" letter-spacing="0.08em">CONTROL GRID</text>
+      <!-- Grid voltage connection -->
+      <line x1="270" y1="240" x2="220" y2="240" stroke="#8B6914" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <text x="200" y="236" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8B6914">Vg</text>
+      <text x="200" y="252" text-anchor="end" font-family="'Inter',sans-serif" font-size="9" fill="#888880">grid voltage</text>
+
+      <!-- ANODE/PLATE (top) -->
+      <rect x="286" y="148" width="108" height="12" rx="1" fill="#2E4057"/>
+      <text x="340" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" letter-spacing="0.08em">ANODE (PLATE)</text>
+      <!-- Anode connection -->
+      <line x1="340" y1="148" x2="340" y2="80" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="350" y="76" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2E4057">+HV</text>
+
+      <!-- Right side: states -->
+      <!-- State 1: Grid negative = tube OFF -->
+      <rect x="560" y="60" width="280" height="160" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="560" y="60" width="280" height="24" fill="#888880" opacity="0.1"/>
+      <text x="700" y="77" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">Vg NEGATIVE → TUBE OFF</text>
+      <text x="580" y="102" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Negative grid repels electrons.</text>
+      <text x="580" y="120" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Electrons cannot pass to anode.</text>
+      <text x="580" y="138" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">No plate current flows.</text>
+      <rect x="580" y="155" width="240" height="20" fill="#888880" opacity="0.1"/>
+      <text x="700" y="169" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#888880">Output = 0 (LOW)</text>
+      <!-- Blocked electrons visual -->
+      <g fill="#2E4057" opacity="0.3">
+        <circle cx="620" cy="108" r="4"/><circle cx="640" cy="102" r="4"/>
+        <circle cx="660" cy="108" r="4"/>
+      </g>
+      <text x="700" y="206" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" font-style="italic">electrons blocked by grid field</text>
+
+      <!-- State 2: Grid zero/positive = tube ON -->
+      <rect x="560" y="260" width="280" height="160" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="560" y="260" width="280" height="24" fill="#728C69" opacity="0.12"/>
+      <text x="700" y="277" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69" letter-spacing="0.1em">Vg ZERO/POS → TUBE ON</text>
+      <text x="580" y="302" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Grid doesn't repel electrons.</text>
+      <text x="580" y="320" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Electrons accelerate to anode.</text>
+      <text x="580" y="338" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Plate current flows.</text>
+      <rect x="580" y="355" width="240" height="20" fill="#728C69" opacity="0.1"/>
+      <text x="700" y="369" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#728C69">Output = 1 (HIGH)</text>
+      <!-- Flowing electrons visual -->
+      <g fill="#2E4057" opacity="0.8">
+        <circle cx="620" cy="308" r="4"/>
+        <circle cx="650" cy="298" r="4"/>
+        <circle cx="680" cy="308" r="4"/>
+        <circle cx="710" cy="298" r="4"/>
+        <circle cx="740" cy="308" r="4"/>
+      </g>
+      <path d="M580 320 L800 320" stroke="#2E4057" stroke-width="1.5" fill="none" marker-end="url(#ea)"/>
+      <text x="700" y="406" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69" font-style="italic">electrons stream through to anode</text>
+
+      <!-- Speed advantage panel -->
+      <rect x="900" y="60" width="260" height="360" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="900" y="60" width="260" height="26" fill="#2E4057" opacity="0.08"/>
+      <text x="1030" y="79" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">SPEED ADVANTAGE</text>
+      <g font-family="'Inter',sans-serif" font-size="11">
+        <text x="920" y="106" fill="#3A3A3A">Relay switching:</text>
+        <text x="920" y="124" font-family="'JetBrains Mono',monospace" fill="#888880">~1–10 ms</text>
+        <text x="920" y="142" fill="#888880">(1,000 ops/sec)</text>
+        <line x1="916" y1="154" x2="1144" y2="154" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="920" y="176" fill="#3A3A3A">Vacuum tube:</text>
+        <text x="920" y="194" font-family="'JetBrains Mono',monospace" fill="#728C69">~1–10 μs</text>
+        <text x="920" y="212" fill="#728C69">(100,000 ops/sec)</text>
+        <line x1="916" y1="224" x2="1144" y2="224" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="920" y="250" fill="#3A3A3A" font-weight="500">100× faster</text>
+        <text x="920" y="268" fill="#888880">No moving parts.</text>
+        <text x="920" y="286" fill="#888880">Electrons move at</text>
+        <text x="920" y="304" fill="#888880">near light speed.</text>
+        <line x1="916" y1="316" x2="1144" y2="316" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="920" y="338" fill="#3A3A3A">ENIAC (1945):</text>
+        <text x="920" y="356" font-family="'JetBrains Mono',monospace" fill="#C82A2A">18,000 tubes</text>
+        <text x="920" y="374" font-family="'JetBrains Mono',monospace" fill="#C82A2A">5,000 ops/sec</text>
+        <text x="920" y="392" fill="#888880">vs 1 human:</text>
+        <text x="920" y="408" font-family="'JetBrains Mono',monospace" fill="#888880">~0.25 ops/sec</text>
+      </g>
+
+      <rect x="0" y="448" width="1200" height="32" fill="rgba(44,64,87,0.06)"/>
+      <text x="60" y="469" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Fig 1.4-A</text>
+      <text x="120" y="469" font-family="'Inter',sans-serif" font-size="12" fill="#6E6E6E">Triode anatomy: cathode emits electrons, control grid gates them, anode collects them. Negative grid blocks flow (OFF/0). Zero or positive grid allows flow (ON/1). 100× faster than relays — no moving parts.</text>
+      <text x="1140" y="469" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 1.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Triode vacuum tube anatomy. The heated cathode emits a cloud of electrons by thermionic emission. The control grid, positioned between cathode and anode, acts as an electrostatic gate: a negative grid voltage repels electrons, blocking current (tube OFF = logic 0). A zero or positive grid voltage allows electrons to stream through to the anode (tube ON = logic 1). The switching action is purely electronic — no moving parts — making the triode approximately 100× faster than an electromagnetic relay. ENIAC (1945) used 18,000 of these to reach 5,000 operations per second.</div>
+</div>
+
+<!-- FIG 1.4-B  ENIAC Scale -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hist">Type B — Historical Reconstruction</span>
+    <span class="fig-id">FIG 1.4-B</span>
+    <span class="fig-title">ENIAC — 18,000 Vacuum Tubes, 1945</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <rect width="1200" height="360" fill="#EAE6DC"/>
+
+      <!-- ENIAC cabinet panels -->
+      <g>
+        <!-- Panel rows -->
+        <g fill="#B8B0A4" stroke="#888078" stroke-width="1">
+          <rect x="40" y="40" width="80" height="260" rx="1"/>
+          <rect x="128" y="40" width="80" height="260" rx="1"/>
+          <rect x="216" y="40" width="80" height="260" rx="1"/>
+          <rect x="304" y="40" width="80" height="260" rx="1"/>
+          <rect x="392" y="40" width="80" height="260" rx="1"/>
+          <rect x="480" y="40" width="80" height="260" rx="1"/>
+          <rect x="568" y="40" width="80" height="260" rx="1"/>
+          <rect x="656" y="40" width="80" height="260" rx="1"/>
+          <rect x="744" y="40" width="80" height="260" rx="1"/>
+          <rect x="832" y="40" width="80" height="260" rx="1"/>
+        </g>
+        <!-- Tube arrays on panels (dots) -->
+        <g fill="#E8DCC8" opacity="0.7">
+          <!-- Panel 1 tubes -->
+          <g transform="translate(44,48)">
+            <g>
+              <circle cx="10" cy="10" r="5"/><circle cx="25" cy="10" r="5"/><circle cx="40" cy="10" r="5"/><circle cx="55" cy="10" r="5"/>
+              <circle cx="10" cy="26" r="5"/><circle cx="25" cy="26" r="5"/><circle cx="40" cy="26" r="5"/><circle cx="55" cy="26" r="5"/>
+              <circle cx="10" cy="42" r="5"/><circle cx="25" cy="42" r="5"/><circle cx="40" cy="42" r="5"/><circle cx="55" cy="42" r="5"/>
+              <circle cx="10" cy="58" r="5"/><circle cx="25" cy="58" r="5"/><circle cx="40" cy="58" r="5"/><circle cx="55" cy="58" r="5"/>
+              <circle cx="10" cy="74" r="5"/><circle cx="25" cy="74" r="5"/><circle cx="40" cy="74" r="5"/><circle cx="55" cy="74" r="5"/>
+              <circle cx="10" cy="90" r="5"/><circle cx="25" cy="90" r="5"/><circle cx="40" cy="90" r="5"/><circle cx="55" cy="90" r="5"/>
+              <circle cx="10" cy="106" r="5"/><circle cx="25" cy="106" r="5"/><circle cx="40" cy="106" r="5"/>
+            </g>
+          </g>
+        </g>
+        <!-- Some tubes highlighted warm (glowing) -->
+        <g fill="#D4A060" opacity="0.8">
+          <circle cx="54" cy="58" r="5"/><circle cx="69" cy="74" r="5"/>
+          <circle cx="142" cy="58" r="5"/><circle cx="157" cy="90" r="5"/>
+          <circle cx="230" cy="74" r="5"/><circle cx="245" cy="106" r="5"/>
+          <circle cx="318" cy="58" r="5"/>
+          <circle cx="406" cy="90" r="5"/><circle cx="421" cy="58" r="5"/>
+          <circle cx="494" cy="74" r="5"/>
+          <circle cx="582" cy="106" r="5"/><circle cx="597" cy="74" r="5"/>
+          <circle cx="670" cy="58" r="5"/>
+          <circle cx="758" cy="90" r="5"/>
+          <circle cx="846" cy="58" r="5"/><circle cx="861" cy="106" r="5"/>
+        </g>
+      </g>
+
+      <!-- Stats panel (right) -->
+      <rect x="940" y="40" width="220" height="260" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="940" y="40" width="220" height="26" fill="#2E4057" opacity="0.1"/>
+      <text x="1050" y="58" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">ENIAC — 1945</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">
+        <text x="956" y="84">Vacuum tubes:</text>
+        <text x="956" y="100" fill="#C82A2A">  17,468</text>
+        <text x="956" y="120">Resistors:</text>
+        <text x="956" y="136" fill="#888880">  70,000</text>
+        <text x="956" y="156">Capacitors:</text>
+        <text x="956" y="172" fill="#888880">  10,000</text>
+        <text x="956" y="192">Weight:</text>
+        <text x="956" y="208" fill="#888880">  30 tonnes</text>
+        <text x="956" y="228">Power:</text>
+        <text x="956" y="244" fill="#888880">  150 kW</text>
+        <text x="956" y="264">Speed:</text>
+        <text x="956" y="280" fill="#728C69">  5,000 ops/s</text>
+      </g>
+
+      <!-- Size comparison -->
+      <text x="480" y="322" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#888880">30 metres long · 2.4 metres tall · entire room</text>
+      <text x="480" y="340" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">One tube failed every 2 days on average → constant maintenance</text>
+
+      <rect x="0" y="350" width="1200" height="10" fill="rgba(44,64,87,0.04)"/>
+    </svg>
+  </div>
+  <div class="fig-caption">ENIAC (Electronic Numerical Integrator and Computer, 1945) — the first general-purpose electronic computer. Ten panels of vacuum tube circuitry filling a 30-metre room. 17,468 tubes, 70,000 resistors, 10,000 capacitors, consuming 150kW of power. One tube failed on average every two days, requiring a dedicated maintenance team. Despite this, ENIAC computed 5,000 additions per second — thousands of times faster than a human computer and 100× faster than a relay machine. It was programmed by physically rewiring patch cables between panels.</div>
+</div>
+
+<!-- FIG 1.4-C  Relay vs Tube Comparison -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Before vs After</span>
+    <span class="fig-id">FIG 1.4-C</span>
+    <span class="fig-title">Relay vs Vacuum Tube — Five Dimensions of Comparison</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:270px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+
+      <!-- Column headers -->
+      <rect x="0" y="0" width="1200" height="36" fill="#2E4057" opacity="0.07"/>
+      <text x="100" y="23" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">DIMENSION</text>
+      <text x="440" y="23" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">RELAY (1940s)</text>
+      <text x="800" y="23" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914" letter-spacing="0.1em">VACUUM TUBE (1945)</text>
+      <text x="1080" y="23" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69" letter-spacing="0.1em">WINNER</text>
+      <!-- Dividers -->
+      <line x1="230" y1="0" x2="230" y2="320" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="650" y1="0" x2="650" y2="320" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="950" y1="0" x2="950" y2="320" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- Row 1: Speed -->
+      <rect x="0" y="36" width="1200" height="48" fill="#FDFDFD"/>
+      <text x="100" y="64" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Switching Speed</text>
+      <text x="440" y="58" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#888880">1–10 ms</text>
+      <text x="440" y="76" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">mechanical movement</text>
+      <text x="800" y="58" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#728C69">1–10 μs</text>
+      <text x="800" y="76" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">electron travel</text>
+      <text x="1080" y="65" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#728C69">Tube ×1000</text>
+
+      <!-- Row 2: Size -->
+      <rect x="0" y="84" width="1200" height="48" fill="#F8F7F3"/>
+      <text x="100" y="112" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Physical Size</text>
+      <text x="440" y="106" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#888880">2–5 cm</text>
+      <text x="440" y="124" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">coil + contacts</text>
+      <text x="800" y="106" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#8B6914">5–10 cm</text>
+      <text x="800" y="124" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">glass envelope</text>
+      <text x="1080" y="112" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880">Relay ≈</text>
+
+      <!-- Row 3: Reliability -->
+      <rect x="0" y="132" width="1200" height="48" fill="#FDFDFD"/>
+      <text x="100" y="160" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Reliability</text>
+      <text x="440" y="154" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#728C69">high</text>
+      <text x="440" y="172" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">mechanical wear is slow</text>
+      <text x="800" y="154" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#C82A2A">low</text>
+      <text x="800" y="172" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">filament burn-out frequent</text>
+      <text x="1080" y="160" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#728C69">Relay wins</text>
+
+      <!-- Row 4: Power -->
+      <rect x="0" y="180" width="1200" height="48" fill="#F8F7F3"/>
+      <text x="100" y="208" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Power Use</text>
+      <text x="440" y="202" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#728C69">low</text>
+      <text x="440" y="220" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">minimal heating</text>
+      <text x="800" y="202" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#C82A2A">very high</text>
+      <text x="800" y="220" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">heater element + plate</text>
+      <text x="1080" y="208" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#728C69">Relay wins</text>
+
+      <!-- Row 5: Noise immunity -->
+      <rect x="0" y="228" width="1200" height="48" fill="#FDFDFD"/>
+      <text x="100" y="256" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Noise / EMI</text>
+      <text x="440" y="250" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#C82A2A">bad</text>
+      <text x="440" y="268" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">spark at contact closure</text>
+      <text x="800" y="250" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#728C69">better</text>
+      <text x="800" y="268" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">no arcing contacts</text>
+      <text x="1080" y="256" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#728C69">Tube wins</text>
+
+      <rect x="0" y="286" width="1200" height="34" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="308" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 1.4-C · Relay vs vacuum tube comparison. Speed is the decisive advantage of the tube. Reliability and power favour the relay. Both are superseded by the transistor (1947) which wins all five dimensions.</text>
+      <text x="1140" y="308" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 1.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Five-dimension comparison of relays vs vacuum tubes. The tube wins on switching speed (1000×) and electromagnetic noise immunity (no arcing contacts). The relay wins on reliability (filaments burn out) and power consumption (heaters draw significant current). Physical size is comparable — both are centimetre-scale. The transistor (Module 1.5) wins every dimension, which is why it replaced both within a decade of its invention.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level 12 — Advanced AI Architecture Figure Set</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:900px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 12 — Advanced AI</div>
+  <div class="page-title">Level 12 — Advanced AI Architecture Figure Set</div>
+  <div class="page-sub">4 figures · Transformer Self-Attention · Tokenisation + Embeddings · RAG Pipeline · AI Agent Architecture</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 12-A  Transformer Self-Attention -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 12-A</span>
+    <span class="fig-title">Transformer Self-Attention — Query, Key, Value Mechanism</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 480" xmlns="http://www.w3.org/2000/svg" style="height:430px">
+      <defs>
+        <linearGradient id="llmBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+        <marker id="att_arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#2C2C2C"/>
+        </marker>
+        <marker id="att_red" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+      </defs>
+      <rect width="1200" height="480" fill="url(#llmBg)"/>
+
+      <!-- Input tokens (left column) -->
+      <text x="80" y="24" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">INPUT TOKENS</text>
+      <g>
+        <rect x="30" y="36" width="100" height="32" rx="1" fill="#2E4057" opacity="0.8"/>
+        <text x="80" y="56" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">The</text>
+        <rect x="30" y="76" width="100" height="32" rx="1" fill="#C82A2A" opacity="0.75" stroke="#C82A2A" stroke-width="1.5"/>
+        <text x="80" y="96" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">cat</text>
+        <rect x="30" y="116" width="100" height="32" rx="1" fill="#2E4057" opacity="0.6"/>
+        <text x="80" y="136" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">sat</text>
+        <rect x="30" y="156" width="100" height="32" rx="1" fill="#2E4057" opacity="0.5"/>
+        <text x="80" y="176" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">on</text>
+        <rect x="30" y="196" width="100" height="32" rx="1" fill="#2E4057" opacity="0.4"/>
+        <text x="80" y="216" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">the</text>
+        <rect x="30" y="236" width="100" height="32" rx="1" fill="#8B6914" opacity="0.7"/>
+        <text x="80" y="256" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">mat</text>
+      </g>
+
+      <!-- QKV matrices -->
+      <text x="280" y="24" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">Q · K · V PROJECTIONS</text>
+      <!-- Q matrix -->
+      <rect x="190" y="36" width="60" height="232" rx="1" fill="#728C69" opacity="0.15" stroke="#728C69" stroke-width="1"/>
+      <text x="220" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" font-weight="500">Q</text>
+      <!-- Q vectors -->
+      <g font-family="'JetBrains Mono',monospace" font-size="7" text-anchor="middle" fill="#728C69">
+        <text x="220" y="80">q₁</text><text x="220" y="120">q₂</text>
+        <text x="220" y="160">q₃</text><text x="220" y="200">q₄</text>
+        <text x="220" y="240">q₅</text><text x="220" y="262">q₆</text>
+      </g>
+      <!-- K matrix -->
+      <rect x="262" y="36" width="60" height="232" rx="1" fill="#C82A2A" opacity="0.1" stroke="#C82A2A" stroke-width="1"/>
+      <text x="292" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" font-weight="500">K</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="7" text-anchor="middle" fill="#C82A2A">
+        <text x="292" y="80">k₁</text><text x="292" y="120">k₂</text>
+        <text x="292" y="160">k₃</text><text x="292" y="200">k₄</text>
+        <text x="292" y="240">k₅</text><text x="292" y="262">k₆</text>
+      </g>
+      <!-- V matrix -->
+      <rect x="334" y="36" width="60" height="232" rx="1" fill="#8B6914" opacity="0.12" stroke="#8B6914" stroke-width="1"/>
+      <text x="364" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914" font-weight="500">V</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="7" text-anchor="middle" fill="#8B6914">
+        <text x="364" y="80">v₁</text><text x="364" y="120">v₂</text>
+        <text x="364" y="160">v₃</text><text x="364" y="200">v₄</text>
+        <text x="364" y="240">v₅</text><text x="364" y="262">v₆</text>
+      </g>
+
+      <!-- Arrows: tokens to Q,K,V -->
+      <g stroke="#D8D6CE" stroke-width="0.5">
+        <line x1="130" y1="52" x2="188" y2="68"/>
+        <line x1="130" y1="92" x2="188" y2="108"/>
+        <line x1="130" y1="132" x2="188" y2="148"/>
+        <line x1="130" y1="172" x2="188" y2="188"/>
+        <line x1="130" y1="212" x2="188" y2="228"/>
+        <line x1="130" y1="252" x2="188" y2="258"/>
+      </g>
+
+      <!-- Attention score matrix (centre) -->
+      <text x="580" y="24" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">ATTENTION SCORES  softmax(QKᵀ/√dₖ)</text>
+      <!-- 6×6 attention heatmap -->
+      <g transform="translate(420,36)">
+        <!-- Heatmap cells (6×6) for "cat" attending to others) -->
+        <!-- Row 2 (cat) has high attention to mat (row 6) and itself -->
+        <g>
+          <!-- Row 1: The -->
+          <rect x="0" y="0" width="30" height="30" fill="#2E4057" opacity="0.2"/><rect x="30" y="0" width="30" height="30" fill="#2E4057" opacity="0.1"/>
+          <rect x="60" y="0" width="30" height="30" fill="#2E4057" opacity="0.05"/><rect x="90" y="0" width="30" height="30" fill="#2E4057" opacity="0.05"/>
+          <rect x="120" y="0" width="30" height="30" fill="#2E4057" opacity="0.1"/><rect x="150" y="0" width="30" height="30" fill="#2E4057" opacity="0.5"/>
+          <!-- Row 2: cat -->
+          <rect x="0" y="30" width="30" height="30" fill="#C82A2A" opacity="0.15"/>
+          <rect x="30" y="30" width="30" height="30" fill="#C82A2A" opacity="0.7"/><!-- cat→cat high -->
+          <rect x="60" y="30" width="30" height="30" fill="#C82A2A" opacity="0.1"/>
+          <rect x="90" y="30" width="30" height="30" fill="#C82A2A" opacity="0.05"/>
+          <rect x="120" y="30" width="30" height="30" fill="#C82A2A" opacity="0.1"/>
+          <rect x="150" y="30" width="30" height="30" fill="#C82A2A" opacity="0.9"/><!-- cat→mat very high -->
+          <!-- Row 3–6 lighter -->
+          <g opacity="0.3">
+            <rect x="0" y="60" width="180" height="30" fill="#2E4057" opacity="0.2"/>
+            <rect x="0" y="90" width="180" height="30" fill="#2E4057" opacity="0.1"/>
+            <rect x="0" y="120" width="180" height="30" fill="#2E4057" opacity="0.15"/>
+            <rect x="0" y="150" width="180" height="30" fill="#8B6914" opacity="0.4"/>
+          </g>
+          <!-- Grid lines -->
+          <g stroke="#FDFDFD" stroke-width="0.5" opacity="0.4">
+            <line x1="30" y1="0" x2="30" y2="180"/><line x1="60" y1="0" x2="60" y2="180"/>
+            <line x1="90" y1="0" x2="90" y2="180"/><line x1="120" y1="0" x2="120" y2="180"/>
+            <line x1="150" y1="0" x2="150" y2="180"/>
+            <line x1="0" y1="30" x2="180" y2="30"/><line x1="0" y1="60" x2="180" y2="60"/>
+            <line x1="0" y1="90" x2="180" y2="90"/><line x1="0" y1="120" x2="180" y2="120"/>
+            <line x1="0" y1="150" x2="180" y2="150"/>
+          </g>
+          <!-- Axis labels -->
+          <g font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">
+            <text x="-8" y="20" text-anchor="end">The</text>
+            <text x="-8" y="50" text-anchor="end" fill="#C82A2A">cat</text>
+            <text x="-8" y="80" text-anchor="end">sat</text>
+            <text x="-8" y="110" text-anchor="end">on</text>
+            <text x="-8" y="140" text-anchor="end">the</text>
+            <text x="-8" y="170" text-anchor="end">mat</text>
+            <text x="15" y="194" fill="#888880">The</text>
+            <text x="45" y="194" fill="#C82A2A">cat</text>
+            <text x="75" y="194">sat</text>
+            <text x="105" y="194">on</text>
+            <text x="135" y="194">the</text>
+            <text x="165" y="194" fill="#8B6914">mat</text>
+          </g>
+          <!-- Highlight: cat→mat high attention -->
+          <rect x="150" y="30" width="30" height="30" fill="none" stroke="#C82A2A" stroke-width="2"/>
+          <text x="165" y="22" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A" text-anchor="middle">cat→mat</text>
+          <text x="165" y="10" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A" text-anchor="middle">0.82!</text>
+        </g>
+      </g>
+
+      <!-- Output context vectors (right) -->
+      <text x="840" y="24" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">OUTPUT (contextualised)</text>
+      <g>
+        <rect x="760" y="36" width="200" height="32" rx="1" fill="#2E4057" opacity="0.5"/>
+        <text x="860" y="57" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">The  [context]</text>
+        <rect x="760" y="76" width="200" height="32" rx="1" fill="#C82A2A" opacity="0.8" stroke="#C82A2A" stroke-width="1.5"/>
+        <text x="860" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">cat  [+mat info]</text>
+        <rect x="760" y="116" width="200" height="32" rx="1" fill="#2E4057" opacity="0.4"/>
+        <text x="860" y="137" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">sat  [context]</text>
+        <rect x="760" y="156" width="200" height="32" rx="1" fill="#2E4057" opacity="0.3"/>
+        <text x="860" y="177" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">on   [context]</text>
+        <rect x="760" y="196" width="200" height="32" rx="1" fill="#2E4057" opacity="0.25"/>
+        <text x="860" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">the  [context]</text>
+        <rect x="760" y="236" width="200" height="32" rx="1" fill="#8B6914" opacity="0.7"/>
+        <text x="860" y="257" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">mat  [context]</text>
+      </g>
+
+      <!-- Key insight annotation -->
+      <path d="M630 45 Q680 38 758 82" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="4,2" marker-end="url(#att_red)"/>
+      <text x="695" y="34" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">"cat" attends to "mat" (0.82)</text>
+      <text x="695" y="47" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">→ output "cat" now knows about "mat"</text>
+
+      <!-- Formula -->
+      <rect x="30" y="298" width="1140" height="50" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="600" y="320" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2E4057">Attention(Q,K,V) = softmax( QKᵀ / √dₖ ) · V</text>
+      <text x="600" y="340" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880">Q=query (what am I looking for?), K=key (what do I contain?), V=value (what do I output if selected?)</text>
+
+      <!-- Multi-head note -->
+      <rect x="30" y="362" width="1140" height="36" rx="1" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="379" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">Multi-head attention: run N attention heads in parallel, each learning different relationships → concatenate → project</text>
+      <text x="600" y="395" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">GPT-3: 96 attention heads per layer · 96 layers · 175 billion parameters</text>
+
+      <rect x="0" y="412" width="1200" height="28" fill="rgba(44,64,87,0.06)"/>
+      <text x="600" y="432" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Fig 12-A · Self-attention: each token queries all other tokens, computing a weighted combination of their values. "cat" attends strongly to "mat" (0.82) — its output vector is enriched with information about what the cat sat on.</text>
+      <text x="1140" y="432" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Level 12</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Transformer self-attention mechanism. Each input token is projected into Query (Q), Key (K), and Value (V) vectors. Attention scores are computed as scaled dot products between all Q-K pairs: softmax(QKᵀ/√dₖ). High scores mean "these two tokens are relevant to each other." The output for each token is a weighted sum of all Value vectors, where weights come from the attention scores. In the example, "cat" attends strongly to "mat" (score 0.82) — the output representation of "cat" now contains information about the mat. This is how transformers capture long-range dependencies without recurrence. Multi-head attention runs this process in parallel N times, each head learning different relationships (syntax, semantics, coreference).</div>
+</div>
+
+<!-- FIG 12-B  RAG Pipeline -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 12-B</span>
+    <span class="fig-title">RAG Pipeline — Retrieval-Augmented Generation</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:280px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+
+      <!-- Header -->
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">RAG: give the LLM access to up-to-date knowledge without retraining</text>
+
+      <!-- Step 1: User Query -->
+      <rect x="40" y="50" width="160" height="60" rx="1" fill="#2E4057" opacity="0.8"/>
+      <text x="120" y="75" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD" font-weight="500">User Query</text>
+      <text x="120" y="93" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.7)">"What is the</text>
+      <text x="120" y="105" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.7)"> GPT-4 context size?"</text>
+
+      <!-- Arrow 1 -->
+      <path d="M202 80 L240 80" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#att_arr)"/>
+      <text x="221" y="70" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">embed</text>
+
+      <!-- Step 2: Embedding -->
+      <rect x="242" y="50" width="160" height="60" rx="1" fill="#C82A2A" opacity="0.7"/>
+      <text x="322" y="75" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD" font-weight="500">Query Embedding</text>
+      <text x="322" y="93" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.7)">[0.23, -0.45,</text>
+      <text x="322" y="105" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.7)"> 0.81, ...]</text>
+
+      <!-- Arrow 2 -->
+      <path d="M404 80 L442 80" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#att_arr)"/>
+      <text x="423" y="70" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">search</text>
+
+      <!-- Step 3: Vector DB -->
+      <rect x="444" y="50" width="160" height="120" rx="1" fill="#8B6914" opacity="0.7"/>
+      <text x="524" y="75" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD" font-weight="500">Vector Database</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="8" fill="rgba(255,255,255,0.8)" text-anchor="middle">
+        <text x="524" y="95">doc₁: [0.21,-0.44,0.82]</text>
+        <text x="524" y="108">doc₂: [0.53, 0.21,-0.12]</text>
+        <text x="524" y="121" fill="#FDFDFD" font-size="9">doc₃: [0.23,-0.43,0.79]</text>
+        <text x="524" y="134">doc₄: [0.11, 0.67,-0.34]</text>
+        <text x="524" y="147" fill="#FFD700">cosine → top-k=3</text>
+      </g>
+      <!-- Arrow 3 -->
+      <path d="M606 90 L644 90" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#att_arr)"/>
+      <text x="625" y="80" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">top-k chunks</text>
+
+      <!-- Step 4: Retrieved Docs -->
+      <rect x="646" y="50" width="180" height="120" rx="1" fill="#728C69" opacity="0.7"/>
+      <text x="736" y="68" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD" font-weight="500">Retrieved Chunks</text>
+      <g font-family="'Inter',sans-serif" font-size="9" fill="rgba(255,255,255,0.85)">
+        <text x="656" y="86">"GPT-4 has 128K</text>
+        <text x="656" y="100"> token context..."</text>
+        <text x="656" y="118">"GPT-4 Turbo</text>
+        <text x="656" y="132"> supports 128K..."</text>
+        <text x="656" y="150">"context window</text>
+        <text x="656" y="162"> extended in 2024"</text>
+      </g>
+
+      <!-- Arrow 4 -->
+      <path d="M828 80 L866 80" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#att_arr)"/>
+      <text x="847" y="70" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">augmented</text>
+      <text x="847" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">prompt</text>
+
+      <!-- Step 5: LLM -->
+      <rect x="868" y="50" width="140" height="120" rx="1" fill="#2E4057" opacity="0.8"/>
+      <text x="938" y="72" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD" font-weight="500">LLM</text>
+      <g font-family="'Inter',sans-serif" font-size="9" fill="rgba(255,255,255,0.7)">
+        <text x="878" y="92">Context:</text>
+        <text x="878" y="106"> [retrieved docs]</text>
+        <text x="878" y="122">Question:</text>
+        <text x="878" y="136"> "GPT-4 context?"</text>
+        <text x="878" y="152">→ generate</text>
+      </g>
+
+      <!-- Arrow 5 -->
+      <path d="M1010 110 L1048 110" stroke="#728C69" stroke-width="2" fill="none" marker-end="url(#att_arr)"/>
+
+      <!-- Step 6: Answer -->
+      <rect x="1050" y="50" width="120" height="120" rx="1" fill="#728C69" opacity="0.8"/>
+      <text x="1110" y="72" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD" font-weight="500">Answer</text>
+      <g font-family="'Inter',sans-serif" font-size="8" fill="rgba(255,255,255,0.9)">
+        <text x="1062" y="90">"GPT-4 has a</text>
+        <text x="1062" y="103"> 128K token</text>
+        <text x="1062" y="116"> context window</text>
+        <text x="1062" y="129"> (as of 2024)."</text>
+      </g>
+      <text x="1110" y="158" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="rgba(255,255,255,0.6)">grounded in docs</text>
+
+      <!-- Indexing pipeline (bottom) -->
+      <rect x="40" y="200" width="1140" height="80" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="200" width="1140" height="22" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="216" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">OFFLINE INDEXING (done once, before queries)</text>
+
+      <!-- Indexing steps -->
+      <g font-family="'JetBrains Mono',monospace" font-size="10">
+        <text x="80" y="244" fill="#2E4057">Documents</text>
+        <path d="M165" y1="240" fill="none"/>
+        <path d="M170 240 L200 240" stroke="#2C2C2C" stroke-width="1" fill="none" marker-end="url(#att_arr)"/>
+        <text x="210" y="244" fill="#C82A2A">chunk(512 tokens)</text>
+        <path d="M370 240 L400 240" stroke="#2C2C2C" stroke-width="1" fill="none" marker-end="url(#att_arr)"/>
+        <text x="410" y="244" fill="#8B6914">embed(text→vector)</text>
+        <path d="M600 240 L630 240" stroke="#2C2C2C" stroke-width="1" fill="none" marker-end="url(#att_arr)"/>
+        <text x="640" y="244" fill="#728C69">store(vectorDB)</text>
+      </g>
+      <text x="600" y="268" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Any new documents → embed → upsert to vector DB. No LLM retraining needed. Enables real-time knowledge updates.</text>
+
+      <rect x="0" y="294" width="1200" height="26" fill="rgba(44,64,87,0.04)"/>
+      <text x="600" y="312" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 12-B · RAG pipeline: user query is embedded into a vector, searched against a vector database of pre-embedded document chunks, top-k relevant chunks are inserted into the LLM context window alongside the query, and the LLM generates a grounded answer.</text>
+      <text x="1140" y="312" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · L12</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Retrieval-Augmented Generation (RAG). The offline indexing phase: documents are split into chunks (~512 tokens), each chunk is converted to a high-dimensional vector (embedding) by an embedding model, and stored in a vector database. At query time: the user's question is embedded into the same vector space, the top-k most similar document chunks are retrieved by cosine similarity search, and these chunks are prepended to the LLM's prompt as context. The LLM generates an answer grounded in the retrieved facts rather than relying on potentially stale parametric memory. RAG enables LLMs to access current information without retraining — a deployment pattern used by virtually all production AI assistants.</div>
+</div>
+
+<!-- FIG 12-C  AI Agent Architecture -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 12-C</span>
+    <span class="fig-title">AI Agent Architecture — Plan, Act, Observe, Reflect Loop</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 340" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <rect width="1200" height="340" fill="#F4EFE6"/>
+
+      <!-- Header -->
+      <rect x="0" y="0" width="1200" height="32" fill="#C82A2A" opacity="0.06"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">AI Agent: LLM + memory + tools + planning loop</text>
+
+      <!-- Central LLM box -->
+      <rect x="460" y="80" width="280" height="160" rx="2" fill="#2E4057" opacity="0.85"/>
+      <text x="600" y="110" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">LLM</text>
+      <text x="600" y="130" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="rgba(255,255,255,0.65)">reasoning engine</text>
+      <!-- Internal steps -->
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.8)" text-anchor="middle">
+        <text x="600" y="155">① OBSERVE</text>
+        <text x="600" y="170">② THINK (CoT)</text>
+        <text x="600" y="185">③ ACT: tool_call()</text>
+        <text x="600" y="200">④ REFLECT on result</text>
+        <text x="600" y="216">⑤ REPEAT or DONE</text>
+      </g>
+
+      <!-- Left: Memory -->
+      <rect x="40" y="80" width="200" height="160" rx="1" fill="#FDFDFD" stroke="#8B6914" stroke-width="1.5"/>
+      <rect x="40" y="80" width="200" height="22" fill="#8B6914" opacity="0.1"/>
+      <text x="140" y="96" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914" font-weight="500">MEMORY</text>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="56" y="120">Short-term:</text>
+        <text x="56" y="136" font-family="'JetBrains Mono'" font-size="9" fill="#888880">conversation history</text>
+        <text x="56" y="160">Long-term:</text>
+        <text x="56" y="176" font-family="'JetBrains Mono'" font-size="9" fill="#888880">vector store</text>
+        <text x="56" y="200">Procedural:</text>
+        <text x="56" y="216" font-family="'JetBrains Mono'" font-size="9" fill="#888880">learned skills</text>
+      </g>
+      <path d="M242 160 L458 160" stroke="#8B6914" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#att_arr)"/>
+      <path d="M458 148 L242 148" stroke="#8B6914" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#att_arr)"/>
+
+      <!-- Right: Tools -->
+      <rect x="960" y="80" width="200" height="160" rx="1" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="960" y="80" width="200" height="22" fill="#728C69" opacity="0.1"/>
+      <text x="1060" y="96" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69" font-weight="500">TOOLS</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A3A3A">
+        <text x="972" y="118">🔍 web_search()</text>
+        <text x="972" y="136">💻 code_exec()</text>
+        <text x="972" y="154">📁 read_file()</text>
+        <text x="972" y="172">🌐 http_request()</text>
+        <text x="972" y="190">📊 query_db()</text>
+        <text x="972" y="208">✉ send_email()</text>
+        <text x="972" y="226">⚙ api_call()</text>
+      </g>
+      <path d="M742 148 L958 148" stroke="#728C69" stroke-width="1.5" fill="none" marker-end="url(#att_arr)"/>
+      <path d="M958 162 L742 162" stroke="#728C69" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#att_arr)"/>
+
+      <!-- Top: User / Goal -->
+      <rect x="480" y="24" width="240" height="48" rx="1" fill="#C82A2A" opacity="0.7"/>
+      <text x="600" y="46" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD" font-weight="500">User Goal</text>
+      <text x="600" y="64" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.8)">"Research and summarise GPT-5 news"</text>
+      <path d="M600 72 L600 79" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#att_arr)"/>
+
+      <!-- Bottom: Output -->
+      <rect x="460" y="258" width="280" height="48" rx="1" fill="#728C69" opacity="0.8"/>
+      <text x="600" y="279" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD" font-weight="500">Final Output</text>
+      <text x="600" y="297" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.8)">[structured report + citations]</text>
+      <path d="M600 240 L600 257" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#att_arr)"/>
+
+      <!-- ReAct loop label -->
+      <rect x="40" y="258" width="380" height="48" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="50" y="275" font-family="'Noto Serif JP',serif" font-size="11" fill="#2C2C2C">ReAct pattern:</text>
+      <text x="50" y="293" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">Thought: "I need to search for GPT-5 announcements"</text>
+      <text x="50" y="306" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">Action: web_search("GPT-5 release date")</text>
+
+      <rect x="780" y="258" width="380" height="48" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="790" y="275" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">Observation: [search results returned]</text>
+      <text x="790" y="293" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">Thought: "I have the data, now summarise"</text>
+      <text x="790" y="306" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">Action: FINISH [write report]</text>
+
+      <rect x="0" y="316" width="1200" height="24" fill="rgba(44,64,87,0.04)"/>
+      <text x="600" y="333" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 12-C · AI agent: LLM as reasoning engine + persistent memory + external tools. The ReAct loop alternates Thought (reasoning) and Action (tool calls) until the goal is complete. Agents can run multi-step, multi-tool workflows autonomously.</text>
+      <text x="1140" y="333" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · L12</text>
+    </svg>
+  </div>
+  <div class="fig-caption">AI agent architecture. The LLM acts as a reasoning engine in a loop: observe the current state, think (chain-of-thought reasoning), select and call a tool, observe the result, and repeat until the goal is achieved. Memory gives the agent continuity: short-term (conversation context), long-term (vector store for persistent facts), and procedural (learned skills and functions). Tools extend the LLM beyond its training data: web search, code execution, file I/O, API calls, database queries. The ReAct (Reasoning + Acting) pattern interleaves explicit reasoning steps with tool actions, making the agent's decision process transparent and debuggable. This architecture underlies GitHub Copilot, Claude with tools, and autonomous coding agents.</div>
+</div>
+
+</div>
+</body>
+</html>

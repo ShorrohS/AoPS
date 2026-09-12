@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 9.3 — Transactions and ACID</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 9 — Databases</div>
+  <div class="page-title">Module 9.3 — Transactions and ACID</div>
+  <div class="page-sub">3 figures · ACID Properties · Isolation Levels · Write-Ahead Log and Crash Recovery</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 9.3-A  ACID Properties -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 9.3-A</span>
+    <span class="fig-title">ACID Properties — Four Guarantees Every Transaction Must Satisfy</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <defs><linearGradient id="acidBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="360" fill="url(#acidBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">ACID — THE FOUR TRANSACTION GUARANTEES: BANK TRANSFER EXAMPLE</text>
+
+      <!-- A: Atomicity -->
+      <rect x="30" y="44" width="260" height="280" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5" rx="1"/>
+      <rect x="30" y="44" width="260" height="44" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="160" y="64" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="18" fill="#FDFDFD">A</text>
+      <text x="160" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#BBBBB5">Atomicity</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="50" y="110">All or nothing.</text>
+        <text x="50" y="130">Either all operations</text>
+        <text x="50" y="148">in a transaction commit,</text>
+        <text x="50" y="166">or none do.</text>
+        <line x1="46" y1="176" x2="274" y2="176" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="50" y="196" fill="#C82A2A">If debit succeeds but</text>
+        <text x="50" y="214" fill="#C82A2A">credit fails → rollback</text>
+        <text x="50" y="232" fill="#C82A2A">both. No half-state.</text>
+        <line x1="46" y1="244" x2="274" y2="244" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="50" y="264" fill="#888880" font-size="9">Implementation: WAL</text>
+        <text x="50" y="278" fill="#888880" font-size="9">log + undo on rollback</text>
+        <text x="50" y="292" fill="#888880" font-size="9">ROLLBACK statement</text>
+      </g>
+
+      <!-- C: Consistency -->
+      <rect x="310" y="44" width="260" height="280" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5" rx="1"/>
+      <rect x="310" y="44" width="260" height="44" fill="#728C69" opacity="0.85" rx="1"/>
+      <text x="440" y="64" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="18" fill="#FDFDFD">C</text>
+      <text x="440" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#DDDDD5">Consistency</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="330" y="110">Rules are always met.</text>
+        <text x="330" y="130">Transaction takes DB</text>
+        <text x="330" y="148">from one valid state</text>
+        <text x="330" y="166">to another valid state.</text>
+        <line x1="326" y1="176" x2="554" y2="176" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="330" y="196" fill="#C82A2A">Cannot transfer more</text>
+        <text x="330" y="214" fill="#C82A2A">than account balance</text>
+        <text x="330" y="232" fill="#C82A2A">(CHECK constraint).</text>
+        <line x1="326" y1="244" x2="554" y2="244" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="330" y="264" fill="#888880" font-size="9">Implementation:</text>
+        <text x="330" y="278" fill="#888880" font-size="9">constraints, triggers,</text>
+        <text x="330" y="292" fill="#888880" font-size="9">foreign keys</text>
+      </g>
+
+      <!-- I: Isolation -->
+      <rect x="590" y="44" width="260" height="280" fill="#FDFDFD" stroke="#8B6914" stroke-width="1.5" rx="1"/>
+      <rect x="590" y="44" width="260" height="44" fill="#8B6914" opacity="0.85" rx="1"/>
+      <text x="720" y="64" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="18" fill="#FDFDFD">I</text>
+      <text x="720" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#DDDDD5">Isolation</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="610" y="110">Concurrent txns don't</text>
+        <text x="610" y="130">interfere. Each sees a</text>
+        <text x="610" y="148">consistent snapshot.</text>
+        <line x1="606" y1="160" x2="834" y2="160" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="610" y="180" fill="#C82A2A">T1 mid-transfer: balance</text>
+        <text x="610" y="198" fill="#C82A2A">shows 0 briefly. T2</text>
+        <text x="610" y="216" fill="#C82A2A">must not see this.</text>
+        <line x1="606" y1="228" x2="834" y2="228" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="610" y="248" fill="#888880" font-size="9">Implementation:</text>
+        <text x="610" y="262" fill="#888880" font-size="9">MVCC (multiversion</text>
+        <text x="610" y="276" fill="#888880" font-size="9">concurrency control),</text>
+        <text x="610" y="290" fill="#888880" font-size="9">locking</text>
+      </g>
+
+      <!-- D: Durability -->
+      <rect x="870" y="44" width="300" height="280" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5" rx="1"/>
+      <rect x="870" y="44" width="300" height="44" fill="#C82A2A" opacity="0.8" rx="1"/>
+      <text x="1020" y="64" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="18" fill="#FDFDFD">D</text>
+      <text x="1020" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#DDDDD5">Durability</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="890" y="110">Committed = permanent.</text>
+        <text x="890" y="130">Survives crashes, power</text>
+        <text x="890" y="148">failures, reboots.</text>
+        <line x1="886" y1="160" x2="1154" y2="160" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="890" y="180" fill="#728C69">COMMIT confirmed →</text>
+        <text x="890" y="198" fill="#728C69">data is on disk, not</text>
+        <text x="890" y="216" fill="#728C69">just in RAM buffer.</text>
+        <line x1="886" y1="228" x2="1154" y2="228" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="890" y="248" fill="#888880" font-size="9">Implementation:</text>
+        <text x="890" y="262" fill="#888880" font-size="9">Write-ahead log fsynced</text>
+        <text x="890" y="276" fill="#888880" font-size="9">to disk before COMMIT</text>
+        <text x="890" y="290" fill="#888880" font-size="9">returns to application</text>
+      </g>
+
+      <rect x="0" y="344" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="356" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 9.3-A · ACID guarantees illustrated with a bank transfer. Atomicity: no partial transfer. Consistency: constraints always satisfied. Isolation: concurrent transactions don't interfere. Durability: committed data survives crashes.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">ACID properties illustrated with a bank transfer (debit account A, credit account B). Atomicity ensures both operations succeed or both are rolled back — no money disappears or is created. Consistency enforces business rules: balance cannot go negative. Isolation ensures Transaction 2 cannot read the intermediate state where A is debited but B isn't yet credited — it sees either the before or after state, never the in-between. Durability means that once the database confirms COMMIT, the transfer is permanent even if the server crashes one millisecond later. These four properties are what distinguish a database from a file system.</div>
+</div>
+
+<!-- FIG 9.3-B  Isolation Levels -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type B — Reference Table</span>
+    <span class="fig-id">FIG 9.3-B</span>
+    <span class="fig-title">SQL Isolation Levels — Anomalies Permitted at Each Level</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">TRANSACTION ISOLATION LEVELS — ANOMALIES ALLOWED vs PREVENTED</text>
+
+      <rect x="40" y="40" width="1120" height="228" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="40" width="1120" height="26" fill="#2E4057" opacity="0.08"/>
+      <g font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.08em" text-anchor="middle">
+        <text x="160" y="57">ISOLATION LEVEL</text>
+        <text x="380" y="57">DIRTY READ</text>
+        <text x="560" y="57">NON-REPEATABLE READ</text>
+        <text x="760" y="57">PHANTOM READ</text>
+        <text x="960" y="57">PERFORMANCE</text>
+        <text x="1100" y="57">USE CASE</text>
+      </g>
+      <g stroke="#E8E6DF" stroke-width="0.5">
+        <line x1="280" y1="40" x2="280" y2="268"/>
+        <line x1="480" y1="40" x2="480" y2="268"/>
+        <line x1="640" y1="40" x2="640" y2="268"/>
+        <line x1="880" y1="40" x2="880" y2="268"/>
+        <line x1="1040" y1="40" x2="1040" y2="268"/>
+      </g>
+      <g font-family="'JetBrains Mono',monospace" font-size="12">
+        <!-- READ UNCOMMITTED -->
+        <rect x="40" y="66" width="1120" height="40" fill="#C82A2A" opacity="0.06"/>
+        <text x="160" y="92" text-anchor="middle" fill="#C82A2A">READ UNCOMMITTED</text>
+        <text x="380" y="92" text-anchor="middle" fill="#C82A2A">✗ possible</text>
+        <text x="560" y="92" text-anchor="middle" fill="#C82A2A">✗ possible</text>
+        <text x="760" y="92" text-anchor="middle" fill="#C82A2A">✗ possible</text>
+        <text x="960" y="92" text-anchor="middle" fill="#728C69">highest</text>
+        <text x="1100" y="92" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">rarely used</text>
+        <!-- READ COMMITTED -->
+        <rect x="40" y="106" width="1120" height="40" fill="#FDFDFD"/>
+        <text x="160" y="132" text-anchor="middle" fill="#8B6914">READ COMMITTED</text>
+        <text x="380" y="132" text-anchor="middle" fill="#728C69">✓ prevented</text>
+        <text x="560" y="132" text-anchor="middle" fill="#C82A2A">✗ possible</text>
+        <text x="760" y="132" text-anchor="middle" fill="#C82A2A">✗ possible</text>
+        <text x="960" y="132" text-anchor="middle" fill="#728C69">high</text>
+        <text x="1100" y="132" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">PostgreSQL default</text>
+        <!-- REPEATABLE READ -->
+        <rect x="40" y="146" width="1120" height="40" fill="#2E4057" opacity="0.04"/>
+        <text x="160" y="172" text-anchor="middle" fill="#2E4057">REPEATABLE READ</text>
+        <text x="380" y="172" text-anchor="middle" fill="#728C69">✓ prevented</text>
+        <text x="560" y="172" text-anchor="middle" fill="#728C69">✓ prevented</text>
+        <text x="760" y="172" text-anchor="middle" fill="#C82A2A">✗ possible</text>
+        <text x="960" y="172" text-anchor="middle" fill="#8B6914">medium</text>
+        <text x="1100" y="172" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">MySQL InnoDB default</text>
+        <!-- SERIALIZABLE -->
+        <rect x="40" y="186" width="1120" height="40" fill="#728C69" opacity="0.08"/>
+        <text x="160" y="212" text-anchor="middle" fill="#728C69">SERIALIZABLE</text>
+        <text x="380" y="212" text-anchor="middle" fill="#728C69">✓ prevented</text>
+        <text x="560" y="212" text-anchor="middle" fill="#728C69">✓ prevented</text>
+        <text x="760" y="212" text-anchor="middle" fill="#728C69">✓ prevented</text>
+        <text x="960" y="212" text-anchor="middle" fill="#C82A2A">lowest</text>
+        <text x="1100" y="212" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">financial systems</text>
+        <!-- Anomaly definitions -->
+        <rect x="40" y="226" width="1120" height="42" fill="#EEECE6"/>
+        <text x="380" y="244" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">Read uncommitted data</text>
+        <text x="380" y="258" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">that may be rolled back</text>
+        <text x="560" y="244" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">Re-read changes value</text>
+        <text x="560" y="258" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">because another txn committed</text>
+        <text x="760" y="244" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">New rows appear in</text>
+        <text x="760" y="258" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">range query re-execution</text>
+      </g>
+
+      <rect x="0" y="282" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="295" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 9.3-B · Higher isolation = fewer anomalies, lower throughput. Most applications use READ COMMITTED (PostgreSQL default) or REPEATABLE READ (MySQL). SERIALIZABLE for financial transactions.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">SQL isolation levels define which read anomalies are permitted in exchange for concurrency. Dirty reads: reading uncommitted data that may be rolled back. Non-repeatable reads: the same row returns a different value on two reads within one transaction (because another transaction committed between reads). Phantom reads: a range query returns different rows on re-execution (because another transaction inserted/deleted rows matching the range). Higher isolation requires more locking or MVCC snapshot management, reducing concurrency. PostgreSQL implements all levels via MVCC (each transaction sees a snapshot of committed data at transaction start), making REPEATABLE READ and SERIALIZABLE available with lower overhead than traditional locking.</div>
+</div>
+
+<!-- FIG 9.3-C  Write-Ahead Log -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 9.3-C</span>
+    <span class="fig-title">Write-Ahead Log (WAL) — Crash Recovery with Before/After Images</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">WRITE-AHEAD LOG — LOG BEFORE DATA: GUARANTEES DURABILITY AND ATOMICITY</text>
+
+      <!-- Normal flow -->
+      <text x="60" y="56" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">NORMAL COMMIT FLOW:</text>
+      <!-- Steps -->
+      <g>
+        <rect x="40" y="64" width="160" height="44" fill="#2E4057" opacity="0.8" rx="1"/>
+        <text x="120" y="84" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">① Write to</text>
+        <text x="120" y="98" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#BBBBB5">WAL log (fsync)</text>
+        <path d="M200 86 L228 86" stroke="#728C69" stroke-width="2" fill="none"/>
+        <path d="M224 82 L232 86 L224 90" fill="#728C69"/>
+
+        <rect x="232" y="64" width="160" height="44" fill="#728C69" opacity="0.7" rx="1"/>
+        <text x="312" y="84" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">② Write to</text>
+        <text x="312" y="98" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">buffer pool</text>
+        <path d="M392 86 L420 86" stroke="#728C69" stroke-width="2" fill="none"/>
+        <path d="M416 82 L424 86 L416 90" fill="#728C69"/>
+
+        <rect x="424" y="64" width="160" height="44" fill="#728C69" opacity="0.6" rx="1"/>
+        <text x="504" y="84" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">③ COMMIT</text>
+        <text x="504" y="98" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">confirmed</text>
+        <path d="M584 86 L612 86" stroke="#728C69" stroke-width="2" fill="none"/>
+        <path d="M608 82 L616 86 L608 90" fill="#728C69"/>
+
+        <rect x="616" y="64" width="160" height="44" fill="#888880" opacity="0.5" rx="1"/>
+        <text x="696" y="84" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">④ Later:</text>
+        <text x="696" y="98" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">flush to disk</text>
+      </g>
+      <text x="120" y="126" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#2E4057">durability ✓</text>
+      <text x="504" y="126" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">app notified</text>
+
+      <!-- WAL log entries -->
+      <text x="60" y="156" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">WAL LOG ENTRIES:</text>
+      <rect x="40" y="164" width="1100" height="28" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">
+        <text x="56" y="182">LSN:1001 BEGIN T1 | LSN:1002 T1 UPDATE accounts SET bal=900 WHERE id=1 BEFORE=1000 | LSN:1003 T1 UPDATE accounts SET bal=1100 WHERE id=2 BEFORE=1000 | LSN:1004 COMMIT T1</text>
+      </g>
+
+      <!-- Crash recovery -->
+      <text x="60" y="222" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">CRASH RECOVERY (ARIES ALGORITHM):</text>
+      <rect x="40" y="232" width="1100" height="46" fill="#FDFDFD" stroke="#C82A2A" stroke-width="0.5"/>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="60" y="252">① Analysis pass: find dirty (unwritten) pages and active transactions at crash</text>
+        <text x="60" y="270">② Redo pass: replay all log entries from oldest dirty page → bring DB to crash state</text>
+        <text x="680" y="252">③ Undo pass: rollback all transactions that had not committed at crash time</text>
+        <text x="680" y="270" fill="#728C69">Result: committed transactions recovered, uncommitted rolled back. DB consistent again.</text>
+      </g>
+
+      <rect x="0" y="284" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="296" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 9.3-C · WAL: log must be fsynced before COMMIT returns. On crash, ARIES: analysis → redo → undo. Committed txns redone; uncommitted txns undone. Guarantees durability + atomicity.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Write-Ahead Logging (WAL) implements both Durability and Atomicity. The rule: before modifying any data page, write the change to the WAL log file and fsync it to disk. Only then modify the in-memory buffer pool. When COMMIT is called, the WAL record for that transaction is fsynced — the application receives confirmation. Actual data pages are written to disk later in bulk (checkpointing). On crash: the ARIES recovery algorithm reads the WAL, replays all changes from the last checkpoint (redo phase), then rolls back any transactions that hadn't committed (undo phase). Committed transactions are always recoverable because their WAL records are on disk; uncommitted transactions are cleanly reversed. This is why PostgreSQL's WAL directory and MySQL's redo log are so critical to backup procedures.</div>
+</div>
+
+</div>
+</body>
+</html>

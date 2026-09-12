@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 12.4 — AI Agents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 12 — Advanced AI</div>
+  <div class="page-title">Module 12.4 — AI Agents</div>
+  <div class="page-sub">3 figures · Agent Architecture · ReAct Pattern · Multi-Agent Systems</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 12.4-A  Agent Architecture -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 12.4-A</span>
+    <span class="fig-title">AI Agent Architecture — Perception, Memory, Planning, Action Loop</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <defs><linearGradient id="agBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="380" fill="url(#agBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">AI AGENT — LLM AS REASONING ENGINE, TOOLS AS ACTUATORS</text>
+
+      <!-- Central agent box -->
+      <rect x="380" y="120" width="440" height="120" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="600" y="156" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="16" fill="#FDFDFD">LLM Agent</text>
+      <text x="600" y="176" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#BBBBB5">reasoning · planning · decision-making</text>
+      <text x="600" y="196" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">GPT-4 / Claude / Gemini</text>
+      <text x="600" y="216" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#BBBBB5">context: task + memory + tool results</text>
+
+      <!-- Inputs (left) -->
+      <!-- Perception -->
+      <rect x="40" y="60" width="260" height="60" fill="#728C69" opacity="0.7" rx="1"/>
+      <text x="170" y="84" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">Perception</text>
+      <text x="170" y="104" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">user request, sensors, env state</text>
+      <path d="M300 90 L378 155" stroke="#728C69" stroke-width="2" fill="none"/>
+      <path d="M374 153 L382 158 L374 163" fill="#728C69"/>
+
+      <!-- Memory -->
+      <rect x="40" y="152" width="260" height="60" fill="#8B6914" opacity="0.7" rx="1"/>
+      <text x="170" y="176" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">Memory</text>
+      <text x="170" y="196" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">short-term (context) / long-term (vector DB)</text>
+      <path d="M300 182 L378 182" stroke="#8B6914" stroke-width="2" fill="none"/>
+      <path d="M374 178 L382 182 L374 186" fill="#8B6914"/>
+
+      <!-- Knowledge -->
+      <rect x="40" y="244" width="260" height="60" fill="#C82A2A" opacity="0.6" rx="1"/>
+      <text x="170" y="268" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">Knowledge</text>
+      <text x="170" y="288" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">RAG retrieval, pre-trained knowledge</text>
+      <path d="M300 274 L378 210" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M374 208 L382 213 L374 218" fill="#C82A2A"/>
+
+      <!-- Outputs (right) -->
+      <!-- Tool use -->
+      <rect x="820" y="60" width="340" height="60" fill="#728C69" opacity="0.7" rx="1"/>
+      <text x="990" y="80" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">Tool Use</text>
+      <text x="990" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">web search · code exec · API calls · file I/O</text>
+      <path d="M820 90 L822 90" stroke="#728C69" stroke-width="2" fill="none"/>
+      <path d="M820 90 L822 90" fill="none"/>
+      <path d="M822 90 L820 90" fill="none"/>
+      <path d="M820 155 L822 90" stroke="#728C69" stroke-width="2" fill="none" stroke-dasharray="4,2"/>
+
+      <!-- Responses -->
+      <rect x="820" y="152" width="340" height="60" fill="#2E4057" opacity="0.6" rx="1"/>
+      <text x="990" y="172" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">Response / Action</text>
+      <text x="990" y="192" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#BBBBB5">text reply · function call · file write</text>
+      <path d="M820 182 L822 182" fill="none"/>
+
+      <!-- Planning -->
+      <rect x="820" y="244" width="340" height="60" fill="#8B6914" opacity="0.65" rx="1"/>
+      <text x="990" y="264" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">Planning</text>
+      <text x="990" y="284" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">decompose task · chain of thought · CoT</text>
+
+      <!-- Arrows from agent to outputs -->
+      <path d="M820 155 L820 90" stroke="#728C69" stroke-width="2" fill="none"/>
+      <path d="M816 94 L820 86 L824 94" fill="#728C69"/>
+      <path d="M820 182 L820 182" stroke="#2E4057" stroke-width="2" fill="none"/>
+      <!-- Horizontal arrows -->
+      <path d="M820 155 L822 155" fill="none"/>
+      <g>
+        <path d="M820 90 C800 90 800 90 822 90" fill="none" stroke="none"/>
+        <!-- simple horizontal connections -->
+        <line x1="820" y1="155" x2="820" y2="90" stroke="#728C69" stroke-width="1.5"/>
+        <path d="M816 94 L820 86 L824 94" fill="#728C69"/>
+        <line x1="820" y1="182" x2="820" y2="182" stroke="#2E4057" stroke-width="0"/>
+      </g>
+
+      <!-- Loop back arrow (action → perception) -->
+      <path d="M1160 182 Q1180 182 1180 50 Q1180 40 600 40 Q40 40 40 60" stroke="#888880" stroke-width="1.5" fill="none" stroke-dasharray="5,3"/>
+      <path d="M44 56 L36 60 L44 64" fill="#888880"/>
+      <text x="1050" y="38" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">observe outcomes → next step</text>
+
+      <rect x="0" y="362" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="375" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 12.4-A · Agent loop: perceive → reason (LLM) → plan → act (tools) → observe results → repeat. Short-term memory = context window. Long-term memory = vector DB. Tools = external actions.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">An AI agent uses an LLM as its reasoning core, augmented with tools (external capabilities) and memory. The agent loop: perceive the environment (user request, sensor data, prior action results), retrieve relevant memories and knowledge, reason with the LLM about what to do next, act by calling tools (web search, code execution, APIs, file I/O), observe the results, and repeat until the task is complete. Short-term memory is the LLM's context window — limited in size. Long-term memory is a vector database or external storage, accessed via retrieval. This architecture allows an LLM (which is fundamentally a text completion model) to autonomously complete multi-step tasks that require planning, tool use, and adapting to intermediate results.</div>
+</div>
+
+<!-- FIG 12.4-B  ReAct Pattern -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 12.4-B</span>
+    <span class="fig-title">ReAct Pattern — Interleaved Reasoning and Action</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">ReAct = REASON + ACT — INTERLEAVED THINKING AND TOOL USE TRACE</text>
+
+      <!-- Trace -->
+      <rect x="40" y="44" width="1120" height="252" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11">
+        <text x="56" y="68" fill="#888880">Task: What is the current population of France and when did it last reach 67 million?</text>
+        <line x1="56" y1="76" x2="1144" y2="76" stroke="#3A3A3A" stroke-width="0.5"/>
+
+        <text x="56" y="96" fill="#8B6914">Thought: I need current population data. Let me search for it.</text>
+        <text x="56" y="114" fill="#C82A2A">Action: web_search("current population of France 2024")</text>
+        <text x="56" y="132" fill="#728C69">Observation: France population 2024 is approximately 68.4 million (INSEE data).</text>
+
+        <line x1="56" y1="142" x2="1144" y2="142" stroke="#3A3A3A" stroke-width="0.5"/>
+        <text x="56" y="160" fill="#8B6914">Thought: Good. Now I need to find when France first reached 67 million.</text>
+        <text x="56" y="178" fill="#C82A2A">Action: web_search("France population reached 67 million year")</text>
+        <text x="56" y="196" fill="#728C69">Observation: France crossed 67 million in approximately 2019 according to UN estimates.</text>
+
+        <line x1="56" y1="206" x2="1144" y2="206" stroke="#3A3A3A" stroke-width="0.5"/>
+        <text x="56" y="224" fill="#8B6914">Thought: I now have both pieces of information needed to answer the question.</text>
+        <text x="56" y="244" fill="#FDFDFD">Answer: France's current population is approximately 68.4 million (2024). It crossed</text>
+        <text x="56" y="260" fill="#FDFDFD">the 67 million threshold around 2019. Sources: INSEE (French stats bureau), UN data.</text>
+        <text x="56" y="278" fill="#728C69">✓ Grounded in retrieved evidence · Citations provided</text>
+      </g>
+
+      <rect x="0" y="302" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="315" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 12.4-B · ReAct: the LLM alternates Thought (internal reasoning), Action (tool call), Observation (tool result). Loop until complete. Prevents hallucination by grounding in retrieved facts.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">ReAct (Reason + Act) is the dominant agent prompting pattern. The LLM interleaves Thought (internal chain-of-thought reasoning about what to do), Action (a structured tool call), and Observation (the tool's result). This loop continues until the agent has enough information to produce a final answer. ReAct prevents hallucination on factual questions by requiring the agent to ground its answer in tool-retrieved evidence rather than parametric memory. The structured Thought-Action-Observation format also makes agent behaviour transparent and debuggable — the reasoning trace is human-readable. ReAct is the foundation of LangChain, AutoGPT, and virtually all production AI agent frameworks.</div>
+</div>
+
+<!-- FIG 12.4-C  Multi-Agent Systems -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Architecture Diagram</span>
+    <span class="fig-id">FIG 12.4-C</span>
+    <span class="fig-title">Multi-Agent System — Orchestrator Delegates to Specialist Agents</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:220px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">MULTI-AGENT SYSTEM — ORCHESTRATOR DELEGATES SUBTASKS TO SPECIALIST AGENTS</text>
+
+      <!-- Orchestrator -->
+      <rect x="460" y="50" width="280" height="60" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="600" y="74" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">Orchestrator Agent</text>
+      <text x="600" y="92" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#BBBBB5">decomposes task, delegates subtasks</text>
+
+      <!-- Delegation arrows -->
+      <line x1="500" y1="110" x2="200" y2="152" stroke="#2E4057" stroke-width="1.5"/>
+      <path d="M203 149 L196 155 L203 161" fill="#2E4057"/>
+      <line x1="580" y1="110" x2="460" y2="152" stroke="#2E4057" stroke-width="1.5"/>
+      <path d="M463 149 L456 155 L463 161" fill="#2E4057"/>
+      <line x1="620" y1="110" x2="740" y2="152" stroke="#2E4057" stroke-width="1.5"/>
+      <path d="M737 149 L744 155 L737 161" fill="#2E4057"/>
+      <line x1="700" y1="110" x2="1000" y2="152" stroke="#2E4057" stroke-width="1.5"/>
+      <path d="M997 149 L1004 155 L997 161" fill="#2E4057"/>
+
+      <!-- Specialist agents -->
+      <rect x="100" y="155" width="200" height="60" fill="#C82A2A" opacity="0.7" rx="1"/>
+      <text x="200" y="178" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Research Agent</text>
+      <text x="200" y="196" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">web search, RAG</text>
+      <text x="200" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">summarise sources</text>
+
+      <rect x="360" y="155" width="200" height="60" fill="#728C69" opacity="0.7" rx="1"/>
+      <text x="460" y="178" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Code Agent</text>
+      <text x="460" y="196" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">write & execute code</text>
+      <text x="460" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">debug, test</text>
+
+      <rect x="620" y="155" width="200" height="60" fill="#8B6914" opacity="0.7" rx="1"/>
+      <text x="720" y="178" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Critic Agent</text>
+      <text x="720" y="196" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">review, fact-check</text>
+      <text x="720" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">improve output</text>
+
+      <rect x="880" y="155" width="200" height="60" fill="#2E4057" opacity="0.6" rx="1"/>
+      <text x="980" y="178" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">API Agent</text>
+      <text x="980" y="196" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">call external services</text>
+      <text x="980" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">databases, tools</text>
+
+      <!-- Results back to orchestrator -->
+      <g stroke="#728C69" stroke-width="1" stroke-dasharray="4,2" fill="none">
+        <line x1="200" y1="215" x2="540" y2="128"/>
+        <line x1="460" y1="215" x2="568" y2="128"/>
+        <line x1="720" y1="215" x2="632" y2="128"/>
+        <line x1="980" y1="215" x2="660" y2="128"/>
+      </g>
+      <text x="600" y="246" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">← specialist agents return results to orchestrator ←</text>
+
+      <!-- Final output -->
+      <rect x="400" y="256" width="400" height="14" fill="#728C69" opacity="0.15" rx="1"/>
+      <text x="600" y="267" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">Orchestrator aggregates and synthesises final answer</text>
+
+      <rect x="0" y="274" stroke-width="0"/>
+    </svg>
+  </div>
+  <div class="fig-caption">Multi-agent systems decompose complex tasks across specialised agents. An orchestrator LLM receives a high-level task, breaks it into subtasks, and delegates each to a specialist: a research agent with web search tools, a code agent with execution capabilities, a critic agent for review and fact-checking, and API agents for external integrations. Specialist agents complete their subtasks and return results; the orchestrator synthesises them into a final response. This architecture mirrors human team organisation — specialists are better and faster at their narrow domains, and coordination overhead is worth it for complex tasks. Challenges: latency (agents run sequentially or in parallel), error propagation, and ensuring the orchestrator correctly decomposes and routes tasks.</div>
+</div>
+
+</div>
+</body>
+</html>

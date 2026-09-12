@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level 10 — Web & Application Development Figure Set</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:900px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 10 — Web & Application Development</div>
+  <div class="page-title">Level 10 — Web & Application Development Figure Set</div>
+  <div class="page-sub">3 figures · Browser Rendering Pipeline · DOM + CSS Box Model · REST API Lifecycle</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 10-A  Browser Rendering Pipeline -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 10-A</span>
+    <span class="fig-title">Browser Rendering Pipeline — From Bytes to Pixels</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" style="height:360px">
+      <defs>
+        <linearGradient id="webBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+        <marker id="web_arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#2C2C2C"/>
+        </marker>
+      </defs>
+      <rect width="1200" height="400" fill="url(#webBg)"/>
+
+      <!-- Step boxes with arrows -->
+      <!-- Step 1: Bytes -->
+      <rect x="30" y="60" width="140" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="30" y="60" width="140" height="22" fill="#2E4057" opacity="0.1"/>
+      <text x="100" y="75" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" letter-spacing="0.08em">BYTES</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="8" fill="#3A3A3A">
+        <text x="44" y="100">&lt;!DOCTYPE html&gt;</text>
+        <text x="44" y="114">&lt;html&gt;</text>
+        <text x="44" y="128">&lt;head&gt;…&lt;/head&gt;</text>
+        <text x="44" y="142">&lt;body&gt;</text>
+        <text x="44" y="156">  &lt;div&gt;</text>
+        <text x="44" y="170">    &lt;h1&gt;</text>
+        <text x="44" y="184">    &lt;p&gt;</text>
+        <text x="44" y="198">  &lt;/div&gt;</text>
+        <text x="44" y="212">&lt;/body&gt;</text>
+        <text x="44" y="226">&lt;/html&gt;</text>
+      </g>
+      <text x="100" y="280" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">raw HTML text</text>
+
+      <!-- Arrow 1→2 -->
+      <path d="M172 180 L204 180" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#web_arr)"/>
+      <text x="188" y="170" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#888880">parse</text>
+
+      <!-- Step 2: DOM Tree -->
+      <rect x="206" y="60" width="160" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="206" y="60" width="160" height="22" fill="#C82A2A" opacity="0.08"/>
+      <text x="286" y="75" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" letter-spacing="0.08em">DOM TREE</text>
+      <!-- Tree visualization -->
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">
+        <text x="264" y="104" text-anchor="middle">Document</text>
+        <line x1="264" y1="108" x2="240" y2="126" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="264" y1="108" x2="286" y2="126" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="228" y="136" text-anchor="middle" font-size="8">html</text>
+        <line x1="228" y1="140" x2="215" y2="156" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="228" y1="140" x2="242" y2="156" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="210" y="166" text-anchor="middle" font-size="8">head</text>
+        <text x="242" y="166" text-anchor="middle" font-size="8">body</text>
+        <line x1="242" y1="170" x2="225" y2="184" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="242" y1="170" x2="258" y2="184" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="220" y="194" text-anchor="middle" font-size="8" fill="#C82A2A">div</text>
+        <text x="258" y="194" text-anchor="middle" font-size="8">p</text>
+        <line x1="220" y1="198" x2="210" y2="212" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="208" y="222" text-anchor="middle" font-size="8">h1</text>
+      </g>
+      <text x="286" y="280" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">element objects</text>
+
+      <!-- Arrow 2→3 -->
+      <path d="M368 180 L400 180" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#web_arr)"/>
+      <text x="384" y="170" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#888880">+ CSS</text>
+
+      <!-- Step 3: CSSOM / Style -->
+      <rect x="402" y="60" width="140" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="402" y="60" width="140" height="22" fill="#8B6914" opacity="0.1"/>
+      <text x="472" y="75" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914" letter-spacing="0.08em">STYLE TREE</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="8" fill="#3A3A3A">
+        <text x="416" y="104">div {</text>
+        <text x="416" y="118">  width: 100%</text>
+        <text x="416" y="132">  color: #333</text>
+        <text x="416" y="146">  display: block</text>
+        <text x="416" y="160">}</text>
+        <text x="416" y="178">h1 {</text>
+        <text x="416" y="192">  font-size: 24px</text>
+        <text x="416" y="206">  margin: 16px</text>
+        <text x="416" y="220">}</text>
+      </g>
+      <text x="472" y="280" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">computed styles</text>
+
+      <!-- Arrow 3→4 -->
+      <path d="M544 180 L576 180" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#web_arr)"/>
+      <text x="560" y="170" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#888880">merge</text>
+
+      <!-- Step 4: Render Tree -->
+      <rect x="578" y="60" width="140" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="578" y="60" width="140" height="22" fill="#728C69" opacity="0.1"/>
+      <text x="648" y="75" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" letter-spacing="0.08em">RENDER TREE</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="8" fill="#3A3A3A">
+        <text x="592" y="100">RenderBlock</text>
+        <text x="592" y="114">  block div</text>
+        <text x="592" y="128">  RenderBlock</text>
+        <text x="592" y="142">    h1</text>
+        <text x="592" y="156">    p</text>
+        <text x="592" y="175" fill="#888880">hidden: false</text>
+        <text x="592" y="191" fill="#888880">display:none → ✗</text>
+        <text x="592" y="207" fill="#888880">visibility:hidden</text>
+        <text x="592" y="221" fill="#888880">→ included</text>
+      </g>
+      <text x="648" y="280" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">visible nodes only</text>
+
+      <!-- Arrow 4→5 -->
+      <path d="M720 180 L752 180" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#web_arr)"/>
+      <text x="736" y="170" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#888880">layout</text>
+
+      <!-- Step 5: Layout -->
+      <rect x="754" y="60" width="140" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="754" y="60" width="140" height="22" fill="#2E4057" opacity="0.1"/>
+      <text x="824" y="75" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" letter-spacing="0.08em">LAYOUT</text>
+      <!-- Box model visual -->
+      <rect x="774" y="96" width="100" height="160" rx="1" fill="#728C69" opacity="0.1" stroke="#728C69" stroke-width="0.5"/>
+      <rect x="784" y="106" width="80" height="140" fill="#8B6914" opacity="0.1" stroke="#8B6914" stroke-width="0.5"/>
+      <rect x="796" y="116" width="56" height="120" fill="#C82A2A" opacity="0.1" stroke="#C82A2A" stroke-width="0.5"/>
+      <rect x="806" y="126" width="36" height="100" fill="#2E4057" opacity="0.3"/>
+      <g font-family="'Inter',sans-serif" font-size="7" fill="#888880" text-anchor="middle">
+        <text x="776" y="108">margin</text>
+        <text x="786" y="118">border</text>
+        <text x="797" y="128">padding</text>
+        <text x="824" y="178" fill="#FDFDFD">content</text>
+      </g>
+      <text x="824" y="270" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">x,y,width,height</text>
+
+      <!-- Arrow 5→6 -->
+      <path d="M896 180 L928 180" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#web_arr)"/>
+      <text x="912" y="170" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#888880">paint</text>
+
+      <!-- Step 6: Paint / Composite -->
+      <rect x="930" y="60" width="220" height="240" rx="1" fill="#FDFDFD" stroke="#2E4057" stroke-width="2"/>
+      <rect x="930" y="60" width="220" height="22" fill="#2E4057" opacity="0.1"/>
+      <text x="1040" y="75" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" letter-spacing="0.08em">PIXELS ON SCREEN</text>
+      <!-- Pixel grid -->
+      <g>
+        <rect x="944" y="90" width="192" height="120" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/>
+        <!-- Simulated rendered page -->
+        <rect x="952" y="98" width="176" height="16" rx="1" fill="#2E4057" opacity="0.6"/>
+        <rect x="952" y="122" width="120" height="8" rx="1" fill="#888880" opacity="0.4"/>
+        <rect x="952" y="134" width="160" height="6" rx="1" fill="#888880" opacity="0.3"/>
+        <rect x="952" y="144" width="140" height="6" rx="1" fill="#888880" opacity="0.2"/>
+        <rect x="952" y="154" width="176" height="30" rx="1" fill="#728C69" opacity="0.15"/>
+        <text x="1040" y="174" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">image block</text>
+        <text x="1040" y="220" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">rasterise → GPU composite</text>
+      </g>
+      <text x="1040" y="272" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" font-weight="500">GPU compositing layers</text>
+
+      <!-- Timeline strip -->
+      <rect x="30" y="328" width="1140" height="40" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="40" y="344" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">First Contentful Paint goal: &lt; 1.8s · Time to Interactive: &lt; 3.8s · Reflow triggered by: DOM change, resize, font load</text>
+      <text x="40" y="360" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Critical render path: minimize blocking CSS/JS · inline critical CSS · defer non-critical scripts</text>
+
+      <rect x="0" y="376" width="1200" height="24" fill="rgba(44,64,87,0.06)"/>
+      <text x="600" y="393" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 10-A · Browser rendering pipeline: HTML bytes → DOM tree → Render tree (DOM+CSSOM) → Layout (geometry) → Paint (pixels) → GPU composite. Each stage feeds the next.</text>
+      <text x="1140" y="393" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Level 10</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The browser critical rendering path. Raw HTML bytes are parsed into a DOM tree (element nodes with parent-child relationships). CSS is parsed into a CSSOM (computed style tree). These are merged into the Render Tree — only visible elements, with full computed styles. The Layout stage assigns every node a precise position and size (the box model: content + padding + border + margin). Paint converts box geometry to pixels. The GPU composites layered elements into the final frame. JavaScript can trigger reflows (layout recalculation) which are expensive — a main reason why DOM manipulation performance matters and why virtual DOM libraries (React) exist.</div>
+</div>
+
+<!-- FIG 10-B  DOM + CSS Box Model -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Concept Diagram</span>
+    <span class="fig-id">FIG 10-B</span>
+    <span class="fig-title">CSS Box Model — Every Element Is a Layered Box</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+
+      <!-- Box model nested diagram -->
+      <!-- Margin (outermost) -->
+      <rect x="100" y="20" width="480" height="240" rx="1" fill="#728C69" opacity="0.15" stroke="#728C69" stroke-width="1.5"/>
+      <text x="120" y="38" font-family="'Inter',sans-serif" font-size="10" fill="#728C69" font-weight="500">MARGIN  (transparent — pushes away neighbours)</text>
+
+      <!-- Border -->
+      <rect x="140" y="50" width="400" height="180" rx="1" fill="#8B6914" opacity="0.2" stroke="#8B6914" stroke-width="1.5"/>
+      <text x="158" y="68" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914" font-weight="500">BORDER  (visible, adds to box size in box-sizing:content-box)</text>
+
+      <!-- Padding -->
+      <rect x="175" y="78" width="330" height="130" rx="1" fill="#C82A2A" opacity="0.12" stroke="#C82A2A" stroke-width="1.5"/>
+      <text x="190" y="95" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A" font-weight="500">PADDING  (space between border and content)</text>
+
+      <!-- Content -->
+      <rect x="215" y="106" width="250" height="80" rx="1" fill="#2E4057" opacity="0.7"/>
+      <text x="340" y="142" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">CONTENT</text>
+      <text x="340" y="160" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="rgba(255,255,255,0.65)">width × height</text>
+
+      <!-- Dimensions labels (right) -->
+      <!-- Margin measurements -->
+      <line x1="580" y1="20" x2="600" y2="20" stroke="#728C69" stroke-width="1"/>
+      <line x1="580" y1="260" x2="600" y2="260" stroke="#728C69" stroke-width="1"/>
+      <line x1="590" y1="20" x2="590" y2="260" stroke="#728C69" stroke-width="1"/>
+      <text x="608" y="144" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">margin: 24px</text>
+
+      <!-- Border measurements -->
+      <line x1="620" y1="50" x2="640" y2="50" stroke="#8B6914" stroke-width="1"/>
+      <line x1="620" y1="230" x2="640" y2="230" stroke="#8B6914" stroke-width="1"/>
+      <line x1="630" y1="50" x2="630" y2="230" stroke="#8B6914" stroke-width="1"/>
+      <text x="648" y="144" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8B6914">border: 2px solid</text>
+
+      <!-- Padding measurements -->
+      <line x1="660" y1="78" x2="680" y2="78" stroke="#C82A2A" stroke-width="1"/>
+      <line x1="660" y1="206" x2="680" y2="206" stroke="#C82A2A" stroke-width="1"/>
+      <line x1="670" y1="78" x2="670" y2="206" stroke="#C82A2A" stroke-width="1"/>
+      <text x="688" y="144" font-family="'JetBrains Mono',monospace" font-size="10" fill="#C82A2A">padding: 16px</text>
+
+      <!-- box-sizing explanation -->
+      <rect x="760" y="20" width="400" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="760" y="20" width="400" height="22" fill="#2E4057" opacity="0.07"/>
+      <text x="960" y="36" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.08em">BOX-SIZING</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="778" y="66" fill="#C82A2A" font-weight="500">content-box (default):</text>
+        <text x="778" y="84">width = content only</text>
+        <text x="778" y="100">total = width + padding×2 + border×2</text>
+        <text x="778" y="116" font-family="'JetBrains Mono'" font-size="10" fill="#C82A2A">div{ width:200px; padding:20px }</text>
+        <text x="778" y="132" font-family="'JetBrains Mono'" font-size="10" fill="#888880">→ renders 240px wide</text>
+        <line x1="770" y1="144" x2="1148" y2="144" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="778" y="164" fill="#728C69" font-weight="500">border-box (recommended):</text>
+        <text x="778" y="182">width includes padding + border</text>
+        <text x="778" y="198" font-family="'JetBrains Mono'" font-size="10" fill="#728C69">div{ box-sizing:border-box;</text>
+        <text x="778" y="214" font-family="'JetBrains Mono'" font-size="10" fill="#728C69">     width:200px; padding:20px }</text>
+        <text x="778" y="230" font-family="'JetBrains Mono'" font-size="10" fill="#888880">→ renders exactly 200px wide</text>
+        <text x="778" y="248" font-size="10" fill="#888880">* most frameworks set this globally</text>
+      </g>
+
+      <rect x="0" y="276" width="1200" height="24" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="293" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 10-B · CSS box model: every element is a rectangular box with four nested layers. box-sizing:border-box makes width predictable by including padding and border in the declared width.</text>
+      <text x="1140" y="293" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · L10</text>
+    </svg>
+  </div>
+  <div class="fig-caption">CSS Box Model. Every HTML element renders as a rectangular box with four nested layers: content (the actual text/image area), padding (space between content and border), border (visible line), and margin (transparent space that pushes other elements away). The critical gotcha: with the default box-sizing:content-box, declaring width:200px on an element with padding:20px produces a 240px wide rendered box — padding is added on top of the declared width. Modern CSS resets use box-sizing:border-box globally, where declared width includes padding and border, making layouts predictable. This is why CSS Grid and Flexbox toolkits always set * { box-sizing: border-box }.</div>
+</div>
+
+<!-- FIG 10-C  REST API Lifecycle -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 10-C</span>
+    <span class="fig-title">REST API Request/Response Lifecycle</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 340" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <rect width="1200" height="340" fill="#F4EFE6"/>
+
+      <!-- Client -->
+      <rect x="40" y="40" width="180" height="240" rx="1" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5"/>
+      <rect x="40" y="40" width="180" height="22" fill="#2E4057" opacity="0.09"/>
+      <text x="130" y="56" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2E4057">CLIENT</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">
+        <text x="56" y="82">fetch('/api/users/1'</text>
+        <text x="56" y="96">  {method: 'GET'})</text>
+        <text x="56" y="116">.then(res =&gt;</text>
+        <text x="56" y="130">  res.json())</text>
+        <text x="56" y="150">.then(user =&gt;</text>
+        <text x="56" y="164">  render(user))</text>
+      </g>
+
+      <!-- Server -->
+      <rect x="700" y="40" width="460" height="240" rx="1" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="700" y="40" width="460" height="22" fill="#728C69" opacity="0.09"/>
+      <text x="930" y="56" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#728C69">SERVER (REST API)</text>
+
+      <!-- Server internals -->
+      <!-- Router -->
+      <rect x="716" y="70" width="120" height="50" rx="1" fill="#728C69" opacity="0.12" stroke="#728C69" stroke-width="1"/>
+      <text x="776" y="92" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">Router</text>
+      <text x="776" y="108" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">GET /users/:id</text>
+
+      <!-- Controller -->
+      <rect x="856" y="70" width="120" height="50" rx="1" fill="#2E4057" opacity="0.12" stroke="#2E4057" stroke-width="1"/>
+      <text x="916" y="92" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">Controller</text>
+      <text x="916" y="108" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">getUser(req,res)</text>
+
+      <!-- DB -->
+      <rect x="996" y="70" width="120" height="50" rx="1" fill="#C82A2A" opacity="0.1" stroke="#C82A2A" stroke-width="1"/>
+      <text x="1056" y="92" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">Database</text>
+      <text x="1056" y="108" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">SELECT * WHERE id=1</text>
+
+      <!-- Internal arrows -->
+      <path d="M836 96 L854 96" stroke="#2C2C2C" stroke-width="1" fill="none" marker-end="url(#web_arr)"/>
+      <path d="M976 96 L994 96" stroke="#2C2C2C" stroke-width="1" fill="none" marker-end="url(#web_arr)"/>
+      <path d="M994 106 L976 106" stroke="#2C2C2C" stroke-width="1" fill="none" stroke-dasharray="3,2" marker-end="url(#web_arr)"/>
+
+      <!-- Response building -->
+      <rect x="716" y="150" width="420" height="100" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="730" y="170" font-family="'Inter',sans-serif" font-size="9" fill="#888880">HTTP/1.1 200 OK</text>
+      <text x="730" y="186" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Content-Type: application/json</text>
+      <text x="730" y="202" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Cache-Control: max-age=300</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">
+        <text x="730" y="222">{"id": 1, "name": "Alice",</text>
+        <text x="730" y="238">"email": "alice@x.com"}</text>
+      </g>
+
+      <!-- Network arrows -->
+      <!-- Request: client → server -->
+      <rect x="260" y="100" width="420" height="60" rx="1" fill="#FDFDFD" stroke="#2E4057" stroke-width="1"/>
+      <text x="470" y="120" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" font-weight="500">HTTP REQUEST →</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057" text-anchor="middle">
+        <text x="470" y="136">GET /api/users/1 HTTP/1.1</text>
+        <text x="470" y="150" fill="#888880">Host: api.example.com</text>
+      </g>
+      <path d="M222 130 L258 130" stroke="#2E4057" stroke-width="2" fill="none" marker-end="url(#web_arr)"/>
+      <path d="M680 130 L700 130" stroke="#2E4057" stroke-width="2" fill="none" marker-end="url(#web_arr)"/>
+
+      <!-- Response: server → client -->
+      <rect x="260" y="190" width="420" height="60" rx="1" fill="#FDFDFD" stroke="#728C69" stroke-width="1"/>
+      <text x="470" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" font-weight="500">← HTTP RESPONSE</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69" text-anchor="middle">
+        <text x="470" y="226">200 OK  •  {"id":1,"name":"Alice"}</text>
+        <text x="470" y="240" fill="#888880">Content-Type: application/json</text>
+      </g>
+      <path d="M258 220 L222 220" stroke="#728C69" stroke-width="2" fill="none" marker-end="url(#web_arr)"/>
+      <path d="M680 220 L700 220" stroke="#728C69" stroke-width="2" fill="none" stroke-dasharray="4,3" marker-end="url(#web_arr)"/>
+
+      <!-- HTTP Verbs -->
+      <rect x="40" y="300" width="1120" height="24" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">
+        <text x="130" y="316" fill="#2E4057">GET /users</text>
+        <text x="130" y="326" fill="#888880">list</text>
+        <text x="310" y="316" fill="#728C69">POST /users</text>
+        <text x="310" y="326" fill="#888880">create</text>
+        <text x="500" y="316" fill="#8B6914">PUT /users/1</text>
+        <text x="500" y="326" fill="#888880">replace</text>
+        <text x="700" y="316" fill="#C82A2A">DELETE /users/1</text>
+        <text x="700" y="326" fill="#888880">delete</text>
+        <text x="930" y="316" fill="#888880">PATCH /users/1</text>
+        <text x="930" y="326" fill="#888880">partial update</text>
+      </g>
+
+      <rect x="0" y="326" width="1200" height="14" fill="rgba(44,64,87,0.04)"/>
+    </svg>
+  </div>
+  <div class="fig-caption">REST API request/response cycle. The client makes an HTTP GET request to /api/users/1. The server's router matches the URL pattern to a handler function. The controller calls the database layer (SELECT WHERE id=1). The result is serialised to JSON and returned with HTTP headers including status code (200 OK), content type, and cache directives. REST uses HTTP verbs semantically: GET (read), POST (create), PUT (full replace), PATCH (partial update), DELETE. Responses are stateless — each request carries all needed context. JSON (JavaScript Object Notation) is the universal data format: human-readable, language-neutral, and directly usable in JavaScript.</div>
+</div>
+
+</div>
+</body>
+</html>

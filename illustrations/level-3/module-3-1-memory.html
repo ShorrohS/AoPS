@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 3.1 Illustrations — Memory: How Machines Remember</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:var(--accent-red);color:var(--accent-red);background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 3 — Machine Architecture</div>
+  <div class="page-title">Module 3.1 — Memory: How Machines Remember</div>
+  <div class="page-sub">3 figures · Memory Hierarchy Pyramid · SRAM vs DRAM · Address Space Map</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 3.1-A  Memory Hierarchy Pyramid -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 3.1-A</span>
+    <span class="fig-title">Memory Hierarchy — Speed vs Capacity vs Cost</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 520" xmlns="http://www.w3.org/2000/svg" style="height:460px">
+      <defs>
+        <linearGradient id="memBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="520" fill="url(#memBg)"/>
+
+      <!-- ── PYRAMID ── -->
+      <!-- Layer 1: Registers (apex) -->
+      <polygon points="600,40 520,110 680,110" fill="#C82A2A" opacity="0.85" stroke="#FDFDFD" stroke-width="1"/>
+      <text x="600" y="82" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">Registers</text>
+
+      <!-- Layer 2: L1 Cache -->
+      <polygon points="520,114 440,180 760,180 680,114" fill="#C82A2A" opacity="0.6" stroke="#FDFDFD" stroke-width="1"/>
+      <text x="600" y="152" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">L1 Cache</text>
+
+      <!-- Layer 3: L2 Cache -->
+      <polygon points="440,184 360,250 840,250 760,184" fill="#8B6914" opacity="0.7" stroke="#FDFDFD" stroke-width="1"/>
+      <text x="600" y="223" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">L2 Cache</text>
+
+      <!-- Layer 4: L3 Cache -->
+      <polygon points="360,254 280,320 920,320 840,254" fill="#8B6914" opacity="0.45" stroke="#FDFDFD" stroke-width="1"/>
+      <text x="600" y="293" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">L3 Cache</text>
+
+      <!-- Layer 5: RAM -->
+      <polygon points="280,324 200,390 1000,390 920,324" fill="#2E4057" opacity="0.7" stroke="#FDFDFD" stroke-width="1"/>
+      <text x="600" y="363" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">Main RAM (DRAM)</text>
+
+      <!-- Layer 6: SSD/NVMe -->
+      <polygon points="200,394 120,460 1080,460 1000,394" fill="#2E4057" opacity="0.4" stroke="#FDFDFD" stroke-width="1"/>
+      <text x="600" y="433" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">SSD / NVMe</text>
+
+      <!-- Layer 7: HDD -->
+      <rect x="120" y="464" width="960" height="46" fill="#2E4057" opacity="0.2" stroke="#FDFDFD" stroke-width="1"/>
+      <text x="600" y="492" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">HDD / Tape / Cloud</text>
+
+      <!-- ── RIGHT: Properties table ── -->
+      <!-- Speed axis -->
+      <text x="80" y="280" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" transform="rotate(-90,80,280)" letter-spacing="0.1em">SPEED →</text>
+      <line x1="100" y1="40" x2="100" y2="510" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- Speed markers -->
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A" text-anchor="end">
+        <text x="98" y="78">0.3 ns</text>
+        <text x="98" y="148">1 ns</text>
+        <text x="98" y="220">5 ns</text>
+        <text x="98" y="290">20 ns</text>
+      </g>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057" text-anchor="end">
+        <text x="98" y="360">60 ns</text>
+        <text x="98" y="430">100 μs</text>
+        <text x="98" y="490">10 ms</text>
+      </g>
+
+      <!-- Properties panel (right) -->
+      <rect x="1060" y="30" width="120" height="480" rx="1" fill="rgba(44,64,87,0.05)" stroke="#D8D6CE" stroke-width="0.5"/>
+      <!-- Capacity gradient bar -->
+      <rect x="1080" y="40" width="20" height="460" rx="2" fill="none" stroke="#D8D6CE" stroke-width="0.5"/>
+      <defs>
+        <linearGradient id="capGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C82A2A" stop-opacity="0.8"/>
+          <stop offset="100%" stop-color="#2E4057" stop-opacity="0.8"/>
+        </linearGradient>
+      </defs>
+      <rect x="1080" y="40" width="20" height="460" rx="2" fill="url(#capGrad)"/>
+      <!-- Capacity labels -->
+      <g font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880" text-anchor="middle">
+        <text x="1100" y="80">~1KB</text>
+        <text x="1100" y="148">32KB</text>
+        <text x="1100" y="220">256KB</text>
+        <text x="1100" y="290">16MB</text>
+        <text x="1100" y="360">32GB</text>
+        <text x="1100" y="430">2TB</text>
+        <text x="1100" y="490">∞</text>
+      </g>
+      <text x="1110" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">SIZE →</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="488" width="1200" height="32" fill="rgba(44,64,87,0.06)"/>
+      <text x="600" y="508" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Fig 3.1-A · Memory hierarchy pyramid. Speed decreases downward; capacity and cost increase. Each level is ~10–1000× slower but larger than the level above.</text>
+      <text x="1140" y="508" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 3.1</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The memory hierarchy pyramid. Each level trades speed for capacity. CPU registers (apex): sub-nanosecond access, ~1KB total, implemented as flip-flops on the CPU die. L1/L2/L3 caches: SRAM, 1–20ns, 32KB–16MB — automatically managed by hardware. Main RAM: DRAM, ~60ns, 8–64GB — software-addressable. SSD/NVMe: ~100μs, terabytes — persistent. HDD: ~10ms, unlimited — archival. The processor tries to keep frequently used data in higher levels; a cache miss cascades down the hierarchy, stalling the CPU until data arrives from the slower level.</div>
+</div>
+
+<!-- FIG 3.1-B  SRAM vs DRAM -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Comparison</span>
+    <span class="fig-id">FIG 3.1-B</span>
+    <span class="fig-title">SRAM vs DRAM — Two Technologies, Two Trade-offs</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:310px">
+      <rect width="1200" height="360" fill="#F4EFE6"/>
+
+      <!-- LEFT: SRAM cell (6-transistor) -->
+      <rect x="40" y="30" width="500" height="290" rx="1" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+      <rect x="40" y="30" width="500" height="26" fill="#C82A2A" opacity="0.07"/>
+      <text x="290" y="47" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">SRAM — Static RAM (Cache)</text>
+
+      <!-- 6T SRAM cell schematic -->
+      <!-- Two cross-coupled inverters + 2 access transistors -->
+      <!-- Inverter 1: M1, M2 -->
+      <rect x="100" y="80" width="60" height="60" rx="1" fill="#EEECE6" stroke="#C82A2A" stroke-width="1"/>
+      <text x="130" y="116" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">INV 1</text>
+      <text x="130" y="129" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">M1+M2</text>
+      <!-- Inverter 2: M3, M4 -->
+      <rect x="240" y="80" width="60" height="60" rx="1" fill="#EEECE6" stroke="#C82A2A" stroke-width="1"/>
+      <text x="270" y="116" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">INV 2</text>
+      <text x="270" y="129" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">M3+M4</text>
+      <!-- Cross-coupling feedback -->
+      <path d="M160 100 Q200 90 240 100" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <path d="M160 120 Q200 130 240 120" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <!-- Access transistors M5, M6 -->
+      <rect x="60" y="92" width="36" height="36" rx="1" fill="#EEECE6" stroke="#2E4057" stroke-width="1"/>
+      <text x="78" y="114" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2E4057">M5</text>
+      <rect x="304" y="92" width="36" height="36" rx="1" fill="#EEECE6" stroke="#2E4057" stroke-width="1"/>
+      <text x="322" y="114" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2E4057">M6</text>
+      <!-- WL line -->
+      <line x1="60" y1="78" x2="340" y2="78" stroke="#8B6914" stroke-width="1.5"/>
+      <text x="350" y="82" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">WL (word line)</text>
+      <!-- BL lines -->
+      <line x1="78" y1="60" x2="78" y2="200" stroke="#2E4057" stroke-width="1.5"/>
+      <line x1="322" y1="60" x2="322" y2="200" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="68" y="56" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">BL</text>
+      <text x="312" y="56" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">BL̄</text>
+
+      <!-- SRAM stats -->
+      <g font-family="'Inter',sans-serif" font-size="11">
+        <text x="60" y="230" fill="#3A3A3A">Transistors per bit: <tspan font-family="'JetBrains Mono',monospace" fill="#C82A2A">6</tspan></text>
+        <text x="60" y="248" fill="#3A3A3A">Access time: <tspan font-family="'JetBrains Mono',monospace" fill="#C82A2A">0.5–3 ns</tspan></text>
+        <text x="60" y="266" fill="#3A3A3A">Refresh needed: <tspan font-family="'JetBrains Mono',monospace" fill="#728C69">No</tspan></text>
+        <text x="60" y="284" fill="#3A3A3A">Density: <tspan font-family="'JetBrains Mono',monospace" fill="#888880">Low (expensive)</tspan></text>
+        <text x="60" y="302" fill="#3A3A3A">Use: <tspan font-family="'JetBrains Mono',monospace" fill="#2E4057">CPU cache (L1/L2/L3)</tspan></text>
+      </g>
+
+      <!-- RIGHT: DRAM cell (1T 1C) -->
+      <rect x="660" y="30" width="500" height="290" rx="1" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5"/>
+      <rect x="660" y="30" width="500" height="26" fill="#2E4057" opacity="0.07"/>
+      <text x="910" y="47" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">DRAM — Dynamic RAM (Main Memory)</text>
+
+      <!-- 1T1C DRAM cell -->
+      <!-- Access transistor -->
+      <rect x="760" y="92" width="50" height="36" rx="1" fill="#EEECE6" stroke="#2E4057" stroke-width="1"/>
+      <text x="785" y="114" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">T</text>
+      <!-- Capacitor -->
+      <g stroke="#2E4057" stroke-width="2" fill="none">
+        <line x1="835" y1="100" x2="835" y2="116"/>
+        <line x1="820" y1="116" x2="850" y2="116"/>
+        <line x1="820" y1="125" x2="850" y2="125"/>
+        <line x1="835" y1="125" x2="835" y2="140"/>
+      </g>
+      <text x="860" y="122" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">C</text>
+      <text x="860" y="134" font-family="'Inter',sans-serif" font-size="8" fill="#888880">(charge)</text>
+      <!-- GND -->
+      <line x1="820" y1="145" x2="850" y2="145" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="827" y1="150" x2="843" y2="150" stroke="#2C2C2C" stroke-width="1"/>
+      <line x1="833" y1="155" x2="837" y2="155" stroke="#2C2C2C" stroke-width="0.8"/>
+      <!-- WL & BL -->
+      <line x1="760" y1="78" x2="860" y2="78" stroke="#8B6914" stroke-width="1.5"/>
+      <text x="870" y="82" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">WL</text>
+      <line x1="785" y1="60" x2="785" y2="200" stroke="#C82A2A" stroke-width="1.5"/>
+      <text x="775" y="56" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">BL</text>
+
+      <!-- Refresh annotation -->
+      <rect x="880" y="85" width="160" height="70" rx="1" fill="#C82A2A" opacity="0.07" stroke="#C82A2A" stroke-width="0.5" stroke-dasharray="3,2"/>
+      <text x="960" y="106" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">Capacitor leaks!</text>
+      <text x="960" y="122" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">Must refresh</text>
+      <text x="960" y="138" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">every 64ms</text>
+
+      <!-- DRAM stats -->
+      <g font-family="'Inter',sans-serif" font-size="11">
+        <text x="680" y="230" fill="#3A3A3A">Transistors per bit: <tspan font-family="'JetBrains Mono',monospace" fill="#2E4057">1T + 1C</tspan></text>
+        <text x="680" y="248" fill="#3A3A3A">Access time: <tspan font-family="'JetBrains Mono',monospace" fill="#2E4057">50–100 ns</tspan></text>
+        <text x="680" y="266" fill="#3A3A3A">Refresh needed: <tspan font-family="'JetBrains Mono',monospace" fill="#C82A2A">Yes (every 64ms)</tspan></text>
+        <text x="680" y="284" fill="#3A3A3A">Density: <tspan font-family="'JetBrains Mono',monospace" fill="#728C69">High (cheap)</tspan></text>
+        <text x="680" y="302" fill="#3A3A3A">Use: <tspan font-family="'JetBrains Mono',monospace" fill="#2E4057">Main memory (RAM)</tspan></text>
+      </g>
+
+      <!-- VS divider -->
+      <line x1="545" y1="30" x2="545" y2="320" stroke="#D8D6CE" stroke-width="1"/>
+      <circle cx="545" cy="175" r="22" fill="#F4EFE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="545" y="171" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="10" fill="#888880">vs</text>
+      <text x="545" y="185" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">6T vs 1T</text>
+
+      <rect x="0" y="330" width="1200" height="30" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="350" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 3.1-B · SRAM (left): 6 transistors per bit, no refresh, fast — used for cache. DRAM (right): 1 transistor + 1 capacitor per bit, must refresh, slow but dense — used for main memory.</text>
+      <text x="1140" y="350" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 3.1</text>
+    </svg>
+  </div>
+  <div class="fig-caption">SRAM vs DRAM at the cell level. SRAM (left): six transistors form two cross-coupled inverters that latch a bit stably — no refresh needed, sub-nanosecond access, but 6× the silicon area. Used exclusively for CPU caches. DRAM (right): one transistor gates a capacitor that stores charge representing the bit — but capacitors leak, so every cell must be read and rewritten (refreshed) every 64ms. Far denser and cheaper than SRAM — a single DRAM chip holds billions of cells. The 50–100ns access time is why cache misses are so expensive: the CPU must wait 50–100 cycles for data from RAM.</div>
+</div>
+
+<!-- FIG 3.1-C  Address Space -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type F — Simulation Figure</span>
+    <span class="fig-id">FIG 3.1-C</span>
+    <span class="fig-title">Memory Address Space — 8-byte Array in RAM</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+
+      <!-- Header -->
+      <rect x="0" y="0" width="1200" height="36" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="23" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2C2C2C">Every byte in RAM has a unique numeric address — reading = specifying an address</text>
+
+      <!-- Memory cell grid -->
+      <!-- Row of cells with addresses -->
+      <g>
+        <!-- Addresses (top) -->
+        <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880" text-anchor="middle">
+          <text x="130" y="60">0x0000</text>
+          <text x="210" y="60">0x0001</text>
+          <text x="290" y="60">0x0002</text>
+          <text x="370" y="60">0x0003</text>
+          <text x="450" y="60">0x0004</text>
+          <text x="530" y="60">0x0005</text>
+          <text x="610" y="60">0x0006</text>
+          <text x="690" y="60">0x0007</text>
+          <text x="770" y="60" fill="#C82A2A">0x0008</text>
+          <text x="850" y="60">0x0009</text>
+          <text x="930" y="60">0x000A</text>
+          <text x="1010" y="60">0x000B</text>
+        </g>
+
+        <!-- Cells -->
+        <g>
+          <!-- 8-byte array "HELLO\0" at 0x0000 -->
+          <rect x="90" y="68" width="80" height="50" rx="1" fill="#2E4057" opacity="0.2" stroke="#2E4057" stroke-width="1.5"/>
+          <text x="130" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2E4057">72</text>
+          <text x="130" y="112" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">'H'</text>
+
+          <rect x="170" y="68" width="80" height="50" rx="1" fill="#2E4057" opacity="0.2" stroke="#2E4057" stroke-width="1.5"/>
+          <text x="210" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2E4057">65</text>
+          <text x="210" y="112" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">'E'</text>
+
+          <rect x="250" y="68" width="80" height="50" rx="1" fill="#2E4057" opacity="0.2" stroke="#2E4057" stroke-width="1.5"/>
+          <text x="290" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2E4057">76</text>
+          <text x="290" y="112" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">'L'</text>
+
+          <rect x="330" y="68" width="80" height="50" rx="1" fill="#2E4057" opacity="0.2" stroke="#2E4057" stroke-width="1.5"/>
+          <text x="370" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2E4057">76</text>
+          <text x="370" y="112" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">'L'</text>
+
+          <rect x="410" y="68" width="80" height="50" rx="1" fill="#2E4057" opacity="0.2" stroke="#2E4057" stroke-width="1.5"/>
+          <text x="450" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2E4057">79</text>
+          <text x="450" y="112" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">'O'</text>
+
+          <rect x="490" y="68" width="80" height="50" rx="1" fill="#728C69" opacity="0.2" stroke="#728C69" stroke-width="1.5"/>
+          <text x="530" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#728C69">0</text>
+          <text x="530" y="112" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">'\0'</text>
+
+          <rect x="570" y="68" width="80" height="50" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+          <text x="610" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">??</text>
+          <text x="610" y="112" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">unused</text>
+
+          <rect x="650" y="68" width="80" height="50" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+          <text x="690" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">??</text>
+
+          <!-- Cell at 0x0008 (accessed) -->
+          <rect x="730" y="68" width="80" height="50" rx="1" fill="#C82A2A" opacity="0.15" stroke="#C82A2A" stroke-width="2"/>
+          <text x="770" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#C82A2A">42</text>
+          <text x="770" y="112" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">reading…</text>
+
+          <!-- More cells -->
+          <rect x="810" y="68" width="80" height="50" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+          <text x="850" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">255</text>
+          <rect x="890" y="68" width="80" height="50" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+          <text x="930" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">7</text>
+          <rect x="970" y="68" width="80" height="50" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+          <text x="1010" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">199</text>
+        </g>
+
+        <!-- Array bracket -->
+        <path d="M90 130 L90 148 L570 148 L570 130" stroke="#2E4057" stroke-width="1.5" fill="none"/>
+        <text x="330" y="165" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">char str[6] = "HELLO" — 6 contiguous bytes from address 0x0000</text>
+
+        <!-- Access annotation -->
+        <path d="M770 130 L770 148 L900 148" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+        <text x="840" y="165" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">READ(0x0008) = 42</text>
+      </g>
+
+      <!-- Address bus size annotation -->
+      <rect x="40" y="188" width="1120" height="60" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="60" y="210" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Address space size = 2^(address bits)</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#3A3A3A">
+        <text x="60" y="234">16-bit address: 2¹⁶ = 64KB addressable</text>
+        <text x="380" y="234">32-bit: 2³² = 4GB</text>
+        <text x="600" y="234">48-bit: 2⁴⁸ = 256TB</text>
+        <text x="830" y="234">64-bit: 2⁶⁴ = 16 exabytes (theoretical)</text>
+      </g>
+
+      <rect x="0" y="260" width="1200" height="20" fill="rgba(44,64,87,0.04)"/>
+      <text x="1140" y="274" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · 3.1</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Memory as an addressable array. Each cell holds exactly one byte (8 bits). Addresses are sequential integers starting at 0. The string "HELLO" is stored as five ASCII bytes (72, 69, 76, 76, 79) followed by a null terminator (0) at addresses 0x0000–0x0005. Reading any byte requires specifying its address — the memory controller puts the address on the address bus and the value appears on the data bus. A 16-bit address bus can access 65,536 unique bytes. Modern 64-bit CPUs theoretically address 16 exabytes, though only 48 bits are typically implemented (256TB).</div>
+</div>
+
+</div>
+</body>
+</html>

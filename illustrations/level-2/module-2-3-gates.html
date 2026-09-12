@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 2.3 Illustrations — Boolean Algebra and Logic Gates</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 2 — Digital Foundations</div>
+  <div class="page-title">Module 2.3 — Boolean Algebra and Logic Gates</div>
+  <div class="page-sub">3 figures · Gate Symbol Atlas · Truth Tables · NAND Universality</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 2.3-A  Gate Symbol Atlas -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 2.3-A</span>
+    <span class="fig-title">Logic Gate Symbol Atlas — All 7 Standard Gates</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 520" xmlns="http://www.w3.org/2000/svg" style="height:460px">
+      <defs>
+        <linearGradient id="gateBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="520" fill="url(#gateBg)"/>
+
+      <!-- Gate drawing helper: each gate at specific x,y position -->
+      <!-- Gate cell template: symbol + truth table + expression -->
+
+      <!-- ── AND (col1, row1) ── -->
+      <rect x="40" y="30" width="240" height="210" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- AND symbol -->
+      <g transform="translate(70,70)">
+        <line x1="0" y1="10" x2="20" y2="10" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="0" y1="30" x2="20" y2="30" stroke="#2C2C2C" stroke-width="2"/>
+        <rect x="20" y="2" width="28" height="36" rx="0" fill="none" stroke="#2C2C2C" stroke-width="2"/>
+        <path d="M48 2 Q76 2 76 20 Q76 38 48 38 L48 2" fill="#EEECE6" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="76" y1="20" x2="96" y2="20" stroke="#2C2C2C" stroke-width="2"/>
+        <text x="-12" y="14" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">A</text>
+        <text x="-12" y="34" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">B</text>
+        <text x="100" y="24" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">Q</text>
+      </g>
+      <text x="160" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#2C2C2C">AND</text>
+      <text x="160" y="130" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">Q = A · B</text>
+      <!-- Mini truth table -->
+      <g font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">
+        <text x="100" y="150" fill="#888880">A B Q</text>
+        <text x="100" y="166" fill="#2C2C2C">0 0 0</text>
+        <text x="100" y="181" fill="#2C2C2C">0 1 0</text>
+        <text x="100" y="196" fill="#2C2C2C">1 0 0</text>
+        <text x="100" y="211" fill="#728C69">1 1 1</text>
+      </g>
+      <text x="190" y="168" font-family="'Inter',sans-serif" font-size="9" fill="#888880">BOTH inputs</text>
+      <text x="190" y="180" font-family="'Inter',sans-serif" font-size="9" fill="#888880">must be 1</text>
+
+      <!-- ── OR (col2, row1) ── -->
+      <rect x="300" y="30" width="240" height="210" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <g transform="translate(330,70)">
+        <line x1="0" y1="10" x2="20" y2="10" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="0" y1="30" x2="20" y2="30" stroke="#2C2C2C" stroke-width="2"/>
+        <path d="M20 2 Q30 2 50 20 Q30 38 20 38 L20 2" fill="#EEECE6" stroke="#2C2C2C" stroke-width="2"/>
+        <path d="M20 2 Q44 2 76 20 Q44 38 20 38" fill="#EEECE6" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="76" y1="20" x2="96" y2="20" stroke="#2C2C2C" stroke-width="2"/>
+        <text x="-12" y="14" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">A</text>
+        <text x="-12" y="34" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">B</text>
+        <text x="100" y="24" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">Q</text>
+      </g>
+      <text x="420" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#2C2C2C">OR</text>
+      <text x="420" y="130" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">Q = A + B</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">
+        <text x="360" y="150" fill="#888880">A B Q</text>
+        <text x="360" y="166" fill="#2C2C2C">0 0 0</text>
+        <text x="360" y="181" fill="#728C69">0 1 1</text>
+        <text x="360" y="196" fill="#728C69">1 0 1</text>
+        <text x="360" y="211" fill="#728C69">1 1 1</text>
+      </g>
+      <text x="450" y="168" font-family="'Inter',sans-serif" font-size="9" fill="#888880">EITHER input</text>
+      <text x="450" y="180" font-family="'Inter',sans-serif" font-size="9" fill="#888880">can be 1</text>
+
+      <!-- ── NOT (col3, row1) ── -->
+      <rect x="560" y="30" width="240" height="210" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <g transform="translate(620,80)">
+        <line x1="0" y1="20" x2="20" y2="20" stroke="#2C2C2C" stroke-width="2"/>
+        <path d="M20 2 L20 38 L68 20 Z" fill="#EEECE6" stroke="#2C2C2C" stroke-width="2"/>
+        <circle cx="72" cy="20" r="4" fill="#FDFDFD" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="76" y1="20" x2="96" y2="20" stroke="#2C2C2C" stroke-width="2"/>
+        <text x="-12" y="24" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">A</text>
+        <text x="100" y="24" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">Q</text>
+      </g>
+      <text x="680" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#2C2C2C">NOT</text>
+      <text x="680" y="130" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">Q = Ā</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">
+        <text x="620" y="150" fill="#888880">A  Q</text>
+        <text x="620" y="166" fill="#728C69">0  1</text>
+        <text x="620" y="181" fill="#2C2C2C">1  0</text>
+      </g>
+      <text x="710" y="168" font-family="'Inter',sans-serif" font-size="9" fill="#888880">INVERTS</text>
+      <text x="710" y="180" font-family="'Inter',sans-serif" font-size="9" fill="#888880">the input</text>
+
+      <!-- ── NAND (col4, row1) ── -->
+      <rect x="820" y="30" width="360" height="210" rx="1" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+      <rect x="820" y="30" width="360" height="26" fill="#C82A2A" opacity="0.07"/>
+      <text x="1000" y="46" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">UNIVERSAL GATE</text>
+      <g transform="translate(850,70)">
+        <line x1="0" y1="10" x2="20" y2="10" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="0" y1="30" x2="20" y2="30" stroke="#2C2C2C" stroke-width="2"/>
+        <rect x="20" y="2" width="28" height="36" rx="0" fill="none" stroke="#2C2C2C" stroke-width="2"/>
+        <path d="M48 2 Q76 2 76 20 Q76 38 48 38 L48 2" fill="#EEECE6" stroke="#2C2C2C" stroke-width="2"/>
+        <circle cx="80" cy="20" r="4" fill="#FDFDFD" stroke="#C82A2A" stroke-width="2"/>
+        <line x1="84" y1="20" x2="104" y2="20" stroke="#2C2C2C" stroke-width="2"/>
+        <text x="-12" y="14" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">A</text>
+        <text x="-12" y="34" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">B</text>
+        <text x="108" y="24" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">Q</text>
+      </g>
+      <text x="970" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#C82A2A">NAND</text>
+      <text x="970" y="130" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">Q = ¬(A · B)</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">
+        <text x="900" y="150" fill="#888880">A B Q</text>
+        <text x="900" y="166" fill="#728C69">0 0 1</text>
+        <text x="900" y="181" fill="#728C69">0 1 1</text>
+        <text x="900" y="196" fill="#728C69">1 0 1</text>
+        <text x="900" y="211" fill="#2C2C2C">1 1 0</text>
+      </g>
+      <rect x="1040" y="140" width="124" height="64" rx="1" fill="#C82A2A" opacity="0.08" stroke="#C82A2A" stroke-width="0.5"/>
+      <text x="1102" y="162" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">Any logic circuit</text>
+      <text x="1102" y="178" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">can be built</text>
+      <text x="1102" y="194" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">from NAND only</text>
+
+      <!-- ── NOR (col1, row2) ── -->
+      <rect x="40" y="260" width="240" height="210" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <g transform="translate(70,300)">
+        <line x1="0" y1="10" x2="20" y2="10" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="0" y1="30" x2="20" y2="30" stroke="#2C2C2C" stroke-width="2"/>
+        <path d="M20 2 Q30 2 50 20 Q30 38 20 38 L20 2" fill="#EEECE6" stroke="#2C2C2C" stroke-width="2"/>
+        <path d="M20 2 Q44 2 72 20 Q44 38 20 38" fill="#EEECE6" stroke="#2C2C2C" stroke-width="2"/>
+        <circle cx="76" cy="20" r="4" fill="#FDFDFD" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="80" y1="20" x2="96" y2="20" stroke="#2C2C2C" stroke-width="2"/>
+        <text x="-12" y="14" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">A</text>
+        <text x="-12" y="34" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">B</text>
+        <text x="100" y="24" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">Q</text>
+      </g>
+      <text x="160" y="286" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#2C2C2C">NOR</text>
+      <text x="160" y="360" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">Q = ¬(A + B)</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">
+        <text x="100" y="380" fill="#888880">A B Q</text>
+        <text x="100" y="396" fill="#728C69">0 0 1</text>
+        <text x="100" y="411" fill="#2C2C2C">0 1 0</text>
+        <text x="100" y="426" fill="#2C2C2C">1 0 0</text>
+        <text x="100" y="441" fill="#2C2C2C">1 1 0</text>
+      </g>
+
+      <!-- ── XOR (col2, row2) ── -->
+      <rect x="300" y="260" width="240" height="210" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <g transform="translate(330,300)">
+        <line x1="0" y1="10" x2="22" y2="10" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="0" y1="30" x2="22" y2="30" stroke="#2C2C2C" stroke-width="2"/>
+        <path d="M16 2 Q26 12 16 20 Q26 28 16 38" fill="none" stroke="#2C2C2C" stroke-width="2"/>
+        <path d="M22 2 Q32 2 52 20 Q32 38 22 38 L22 2" fill="#EEECE6" stroke="#2C2C2C" stroke-width="2"/>
+        <path d="M22 2 Q46 2 76 20 Q46 38 22 38" fill="#EEECE6" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="76" y1="20" x2="96" y2="20" stroke="#2C2C2C" stroke-width="2"/>
+        <text x="-12" y="14" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">A</text>
+        <text x="-12" y="34" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">B</text>
+        <text x="100" y="24" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">Q</text>
+      </g>
+      <text x="420" y="286" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#2C2C2C">XOR</text>
+      <text x="420" y="360" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">Q = A ⊕ B</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">
+        <text x="360" y="380" fill="#888880">A B Q</text>
+        <text x="360" y="396" fill="#2C2C2C">0 0 0</text>
+        <text x="360" y="411" fill="#728C69">0 1 1</text>
+        <text x="360" y="426" fill="#728C69">1 0 1</text>
+        <text x="360" y="441" fill="#2C2C2C">1 1 0</text>
+      </g>
+      <text x="450" y="400" font-family="'Inter',sans-serif" font-size="9" fill="#888880">"different" gate</text>
+      <text x="450" y="413" font-family="'Inter',sans-serif" font-size="9" fill="#888880">used in adders</text>
+
+      <!-- ── XNOR (col3, row2) ── -->
+      <rect x="560" y="260" width="240" height="210" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <g transform="translate(590,300)">
+        <line x1="0" y1="10" x2="22" y2="10" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="0" y1="30" x2="22" y2="30" stroke="#2C2C2C" stroke-width="2"/>
+        <path d="M16 2 Q26 12 16 20 Q26 28 16 38" fill="none" stroke="#2C2C2C" stroke-width="2"/>
+        <path d="M22 2 Q32 2 52 20 Q32 38 22 38 L22 2" fill="#EEECE6" stroke="#2C2C2C" stroke-width="2"/>
+        <path d="M22 2 Q46 2 72 20 Q46 38 22 38" fill="#EEECE6" stroke="#2C2C2C" stroke-width="2"/>
+        <circle cx="76" cy="20" r="4" fill="#FDFDFD" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="80" y1="20" x2="96" y2="20" stroke="#2C2C2C" stroke-width="2"/>
+        <text x="-12" y="14" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">A</text>
+        <text x="-12" y="34" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">B</text>
+        <text x="100" y="24" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">Q</text>
+      </g>
+      <text x="680" y="286" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#2C2C2C">XNOR</text>
+      <text x="680" y="360" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">Q = ¬(A ⊕ B)</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">
+        <text x="620" y="380" fill="#888880">A B Q</text>
+        <text x="620" y="396" fill="#728C69">0 0 1</text>
+        <text x="620" y="411" fill="#2C2C2C">0 1 0</text>
+        <text x="620" y="426" fill="#2C2C2C">1 0 0</text>
+        <text x="620" y="441" fill="#728C69">1 1 1</text>
+      </g>
+      <text x="710" y="400" font-family="'Inter',sans-serif" font-size="9" fill="#888880">"same" gate</text>
+      <text x="710" y="413" font-family="'Inter',sans-serif" font-size="9" fill="#888880">equality checker</text>
+
+      <!-- NAND universal summary -->
+      <rect x="820" y="260" width="360" height="210" rx="1" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+      <rect x="820" y="260" width="360" height="26" fill="#C82A2A" opacity="0.07"/>
+      <text x="1000" y="277" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">NAND IS UNIVERSAL</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="840" y="306">NOT A  =  NAND(A,A)</text>
+        <text x="840" y="326">AND    =  NOT(NAND(A,B))</text>
+        <text x="840" y="346">OR     =  NAND(NOT A, NOT B)</text>
+      </g>
+      <rect x="830" y="364" width="340" height="56" rx="1" fill="#C82A2A" opacity="0.06"/>
+      <text x="1000" y="386" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#C82A2A">Any Boolean function can be</text>
+      <text x="1000" y="404" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#C82A2A">expressed using NAND only</text>
+      <text x="1000" y="424" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Used in NAND flash memory, most ASICs</text>
+      <text x="1000" y="440" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">NOR is also universal</text>
+      <text x="1000" y="456" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">(used in early NASA/SpaceX FPGAs)</text>
+
+      <rect x="0" y="486" width="1200" height="34" fill="rgba(44,64,87,0.06)"/>
+      <text x="600" y="507" text-anchor="middle" font-family="'Inter',sans-serif" font-size="12" fill="#6E6E6E">Fig 2.3-A · Complete logic gate atlas: AND, OR, NOT, NAND, NOR, XOR, XNOR with symbols, expressions, and truth tables. NAND (red border) is the universal gate — every other operation can be built from it alone.</text>
+      <text x="1140" y="507" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 2.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Complete logic gate reference. Seven standard gates are shown with IEEE symbols, Boolean expressions, and truth tables. AND requires both inputs HIGH; OR requires at least one. NOT inverts. NAND (highlighted red border) is the universal gate: NOT, AND, and OR can all be synthesised from NAND gates alone. This universality means any digital circuit can be fabricated on a chip using only one type of transistor arrangement, which dramatically simplifies semiconductor manufacturing. NOR is also universal; both NAND and NOR flash memory chips derive their names from this property.</div>
+</div>
+
+<!-- FIG 2.3-B  NAND universality - XOR from 4 NANDs -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Concept Diagram</span>
+    <span class="fig-id">FIG 2.3-B</span>
+    <span class="fig-title">NAND Universality — Building XOR from 4 NAND Gates</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+
+      <!-- Header -->
+      <rect x="0" y="0" width="1200" height="36" fill="#C82A2A" opacity="0.07"/>
+      <text x="600" y="23" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2C2C2C">XOR from 4 NAND gates — proving NAND universality</text>
+
+      <!-- Inputs A, B -->
+      <text x="60" y="110" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2E4057">A</text>
+      <text x="60" y="190" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2E4057">B</text>
+      <line x1="70" y1="108" x2="130" y2="108" stroke="#2E4057" stroke-width="2"/>
+      <line x1="70" y1="188" x2="130" y2="188" stroke="#2E4057" stroke-width="2"/>
+
+      <!-- NAND gate helper macro -->
+      <!-- NAND at x,y with inputs from y-offsets -->
+      <!-- NAND 1: A,B → G1 = NAND(A,B) -->
+      <g transform="translate(130,130)">
+        <line x1="0" y1="-22" x2="18" y2="-22" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="0" y1="22" x2="18" y2="22" stroke="#2C2C2C" stroke-width="2"/>
+        <rect x="18" y="-30" width="26" height="60" rx="0" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+        <path d="M44 -30 Q72 -30 72 0 Q72 30 44 30 L44 -30" fill="#EEECE6" stroke="#2C2C2C" stroke-width="1.5"/>
+        <circle cx="76" cy="0" r="4" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+        <line x1="80" y1="0" x2="100" y2="0" stroke="#2C2C2C" stroke-width="2"/>
+        <text x="-14" y="-17" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">A</text>
+        <text x="-14" y="27" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">B</text>
+        <text x="60" y="-34" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">G1</text>
+      </g>
+      <!-- Wire from A to G1 input -->
+      <line x1="130" y1="108" x2="130" y2="108" stroke="none"/>
+      <!-- NAND 2: A,G1 output → G2 = NAND(A, NAND(A,B)) -->
+      <g transform="translate(320,88)">
+        <line x1="0" y1="-22" x2="18" y2="-22" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="0" y1="22" x2="18" y2="22" stroke="#2C2C2C" stroke-width="2"/>
+        <rect x="18" y="-30" width="26" height="60" rx="0" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+        <path d="M44 -30 Q72 -30 72 0 Q72 30 44 30 L44 -30" fill="#EEECE6" stroke="#2C2C2C" stroke-width="1.5"/>
+        <circle cx="76" cy="0" r="4" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+        <line x1="80" y1="0" x2="100" y2="0" stroke="#2C2C2C" stroke-width="2"/>
+        <text x="60" y="-34" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">G2</text>
+      </g>
+      <!-- NAND 3: B,G1 output → G3 = NAND(B, NAND(A,B)) -->
+      <g transform="translate(320,188)">
+        <line x1="0" y1="-22" x2="18" y2="-22" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="0" y1="22" x2="18" y2="22" stroke="#2C2C2C" stroke-width="2"/>
+        <rect x="18" y="-30" width="26" height="60" rx="0" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+        <path d="M44 -30 Q72 -30 72 0 Q72 30 44 30 L44 -30" fill="#EEECE6" stroke="#2C2C2C" stroke-width="1.5"/>
+        <circle cx="76" cy="0" r="4" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+        <line x1="80" y1="0" x2="100" y2="0" stroke="#2C2C2C" stroke-width="2"/>
+        <text x="60" y="-34" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">G3</text>
+      </g>
+      <!-- NAND 4: G2,G3 → output XOR -->
+      <g transform="translate(520,138)">
+        <line x1="0" y1="-40" x2="18" y2="-40" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="0" y1="40" x2="18" y2="40" stroke="#2C2C2C" stroke-width="2"/>
+        <rect x="18" y="-48" width="30" height="96" rx="0" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+        <path d="M48 -48 Q84 -48 84 0 Q84 48 48 48 L48 -48" fill="#EEECE6" stroke="#2C2C2C" stroke-width="1.5"/>
+        <circle cx="88" cy="0" r="4" fill="#FDFDFD" stroke="#C82A2A" stroke-width="2"/>
+        <line x1="92" y1="0" x2="120" y2="0" stroke="#2C2C2C" stroke-width="2"/>
+        <text x="74" y="-52" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">G4</text>
+      </g>
+
+      <!-- Wires -->
+      <!-- A to G2 -->
+      <line x1="72" y1="108" x2="300" y2="108" stroke="#2E4057" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <line x1="300" y1="108" x2="300" y2="66" stroke="#2E4057" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <line x1="300" y1="66" x2="320" y2="66" stroke="#2E4057" stroke-width="1.5"/>
+      <!-- B to G3 -->
+      <line x1="72" y1="188" x2="290" y2="188" stroke="#2E4057" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <line x1="290" y1="188" x2="290" y2="210" stroke="#2E4057" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <line x1="290" y1="210" x2="320" y2="210" stroke="#2E4057" stroke-width="1.5"/>
+      <!-- G1 out to G2 and G3 -->
+      <line x1="230" y1="130" x2="260" y2="130" stroke="#C82A2A" stroke-width="1.5"/>
+      <line x1="260" y1="130" x2="260" y2="110" stroke="#C82A2A" stroke-width="1.5"/>
+      <line x1="260" y1="110" x2="320" y2="110" stroke="#C82A2A" stroke-width="1.5"/>
+      <line x1="260" y1="130" x2="260" y2="166" stroke="#C82A2A" stroke-width="1.5"/>
+      <line x1="260" y1="166" x2="320" y2="166" stroke="#C82A2A" stroke-width="1.5"/>
+      <!-- G2 out to G4 -->
+      <line x1="420" y1="88" x2="490" y2="88" stroke="#C82A2A" stroke-width="1.5"/>
+      <line x1="490" y1="88" x2="490" y2="98" stroke="#C82A2A" stroke-width="1.5"/>
+      <line x1="490" y1="98" x2="520" y2="98" stroke="#C82A2A" stroke-width="1.5"/>
+      <!-- G3 out to G4 -->
+      <line x1="420" y1="188" x2="490" y2="188" stroke="#C82A2A" stroke-width="1.5"/>
+      <line x1="490" y1="188" x2="490" y2="178" stroke="#C82A2A" stroke-width="1.5"/>
+      <line x1="490" y1="178" x2="520" y2="178" stroke="#C82A2A" stroke-width="1.5"/>
+
+      <!-- XOR output label -->
+      <text x="660" y="138" font-family="'JetBrains Mono',monospace" font-size="15" fill="#728C69">A ⊕ B</text>
+      <text x="660" y="158" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">XOR output</text>
+
+      <!-- Truth table verification -->
+      <rect x="760" y="40" width="400" height="220" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="760" y="40" width="400" height="26" fill="#2E4057" opacity="0.08"/>
+      <text x="960" y="57" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.08em">VERIFICATION</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <text x="800" y="82" fill="#888880">A</text><text x="830" y="82" fill="#888880">B</text>
+        <text x="875" y="82" fill="#C82A2A">G1</text><text x="920" y="82" fill="#C82A2A">G2</text>
+        <text x="965" y="82" fill="#C82A2A">G3</text><text x="1010" y="82" fill="#C82A2A">G4</text>
+        <text x="1110" y="82" fill="#728C69">XOR</text>
+        <line x1="768" y1="88" x2="1152" y2="88" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="800" y="108" fill="#2C2C2C">0</text><text x="830" y="108" fill="#2C2C2C">0</text>
+        <text x="875" y="108" fill="#728C69">1</text><text x="920" y="108" fill="#728C69">1</text>
+        <text x="965" y="108" fill="#728C69">1</text><text x="1010" y="108" fill="#888880">0</text>
+        <text x="1110" y="108" fill="#888880">0 ✓</text>
+        <text x="800" y="132" fill="#2C2C2C">0</text><text x="830" y="132" fill="#728C69">1</text>
+        <text x="875" y="132" fill="#728C69">1</text><text x="920" y="132" fill="#728C69">1</text>
+        <text x="965" y="132" fill="#888880">0</text><text x="1010" y="132" fill="#728C69">1</text>
+        <text x="1110" y="132" fill="#728C69">1 ✓</text>
+        <text x="800" y="156" fill="#728C69">1</text><text x="830" y="156" fill="#2C2C2C">0</text>
+        <text x="875" y="156" fill="#728C69">1</text><text x="920" y="156" fill="#888880">0</text>
+        <text x="965" y="156" fill="#728C69">1</text><text x="1010" y="156" fill="#728C69">1</text>
+        <text x="1110" y="156" fill="#728C69">1 ✓</text>
+        <text x="800" y="180" fill="#728C69">1</text><text x="830" y="180" fill="#728C69">1</text>
+        <text x="875" y="180" fill="#888880">0</text><text x="920" y="180" fill="#728C69">1</text>
+        <text x="965" y="180" fill="#728C69">1</text><text x="1010" y="180" fill="#888880">0</text>
+        <text x="1110" y="180" fill="#888880">0 ✓</text>
+      </g>
+
+      <rect x="0" y="260" width="1200" height="40" fill="rgba(44,64,87,0.04)"/>
+      <text x="600" y="284" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Fig 2.3-B · XOR from 4 NAND gates. G1=NAND(A,B). G2=NAND(A,G1). G3=NAND(B,G1). G4=NAND(G2,G3)=XOR. Truth table confirms all four rows. The challenge is to implement XOR from 4 NANDs.</text>
+      <text x="1140" y="284" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 2.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">XOR built from 4 NAND gates — the canonical proof of NAND universality. G1 = NAND(A,B) acts as a shared intermediate. G2 = NAND(A, G1) implements NOT(A AND NOT(AB)). G3 = NAND(B, G1) implements NOT(B AND NOT(AB)). G4 = NAND(G2, G3) combines them to produce A XOR B. The truth table verifies all four input combinations. This construction is used in CMOS logic libraries where all cells are ultimately implemented as NAND chains.</div>
+</div>
+
+<!-- FIG 2.3-C  All Seven Gates — Complete Truth Table Matrix -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type B — Reference Diagram</span>
+    <span class="fig-id">FIG 2.3-C</span>
+    <span class="fig-title">All Seven Standard Gates — Symbol · Boolean Expression · Truth Table</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 480" xmlns="http://www.w3.org/2000/svg" style="height:420px">
+      <rect width="1200" height="480" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="34" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">COMPLETE LOGIC GATE REFERENCE — SYMBOL · EXPRESSION · TRUTH TABLE</text>
+      <!-- Column headers -->
+      <rect x="40" y="44" width="1120" height="24" fill="#2E4057" opacity="0.08"/>
+      <text x="120" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.12em">GATE</text>
+      <text x="280" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.12em">SYMBOL (schematic)</text>
+      <text x="520" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.12em">BOOLEAN</text>
+      <text x="700" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.12em">A=0 B=0</text>
+      <text x="800" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.12em">A=0 B=1</text>
+      <text x="900" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.12em">A=1 B=0</text>
+      <text x="1000" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.12em">A=1 B=1</text>
+      <text x="1110" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.12em">DESCRIPTION</text>
+      <!-- Row separator lines -->
+      <line x1="40" y1="68" x2="1160" y2="68" stroke="#D8D6CE" stroke-width="0.5"/>
+      <!-- Vertical column dividers -->
+      <g stroke="#E8E6DF" stroke-width="0.5">
+        <line x1="190" y1="44" x2="190" y2="448"/>
+        <line x1="430" y1="44" x2="430" y2="448"/>
+        <line x1="630" y1="44" x2="630" y2="448"/>
+        <line x1="745" y1="44" x2="745" y2="448"/>
+        <line x1="845" y1="44" x2="845" y2="448"/>
+        <line x1="945" y1="44" x2="945" y2="448"/>
+        <line x1="1055" y1="44" x2="1055" y2="448"/>
+      </g>
+
+      <!-- Helper macro for rows: y = row top -->
+      <!-- ROW 1: AND -->
+      <rect x="40" y="68" width="1120" height="52" fill="#FDFDFD"/>
+      <text x="120" y="98" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">AND</text>
+      <!-- AND symbol (D-shape) -->
+      <line x1="230" y1="84" x2="260" y2="84" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="230" y1="108" x2="260" y2="108" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="230" y1="84" x2="230" y2="108" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M260 84 Q290 84 290 96 Q290 108 260 108" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="210" y1="90" x2="230" y2="90" stroke="#2C2C2C" stroke-width="1"/><line x1="210" y1="102" x2="230" y2="102" stroke="#2C2C2C" stroke-width="1"/>
+      <line x1="290" y1="96" x2="310" y2="96" stroke="#2C2C2C" stroke-width="1"/>
+      <text x="200" y="94" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">A</text>
+      <text x="200" y="106" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">B</text>
+      <text x="318" y="100" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">Q</text>
+      <text x="520" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2C2C2C">Q = A · B</text>
+      <text x="700" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">0</text>
+      <text x="800" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">0</text>
+      <text x="900" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">0</text>
+      <text x="1000" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#728C69">1</text>
+      <text x="1110" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">both inputs high</text>
+      <line x1="40" y1="120" x2="1160" y2="120" stroke="#E8E6DF" stroke-width="0.5"/>
+
+      <!-- ROW 2: OR -->
+      <rect x="40" y="120" width="1120" height="52" fill="#FDFDFD"/>
+      <text x="120" y="150" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">OR</text>
+      <!-- OR symbol (curved) -->
+      <path d="M230 136 Q248 148 230 160" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M230 136 Q265 136 285 148 Q265 160 230 160" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="210" y1="142" x2="238" y2="142" stroke="#2C2C2C" stroke-width="1"/><line x1="210" y1="154" x2="238" y2="154" stroke="#2C2C2C" stroke-width="1"/>
+      <line x1="285" y1="148" x2="310" y2="148" stroke="#2C2C2C" stroke-width="1"/>
+      <text x="200" y="146" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">A</text>
+      <text x="200" y="158" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">B</text>
+      <text x="520" y="152" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2C2C2C">Q = A + B</text>
+      <text x="700" y="152" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">0</text>
+      <text x="800" y="152" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#728C69">1</text>
+      <text x="900" y="152" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#728C69">1</text>
+      <text x="1000" y="152" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#728C69">1</text>
+      <text x="1110" y="152" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">at least one high</text>
+      <line x1="40" y1="172" x2="1160" y2="172" stroke="#E8E6DF" stroke-width="0.5"/>
+
+      <!-- ROW 3: NOT -->
+      <rect x="40" y="172" width="1120" height="52" fill="#F8F7F3"/>
+      <text x="120" y="202" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">NOT</text>
+      <!-- NOT triangle with bubble -->
+      <path d="M230 188 L230 212 L278 200 Z" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="282" cy="200" r="5" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="210" y1="200" x2="230" y2="200" stroke="#2C2C2C" stroke-width="1"/>
+      <line x1="287" y1="200" x2="310" y2="200" stroke="#2C2C2C" stroke-width="1"/>
+      <text x="200" y="204" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">A</text>
+      <text x="520" y="204" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2C2C2C">Q = Ā</text>
+      <text x="700" y="204" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#728C69">1</text>
+      <text x="800" y="204" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">(single input)</text>
+      <text x="900" y="204" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">0</text>
+      <text x="1000" y="204" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880"></text>
+      <text x="1110" y="204" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">invert input</text>
+      <line x1="40" y1="224" x2="1160" y2="224" stroke="#E8E6DF" stroke-width="0.5"/>
+
+      <!-- ROW 4: NAND -->
+      <rect x="40" y="224" width="1120" height="52" fill="#FDFDFD"/>
+      <text x="120" y="254" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">NAND</text>
+      <!-- NAND = AND + bubble -->
+      <line x1="230" y1="236" x2="260" y2="236" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="230" y1="260" x2="260" y2="260" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="230" y1="236" x2="230" y2="260" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M260 236 Q290 236 290 248 Q290 260 260 260" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="294" cy="248" r="5" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="210" y1="242" x2="230" y2="242" stroke="#2C2C2C" stroke-width="1"/><line x1="210" y1="254" x2="230" y2="254" stroke="#2C2C2C" stroke-width="1"/>
+      <line x1="299" y1="248" x2="318" y2="248" stroke="#2C2C2C" stroke-width="1"/>
+      <text x="520" y="254" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#C82A2A">Q = A·B̄</text>
+      <text x="700" y="254" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#728C69">1</text>
+      <text x="800" y="254" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#728C69">1</text>
+      <text x="900" y="254" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#728C69">1</text>
+      <text x="1000" y="254" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">0</text>
+      <text x="1110" y="254" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">universal gate</text>
+      <line x1="40" y1="276" x2="1160" y2="276" stroke="#E8E6DF" stroke-width="0.5"/>
+
+      <!-- ROW 5: NOR -->
+      <rect x="40" y="276" width="1120" height="52" fill="#F8F7F3"/>
+      <text x="120" y="306" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">NOR</text>
+      <path d="M230 288 Q248 300 230 312" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M230 288 Q265 288 285 300 Q265 312 230 312" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="290" cy="300" r="5" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="210" y1="294" x2="238" y2="294" stroke="#2C2C2C" stroke-width="1"/><line x1="210" y1="306" x2="238" y2="306" stroke="#2C2C2C" stroke-width="1"/>
+      <line x1="295" y1="300" x2="318" y2="300" stroke="#2C2C2C" stroke-width="1"/>
+      <text x="520" y="306" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2C2C2C">Q = A+B̄</text>
+      <text x="700" y="306" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#728C69">1</text>
+      <text x="800" y="306" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">0</text>
+      <text x="900" y="306" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">0</text>
+      <text x="1000" y="306" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">0</text>
+      <text x="1110" y="306" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">universal gate</text>
+      <line x1="40" y1="328" x2="1160" y2="328" stroke="#E8E6DF" stroke-width="0.5"/>
+
+      <!-- ROW 6: XOR -->
+      <rect x="40" y="328" width="1120" height="52" fill="#FDFDFD"/>
+      <text x="120" y="358" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#8B6914">XOR</text>
+      <path d="M224 340 Q242 352 224 364" fill="none" stroke="#2C2C2C" stroke-width="1"/>
+      <path d="M230 340 Q248 352 230 364" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M230 340 Q265 340 285 352 Q265 364 230 364" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="210" y1="346" x2="236" y2="346" stroke="#2C2C2C" stroke-width="1"/><line x1="210" y1="358" x2="236" y2="358" stroke="#2C2C2C" stroke-width="1"/>
+      <line x1="285" y1="352" x2="310" y2="352" stroke="#2C2C2C" stroke-width="1"/>
+      <text x="520" y="358" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#8B6914">Q = A⊕B</text>
+      <text x="700" y="358" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">0</text>
+      <text x="800" y="358" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#728C69">1</text>
+      <text x="900" y="358" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#728C69">1</text>
+      <text x="1000" y="358" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">0</text>
+      <text x="1110" y="358" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914">inputs differ</text>
+      <line x1="40" y1="380" x2="1160" y2="380" stroke="#E8E6DF" stroke-width="0.5"/>
+
+      <!-- ROW 7: XNOR -->
+      <rect x="40" y="380" width="1120" height="52" fill="#F8F7F3"/>
+      <text x="120" y="410" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">XNOR</text>
+      <path d="M224 392 Q242 404 224 416" fill="none" stroke="#2C2C2C" stroke-width="1"/>
+      <path d="M230 392 Q248 404 230 416" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M230 392 Q265 392 285 404 Q265 416 230 416" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="290" cy="404" r="5" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="210" y1="398" x2="236" y2="398" stroke="#2C2C2C" stroke-width="1"/><line x1="210" y1="410" x2="236" y2="410" stroke="#2C2C2C" stroke-width="1"/>
+      <line x1="295" y1="404" x2="318" y2="404" stroke="#2C2C2C" stroke-width="1"/>
+      <text x="520" y="410" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2C2C2C">Q = A⊕B̄</text>
+      <text x="700" y="410" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#728C69">1</text>
+      <text x="800" y="410" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">0</text>
+      <text x="900" y="410" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#888880">0</text>
+      <text x="1000" y="410" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#728C69">1</text>
+      <text x="1110" y="410" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">inputs equal</text>
+
+      <!-- Outer border -->
+      <rect x="40" y="44" width="1120" height="388" fill="none" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- Footer -->
+      <rect x="0" y="450" width="1200" height="30" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="469" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Fig 2.3-C</text>
+      <text x="120" y="469" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Complete logic gate reference. NAND and NOR are universal gates — any logic function can be built from NAND alone (or NOR alone). XOR is the inequality detector and the core of binary addition.</text>
+      <text x="1140" y="469" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 2.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Complete reference for all seven standard logic gates, showing IEEE schematic symbol, Boolean expression, and full truth table. NAND and NOR are marked as universal gates — a fact of deep importance: any digital circuit, no matter how complex, can be constructed from NAND gates alone. This is why CMOS logic libraries are largely implemented as NAND chains. XOR outputs 1 when inputs differ, making it the equality tester and the sum-bit generator in binary addition.</div>
+</div>
+
+</div>
+</body>
+</html>

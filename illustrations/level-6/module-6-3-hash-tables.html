@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 6.3 — Hash Tables</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:#F4EFE6;border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 6 — Data Structures &amp; Algorithms</div>
+  <div class="page-title">Module 6.3 — Hash Tables</div>
+  <div class="page-sub">3 figures · Hash Function Internals · Chaining vs Open Addressing · Load Factor and Rehashing</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 6.3-A  Hash Function Internals -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 6.3-A</span>
+    <span class="fig-title">Hash Function Step-by-Step — Turning a String Key into a Bucket Index</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 460" xmlns="http://www.w3.org/2000/svg" style="height:400px">
+      <defs>
+        <linearGradient id="hBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="460" fill="url(#hBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">DJB2 HASH FUNCTION — KEY "cat" → BUCKET INDEX (table size = 8)</text>
+
+      <!-- Key input -->
+      <rect x="40" y="50" width="180" height="60" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="130" y="72" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">KEY</text>
+      <text x="130" y="96" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="22" fill="#2C2C2C">"cat"</text>
+
+      <!-- Arrow -->
+      <path d="M220 80 L268 80" stroke="#2E4057" stroke-width="2" fill="none"/>
+      <path d="M264 76 L272 80 L264 84" fill="#2E4057"/>
+
+      <!-- djb2 algorithm box -->
+      <rect x="272" y="40" width="380" height="200" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5"/>
+      <rect x="272" y="40" width="380" height="26" fill="#2E4057" opacity="0.09"/>
+      <text x="462" y="57" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.12em">djb2 ALGORITHM</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">
+        <text x="288" y="84">hash = 5381</text>
+        <text x="288" y="102">for each char c in key:</text>
+        <text x="288" y="120">  hash = hash * 33 + c</text>
+      </g>
+      <line x1="288" y1="130" x2="636" y2="130" stroke="#E8E6DF" stroke-width="0.5"/>
+      <!-- Step trace -->
+      <text x="288" y="150" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">TRACE FOR "cat"</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#6E6E6E">
+        <text x="288" y="168">hash = 5381</text>
+        <text x="288" y="184"><tspan fill="#728C69">'c'</tspan>(99): 5381×33 + 99 = <tspan fill="#2E4057">177672</tspan></text>
+        <text x="288" y="200"><tspan fill="#728C69">'a'</tspan>(97): 177672×33 + 97 = <tspan fill="#2E4057">5863273</tspan></text>
+        <text x="288" y="216"><tspan fill="#728C69">'t'</tspan>(116): 5863273×33 + 116 = <tspan fill="#C82A2A">193488125</tspan></text>
+      </g>
+
+      <!-- Modulo step -->
+      <path d="M652 140 L700 140" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M696 136 L704 140 L696 144" fill="#C82A2A"/>
+      <rect x="704" y="80" width="240" height="120" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+      <rect x="704" y="80" width="240" height="26" fill="#C82A2A" opacity="0.08"/>
+      <text x="824" y="97" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#C82A2A" letter-spacing="0.12em">MODULO STEP</text>
+      <text x="824" y="124" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2C2C2C">193488125</text>
+      <text x="824" y="148" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2C2C2C">% 8</text>
+      <line x1="720" y1="156" x2="928" y2="156" stroke="#E8E6DF" stroke-width="0.5"/>
+      <text x="824" y="178" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="20" fill="#C82A2A">= 5</text>
+
+      <!-- Bucket array -->
+      <text x="600" y="290" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">BUCKET ARRAY (size 8)</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">
+        <rect x="80" y="300" width="80" height="36" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/><text x="120" y="322" fill="#888880">[0]</text>
+        <rect x="160" y="300" width="80" height="36" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/><text x="200" y="322" fill="#888880">[1]</text>
+        <rect x="240" y="300" width="80" height="36" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/><text x="280" y="322" fill="#888880">[2]</text>
+        <rect x="320" y="300" width="80" height="36" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/><text x="360" y="322" fill="#888880">[3]</text>
+        <rect x="400" y="300" width="80" height="36" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/><text x="440" y="322" fill="#888880">[4]</text>
+        <rect x="480" y="300" width="80" height="36" fill="#C82A2A" opacity="0.85" stroke="#C82A2A" stroke-width="1.5"/><text x="520" y="322" fill="#FDFDFD">[5]"cat"</text>
+        <rect x="560" y="300" width="80" height="36" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/><text x="600" y="322" fill="#888880">[6]</text>
+        <rect x="640" y="300" width="80" height="36" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/><text x="680" y="322" fill="#888880">[7]</text>
+      </g>
+      <!-- Arrow down to bucket 5 -->
+      <path d="M824 200 L824 260 L520 260 L520 298" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="5,3"/>
+      <path d="M516 294 L520 302 L524 294" fill="#C82A2A"/>
+
+      <!-- Properties panel -->
+      <rect x="780" y="290" width="380" height="130" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="780" y="290" width="380" height="22" fill="#2E4057" opacity="0.07"/>
+      <text x="970" y="305" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">GOOD HASH FUNCTION PROPERTIES</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="796" y="328">✓ Deterministic — same key always same hash</text>
+        <text x="796" y="346">✓ Uniform — distributes keys across all buckets</text>
+        <text x="796" y="364">✓ Fast — O(k) for key length k</text>
+        <text x="796" y="382">✓ Avalanche — 1-bit key change → ~50% hash bits flip</text>
+        <text x="796" y="400" fill="#888880" font-size="9">djb2, FNV-1a, MurmurHash3 used in practice</text>
+      </g>
+
+      <!-- Footer -->
+      <rect x="0" y="438" width="1200" height="22" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="453" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 6.3-A</text>
+      <text x="120" y="453" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">djb2 hashes "cat" to 193,488,125. Modulo 8 gives bucket 5. The hash function's quality determines how evenly keys distribute — poor distribution causes collisions and O(n) degradation.</text>
+      <text x="1140" y="453" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 6.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The djb2 hash function traced step by step on key "cat". Each character's ASCII value is mixed into a running hash via multiply-by-33-and-add — a simple but effective avalanche operation. The final 193,488,125 is reduced to a bucket index by taking modulo the table size (8), landing in bucket 5. A good hash function must be deterministic, fast, and distribute keys uniformly to minimise collisions. Real implementations like MurmurHash3 use bitwise XOR and shifts for better statistical properties and near-zero correlation between similar keys.</div>
+</div>
+
+<!-- FIG 6.3-B  Chaining vs Open Addressing -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Comparison</span>
+    <span class="fig-id">FIG 6.3-B</span>
+    <span class="fig-title">Collision Resolution — Chaining vs Linear Open Addressing</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" style="height:360px">
+      <rect width="1200" height="420" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">COLLISION RESOLUTION: CHAINING (LEFT) vs LINEAR PROBING (RIGHT)</text>
+
+      <!-- CHAINING -->
+      <text x="270" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2C2C2C">Separate Chaining</text>
+      <text x="270" y="70" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">each bucket holds a linked list</text>
+
+      <!-- Bucket array left -->
+      <g font-family="'JetBrains Mono',monospace" font-size="11">
+        <rect x="100" y="80" width="100" height="30" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="150" y="100" text-anchor="middle" fill="#888880">[0] →</text>
+        <text x="260" y="100" font-family="'Inter',sans-serif" font-size="10" fill="#888880">empty</text>
+
+        <rect x="100" y="112" width="100" height="30" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="150" y="132" text-anchor="middle" fill="#888880">[1] →</text>
+        <text x="260" y="132" font-family="'Inter',sans-serif" font-size="10" fill="#888880">empty</text>
+
+        <rect x="100" y="144" width="100" height="30" fill="#FDFDFD" stroke="#2E4057" stroke-width="1"/>
+        <text x="150" y="164" text-anchor="middle" fill="#2E4057">[2] →</text>
+        <!-- Chain: "apple" → "mango" -->
+        <rect x="220" y="144" width="90" height="30" fill="#2E4057" opacity="0.7"/>
+        <text x="265" y="164" text-anchor="middle" fill="#FDFDFD">apple</text>
+        <path d="M310 159 L348 159" stroke="#2E4057" stroke-width="1.5" fill="none"/>
+        <path d="M344 155 L352 159 L344 163" fill="#2E4057"/>
+        <rect x="352" y="144" width="90" height="30" fill="#2E4057" opacity="0.5"/>
+        <text x="397" y="164" text-anchor="middle" fill="#FDFDFD">mango</text>
+        <path d="M442 159 L470 159" stroke="#888880" stroke-width="1" stroke-dasharray="3,2" fill="none"/>
+        <text x="480" y="164" font-family="'Inter',sans-serif" font-size="9" fill="#888880">NULL</text>
+
+        <rect x="100" y="176" width="100" height="30" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="150" y="196" text-anchor="middle" fill="#888880">[3] →</text>
+        <text x="260" y="196" font-family="'Inter',sans-serif" font-size="10" fill="#888880">empty</text>
+
+        <rect x="100" y="208" width="100" height="30" fill="#FDFDFD" stroke="#728C69" stroke-width="1"/>
+        <text x="150" y="228" text-anchor="middle" fill="#728C69">[4] →</text>
+        <rect x="220" y="208" width="90" height="30" fill="#728C69" opacity="0.7"/>
+        <text x="265" y="228" text-anchor="middle" fill="#FDFDFD">grape</text>
+        <path d="M310 223 L340 223" stroke="#888880" stroke-width="1" stroke-dasharray="3,2" fill="none"/>
+        <text x="350" y="228" font-family="'Inter',sans-serif" font-size="9" fill="#888880">NULL</text>
+
+        <rect x="100" y="240" width="100" height="30" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="150" y="260" text-anchor="middle" fill="#888880">[5] →</text>
+        <text x="260" y="260" font-family="'Inter',sans-serif" font-size="10" fill="#888880">empty</text>
+
+        <rect x="100" y="272" width="100" height="30" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1"/>
+        <text x="150" y="292" text-anchor="middle" fill="#C82A2A">[6] →</text>
+        <rect x="220" y="272" width="90" height="30" fill="#C82A2A" opacity="0.7"/>
+        <text x="265" y="292" text-anchor="middle" fill="#FDFDFD">kiwi</text>
+        <path d="M310 287 L348 287" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+        <path d="M344 283 L352 287 L344 291" fill="#C82A2A"/>
+        <rect x="352" y="272" width="90" height="30" fill="#C82A2A" opacity="0.5"/>
+        <text x="397" y="292" text-anchor="middle" fill="#FDFDFD">lime</text>
+        <path d="M442 287 L470 287" stroke="#888880" stroke-width="1" stroke-dasharray="3,2" fill="none"/>
+        <text x="480" y="292" font-family="'Inter',sans-serif" font-size="9" fill="#888880">NULL</text>
+
+        <rect x="100" y="304" width="100" height="30" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="150" y="324" text-anchor="middle" fill="#888880">[7] →</text>
+        <text x="260" y="324" font-family="'Inter',sans-serif" font-size="10" fill="#888880">empty</text>
+      </g>
+
+      <!-- Chaining notes -->
+      <rect x="80" y="348" width="460" height="44" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="100" y="367" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">✓ Simple, handles high load factors</text>
+      <text x="100" y="384" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">✗ Extra pointer memory, poor cache locality</text>
+
+      <!-- DIVIDER -->
+      <line x1="590" y1="44" x2="590" y2="400" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- OPEN ADDRESSING / LINEAR PROBING -->
+      <text x="880" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2C2C2C">Linear Probing</text>
+      <text x="880" y="70" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">on collision: try next slot</text>
+
+      <!-- Inline bucket array with probing trace -->
+      <g font-family="'JetBrains Mono',monospace" font-size="11">
+        <rect x="660" y="80" width="440" height="30" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="680" y="100" fill="#888880">[0] empty</text>
+
+        <rect x="660" y="112" width="440" height="30" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="680" y="132" fill="#888880">[1] empty</text>
+
+        <rect x="660" y="144" width="440" height="30" fill="#2E4057" opacity="0.7" stroke="#2E4057" stroke-width="1"/>
+        <text x="680" y="164" fill="#FDFDFD">[2] "apple"</text>
+        <text x="960" y="164" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">← apple hashes to 2</text>
+
+        <rect x="660" y="176" width="440" height="30" fill="#C82A2A" opacity="0.6" stroke="#C82A2A" stroke-width="1.5"/>
+        <text x="680" y="196" fill="#FDFDFD">[3] "mango"</text>
+        <text x="960" y="196" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">← mango hashes to 2! probed to 3</text>
+
+        <rect x="660" y="208" width="440" height="30" fill="#728C69" opacity="0.7" stroke="#728C69" stroke-width="1"/>
+        <text x="680" y="228" fill="#FDFDFD">[4] "grape"</text>
+        <text x="960" y="228" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">← grape hashes to 4</text>
+
+        <rect x="660" y="240" width="440" height="30" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="680" y="260" fill="#888880">[5] empty</text>
+
+        <rect x="660" y="272" width="440" height="30" fill="#C82A2A" opacity="0.6" stroke="#C82A2A" stroke-width="1.5"/>
+        <text x="680" y="292" fill="#FDFDFD">[6] "kiwi"</text>
+        <text x="960" y="292" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">← kiwi hashes to 6</text>
+
+        <rect x="660" y="304" width="440" height="30" fill="#C82A2A" opacity="0.45" stroke="#C82A2A" stroke-width="1"/>
+        <text x="680" y="324" fill="#FDFDFD">[7] "lime"</text>
+        <text x="960" y="324" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">← lime hashes to 6! probed to 7</text>
+      </g>
+
+      <!-- Probing annotation -->
+      <path d="M940 176 Q990 182 990 193 L990 205" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="4,2"/>
+      <text x="996" y="188" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">probe +1</text>
+
+      <!-- Open addressing notes -->
+      <rect x="660" y="348" width="480" height="44" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="680" y="367" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">✓ Better cache locality — all data in one array</text>
+      <text x="680" y="384" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">✗ Clustering, needs load factor &lt; 0.7, tricky delete</text>
+
+      <!-- Footer -->
+      <rect x="0" y="400" width="1200" height="20" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="414" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 6.3-B · Chaining appends collisions to a linked list per bucket. Linear probing scans forward for the next empty slot. Probing is cache-friendlier; chaining handles high load factors more gracefully.</text>
+      <text x="1140" y="414" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · 6.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Two collision resolution strategies. Separate chaining stores a linked list in each bucket — colliding keys are appended to the list. Simple and robust at high load factors but each list node requires extra memory and pointer dereferences hurt CPU cache performance. Linear probing stores all data in the array itself — on collision, it scans forward to the next empty slot. Cache-friendly because data is contiguous, but clustering (long runs of filled slots) degrades performance, and deletion requires tombstone markers to avoid breaking probe chains. Python's dict uses a variant of open addressing; Java's HashMap uses chaining.</div>
+</div>
+
+<!-- FIG 6.3-C  Load Factor and Rehashing -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Performance Diagram</span>
+    <span class="fig-id">FIG 6.3-C</span>
+    <span class="fig-title">Load Factor and Rehashing — When Performance Degrades</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <rect width="1200" height="360" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">LOAD FACTOR α = items/buckets — IMPACT ON AVERAGE LOOKUP TIME</text>
+
+      <!-- Chart area -->
+      <rect x="60" y="44" width="700" height="260" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- Axes -->
+      <line x1="100" y1="44" x2="100" y2="304" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="100" y1="304" x2="760" y2="304" stroke="#2C2C2C" stroke-width="1.5"/>
+      <!-- X axis label -->
+      <text x="430" y="328" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Load Factor α (items / buckets)</text>
+      <!-- Y axis label -->
+      <text x="42" y="174" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" transform="rotate(-90,42,174)">Avg comparisons</text>
+      <!-- X ticks -->
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880" text-anchor="middle">
+        <text x="190" y="316">0.25</text><text x="280" y="316">0.5</text>
+        <text x="370" y="316">0.75</text><text x="460" y="316">1.0</text>
+        <text x="640" y="316">1.5</text><text x="730" y="316">2.0</text>
+      </g>
+      <!-- Y ticks -->
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880" text-anchor="end">
+        <text x="94" y="308">1</text><text x="94" y="258">2</text>
+        <text x="94" y="208">3</text><text x="94" y="158">4</text>
+        <text x="94" y="108">5</text><text x="94" y="58">6</text>
+      </g>
+      <!-- Grid -->
+      <g stroke="#E8E6DF" stroke-width="0.5" stroke-dasharray="3,3">
+        <line x1="100" y1="258" x2="760" y2="258"/>
+        <line x1="100" y1="208" x2="760" y2="208"/>
+        <line x1="100" y1="158" x2="760" y2="158"/>
+        <line x1="100" y1="108" x2="760" y2="108"/>
+        <line x1="280" y1="44" x2="280" y2="304"/>
+        <line x1="370" y1="44" x2="370" y2="304"/>
+        <line x1="460" y1="44" x2="460" y2="304"/>
+      </g>
+      <!-- Chaining curve: 1 + α/2 -->
+      <path d="M100 294 Q190 290 280 285 Q370 278 460 272 Q550 263 640 250 Q700 240 760 225"
+            stroke="#2E4057" stroke-width="2.5" fill="none"/>
+      <text x="770" y="228" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">chaining</text>
+      <!-- Linear probing curve: 1/(1-α) — steeper -->
+      <path d="M100 293 Q190 289 280 283 Q340 276 370 265 Q410 245 440 220 Q455 200 460 180 Q465 155 470 120 Q475 80 480 52"
+            stroke="#C82A2A" stroke-width="2.5" fill="none"/>
+      <text x="490" y="56" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">linear probing</text>
+
+      <!-- Sweet zone shading -->
+      <rect x="100" y="44" width="270" height="260" fill="#728C69" opacity="0.04"/>
+      <text x="234" y="194" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">sweet zone</text>
+      <text x="234" y="207" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">α &lt; 0.75</text>
+
+      <!-- Danger zone -->
+      <rect x="370" y="44" width="390" height="260" fill="#C82A2A" opacity="0.03"/>
+      <text x="565" y="270" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">performance degrades</text>
+
+      <!-- 0.75 vertical marker -->
+      <line x1="370" y1="44" x2="370" y2="304" stroke="#C82A2A" stroke-width="1.5" stroke-dasharray="6,3"/>
+      <text x="370" y="40" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">rehash threshold (0.75)</text>
+
+      <!-- Rehashing process panel -->
+      <rect x="800" y="44" width="360" height="280" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="800" y="44" width="360" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="980" y="61" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">REHASHING PROCESS</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="816" y="88">When α &gt; threshold (0.75):</text>
+        <line x1="816" y1="96" x2="1144" y2="96" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="816" y="116">① Allocate new array (2× size)</text>
+        <text x="816" y="134">② Re-hash every existing key</text>
+        <text x="816" y="152">③ Insert into new array</text>
+        <text x="816" y="170">④ Discard old array</text>
+        <line x1="816" y1="180" x2="1144" y2="180" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="816" y="200" fill="#C82A2A">Cost: O(n) for rehash event</text>
+        <text x="816" y="218" fill="#728C69">Amortized: O(1) per insert</text>
+        <line x1="816" y1="228" x2="1144" y2="228" stroke="#E8E6DF" stroke-width="0.5"/>
+      </g>
+      <!-- Example -->
+      <rect x="816" y="236" width="328" height="72" fill="#EEECE6"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="10">
+        <text x="826" y="256" fill="#888880">size=8, items=6 → α=0.75</text>
+        <text x="826" y="274" fill="#C82A2A">insert 7th → α=0.875 &gt; 0.75</text>
+        <text x="826" y="292" fill="#728C69">→ rehash to size=16, α=0.44</text>
+        <text x="826" y="308" fill="#728C69">→ performance restored</text>
+      </g>
+
+      <!-- Footer -->
+      <rect x="0" y="340" width="1200" height="20" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="354" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 6.3-C · Load factor α governs hash table performance. Above 0.75 both strategies degrade rapidly. Rehashing doubles capacity and re-inserts all entries — O(n) but amortized O(1) per insert over the table's lifetime.</text>
+      <text x="1140" y="354" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · 6.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Load factor α = items/buckets governs hash table performance. Chaining average lookup cost grows as 1 + α/2 — manageable even at higher load factors. Linear probing cost grows as 1/(1−α), approaching infinity as α approaches 1 (table full). Most implementations trigger a rehash at α = 0.75: allocate a new array of double the size, re-hash every existing key into the new table, then discard the old one. This O(n) rehash event occurs logarithmically rarely, so the amortized cost per insert remains O(1). Python's dict uses a load factor threshold of 2/3; Java's HashMap defaults to 0.75.</div>
+</div>
+
+</div>
+</body>
+</html>

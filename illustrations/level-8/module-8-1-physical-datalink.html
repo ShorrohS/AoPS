@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 8.1 — Physical and Data Link Layers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 8 — Networks &amp; Protocols</div>
+  <div class="page-title">Module 8.1 — Physical and Data Link Layers</div>
+  <div class="page-sub">3 figures · OSI Model Stack · Ethernet Frame Structure · Encapsulation</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 8.1-A  OSI Model -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 8.1-A</span>
+    <span class="fig-title">OSI 7-Layer Model — Encapsulation as Data Travels Down the Stack</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 440" xmlns="http://www.w3.org/2000/svg" style="height:380px">
+      <defs><linearGradient id="osiBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="440" fill="url(#osiBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">OSI MODEL — 7 LAYERS, DATA ENCAPSULATION, REAL PROTOCOLS AT EACH LAYER</text>
+
+      <!-- Layer stack left — Sender -->
+      <text x="200" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">SENDER (DATA GOES DOWN ↓)</text>
+      <!-- 7 Application -->
+      <rect x="40" y="60" width="320" height="44" fill="#C82A2A" opacity="0.75" rx="1"/>
+      <text x="80" y="79" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">7  Application</text>
+      <text x="80" y="96" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">HTTP, DNS, FTP, SMTP, SSH</text>
+      <text x="370" y="85" font-family="'Inter',sans-serif" font-size="9" fill="#888880">data</text>
+      <!-- 6 Presentation -->
+      <rect x="40" y="108" width="320" height="44" fill="#C82A2A" opacity="0.6" rx="1"/>
+      <text x="80" y="127" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">6  Presentation</text>
+      <text x="80" y="144" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">TLS/SSL, compression, encoding</text>
+      <!-- 5 Session -->
+      <rect x="40" y="156" width="320" height="44" fill="#8B6914" opacity="0.75" rx="1"/>
+      <text x="80" y="175" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">5  Session</text>
+      <text x="80" y="192" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">session management, RPC, sockets</text>
+      <!-- 4 Transport -->
+      <rect x="40" y="204" width="320" height="44" fill="#8B6914" opacity="0.55" rx="1"/>
+      <text x="80" y="223" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">4  Transport</text>
+      <text x="80" y="240" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">TCP, UDP — segments / datagrams</text>
+      <text x="370" y="225" font-family="'Inter',sans-serif" font-size="9" fill="#888880">segment</text>
+      <!-- 3 Network -->
+      <rect x="40" y="252" width="320" height="44" fill="#2E4057" opacity="0.75" rx="1"/>
+      <text x="80" y="271" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">3  Network</text>
+      <text x="80" y="288" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">IP, ICMP, routing — packets</text>
+      <text x="370" y="273" font-family="'Inter',sans-serif" font-size="9" fill="#888880">packet</text>
+      <!-- 2 Data Link -->
+      <rect x="40" y="300" width="320" height="44" fill="#2E4057" opacity="0.55" rx="1"/>
+      <text x="80" y="319" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">2  Data Link</text>
+      <text x="80" y="336" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">Ethernet, Wi-Fi, MAC — frames</text>
+      <text x="370" y="321" font-family="'Inter',sans-serif" font-size="9" fill="#888880">frame</text>
+      <!-- 1 Physical -->
+      <rect x="40" y="348" width="320" height="44" fill="#728C69" opacity="0.75" rx="1"/>
+      <text x="80" y="367" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">1  Physical</text>
+      <text x="80" y="384" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">bits, voltage, copper, fibre, radio</text>
+      <text x="370" y="369" font-family="'Inter',sans-serif" font-size="9" fill="#888880">bits</text>
+
+      <!-- Down arrow -->
+      <path d="M200 394 L200 420" stroke="#728C69" stroke-width="2" fill="none" stroke-dasharray="4,2"/>
+      <path d="M196 416 L200 424 L204 416" fill="#728C69"/>
+      <text x="200" y="432" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">physical medium</text>
+
+      <!-- Encapsulation diagram (centre) -->
+      <text x="700" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">ENCAPSULATION (DATA WRAPPING)</text>
+      <!-- Data units growing as they go down -->
+      <!-- App data -->
+      <rect x="540" y="68" width="340" height="28" fill="#C82A2A" opacity="0.6" rx="1"/>
+      <text x="710" y="86" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">APPLICATION DATA</text>
+      <!-- + TCP header -->
+      <rect x="520" y="116" width="60" height="28" fill="#8B6914" opacity="0.7" rx="1"/>
+      <text x="550" y="134" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">TCP hdr</text>
+      <rect x="580" y="116" width="300" height="28" fill="#C82A2A" opacity="0.5"/>
+      <text x="720" y="134" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">data</text>
+      <text x="500" y="133" text-anchor="end" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">segment</text>
+      <!-- + IP header -->
+      <rect x="500" y="164" width="60" height="28" fill="#2E4057" opacity="0.8" rx="1"/>
+      <text x="530" y="182" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">IP hdr</text>
+      <rect x="560" y="164" width="60" height="28" fill="#8B6914" opacity="0.6"/>
+      <text x="590" y="182" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#FDFDFD">TCP</text>
+      <rect x="620" y="164" width="260" height="28" fill="#C82A2A" opacity="0.4"/>
+      <text x="740" y="182" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">data</text>
+      <text x="480" y="181" text-anchor="end" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">packet</text>
+      <!-- + Eth header + trailer -->
+      <rect x="460" y="212" width="60" height="28" fill="#728C69" opacity="0.7" rx="1"/>
+      <text x="490" y="230" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#FDFDFD">Eth hdr</text>
+      <rect x="520" y="212" width="40" height="28" fill="#2E4057" opacity="0.7"/>
+      <text x="540" y="230" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#FDFDFD">IP</text>
+      <rect x="560" y="212" width="40" height="28" fill="#8B6914" opacity="0.5"/>
+      <text x="580" y="230" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#FDFDFD">TCP</text>
+      <rect x="600" y="212" width="220" height="28" fill="#C82A2A" opacity="0.35"/>
+      <text x="700" y="230" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#FDFDFD">data</text>
+      <rect x="820" y="212" width="40" height="28" fill="#728C69" opacity="0.5"/>
+      <text x="840" y="230" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#FDFDFD">FCS</text>
+      <text x="440" y="229" text-anchor="end" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">frame</text>
+
+      <!-- Receiver stack (right) -->
+      <text x="1060" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">RECEIVER (DATA GOES UP ↑)</text>
+      <rect x="900" y="348" width="260" height="44" fill="#728C69" opacity="0.75" rx="1"/>
+      <text x="950" y="367" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">1  Physical</text>
+      <text x="950" y="384" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">receive bits</text>
+      <rect x="900" y="300" width="260" height="44" fill="#2E4057" opacity="0.55" rx="1"/>
+      <text x="950" y="319" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">2  Data Link</text>
+      <text x="950" y="336" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">strip Eth header/FCS</text>
+      <rect x="900" y="252" width="260" height="44" fill="#2E4057" opacity="0.75" rx="1"/>
+      <text x="950" y="271" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">3  Network</text>
+      <text x="950" y="288" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">strip IP header, route</text>
+      <rect x="900" y="204" width="260" height="44" fill="#8B6914" opacity="0.55" rx="1"/>
+      <text x="950" y="223" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">4  Transport</text>
+      <text x="950" y="240" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">strip TCP header, reassemble</text>
+      <rect x="900" y="60" width="260" height="44" fill="#C82A2A" opacity="0.75" rx="1"/>
+      <text x="950" y="79" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">7  Application</text>
+      <text x="950" y="96" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">receives clean data</text>
+
+      <rect x="0" y="418" width="1200" height="22" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="433" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 8.1-A</text>
+      <text x="120" y="433" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">OSI 7-layer model. Sender wraps data in headers going down. Receiver strips headers going up. Each layer only reads its own header and passes the rest to the layer above.</text>
+      <text x="1140" y="433" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 8.1</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The OSI 7-layer model with encapsulation. As data travels down the sender's stack, each layer adds its own header (and sometimes trailer): Transport adds TCP/UDP ports and sequence numbers, Network adds IP source/destination addresses, Data Link adds MAC addresses and a Frame Check Sequence. The receiver's stack strips these headers in reverse — each layer reads only its own header and passes the payload up. This layering is the key architectural principle: higher layers are completely insulated from the details of lower layers. An HTTP server does not know whether it is running over copper Ethernet, fibre optics, or Wi-Fi — the physical layer is transparent.</div>
+</div>
+
+<!-- FIG 8.1-B  Ethernet Frame -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type B — Reference Diagram</span>
+    <span class="fig-id">FIG 8.1-B</span>
+    <span class="fig-title">Ethernet II Frame Structure — Every Field Labelled with Byte Widths</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">ETHERNET II FRAME — BIT-LEVEL FIELD LAYOUT (MINIMUM 64 BYTES, MAXIMUM 1518 BYTES)</text>
+
+      <!-- Frame fields -->
+      <!-- Preamble -->
+      <rect x="30" y="60" width="90" height="60" fill="#888880" opacity="0.4" stroke="#888880" stroke-width="0.5"/>
+      <text x="75" y="85" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2C2C2C">Preamble</text>
+      <text x="75" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">7 bytes</text>
+      <text x="75" y="134" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">sync clock</text>
+      <!-- SFD -->
+      <rect x="120" y="60" width="50" height="60" fill="#888880" opacity="0.3" stroke="#888880" stroke-width="0.5"/>
+      <text x="145" y="85" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#2C2C2C">SFD</text>
+      <text x="145" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">1B</text>
+      <text x="145" y="134" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">0xAB</text>
+      <!-- Dst MAC -->
+      <rect x="170" y="60" width="130" height="60" fill="#2E4057" opacity="0.75" stroke="#2E4057" stroke-width="0.5"/>
+      <text x="235" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">Dest MAC</text>
+      <text x="235" y="96" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">6 bytes</text>
+      <text x="235" y="110" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#BBBBB5">aa:bb:cc:dd:ee:ff</text>
+      <text x="235" y="134" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#2E4057">who to deliver to</text>
+      <!-- Src MAC -->
+      <rect x="300" y="60" width="130" height="60" fill="#2E4057" opacity="0.55" stroke="#2E4057" stroke-width="0.5"/>
+      <text x="365" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">Src MAC</text>
+      <text x="365" y="96" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">6 bytes</text>
+      <text x="365" y="110" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#BBBBB5">11:22:33:44:55:66</text>
+      <text x="365" y="134" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#2E4057">sender's address</text>
+      <!-- EtherType -->
+      <rect x="430" y="60" width="80" height="60" fill="#8B6914" opacity="0.7" stroke="#8B6914" stroke-width="0.5"/>
+      <text x="470" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">EtherType</text>
+      <text x="470" y="96" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#DDDDD5">2 bytes</text>
+      <text x="470" y="110" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#DDDDD5">0x0800=IPv4</text>
+      <text x="470" y="134" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">payload type</text>
+      <!-- Payload -->
+      <rect x="510" y="60" width="550" height="60" fill="#728C69" opacity="0.3" stroke="#728C69" stroke-width="1"/>
+      <text x="785" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#2C2C2C">Payload (IP packet)</text>
+      <text x="785" y="98" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">46–1500 bytes</text>
+      <text x="785" y="114" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">IPv4 packet, ARP, or other</text>
+      <text x="785" y="134" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">padded to 46 bytes minimum</text>
+      <!-- FCS -->
+      <rect x="1060" y="60" width="100" height="60" fill="#C82A2A" opacity="0.5" stroke="#C82A2A" stroke-width="0.5"/>
+      <text x="1110" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">FCS</text>
+      <text x="1110" y="96" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#DDDDD5">4 bytes</text>
+      <text x="1110" y="110" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#DDDDD5">CRC-32</text>
+      <text x="1110" y="134" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">error detection</text>
+
+      <!-- MAC address explanation -->
+      <rect x="30" y="164" width="540" height="100" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="30" y="164" width="4" height="100" fill="#2E4057"/>
+      <text x="48" y="184" font-family="'Noto Serif JP',serif" font-size="12" fill="#2E4057">MAC Address</text>
+      <text x="48" y="204" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">48-bit hardware address burned into the NIC. First 3 bytes = OUI (vendor ID). Last 3 bytes = device serial.</text>
+      <text x="48" y="224" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2E4057">aa:bb:cc  :  dd:ee:ff</text>
+      <text x="240" y="224" font-family="'Inter',sans-serif" font-size="9" fill="#888880">← OUI (vendor)   ← device</text>
+      <text x="48" y="252" font-family="'Inter',sans-serif" font-size="10" fill="#888880">ff:ff:ff:ff:ff:ff = broadcast (sent to all devices on segment)</text>
+
+      <!-- FCS explanation -->
+      <rect x="590" y="164" width="570" height="100" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="590" y="164" width="4" height="100" fill="#C82A2A"/>
+      <text x="608" y="184" font-family="'Noto Serif JP',serif" font-size="12" fill="#C82A2A">Frame Check Sequence (CRC-32)</text>
+      <text x="608" y="204" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Receiver recomputes CRC over received frame. If mismatch → frame silently discarded.</text>
+      <text x="608" y="224" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Detects single-bit errors and most burst errors.</text>
+      <text x="608" y="244" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Does NOT correct errors — higher layers (TCP) handle retransmission.</text>
+
+      <rect x="0" y="282" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="295" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 8.1-B · Ethernet II frame. Preamble+SFD not counted in frame size. Min 64 bytes (to detect collisions). Max 1518 bytes (MTU 1500 + 18 overhead). Jumbo frames up to 9000 bytes on LAN.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Ethernet II frame structure — the Data Link Layer PDU on virtually all modern LANs. The 7-byte preamble and 1-byte Start Frame Delimiter are used by hardware for clock synchronisation and are not counted in the frame length. The 6-byte destination and source MAC addresses identify which device should receive the frame and who sent it. EtherType (0x0800 for IPv4, 0x0806 for ARP, 0x86DD for IPv6) tells the receiver how to parse the payload. The 4-byte Frame Check Sequence (CRC-32) detects transmission errors — a mismatch causes the NIC to silently discard the frame. Minimum payload is 46 bytes (padded if shorter) to ensure the frame is long enough for collision detection on half-duplex Ethernet.</div>
+</div>
+
+<!-- FIG 8.1-C  Encapsulation Walk-Through -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 8.1-C</span>
+    <span class="fig-title">Encapsulation Walk-Through — HTTP Data Wrapped at Each Layer</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:220px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">ENCAPSULATION: "GET /index.html" WRAPPED LAYER BY LAYER FOR TRANSMISSION</text>
+
+      <!-- Level 1: Application data -->
+      <text x="40" y="58" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" letter-spacing="0.1em">L7 APPLICATION:</text>
+      <rect x="220" y="46" width="700" height="26" fill="#C82A2A" opacity="0.6" rx="1"/>
+      <text x="570" y="63" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">GET /index.html HTTP/1.1\r\nHost: example.com\r\n\r\n</text>
+
+      <!-- Level 2: TCP segment -->
+      <text x="40" y="106" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914" letter-spacing="0.1em">L4 TRANSPORT:</text>
+      <rect x="220" y="92" width="120" height="26" fill="#8B6914" opacity="0.75" rx="1"/>
+      <text x="280" y="109" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">TCP hdr sp=50000 dp=80 seq=1</text>
+      <rect x="340" y="92" width="580" height="26" fill="#C82A2A" opacity="0.4"/>
+      <text x="630" y="109" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">HTTP data</text>
+
+      <!-- Level 3: IP packet -->
+      <text x="40" y="152" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" letter-spacing="0.1em">L3 NETWORK:</text>
+      <rect x="220" y="138" width="100" height="26" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="270" y="155" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#FDFDFD">IP hdr src=192.168.1.2 dst=93.184.216.34</text>
+      <rect x="320" y="138" width="700" height="26" fill="#8B6914" opacity="0.25"/>
+      <text x="670" y="155" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">TCP segment</text>
+
+      <!-- Level 4: Ethernet frame -->
+      <text x="40" y="198" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" letter-spacing="0.1em">L2 DATA LINK:</text>
+      <rect x="220" y="184" width="80" height="26" fill="#728C69" opacity="0.8" rx="1"/>
+      <text x="260" y="201" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#FDFDFD">Eth hdr MAC</text>
+      <rect x="300" y="184" width="800" height="26" fill="#2E4057" opacity="0.2"/>
+      <text x="700" y="201" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">IP packet</text>
+      <rect x="1100" y="184" width="60" height="26" fill="#C82A2A" opacity="0.5"/>
+      <text x="1130" y="201" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#FDFDFD">FCS</text>
+
+      <!-- Physical -->
+      <text x="40" y="244" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">L1 PHYSICAL:</text>
+      <rect x="220" y="230" width="940" height="22" fill="#888880" opacity="0.35" rx="1"/>
+      <text x="690" y="245" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">01010101 ... 1100 1011 0000 ... (bits on wire)</text>
+
+      <rect x="0" y="264" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="276" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 8.1-C · Each layer wraps the layer above in its own header. On the receiver, each layer strips its header and passes the payload up. The application sees only its own data — layers are transparent to each other.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Encapsulation walk-through for an HTTP GET request. At Layer 7 (Application), the HTTP request is plain text. Layer 4 (Transport) wraps it in a TCP segment header adding source port, destination port 80, and sequence number. Layer 3 (Network) wraps the TCP segment in an IP packet header adding source and destination IP addresses. Layer 2 (Data Link) wraps the IP packet in an Ethernet frame adding MAC addresses and a CRC trailer. Layer 1 (Physical) transmits the entire frame as electrical signals or light pulses. The receiver performs the reverse — each layer reads its header, verifies integrity, and passes the payload up. The HTTP server never sees MAC addresses; the network router never sees HTTP content.</div>
+</div>
+
+</div>
+</body>
+</html>

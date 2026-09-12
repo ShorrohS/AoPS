@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 5.5 Illustrations — Sorting Algorithms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-ink:#2C2C2C;--zen-stone:#6E6E6E;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);color:var(--text-sumi);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;color:var(--text-sumi);letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--zen-indigo);color:var(--zen-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:var(--accent-red);color:var(--accent-red);background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;color:var(--text-sumi);}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 5 — Programming</div>
+  <div class="page-title">Module 5.5 — Sorting Algorithms</div>
+  <div class="page-sub">3 figures · Bubble Sort Step Trace · Merge Sort Divide and Conquer · Sorting Algorithm Comparison</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 5.5-A  Bubble Sort Trace -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 5.5-A</span>
+    <span class="fig-title">Bubble Sort — Step-by-Step Trace on [5, 3, 8, 1, 9, 2]</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 480" xmlns="http://www.w3.org/2000/svg" style="height:420px">
+      <defs>
+        <linearGradient id="sortBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="480" fill="url(#sortBg)"/>
+      <rect x="0" y="0" width="1200" height="34" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">BUBBLE SORT — PASS 1 THROUGH ARRAY [5, 3, 8, 1, 9, 2]</text>
+      <!-- Helper: draw array row -->
+      <!-- Pass 0: initial -->
+      <text x="60" y="68" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">INITIAL:</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle">
+        <rect x="140" y="52" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="166" y="74" fill="#2C2C2C">5</text>
+        <rect x="196" y="52" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="222" y="74" fill="#2C2C2C">3</text>
+        <rect x="252" y="52" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="278" y="74" fill="#2C2C2C">8</text>
+        <rect x="308" y="52" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="334" y="74" fill="#2C2C2C">1</text>
+        <rect x="364" y="52" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="390" y="74" fill="#2C2C2C">9</text>
+        <rect x="420" y="52" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="446" y="74" fill="#2C2C2C">2</text>
+      </g>
+      <!-- Pass 1 step 1: compare 5,3 → swap -->
+      <text x="60" y="120" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">Step 1: 5>3 SWAP</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle">
+        <rect x="140" y="104" width="52" height="34" fill="#C82A2A" opacity="0.2" stroke="#C82A2A" stroke-width="1.5"/><text x="166" y="126" fill="#C82A2A">3</text>
+        <rect x="196" y="104" width="52" height="34" fill="#C82A2A" opacity="0.2" stroke="#C82A2A" stroke-width="1.5"/><text x="222" y="126" fill="#C82A2A">5</text>
+        <rect x="252" y="104" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="278" y="126" fill="#2C2C2C">8</text>
+        <rect x="308" y="104" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="334" y="126" fill="#2C2C2C">1</text>
+        <rect x="364" y="104" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="390" y="126" fill="#2C2C2C">9</text>
+        <rect x="420" y="104" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="446" y="126" fill="#2C2C2C">2</text>
+      </g>
+      <!-- Step 2: 5,8 no swap -->
+      <text x="60" y="172" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Step 2: 5&lt;8 no swap</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle">
+        <rect x="140" y="156" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="166" y="178" fill="#2C2C2C">3</text>
+        <rect x="196" y="156" width="52" height="34" fill="#EEECE6" stroke="#728C69" stroke-width="1"/><text x="222" y="178" fill="#728C69">5</text>
+        <rect x="252" y="156" width="52" height="34" fill="#EEECE6" stroke="#728C69" stroke-width="1"/><text x="278" y="178" fill="#728C69">8</text>
+        <rect x="308" y="156" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="334" y="178" fill="#2C2C2C">1</text>
+        <rect x="364" y="156" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="390" y="178" fill="#2C2C2C">9</text>
+        <rect x="420" y="156" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="446" y="178" fill="#2C2C2C">2</text>
+      </g>
+      <!-- Step 3: 8,1 swap -->
+      <text x="60" y="224" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">Step 3: 8>1 SWAP</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle">
+        <rect x="140" y="208" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="166" y="230" fill="#2C2C2C">3</text>
+        <rect x="196" y="208" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="222" y="230" fill="#2C2C2C">5</text>
+        <rect x="252" y="208" width="52" height="34" fill="#C82A2A" opacity="0.2" stroke="#C82A2A" stroke-width="1.5"/><text x="278" y="230" fill="#C82A2A">1</text>
+        <rect x="308" y="208" width="52" height="34" fill="#C82A2A" opacity="0.2" stroke="#C82A2A" stroke-width="1.5"/><text x="334" y="230" fill="#C82A2A">8</text>
+        <rect x="364" y="208" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="390" y="230" fill="#2C2C2C">9</text>
+        <rect x="420" y="208" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="446" y="230" fill="#2C2C2C">2</text>
+      </g>
+      <!-- Step 4: 8,9 no swap -->
+      <text x="60" y="276" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Step 4: 8&lt;9 no swap</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle">
+        <rect x="140" y="260" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="166" y="282" fill="#2C2C2C">3</text>
+        <rect x="196" y="260" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="222" y="282" fill="#2C2C2C">5</text>
+        <rect x="252" y="260" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="278" y="282" fill="#2C2C2C">1</text>
+        <rect x="308" y="260" width="52" height="34" fill="#EEECE6" stroke="#728C69" stroke-width="1"/><text x="334" y="282" fill="#728C69">8</text>
+        <rect x="364" y="260" width="52" height="34" fill="#EEECE6" stroke="#728C69" stroke-width="1"/><text x="390" y="282" fill="#728C69">9</text>
+        <rect x="420" y="260" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="446" y="282" fill="#2C2C2C">2</text>
+      </g>
+      <!-- Step 5: 9,2 swap — 9 bubbles to end -->
+      <text x="60" y="328" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">Step 5: 9>2 SWAP → 9 in final position</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle">
+        <rect x="140" y="312" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="166" y="334" fill="#2C2C2C">3</text>
+        <rect x="196" y="312" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="222" y="334" fill="#2C2C2C">5</text>
+        <rect x="252" y="312" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="278" y="334" fill="#2C2C2C">1</text>
+        <rect x="308" y="312" width="52" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/><text x="334" y="334" fill="#2C2C2C">8</text>
+        <rect x="364" y="312" width="52" height="34" fill="#C82A2A" opacity="0.15" stroke="#C82A2A" stroke-width="1.5"/><text x="390" y="334" fill="#C82A2A">2</text>
+        <rect x="420" y="312" width="52" height="34" fill="#2E4057" opacity="0.7" stroke="#2E4057" stroke-width="1.5"/><text x="446" y="334" fill="#FDFDFD">9</text>
+      </g>
+      <text x="446" y="360" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#2E4057">sorted ✓</text>
+      <!-- Stats panel right -->
+      <rect x="560" y="60" width="600" height="300" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="560" y="60" width="600" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="860" y="77" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">BUBBLE SORT ANALYSIS</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="576" y="108">Pass 1 guarantees the largest element reaches its final position.</text>
+        <text x="576" y="126">Pass 2 guarantees the second-largest. After n-1 passes: sorted.</text>
+        <line x1="576" y1="136" x2="1140" y2="136" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="576" y="156" fill="#888880" font-size="9" font-weight="500" letter-spacing="0.1em">COMPARISONS:</text>
+        <text x="576" y="174" font-family="'JetBrains Mono',monospace">n=6: pass1=5, pass2=4, ... = 5+4+3+2+1 = 15</text>
+        <text x="576" y="192" font-family="'JetBrains Mono',monospace">n elements: n(n-1)/2 comparisons</text>
+        <text x="576" y="210" fill="#C82A2A">→ O(n²) — slow for large arrays</text>
+        <line x1="576" y1="220" x2="1140" y2="220" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="576" y="240" fill="#888880" font-size="9" font-weight="500" letter-spacing="0.1em">WHY STUDY BUBBLE SORT?</text>
+        <text x="576" y="258">Not used in practice — too slow.</text>
+        <text x="576" y="276">Pedagogical value: shows invariants (largest</text>
+        <text x="576" y="294">bubbles up), stability (equal elements keep order),</text>
+        <text x="576" y="312">and motivates why O(n log n) matters.</text>
+        <text x="576" y="332" fill="#2E4057">Best sorting algorithms: merge, heap, quicksort</text>
+        <text x="576" y="350" fill="#2E4057">→ O(n log n) average or guaranteed</text>
+      </g>
+      <!-- Footer -->
+      <rect x="0" y="458" width="1200" height="22" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="473" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 5.5-A</text>
+      <text x="120" y="473" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Bubble sort pass 1 on [5,3,8,1,9,2]. Each pass bubbles the largest unsorted element to its final position. After n-1 passes the array is sorted. O(n²) comparisons — 15 for n=6, ~500,000 for n=1000.</text>
+      <text x="1140" y="473" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · Module 5.5</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Bubble sort pass 1 on [5, 3, 8, 1, 9, 2]. The algorithm compares adjacent elements and swaps them if out of order. After pass 1, the largest element (9) has "bubbled" to its final position. After pass 2, the second-largest reaches its place, and so on. O(n²) total comparisons: n(n-1)/2. For n=1000, that is about 500,000 comparisons. Bubble sort is studied for its algorithmic clarity, not its practical performance — it motivates the search for O(n log n) algorithms that can sort a million elements in ~20 million operations instead of ~500 billion.</div>
+</div>
+
+<!-- FIG 5.5-B  Merge Sort — Divide and Conquer -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 5.5-B</span>
+    <span class="fig-title">Merge Sort — Divide, Conquer, Combine</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 440" xmlns="http://www.w3.org/2000/svg" style="height:380px">
+      <rect width="1200" height="440" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">MERGE SORT: [5, 3, 8, 1] → DIVIDE → SORT → MERGE → [1, 3, 5, 8]</text>
+      <!-- Level 0: full array -->
+      <rect x="440" y="44" width="320" height="36" fill="#2E4057" opacity="0.8" rx="1"/>
+      <text x="600" y="67" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">[5, 3, 8, 1]</text>
+      <!-- Divide arrows -->
+      <line x1="530" y1="80" x2="400" y2="118" stroke="#888880" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <line x1="670" y1="80" x2="800" y2="118" stroke="#888880" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <text x="430" y="102" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">divide</text>
+      <text x="770" y="102" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">divide</text>
+      <!-- Level 1: two halves -->
+      <rect x="280" y="118" width="240" height="36" fill="#2E4057" opacity="0.6" rx="1"/>
+      <text x="400" y="141" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">[5, 3]</text>
+      <rect x="680" y="118" width="240" height="36" fill="#2E4057" opacity="0.6" rx="1"/>
+      <text x="800" y="141" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">[8, 1]</text>
+      <!-- Divide again -->
+      <line x1="360" y1="154" x2="280" y2="192" stroke="#888880" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <line x1="440" y1="154" x2="520" y2="192" stroke="#888880" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <line x1="760" y1="154" x2="680" y2="192" stroke="#888880" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <line x1="840" y1="154" x2="920" y2="192" stroke="#888880" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <!-- Level 2: single elements (base case) -->
+      <rect x="220" y="192" width="80" height="36" fill="#728C69" opacity="0.7" rx="1"/>
+      <text x="260" y="215" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">[5]</text>
+      <rect x="480" y="192" width="80" height="36" fill="#728C69" opacity="0.7" rx="1"/>
+      <text x="520" y="215" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">[3]</text>
+      <rect x="640" y="192" width="80" height="36" fill="#728C69" opacity="0.7" rx="1"/>
+      <text x="680" y="215" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">[8]</text>
+      <rect x="900" y="192" width="80" height="36" fill="#728C69" opacity="0.7" rx="1"/>
+      <text x="940" y="215" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">[1]</text>
+      <!-- Labels -->
+      <text x="390" y="208" font-family="'Inter',sans-serif" font-size="8" fill="#728C69" text-anchor="middle">base</text>
+      <text x="390" y="218" font-family="'Inter',sans-serif" font-size="8" fill="#728C69" text-anchor="middle">case</text>
+      <!-- Merge arrows -->
+      <line x1="280" y1="228" x2="360" y2="282" stroke="#8B6914" stroke-width="1.5"/>
+      <line x1="540" y1="228" x2="460" y2="282" stroke="#8B6914" stroke-width="1.5"/>
+      <line x1="700" y1="228" x2="760" y2="282" stroke="#8B6914" stroke-width="1.5"/>
+      <line x1="960" y1="228" x2="880" y2="282" stroke="#8B6914" stroke-width="1.5"/>
+      <text x="400" y="270" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">merge</text>
+      <text x="820" y="270" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">merge</text>
+      <!-- Level 1 merged: sorted halves -->
+      <rect x="280" y="282" width="240" height="36" fill="#8B6914" opacity="0.6" rx="1"/>
+      <text x="400" y="305" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">[3, 5]</text>
+      <rect x="680" y="282" width="240" height="36" fill="#8B6914" opacity="0.6" rx="1"/>
+      <text x="800" y="305" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">[1, 8]</text>
+      <!-- Final merge -->
+      <line x1="450" y1="318" x2="530" y2="362" stroke="#C82A2A" stroke-width="2"/>
+      <line x1="750" y1="318" x2="670" y2="362" stroke="#C82A2A" stroke-width="2"/>
+      <text x="600" y="352" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">final merge</text>
+      <!-- Sorted result -->
+      <rect x="400" y="362" width="400" height="40" fill="#728C69" opacity="0.85" rx="1"/>
+      <text x="600" y="387" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="16" fill="#FDFDFD">[1, 3, 5, 8] ✓</text>
+      <!-- Merge detail inset -->
+      <rect x="900" y="282" width="280" height="120" fill="#FDFDFD" stroke="#8B6914" stroke-width="1"/>
+      <rect x="900" y="282" width="280" height="22" fill="#8B6914" opacity="0.1"/>
+      <text x="1040" y="298" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#8B6914" letter-spacing="0.1em">MERGE STEP DETAIL</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">
+        <text x="916" y="320">L:[3,5]   R:[1,8]</text>
+        <text x="916" y="338">1&lt;3 → take 1:  [1...]</text>
+        <text x="916" y="354">3&lt;8 → take 3:  [1,3...]</text>
+        <text x="916" y="370">5&lt;8 → take 5:  [1,3,5...]</text>
+        <text x="916" y="386">take 8:  [1,3,5,8] ✓</text>
+      </g>
+      <!-- Complexity annotation -->
+      <rect x="40" y="362" width="340" height="60" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="362" width="4" height="60" fill="#2E4057"/>
+      <text x="56" y="382" font-family="'Noto Serif JP',serif" font-size="12" fill="#2E4057">O(n log n) — always</text>
+      <text x="56" y="400" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">log n levels of recursion</text>
+      <text x="56" y="416" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">n comparisons per level → n log n total</text>
+      <!-- Footer -->
+      <rect x="0" y="424" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="436" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 5.5-B · Merge sort: recursively divide array until single elements, then merge sorted halves. Each merge level does n comparisons across log n levels = O(n log n) guaranteed.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Merge sort on [5, 3, 8, 1]. The divide phase recursively splits the array in half until single-element arrays are reached (trivially sorted). The conquer phase merges adjacent sorted pairs into larger sorted arrays. The merge step compares the front elements of two sorted arrays and takes the smaller — O(n) work per level. With log n recursive levels, total work is O(n log n) — guaranteed regardless of input order. Merge sort is stable (preserves equal elements' order) and optimal for comparison-based sorting by the lower-bound proof.</div>
+</div>
+
+<!-- FIG 5.5-C  Sorting Algorithm Comparison -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Reference Table</span>
+    <span class="fig-id">FIG 5.5-C</span>
+    <span class="fig-title">Sorting Algorithm Comparison — Complexity, Stability, Space</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <rect width="1200" height="360" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">SORTING ALGORITHM REFERENCE — TIME · SPACE · STABILITY · USE CASE</text>
+      <rect x="40" y="40" width="1120" height="286" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="40" width="1120" height="24" fill="#2E4057" opacity="0.08"/>
+      <g font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.08em" text-anchor="middle">
+        <text x="120" y="57">ALGORITHM</text>
+        <text x="260" y="57">BEST</text>
+        <text x="380" y="57">AVERAGE</text>
+        <text x="510" y="57">WORST</text>
+        <text x="620" y="57">SPACE</text>
+        <text x="730" y="57">STABLE?</text>
+        <text x="980" y="57">WHEN TO USE</text>
+      </g>
+      <g stroke="#E8E6DF" stroke-width="0.5">
+        <line x1="200" y1="40" x2="200" y2="326"/><line x1="320" y1="40" x2="320" y2="326"/>
+        <line x1="440" y1="40" x2="440" y2="326"/><line x1="580" y1="40" x2="580" y2="326"/>
+        <line x1="660" y1="40" x2="660" y2="326"/><line x1="800" y1="40" x2="800" y2="326"/>
+      </g>
+      <g font-family="'JetBrains Mono',monospace" font-size="11">
+        <!-- Bubble -->
+        <rect x="40" y="64" width="1120" height="36" fill="#F8F7F3"/>
+        <text x="120" y="87" text-anchor="middle" fill="#C82A2A">Bubble</text>
+        <text x="260" y="87" text-anchor="middle" fill="#728C69">O(n)</text>
+        <text x="380" y="87" text-anchor="middle" fill="#C82A2A">O(n²)</text>
+        <text x="510" y="87" text-anchor="middle" fill="#C82A2A">O(n²)</text>
+        <text x="620" y="87" text-anchor="middle" fill="#728C69">O(1)</text>
+        <text x="730" y="87" text-anchor="middle" fill="#728C69">Yes</text>
+        <text x="980" y="87" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Teaching only</text>
+        <!-- Selection -->
+        <rect x="40" y="100" width="1120" height="36" fill="#FDFDFD"/>
+        <text x="120" y="123" text-anchor="middle" fill="#8B6914">Selection</text>
+        <text x="260" y="123" text-anchor="middle" fill="#C82A2A">O(n²)</text>
+        <text x="380" y="123" text-anchor="middle" fill="#C82A2A">O(n²)</text>
+        <text x="510" y="123" text-anchor="middle" fill="#C82A2A">O(n²)</text>
+        <text x="620" y="123" text-anchor="middle" fill="#728C69">O(1)</text>
+        <text x="730" y="123" text-anchor="middle" fill="#C82A2A">No</text>
+        <text x="980" y="123" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Minimise swaps</text>
+        <!-- Insertion -->
+        <rect x="40" y="136" width="1120" height="36" fill="#F8F7F3"/>
+        <text x="120" y="159" text-anchor="middle" fill="#2E4057">Insertion</text>
+        <text x="260" y="159" text-anchor="middle" fill="#728C69">O(n)</text>
+        <text x="380" y="159" text-anchor="middle" fill="#C82A2A">O(n²)</text>
+        <text x="510" y="159" text-anchor="middle" fill="#C82A2A">O(n²)</text>
+        <text x="620" y="159" text-anchor="middle" fill="#728C69">O(1)</text>
+        <text x="730" y="159" text-anchor="middle" fill="#728C69">Yes</text>
+        <text x="980" y="159" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Small / nearly-sorted arrays</text>
+        <!-- Merge -->
+        <rect x="40" y="172" width="1120" height="36" fill="#FDFDFD"/>
+        <text x="120" y="195" text-anchor="middle" fill="#728C69">Merge</text>
+        <text x="260" y="195" text-anchor="middle" fill="#728C69">O(n log n)</text>
+        <text x="380" y="195" text-anchor="middle" fill="#728C69">O(n log n)</text>
+        <text x="510" y="195" text-anchor="middle" fill="#728C69">O(n log n)</text>
+        <text x="620" y="195" text-anchor="middle" fill="#8B6914">O(n)</text>
+        <text x="730" y="195" text-anchor="middle" fill="#728C69">Yes</text>
+        <text x="980" y="195" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Stable sort, guaranteed O(n log n)</text>
+        <!-- Heap -->
+        <rect x="40" y="208" width="1120" height="36" fill="#F8F7F3"/>
+        <text x="120" y="231" text-anchor="middle" fill="#2E4057">Heap</text>
+        <text x="260" y="231" text-anchor="middle" fill="#728C69">O(n log n)</text>
+        <text x="380" y="231" text-anchor="middle" fill="#728C69">O(n log n)</text>
+        <text x="510" y="231" text-anchor="middle" fill="#728C69">O(n log n)</text>
+        <text x="620" y="231" text-anchor="middle" fill="#728C69">O(1)</text>
+        <text x="730" y="231" text-anchor="middle" fill="#C82A2A">No</text>
+        <text x="980" y="231" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">O(1) space, guaranteed worst case</text>
+        <!-- Quicksort -->
+        <rect x="40" y="244" width="1120" height="36" fill="#FDFDFD"/>
+        <text x="120" y="267" text-anchor="middle" fill="#728C69">Quick</text>
+        <text x="260" y="267" text-anchor="middle" fill="#728C69">O(n log n)</text>
+        <text x="380" y="267" text-anchor="middle" fill="#728C69">O(n log n)</text>
+        <text x="510" y="267" text-anchor="middle" fill="#C82A2A">O(n²)</text>
+        <text x="620" y="267" text-anchor="middle" fill="#728C69">O(log n)</text>
+        <text x="730" y="267" text-anchor="middle" fill="#C82A2A">No</text>
+        <text x="980" y="267" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Fastest in practice, cache-friendly</text>
+        <!-- Radix -->
+        <rect x="40" y="280" width="1120" height="46" fill="#F8F7F3"/>
+        <text x="120" y="309" text-anchor="middle" fill="#8B6914">Radix</text>
+        <text x="260" y="309" text-anchor="middle" fill="#728C69">O(nk)</text>
+        <text x="380" y="309" text-anchor="middle" fill="#728C69">O(nk)</text>
+        <text x="510" y="309" text-anchor="middle" fill="#728C69">O(nk)</text>
+        <text x="620" y="309" text-anchor="middle" fill="#8B6914">O(n+k)</text>
+        <text x="730" y="309" text-anchor="middle" fill="#728C69">Yes</text>
+        <text x="980" y="309" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914">Integer keys, can beat O(n log n)</text>
+      </g>
+      <!-- Footer -->
+      <rect x="0" y="340" width="1200" height="20" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="354" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 5.5-C · Quicksort is fastest in practice (cache locality). Merge sort gives guaranteed O(n log n) and stability. Radix sort can beat comparison lower bound for integer keys.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Sorting algorithm comparison across complexity, space, and stability properties. The O(n log n) lower bound applies to comparison-based sorting — no algorithm that only compares elements can sort faster in the general case. Practical choice: Quicksort for general purpose (fastest in cache, O(n log n) average), Merge Sort when stability is required, Heap Sort when guaranteed worst-case O(n log n) with O(1) space is needed, Insertion Sort for small or nearly-sorted arrays, Radix Sort when keys are integers and the digit count k is small. Python's Timsort is a hybrid merge-insertion sort optimised for real-world data patterns.</div>
+</div>
+
+</div>
+</body>
+</html>

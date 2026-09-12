@@ -1,0 +1,297 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 6.1 — Arrays and Linked Lists</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-ink:#2C2C2C;--zen-stone:#6E6E6E;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);color:var(--text-sumi);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;color:var(--text-sumi);letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--zen-indigo);color:var(--zen-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:var(--accent-red);color:var(--accent-red);background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;color:var(--text-sumi);}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 6 — DSA</div>
+  <div class="page-title">Module 6.1 — Arrays and Linked Lists</div>
+  <div class="page-sub">3 figures · Array vs Linked List · Memory Layout · Insert/Delete Operations</div>
+</div>
+<div class="figures-wrap">
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 6.1-A</span>
+    <span class="fig-title">Array vs Linked List — Memory Layout Comparison</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <rect width="1200" height="380" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">ARRAY vs LINKED LIST — PHYSICAL MEMORY LAYOUT</text>
+      <!-- ARRAY section -->
+      <text x="300" y="52" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2C2C2C">Array — Contiguous Memory</text>
+      <!-- Memory cells -->
+      <rect x="60" y="62" width="480" height="50" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">
+        <rect x="64" y="66" width="72" height="42" fill="#2E4057" opacity="0.8"/><text x="100" y="92" fill="#FDFDFD">10</text>
+        <rect x="136" y="66" width="72" height="42" fill="#2E4057" opacity="0.65"/><text x="172" y="92" fill="#FDFDFD">20</text>
+        <rect x="208" y="66" width="72" height="42" fill="#2E4057" opacity="0.5"/><text x="244" y="92" fill="#FDFDFD">30</text>
+        <rect x="280" y="66" width="72" height="42" fill="#2E4057" opacity="0.5"/><text x="316" y="92" fill="#FDFDFD">40</text>
+        <rect x="352" y="66" width="72" height="42" fill="#2E4057" opacity="0.5"/><text x="388" y="92" fill="#FDFDFD">50</text>
+        <rect x="424" y="66" width="72" height="42" fill="#2E4057" opacity="0.65"/><text x="460" y="92" fill="#FDFDFD">60</text>
+      </g>
+      <!-- Address labels -->
+      <g font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle" fill="#888880">
+        <text x="100" y="120">0x100</text><text x="172" y="120">0x104</text>
+        <text x="244" y="120">0x108</text><text x="316" y="120">0x10C</text>
+        <text x="388" y="120">0x110</text><text x="460" y="120">0x114</text>
+      </g>
+      <!-- Index access annotation -->
+      <path d="M100 62 L100 44" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+      <text x="100" y="40" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">arr[0]</text>
+      <path d="M316" y1="62" />
+      <!-- O(1) access annotation -->
+      <rect x="60" y="134" width="480" height="38" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="300" y="150" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">arr[i] = base_addr + i × element_size</text>
+      <text x="300" y="165" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">Random access: O(1) — one multiplication + addition</text>
+      <!-- Properties -->
+      <rect x="60" y="182" width="480" height="160" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="76" y="202" fill="#728C69">✓ O(1) random access by index</text>
+        <text x="76" y="220" fill="#728C69">✓ Cache-friendly (contiguous memory)</text>
+        <text x="76" y="238" fill="#C82A2A">✗ O(n) insert/delete (shift elements)</text>
+        <text x="76" y="256" fill="#C82A2A">✗ Fixed size (static array)</text>
+        <text x="76" y="274" fill="#C82A2A">✗ Wasted space if sparsely filled</text>
+        <text x="76" y="298" fill="#888880" font-size="9">Use: known size, frequent random access</text>
+        <text x="76" y="314" fill="#888880" font-size="9">Examples: image pixels, lookup tables, sorting</text>
+        <text x="76" y="330" fill="#888880" font-size="9">Languages: C arr[], Python list, Java ArrayList</text>
+      </g>
+      <!-- LINKED LIST section -->
+      <text x="900" y="52" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2C2C2C">Linked List — Scattered Memory</text>
+      <!-- Nodes with pointers -->
+      <g>
+        <!-- Node 1 at 0x200 -->
+        <rect x="620" y="66" width="100" height="42" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1"/>
+        <rect x="620" y="66" width="52" height="42" fill="#C82A2A" opacity="0.15"/>
+        <rect x="672" y="66" width="48" height="42" fill="#C82A2A" opacity="0.25"/>
+        <text x="646" y="92" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2C2C2C">10</text>
+        <text x="696" y="88" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">→0x450</text>
+        <text x="670" y="120" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">0x200</text>
+        <!-- Arrow to node 2 -->
+        <path d="M720 87 Q820 40 870 87" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+        <path d="M866 84 L874 88 L866 92" fill="#C82A2A"/>
+        <!-- Node 2 at 0x450 -->
+        <rect x="790" y="66" width="100" height="42" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1"/>
+        <rect x="790" y="66" width="52" height="42" fill="#C82A2A" opacity="0.15"/>
+        <rect x="842" y="66" width="48" height="42" fill="#C82A2A" opacity="0.25"/>
+        <text x="816" y="92" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2C2C2C">20</text>
+        <text x="866" y="88" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">→0x830</text>
+        <text x="840" y="120" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">0x450</text>
+        <!-- Arrow to node 3 -->
+        <path d="M890 87 Q980 40 1030 87" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+        <path d="M1026 84 L1034 88 L1026 92" fill="#C82A2A"/>
+        <!-- Node 3 at 0x830 -->
+        <rect x="960" y="66" width="100" height="42" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1"/>
+        <rect x="960" y="66" width="52" height="42" fill="#C82A2A" opacity="0.15"/>
+        <rect x="1012" y="66" width="48" height="42" fill="#C82A2A" opacity="0.25"/>
+        <text x="986" y="92" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2C2C2C">30</text>
+        <text x="1036" y="88" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">NULL</text>
+        <text x="1010" y="120" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">0x830</text>
+      </g>
+      <!-- Head pointer -->
+      <path d="M600" y1="87"/><path d="M580 87 L618 87" stroke="#2E4057" stroke-width="2" fill="none"/>
+      <path d="M614 83 L622 87 L614 91" fill="#2E4057"/>
+      <text x="560" y="91" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2E4057">head</text>
+      <!-- Scattered memory annotation -->
+      <rect x="620" y="134" width="540" height="38" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="890" y="150" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">Access arr[2]: head → next → next — O(n) traversal</text>
+      <text x="890" y="165" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Nodes scattered in memory — each hop may miss cache</text>
+      <!-- Properties -->
+      <rect x="620" y="182" width="540" height="160" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="636" y="202" fill="#728C69">✓ O(1) insert/delete (with pointer)</text>
+        <text x="636" y="220" fill="#728C69">✓ Dynamic size — grows as needed</text>
+        <text x="636" y="238" fill="#728C69">✓ No wasted pre-allocated space</text>
+        <text x="636" y="256" fill="#C82A2A">✗ O(n) random access (must traverse)</text>
+        <text x="636" y="274" fill="#C82A2A">✗ Extra memory for each pointer (8 bytes)</text>
+        <text x="636" y="298" fill="#888880" font-size="9">Use: frequent insert/delete, unknown size</text>
+        <text x="636" y="314" fill="#888880" font-size="9">Examples: undo history, LRU cache, adjacency list</text>
+        <text x="636" y="330" fill="#888880" font-size="9">Languages: C struct+ptr, Python deque, Java LinkedList</text>
+      </g>
+      <rect x="0" y="358" width="1200" height="22" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="373" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 6.1-A</text>
+      <text x="120" y="373" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Array: contiguous memory enables O(1) indexed access via arithmetic. Linked list: each node stores data + next pointer, scattered in memory — O(1) insert but O(n) access.</text>
+      <text x="1140" y="373" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 6.1</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Array vs linked list memory layout. Arrays store elements at consecutive addresses — index i is found by one multiply-and-add: base + i×size, giving O(1) random access. Linked list nodes are scattered anywhere in the heap, connected by pointers. Accessing element i requires following i pointers from the head — O(n). However, inserting or deleting in a linked list only requires updating two pointers — O(1) once the position is known. The fundamental trade-off: arrays are fast to read, linked lists are fast to modify structurally.</div>
+</div>
+
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 6.1-B</span>
+    <span class="fig-title">Linked List Insert and Delete — Pointer Manipulation</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="30" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="20" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">LINKED LIST: INSERT AFTER NODE A · DELETE NODE B</text>
+      <!-- INSERT diagram -->
+      <text x="280" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69" letter-spacing="0.1em">INSERT NEW NODE BETWEEN A AND B</text>
+      <!-- Before state -->
+      <text x="80" y="76" font-family="'Inter',sans-serif" font-size="9" fill="#888880">BEFORE:</text>
+      <rect x="80" y="84" width="80" height="32" fill="#2E4057" opacity="0.7"/>
+      <text x="120" y="104" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">A</text>
+      <path d="M160 100 L220 100" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <path d="M216 96 L224 100 L216 104" fill="#2C2C2C"/>
+      <rect x="224" y="84" width="80" height="32" fill="#2E4057" opacity="0.5"/>
+      <text x="264" y="104" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">B</text>
+      <path d="M304 100 L360 100" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <path d="M356 96 L364 100 L356 104" fill="#2C2C2C"/>
+      <rect x="364" y="84" width="80" height="32" fill="#2E4057" opacity="0.5"/>
+      <text x="404" y="104" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">C</text>
+      <!-- After insert -->
+      <text x="80" y="156" font-family="'Inter',sans-serif" font-size="9" fill="#888880">AFTER:</text>
+      <rect x="80" y="164" width="80" height="32" fill="#2E4057" opacity="0.7"/>
+      <text x="120" y="184" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">A</text>
+      <!-- A now points to NEW -->
+      <path d="M160 180 Q196 150 224 180" stroke="#728C69" stroke-width="2" fill="none"/>
+      <path d="M220 177 L228 181 L220 185" fill="#728C69"/>
+      <rect x="224" y="164" width="80" height="32" fill="#728C69" opacity="0.8"/>
+      <text x="264" y="184" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">NEW</text>
+      <!-- NEW points to B -->
+      <path d="M304 180 L360 180" stroke="#728C69" stroke-width="2" fill="none"/>
+      <path d="M356 176 L364 180 L356 184" fill="#728C69"/>
+      <rect x="364" y="164" width="80" height="32" fill="#2E4057" opacity="0.5"/>
+      <text x="404" y="184" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">B</text>
+      <path d="M444 180 L500 180" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <path d="M496 176 L504 180 L496 184" fill="#2C2C2C"/>
+      <rect x="504" y="164" width="80" height="32" fill="#2E4057" opacity="0.5"/>
+      <text x="544" y="184" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">C</text>
+      <!-- Steps -->
+      <rect x="80" y="212" width="500" height="48" fill="#FDFDFD" stroke="#728C69" stroke-width="0.5"/>
+      <text x="96" y="232" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">new_node.next = A.next   // NEW → B</text>
+      <text x="96" y="252" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">A.next = new_node        // A → NEW</text>
+      <text x="600" y="238" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">2 pointer updates → O(1)</text>
+      <!-- DIVIDER -->
+      <line x1="640" y1="40" x2="640" y2="290" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- DELETE diagram -->
+      <text x="920" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">DELETE NODE B</text>
+      <text x="660" y="76" font-family="'Inter',sans-serif" font-size="9" fill="#888880">BEFORE:</text>
+      <rect x="660" y="84" width="80" height="32" fill="#2E4057" opacity="0.7"/>
+      <text x="700" y="104" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">A</text>
+      <path d="M740 100 L800 100" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <path d="M796 96 L804 100 L796 104" fill="#2C2C2C"/>
+      <rect x="804" y="84" width="80" height="32" fill="#C82A2A" opacity="0.7"/>
+      <text x="844" y="104" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">B</text>
+      <path d="M884 100 L944 100" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <path d="M940 96 L948 100 L940 104" fill="#2C2C2C"/>
+      <rect x="948" y="84" width="80" height="32" fill="#2E4057" opacity="0.5"/>
+      <text x="988" y="104" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">C</text>
+      <text x="660" y="156" font-family="'Inter',sans-serif" font-size="9" fill="#888880">AFTER:</text>
+      <rect x="660" y="164" width="80" height="32" fill="#2E4057" opacity="0.7"/>
+      <text x="700" y="184" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">A</text>
+      <!-- A now points directly to C, skipping B -->
+      <path d="M740 180 Q870 140 940 180" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M936 177 L944 181 L936 185" fill="#C82A2A"/>
+      <!-- B shown as freed -->
+      <rect x="804" y="164" width="80" height="32" fill="#888880" opacity="0.2" stroke="#888880" stroke-width="1" stroke-dasharray="4,2"/>
+      <text x="844" y="184" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#888880">B</text>
+      <text x="844" y="208" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">freed</text>
+      <rect x="948" y="164" width="80" height="32" fill="#2E4057" opacity="0.5"/>
+      <text x="988" y="184" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">C</text>
+      <rect x="660" y="212" width="500" height="48" fill="#FDFDFD" stroke="#C82A2A" stroke-width="0.5"/>
+      <text x="676" y="232" font-family="'JetBrains Mono',monospace" font-size="10" fill="#C82A2A">A.next = B.next          // A → C</text>
+      <text x="676" y="252" font-family="'JetBrains Mono',monospace" font-size="10" fill="#C82A2A">free(B)                  // deallocate B</text>
+      <rect x="0" y="298" width="1200" height="22" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="313" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 6.1-B · Linked list insert and delete each require only 1–2 pointer updates — O(1) once the position is known. Compare with array insert which requires shifting all subsequent elements.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Linked list pointer manipulation for insert and delete. Inserting a new node between A and B requires exactly two pointer updates: new_node.next = A.next, then A.next = new_node — no element shifting, no reallocation, O(1). Deleting node B requires one update: A.next = B.next — then free B's memory. The critical caveat: both operations require knowing the predecessor node. Finding that predecessor still costs O(n) traversal from the head. Doubly-linked lists add a prev pointer to each node, enabling O(1) delete given only the node itself.</div>
+</div>
+
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Reference Table</span>
+    <span class="fig-id">FIG 6.1-C</span>
+    <span class="fig-title">Array vs Linked List — Operation Complexity Summary</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:230px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="30" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="20" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">OPERATION COMPLEXITY: ARRAY vs SINGLY LINKED LIST vs DOUBLY LINKED LIST</text>
+      <rect x="40" y="36" width="1120" height="210" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="36" width="1120" height="24" fill="#2E4057" opacity="0.08"/>
+      <g font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.08em" text-anchor="middle">
+        <text x="180" y="53">OPERATION</text>
+        <text x="440" y="53">ARRAY</text>
+        <text x="700" y="53">SINGLY LINKED</text>
+        <text x="960" y="53">DOUBLY LINKED</text>
+      </g>
+      <g stroke="#E8E6DF" stroke-width="0.5">
+        <line x1="320" y1="36" x2="320" y2="246"/><line x1="560" y1="36" x2="560" y2="246"/>
+        <line x1="840" y1="36" x2="840" y2="246"/>
+      </g>
+      <g font-family="'JetBrains Mono',monospace" font-size="12">
+        <rect x="40" y="60" width="1120" height="30" fill="#F8F7F3"/>
+        <text x="180" y="80" text-anchor="middle" font-family="'Inter',sans-serif" fill="#2C2C2C">Access by index</text>
+        <text x="440" y="80" text-anchor="middle" fill="#728C69">O(1)</text>
+        <text x="700" y="80" text-anchor="middle" fill="#C82A2A">O(n)</text>
+        <text x="960" y="80" text-anchor="middle" fill="#C82A2A">O(n)</text>
+        <rect x="40" y="90" width="1120" height="30" fill="#FDFDFD"/>
+        <text x="180" y="110" text-anchor="middle" font-family="'Inter',sans-serif" fill="#2C2C2C">Search (unsorted)</text>
+        <text x="440" y="110" text-anchor="middle" fill="#C82A2A">O(n)</text>
+        <text x="700" y="110" text-anchor="middle" fill="#C82A2A">O(n)</text>
+        <text x="960" y="110" text-anchor="middle" fill="#C82A2A">O(n)</text>
+        <rect x="40" y="120" width="1120" height="30" fill="#F8F7F3"/>
+        <text x="180" y="140" text-anchor="middle" font-family="'Inter',sans-serif" fill="#2C2C2C">Insert at front</text>
+        <text x="440" y="140" text-anchor="middle" fill="#C82A2A">O(n)</text>
+        <text x="700" y="140" text-anchor="middle" fill="#728C69">O(1)</text>
+        <text x="960" y="140" text-anchor="middle" fill="#728C69">O(1)</text>
+        <rect x="40" y="150" width="1120" height="30" fill="#FDFDFD"/>
+        <text x="180" y="170" text-anchor="middle" font-family="'Inter',sans-serif" fill="#2C2C2C">Insert at back</text>
+        <text x="440" y="170" text-anchor="middle" fill="#728C69">O(1)*</text>
+        <text x="700" y="170" text-anchor="middle" fill="#C82A2A">O(n)</text>
+        <text x="960" y="170" text-anchor="middle" fill="#728C69">O(1) w/tail</text>
+        <rect x="40" y="180" width="1120" height="30" fill="#F8F7F3"/>
+        <text x="180" y="200" text-anchor="middle" font-family="'Inter',sans-serif" fill="#2C2C2C">Delete given node</text>
+        <text x="440" y="200" text-anchor="middle" fill="#C82A2A">O(n)</text>
+        <text x="700" y="200" text-anchor="middle" fill="#C82A2A">O(n) find pred</text>
+        <text x="960" y="200" text-anchor="middle" fill="#728C69">O(1)</text>
+        <rect x="40" y="210" width="1120" height="36" fill="#FDFDFD"/>
+        <text x="180" y="230" text-anchor="middle" font-family="'Inter',sans-serif" fill="#2C2C2C">Memory overhead</text>
+        <text x="440" y="230" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">0 extra bytes/elem</text>
+        <text x="700" y="230" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914">+8 bytes (next ptr)</text>
+        <text x="960" y="230" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">+16 bytes (prev+next)</text>
+      </g>
+      <rect x="0" y="260" width="1200" height="20" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="274" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 6.1-C · *Amortized O(1) for dynamic array append. O(1) insert/delete in doubly linked list requires a reference to the node itself — no traversal needed.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Operation complexity table for arrays, singly linked lists, and doubly linked lists. The doubly linked list achieves O(1) delete when given a direct node reference because each node knows its predecessor through prev. Arrays achieve O(1) append amortized — dynamic arrays (Python list, C++ vector) occasionally resize by doubling capacity, but the average cost per append over N operations is O(1). The practical choice depends on the dominant operation: favour arrays for indexed reads, favour doubly linked lists for frequent arbitrary insertions and deletions.</div>
+</div>
+
+</div>
+</body>
+</html>

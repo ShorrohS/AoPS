@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 8.5 — TLS/SSL: Securing the Transport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 8 — Networks &amp; Protocols</div>
+  <div class="page-title">Module 8.5 — TLS/SSL: Securing the Transport</div>
+  <div class="page-sub">3 figures · TLS 1.3 Handshake · Certificate Chain · Symmetric vs Asymmetric Encryption</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 8.5-A  TLS Handshake -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 8.5-A</span>
+    <span class="fig-title">TLS 1.3 Handshake — 1-RTT Connection with Forward Secrecy</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" style="height:360px">
+      <defs><linearGradient id="tlsBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="420" fill="url(#tlsBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">TLS 1.3 HANDSHAKE — 1 ROUND TRIP, THEN ENCRYPTED DATA</text>
+
+      <!-- Client and Server columns -->
+      <text x="180" y="52" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2E4057">Client</text>
+      <line x1="180" y1="60" x2="180" y2="390" stroke="#2E4057" stroke-width="2"/>
+      <text x="1020" y="52" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#728C69">Server</text>
+      <line x1="1020" y1="60" x2="1020" y2="390" stroke="#728C69" stroke-width="2"/>
+
+      <!-- TCP 3-way handshake (brief) -->
+      <rect x="340" y="64" width="520" height="22" fill="#888880" opacity="0.2" rx="1"/>
+      <text x="600" y="79" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">TCP 3-way handshake (1 RTT — not shown)</text>
+
+      <!-- ClientHello -->
+      <path d="M180 106 L1020 136" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M1016 132 L1024 136 L1016 140" fill="#C82A2A"/>
+      <rect x="440" y="92" width="340" height="28" fill="#C82A2A" opacity="0.8" rx="1"/>
+      <text x="610" y="106" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">ClientHello</text>
+      <text x="610" y="118" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">TLS 1.3, cipher suites, key_share (Diffie-Hellman public key)</text>
+
+      <!-- ServerHello + Certificate + Finished -->
+      <path d="M1020 186 L180 216" stroke="#728C69" stroke-width="2" fill="none"/>
+      <path d="M184 212 L176 216 L184 220" fill="#728C69"/>
+      <rect x="360" y="172" width="500" height="40" fill="#728C69" opacity="0.8" rx="1"/>
+      <text x="610" y="187" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">ServerHello + Certificate + CertVerify + Finished</text>
+      <text x="610" y="203" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">server key_share (DH public), certificate, signature, HMAC</text>
+
+      <!-- Client verifies cert, sends Finished -->
+      <rect x="80" y="226" width="200" height="36" fill="#FDFDFD" stroke="#2E4057" stroke-width="0.5" rx="1"/>
+      <text x="180" y="244" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">verify certificate</text>
+      <text x="180" y="258" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">derive session key</text>
+
+      <path d="M180 262 L1020 282" stroke="#8B6914" stroke-width="2" fill="none"/>
+      <path d="M1016 278 L1024 282 L1016 286" fill="#8B6914"/>
+      <rect x="490" y="262" width="160" height="26" fill="#8B6914" opacity="0.8" rx="1"/>
+      <text x="570" y="279" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">Finished (HMAC)</text>
+
+      <!-- Encrypted data -->
+      <path d="M180 310 L1020 330" stroke="#2E4057" stroke-width="3" fill="none"/>
+      <path d="M1016 326 L1024 330 L1016 334" fill="#2E4057"/>
+      <rect x="400" y="298" width="400" height="26" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="600" y="315" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">🔒 Encrypted HTTP request (AES-256-GCM)</text>
+
+      <path d="M1020 360 L180 380" stroke="#2E4057" stroke-width="3" fill="none"/>
+      <path d="M184 376 L176 380 L184 384" fill="#2E4057"/>
+      <rect x="400" y="348" width="400" height="26" fill="#2E4057" opacity="0.7" rx="1"/>
+      <text x="600" y="365" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">🔒 Encrypted HTTP response</text>
+
+      <!-- Key derivation side note -->
+      <rect x="1060" y="186" width="120" height="80" fill="#FDFDFD" stroke="#728C69" stroke-width="0.5" rx="1"/>
+      <text x="1120" y="204" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">ECDH key exchange</text>
+      <text x="1120" y="220" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">shared secret</text>
+      <text x="1120" y="238" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">→ HKDF → session keys</text>
+      <text x="1120" y="254" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">Forward secrecy</text>
+
+      <rect x="0" y="402" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="415" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 8.5-A · TLS 1.3 handshake: 1 RTT after TCP. Client and server exchange DH public keys, derive shared session key. Server authenticates via certificate signature. All HTTP data encrypted with AES-GCM.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">TLS 1.3 handshake — the mechanism behind HTTPS. After the TCP 3-way handshake, the client sends its Diffie-Hellman public key in ClientHello. The server responds with its own DH public key, its X.509 certificate, a signature proving it holds the private key, and a Finished HMAC. Both sides now derive an identical session key from the DH exchange without ever transmitting it — a man in the middle sees only public keys, from which deriving the session key is computationally infeasible. The client verifies the certificate chain and sends its own Finished HMAC. All subsequent HTTP data is encrypted with AES-256-GCM. Forward secrecy ensures that even if the server's private key is later compromised, past sessions (recorded by an attacker) cannot be decrypted.</div>
+</div>
+
+<!-- FIG 8.5-B  Certificate Chain -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type B — Concept Diagram</span>
+    <span class="fig-id">FIG 8.5-B</span>
+    <span class="fig-title">Certificate Chain — Root CA, Intermediate CA, Leaf Certificate</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">X.509 CERTIFICATE CHAIN — TRUST FLOWS FROM ROOT CA DOWN TO LEAF</text>
+
+      <!-- Root CA -->
+      <rect x="460" y="48" width="280" height="80" fill="#2E4057" opacity="0.85" rx="1"/>
+      <rect x="460" y="48" width="280" height="26" fill="#2E4057" opacity="0.3"/>
+      <text x="600" y="66" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Root CA</text>
+      <text x="600" y="88" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#BBBBB5">DigiCert / Let's Encrypt / Comodo</text>
+      <text x="600" y="104" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">Self-signed · Stored in OS/browser trust store</text>
+      <text x="600" y="118" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">Private key kept offline in HSM</text>
+
+      <!-- Signs arrow -->
+      <path d="M600 128 L600 156" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M596 152 L600 160 L604 152" fill="#C82A2A"/>
+      <text x="618" y="148" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">signs</text>
+
+      <!-- Intermediate CA -->
+      <rect x="360" y="160" width="480" height="80" fill="#8B6914" opacity="0.75" rx="1"/>
+      <rect x="360" y="160" width="480" height="26" fill="#8B6914" opacity="0.3"/>
+      <text x="600" y="178" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Intermediate CA</text>
+      <text x="600" y="200" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">DigiCert TLS RSA SHA256 2020 CA1</text>
+      <text x="600" y="216" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">Signed by Root CA · Can issue leaf certs · Online</text>
+      <text x="600" y="230" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">If compromised: only affects certs issued by this intermediate</text>
+
+      <!-- Signs arrow -->
+      <path d="M600 240 L600 268" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M596 264 L600 272 L604 264" fill="#C82A2A"/>
+      <text x="618" y="258" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">signs</text>
+
+      <!-- Leaf certificate -->
+      <rect x="260" y="272" width="680" height="32" fill="#728C69" opacity="0.8" rx="1"/>
+      <text x="600" y="292" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Leaf Certificate: example.com</text>
+      <text x="600" y="304" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">Subject: CN=example.com · SANs: example.com, www.example.com · Valid: 90 days · Public key for TLS</text>
+
+      <!-- Trust annotation -->
+      <rect x="30" y="60" width="200" height="80" fill="#FDFDFD" stroke="#2E4057" stroke-width="0.5" rx="1"/>
+      <rect x="30" y="60" width="4" height="80" fill="#2E4057"/>
+      <text x="48" y="80" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057">Trust store</text>
+      <text x="48" y="100" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">~150 root CAs</text>
+      <text x="48" y="118" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">pre-installed in OS</text>
+      <text x="48" y="132" font-family="'Inter',sans-serif" font-size="9" fill="#888880">browsers/OS curate list</text>
+
+      <!-- Verification box -->
+      <rect x="970" y="160" width="200" height="100" fill="#FDFDFD" stroke="#728C69" stroke-width="0.5" rx="1"/>
+      <rect x="970" y="160" width="4" height="100" fill="#728C69"/>
+      <text x="988" y="178" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69">Browser verifies:</text>
+      <text x="988" y="196" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">① cert not expired</text>
+      <text x="988" y="212" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">② hostname matches</text>
+      <text x="988" y="228" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">③ chain to trusted root</text>
+      <text x="988" y="244" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">④ not revoked (OCSP)</text>
+
+      <rect x="0" y="302" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="315" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 8.5-B · Certificate chain: browser trusts root CA (in OS trust store). Intermediate CA signed by root. Leaf cert signed by intermediate. Browser verifies entire chain to establish trust.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">X.509 certificate chain of trust. Root CAs are the anchors: ~150 of them are pre-installed in every operating system and browser trust store, and their private keys are kept offline in Hardware Security Modules. Root CAs sign Intermediate CAs, which are kept online and issue leaf certificates to websites. This two-level structure limits blast radius: if an intermediate CA is compromised, only certificates it issued are affected — the root remains secure. The leaf certificate contains the domain's public key, the allowed hostnames (SANs), validity period (90 days for Let's Encrypt), and the intermediate CA's signature. When you connect to example.com over HTTPS, your browser verifies the entire chain: leaf → intermediate → root, ensuring the certificate was issued by a trusted authority.</div>
+</div>
+
+<!-- FIG 8.5-C  Asymmetric vs Symmetric Encryption in TLS -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type E — Comparison</span>
+    <span class="fig-id">FIG 8.5-C</span>
+    <span class="fig-title">TLS Encryption Roles — Asymmetric for Key Exchange, Symmetric for Data</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:220px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">WHY TLS USES BOTH: ASYMMETRIC FOR KEY EXCHANGE, SYMMETRIC FOR BULK DATA</text>
+
+      <!-- Asymmetric (left) -->
+      <rect x="40" y="44" width="500" height="200" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5" rx="1"/>
+      <rect x="40" y="44" width="500" height="26" fill="#C82A2A" opacity="0.1"/>
+      <text x="290" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">Asymmetric (Public Key) Cryptography</text>
+      <text x="290" y="84" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">RSA, ECDSA, ECDH — used in TLS handshake only</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="60" y="110">Two mathematically linked keys:</text>
+        <text x="60" y="130" fill="#2E4057">Public key: shared openly (in certificate)</text>
+        <text x="60" y="150" fill="#C82A2A">Private key: kept secret by server</text>
+        <line x1="56" y1="160" x2="524" y2="160" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="60" y="180" fill="#C82A2A">✗ 1000× slower than symmetric</text>
+        <text x="60" y="200" fill="#728C69">✓ Solves key distribution problem</text>
+        <text x="60" y="220" fill="#888880" font-size="9">Used in TLS for: server authentication (RSA/ECDSA signature)</text>
+        <text x="60" y="234" fill="#888880" font-size="9">and key exchange (ECDH DH shared secret derivation)</text>
+      </g>
+
+      <!-- Symmetric (right) -->
+      <rect x="660" y="44" width="500" height="200" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5" rx="1"/>
+      <rect x="660" y="44" width="500" height="26" fill="#728C69" opacity="0.1"/>
+      <text x="910" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">Symmetric Encryption</text>
+      <text x="910" y="84" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">AES-256-GCM, ChaCha20-Poly1305 — used for all data</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="680" y="110">Same key for encrypt and decrypt.</text>
+        <text x="680" y="130" fill="#728C69">Session key derived from DH handshake.</text>
+        <text x="680" y="150" fill="#728C69">Both sides derive identically, never transmitted.</text>
+        <line x1="676" y1="160" x2="1144" y2="160" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="680" y="180" fill="#728C69">✓ 1000× faster than asymmetric</text>
+        <text x="680" y="200" fill="#728C69">✓ Hardware AES-NI instructions in CPU</text>
+        <text x="680" y="220" fill="#C82A2A">✗ Key distribution challenge (solved by DH)</text>
+        <text x="680" y="234" fill="#888880" font-size="9">10 Gbps encrypted throughput on a modern server</text>
+      </g>
+
+      <rect x="0" y="262" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="275" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 8.5-C · TLS uses both: asymmetric crypto in the handshake to authenticate and agree on a session key; symmetric AES-GCM for all subsequent data encryption at full line speed.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">TLS uses asymmetric and symmetric cryptography for complementary purposes. Asymmetric cryptography (RSA, ECDSA, ECDH) solves the key distribution problem — two parties can establish a shared secret over a public channel without ever transmitting the secret. But asymmetric operations are 1000× slower than symmetric ones. Symmetric cryptography (AES-256-GCM) is fast enough for bulk data — modern CPUs include AES-NI hardware instructions, enabling 10+ Gbps encrypted throughput. TLS therefore uses asymmetric crypto only in the handshake (to authenticate the server and derive the session key), then switches to symmetric AES-GCM for all application data. The session key exists only for the duration of the connection and is never stored — this is forward secrecy.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 6.2 — Stacks and Queues</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-ink:#2C2C2C;--zen-stone:#6E6E6E;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);color:var(--text-sumi);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;color:var(--text-sumi);letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--zen-indigo);color:var(--zen-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:var(--accent-red);color:var(--accent-red);background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;color:var(--text-sumi);}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 6 — DSA</div>
+  <div class="page-title">Module 6.2 — Stacks and Queues</div>
+  <div class="page-sub">3 figures · LIFO vs FIFO · Stack Applications · Queue Applications</div>
+</div>
+<div class="figures-wrap">
+
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 6.2-A</span>
+    <span class="fig-title">Stack (LIFO) vs Queue (FIFO) — Structural Comparison</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" style="height:360px">
+      <rect width="1200" height="420" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">STACK (LIFO) vs QUEUE (FIFO) — PUSH/POP AND ENQUEUE/DEQUEUE</text>
+      <!-- STACK -->
+      <text x="280" y="56" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="16" fill="#2C2C2C">Stack — Last In, First Out</text>
+      <!-- Stack container -->
+      <rect x="200" y="68" width="160" height="240" fill="#FDFDFD" stroke="#2C2C2C" stroke-width="1.5"/>
+      <!-- Stack items -->
+      <rect x="204" y="244" width="152" height="40" fill="#2E4057" opacity="0.8"/>
+      <text x="280" y="269" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">10  [bottom]</text>
+      <rect x="204" y="200" width="152" height="40" fill="#2E4057" opacity="0.6"/>
+      <text x="280" y="225" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">20</text>
+      <rect x="204" y="156" width="152" height="40" fill="#2E4057" opacity="0.4"/>
+      <text x="280" y="181" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">30</text>
+      <!-- Top item with highlight -->
+      <rect x="204" y="112" width="152" height="40" fill="#C82A2A" opacity="0.85"/>
+      <text x="280" y="137" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">40  [top]</text>
+      <!-- Push arrow -->
+      <path d="M200 92 L200 68" stroke="#728C69" stroke-width="2" fill="none" marker-end="url(#arrowGreen)"/>
+      <defs>
+        <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+          <polygon points="0 0,8 3,0 6" fill="#728C69"/>
+        </marker>
+        <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+          <polygon points="0 0,8 3,0 6" fill="#C82A2A"/>
+        </marker>
+        <marker id="arrowInk" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+          <polygon points="0 0,8 3,0 6" fill="#2C2C2C"/>
+        </marker>
+      </defs>
+      <!-- Push label -->
+      <text x="160" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#728C69">PUSH</text>
+      <path d="M160 60 L170 80" stroke="#728C69" stroke-width="1.5" fill="none"/>
+      <!-- Pop arrow -->
+      <path d="M360 112 L390 92" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <polygon points="386,88 394,92 388,98" fill="#C82A2A"/>
+      <text x="400" y="88" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#C82A2A">POP</text>
+      <text x="400" y="102" font-family="'Inter',sans-serif" font-size="9" fill="#888880">removes top</text>
+      <!-- Stack pointer -->
+      <path d="M380 132 L364 132" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <polygon points="368,128 360,132 368,136" fill="#2C2C2C"/>
+      <text x="385" y="136" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">sp (stack pointer)</text>
+      <!-- Stack operations -->
+      <rect x="100" y="330" width="360" height="60" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="280" y="350" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">push(x): sp++; stack[sp] = x  O(1)</text>
+      <text x="280" y="368" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">pop():   x = stack[sp]; sp--   O(1)</text>
+      <text x="280" y="382" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">peek():  return stack[sp]       O(1)</text>
+      <!-- QUEUE -->
+      <text x="870" y="56" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="16" fill="#2C2C2C">Queue — First In, First Out</text>
+      <!-- Queue container — horizontal -->
+      <rect x="620" y="130" width="500" height="80" fill="#FDFDFD" stroke="#2C2C2C" stroke-width="1.5"/>
+      <!-- Queue items -->
+      <rect x="624" y="134" width="96" height="72" fill="#2E4057" opacity="0.8"/>
+      <text x="672" y="168" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">10</text>
+      <text x="672" y="184" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">front</text>
+      <rect x="722" y="134" width="96" height="72" fill="#2E4057" opacity="0.6"/>
+      <text x="770" y="175" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">20</text>
+      <rect x="820" y="134" width="96" height="72" fill="#2E4057" opacity="0.4"/>
+      <text x="868" y="175" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">30</text>
+      <rect x="918" y="134" width="98" height="72" fill="#728C69" opacity="0.85"/>
+      <text x="967" y="168" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">40</text>
+      <text x="967" y="184" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">rear</text>
+      <!-- Enqueue arrow (right side) -->
+      <path d="M1120 170 L1122 170" stroke="none"/>
+      <path d="M1080 170 L1120 170" stroke="#728C69" stroke-width="2" fill="none"/>
+      <polygon points="1116,166 1124,170 1116,174" fill="#728C69"/>
+      <text x="1130" y="166" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#728C69">ENQUEUE</text>
+      <text x="1130" y="180" font-family="'Inter',sans-serif" font-size="9" fill="#888880">adds to rear</text>
+      <!-- Dequeue arrow (left side) -->
+      <path d="M620 170 L580 170" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <polygon points="584,166 576,170 584,174" fill="#C82A2A"/>
+      <text x="500" y="162" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#C82A2A">DEQUEUE</text>
+      <text x="500" y="176" font-family="'Inter',sans-serif" font-size="9" fill="#888880">removes front</text>
+      <!-- Flow arrow -->
+      <path d="M640 230 L1100 230" stroke="#2C2C2C" stroke-width="1" stroke-dasharray="4,3" fill="none"/>
+      <polygon points="1096,226 1104,230 1096,234" fill="#2C2C2C"/>
+      <text x="872" y="248" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">flow direction →</text>
+      <!-- Queue operations -->
+      <rect x="620" y="330" width="500" height="60" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="870" y="350" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">enqueue(x): rear.next = x; rear = x    O(1)</text>
+      <text x="870" y="368" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">dequeue():  x = front; front = front.next  O(1)</text>
+      <text x="870" y="382" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">peek():     return front.value            O(1)</text>
+      <!-- Footer -->
+      <rect x="0" y="400" width="1200" height="20" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="414" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 6.2-A</text>
+      <text x="120" y="414" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Stack: elements enter and exit from the same end (top) — LIFO. Queue: elements enter from one end (rear) and exit from the other (front) — FIFO. Both operations are O(1).</text>
+      <text x="1140" y="414" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 6.2</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Stack and Queue are the two fundamental access-ordered data structures. A Stack enforces Last-In-First-Out (LIFO): push adds to the top, pop removes from the top. A Queue enforces First-In-First-Out (FIFO): enqueue adds to the rear, dequeue removes from the front. Both operations are O(1) regardless of structure size when implemented with a linked list or circular buffer. The key distinction is the relationship between insertion order and retrieval order — stacks reverse it, queues preserve it.</div>
+</div>
+
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 6.2-B</span>
+    <span class="fig-title">Stack Applications — Call Stack, Undo/Redo, Expression Evaluation</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" style="height:340px">
+      <rect width="1200" height="400" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="30" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="20" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">STACK APPLICATIONS — CALL STACK · UNDO/REDO · EXPRESSION EVALUATION</text>
+      <!-- CALL STACK -->
+      <text x="180" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#2E4057" letter-spacing="0.1em">FUNCTION CALL STACK</text>
+      <text x="180" y="66" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">main() calls A(), A() calls B()</text>
+      <!-- Stack frames -->
+      <rect x="80" y="80" width="200" height="44" fill="#2E4057" opacity="0.2" stroke="#2E4057" stroke-width="1"/>
+      <text x="180" y="97" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">main()</text>
+      <text x="180" y="113" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">frame: local vars, ret addr</text>
+      <rect x="80" y="126" width="200" height="44" fill="#2E4057" opacity="0.45" stroke="#2E4057" stroke-width="1"/>
+      <text x="180" y="143" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">A(x=5)</text>
+      <text x="180" y="159" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">frame: x=5, ret addr</text>
+      <rect x="80" y="172" width="200" height="44" fill="#C82A2A" opacity="0.75" stroke="#C82A2A" stroke-width="1.5"/>
+      <text x="180" y="189" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">B(y=3)  ← active</text>
+      <text x="180" y="205" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">frame: y=3, ret addr</text>
+      <!-- Return arrow -->
+      <path d="M280 189 L320 189" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+      <text x="325" y="185" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">B returns →</text>
+      <text x="325" y="197" font-family="'Inter',sans-serif" font-size="9" fill="#888880">pop frame, resume A</text>
+      <!-- sp indicator -->
+      <path d="M60 189 L78 189" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+      <polygon points="74,185 82,189 74,193" fill="#C82A2A"/>
+      <text x="30" y="193" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">sp</text>
+      <!-- Grows down label -->
+      <path d="M60 100 L60 220" stroke="#888880" stroke-width="1" stroke-dasharray="2,2"/>
+      <polygon points="56,216 60,224 64,216" fill="#888880"/>
+      <text x="36" y="240" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">grows</text>
+      <text x="36" y="250" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">down</text>
+      <!-- UNDO/REDO -->
+      <line x1="430" y1="40" x2="430" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="620" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#2E4057" letter-spacing="0.1em">UNDO / REDO STACKS</text>
+      <!-- Two stacks side by side -->
+      <text x="530" y="72" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">UNDO stack</text>
+      <rect x="460" y="80" width="140" height="180" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="464" y="216" width="132" height="40" fill="#728C69" opacity="0.3"/>
+      <text x="530" y="241" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">type "H"</text>
+      <rect x="464" y="172" width="132" height="40" fill="#728C69" opacity="0.5"/>
+      <text x="530" y="197" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">type "He"</text>
+      <rect x="464" y="128" width="132" height="40" fill="#728C69" opacity="0.7"/>
+      <text x="530" y="153" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">type "Hel"</text>
+      <rect x="464" y="84" width="132" height="40" fill="#728C69" opacity="0.9"/>
+      <text x="530" y="102" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">type "Hell" ← top</text>
+      <!-- Undo action -->
+      <path d="M600 104 L650 104" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <polygon points="646,100 654,104 646,108" fill="#C82A2A"/>
+      <text x="657" y="100" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">Ctrl+Z</text>
+      <text x="710" y="72" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#C82A2A">REDO stack</text>
+      <rect x="660" y="80" width="140" height="180" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="664" y="84" width="132" height="40" fill="#C82A2A" opacity="0.7"/>
+      <text x="730" y="102" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">type "Hell" ← top</text>
+      <text x="730" y="170" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#888880">(empty below)</text>
+      <!-- EXPRESSION EVAL -->
+      <line x1="870" y1="40" x2="870" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="1040" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#2E4057" letter-spacing="0.1em">EXPRESSION EVALUATION</text>
+      <text x="1040" y="66" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">( 3 + 4 ) × 2 → postfix: 3 4 + 2 ×</text>
+      <!-- Steps -->
+      <g font-family="'JetBrains Mono',monospace" font-size="10">
+        <rect x="890" y="80" width="300" height="26" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="904" y="97" fill="#888880">Token: 3    → push  Stack: [3]</text>
+        <rect x="890" y="110" width="300" height="26" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="904" y="127" fill="#888880">Token: 4    → push  Stack: [3, 4]</text>
+        <rect x="890" y="140" width="300" height="26" fill="#728C69" opacity="0.15" stroke="#728C69" stroke-width="0.5"/>
+        <text x="904" y="157" fill="#728C69">Token: +    → pop 4, pop 3, push 7</text>
+        <rect x="890" y="170" width="300" height="26" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="904" y="187" fill="#888880">Token: 2    → push  Stack: [7, 2]</text>
+        <rect x="890" y="200" width="300" height="26" fill="#C82A2A" opacity="0.15" stroke="#C82A2A" stroke-width="0.5"/>
+        <text x="904" y="217" fill="#C82A2A">Token: ×    → pop 2, pop 7, push 14</text>
+        <rect x="890" y="230" width="300" height="26" fill="#2E4057" opacity="0.15" stroke="#2E4057" stroke-width="0.5"/>
+        <text x="904" y="247" fill="#2E4057">End: pop → result = 14  ✓</text>
+      </g>
+      <!-- Footer -->
+      <rect x="0" y="378" width="1200" height="22" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="393" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 6.2-B</text>
+      <text x="120" y="393" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Three canonical stack applications: the function call stack (frames pushed/popped on each call/return), undo/redo (two stacks transfer actions between them), and postfix expression evaluation (operands pushed, operators pop operands and push results).</text>
+      <text x="1140" y="393" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 6.2</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Three canonical stack applications. The function call stack tracks activation frames — each function call pushes a frame containing local variables and the return address; return pops the frame and resumes the caller. Undo/redo systems maintain two stacks: Ctrl+Z pops from the undo stack and pushes onto the redo stack; Ctrl+Y reverses this. Postfix (Reverse Polish Notation) expression evaluation uses a single stack — operands are pushed, operators pop their operands, compute, and push the result. All three rely on LIFO order as a correctness requirement, not an optimisation.</div>
+</div>
+
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Reference Table</span>
+    <span class="fig-id">FIG 6.2-C</span>
+    <span class="fig-title">Queue Applications — BFS Frontier, Task Scheduling, Print Queue</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <rect width="1200" height="380" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="30" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="20" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">QUEUE APPLICATIONS — BFS FRONTIER · TASK SCHEDULING · PRINT QUEUE</text>
+      <!-- BFS Frontier -->
+      <text x="200" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#2E4057" letter-spacing="0.1em">BFS FRONTIER QUEUE</text>
+      <!-- Graph nodes -->
+      <circle cx="200" cy="110" r="22" fill="#2E4057" opacity="0.8"/>
+      <text x="200" y="115" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">A</text>
+      <text x="200" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">visited ①</text>
+      <line x1="222" y1="100" x2="278" y2="80" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="222" y1="120" x2="278" y2="140" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="300" cy="75" r="22" fill="#728C69" opacity="0.8"/>
+      <text x="300" y="80" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">B</text>
+      <text x="300" y="106" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">visited ②</text>
+      <circle cx="300" cy="150" r="22" fill="#728C69" opacity="0.8"/>
+      <text x="300" y="155" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">C</text>
+      <text x="300" y="180" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">visited ③</text>
+      <line x1="322" y1="75" x2="358" y2="75" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="322" y1="150" x2="358" y2="130" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="380" cy="75" r="22" fill="#C82A2A" opacity="0.7"/>
+      <text x="380" y="80" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">D</text>
+      <text x="380" y="106" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">in queue ④</text>
+      <circle cx="380" cy="130" r="22" fill="#C82A2A" opacity="0.7"/>
+      <text x="380" y="135" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">E</text>
+      <text x="380" y="156" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">in queue ⑤</text>
+      <!-- Queue state -->
+      <rect x="80" y="200" width="320" height="36" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="100" y="214" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Queue state:</text>
+      <rect x="190" y="204" width="54" height="28" fill="#C82A2A" opacity="0.6"/>
+      <text x="217" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">D</text>
+      <rect x="246" y="204" width="54" height="28" fill="#C82A2A" opacity="0.4"/>
+      <text x="273" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">E</text>
+      <text x="185" y="236" font-family="'Inter',sans-serif" font-size="8" fill="#888880">dequeue</text>
+      <text x="290" y="236" font-family="'Inter',sans-serif" font-size="8" fill="#888880">enqueue</text>
+      <text x="240" y="258" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">BFS guarantees shortest path in unweighted graph</text>
+      <!-- TASK SCHEDULING -->
+      <line x1="470" y1="38" x2="470" y2="340" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="660" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#2E4057" letter-spacing="0.1em">ROUND-ROBIN TASK SCHEDULING</text>
+      <!-- CPU -->
+      <rect x="566" y="70" width="90" height="50" fill="#2E4057" opacity="0.8" rx="2"/>
+      <text x="611" y="91" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#FDFDFD">CPU</text>
+      <text x="611" y="107" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">running P1</text>
+      <!-- Ready queue -->
+      <text x="700" y="68" font-family="'Inter',sans-serif" font-size="9" fill="#888880">ready queue →</text>
+      <rect x="660" y="74" width="60" height="42" fill="#728C69" opacity="0.7"/>
+      <text x="690" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">P2</text>
+      <rect x="722" y="74" width="60" height="42" fill="#728C69" opacity="0.5"/>
+      <text x="752" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">P3</text>
+      <rect x="784" y="74" width="60" height="42" fill="#728C69" opacity="0.35"/>
+      <text x="814" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">P4</text>
+      <!-- Time slice arrows -->
+      <path d="M660 120 L610 122 L610 120" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+      <text x="635" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">time slice expires</text>
+      <text x="635" y="152" font-family="'Inter',sans-serif" font-size="9" fill="#888880">P1 → back of queue</text>
+      <!-- Timeline -->
+      <rect x="486" y="180" width="380" height="24" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <rect x="486" y="180" width="60" height="24" fill="#2E4057" opacity="0.6"/>
+      <text x="516" y="196" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">P1</text>
+      <rect x="546" y="180" width="60" height="24" fill="#728C69" opacity="0.6"/>
+      <text x="576" y="196" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">P2</text>
+      <rect x="606" y="180" width="60" height="24" fill="#8B6914" opacity="0.6"/>
+      <text x="636" y="196" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">P3</text>
+      <rect x="666" y="180" width="60" height="24" fill="#C82A2A" opacity="0.5"/>
+      <text x="696" y="196" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">P4</text>
+      <rect x="726" y="180" width="60" height="24" fill="#2E4057" opacity="0.6"/>
+      <text x="756" y="196" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">P1</text>
+      <rect x="786" y="180" width="60" height="24" fill="#728C69" opacity="0.6"/>
+      <text x="816" y="196" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">P2…</text>
+      <text x="676" y="218" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">time →</text>
+      <!-- PRINT QUEUE -->
+      <line x1="900" y1="38" x2="900" y2="340" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="1060" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#2E4057" letter-spacing="0.1em">PRINT QUEUE (SPOOLER)</text>
+      <!-- Print jobs -->
+      <g>
+        <rect x="920" y="68" width="280" height="36" fill="#FDFDFD" stroke="#728C69" stroke-width="1"/>
+        <text x="930" y="82" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">① report.pdf — 12 pages  [printing]</text>
+        <text x="930" y="96" font-family="'Inter',sans-serif" font-size="8" fill="#728880">submitted 09:01</text>
+        <rect x="920" y="108" width="280" height="36" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="930" y="122" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">② slides.pdf — 24 pages  [queued]</text>
+        <text x="930" y="136" font-family="'Inter',sans-serif" font-size="8" fill="#888880">submitted 09:03</text>
+        <rect x="920" y="148" width="280" height="36" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="930" y="162" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">③ invoice.pdf — 2 pages   [queued]</text>
+        <text x="930" y="176" font-family="'Inter',sans-serif" font-size="8" fill="#888880">submitted 09:07</text>
+      </g>
+      <text x="1060" y="208" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">FIFO ensures fairness — first submitted, first printed.</text>
+      <text x="1060" y="222" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">No job starves; no job jumps the queue.</text>
+      <!-- Footer -->
+      <rect x="0" y="358" width="1200" height="22" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="373" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 6.2-C</text>
+      <text x="120" y="373" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Queue applications all share one property: the order of arrival determines the order of service. BFS, scheduling, and I/O spooling all rely on FIFO fairness guarantees.</text>
+      <text x="1140" y="373" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 6.2</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Three canonical queue applications. BFS uses a queue as its frontier — visited nodes' unvisited neighbours are enqueued, ensuring nodes are explored in order of increasing distance from the source, which guarantees shortest-path correctness on unweighted graphs. Round-robin CPU scheduling rotates processes through the ready queue, giving each a time slice in arrival order for fair CPU sharing. Print spoolers queue jobs in submission order so no document is skipped. All three require FIFO ordering as a correctness invariant, not merely a convenience.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 0.4 Illustrations — Babbage and Ada: The First Programmers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-paper:#F4F3EF; --bg-washi:#FDFDFD; --bg-warm:#EEECE6;
+    --text-sumi:#1C1C1C; --text-body:#3A3A3A; --text-muted:#888880; --text-ghost:#BBBBB5;
+    --accent-red:#C82A2A; --accent-indigo:#1C2D42; --accent-gold:#8B6914;
+    --border-light:#D8D6CE; --border-paper:#E8E6DF;
+    --zen-sand:#F4EFE6; --zen-ink:#2C2C2C; --zen-stone:#6E6E6E;
+    --zen-bamboo:#728C69; --zen-indigo:#2E4057;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg-paper); color: var(--text-sumi); font-family: 'Inter', sans-serif; font-weight: 300; }
+  .page-header { padding: 40px 60px 32px; border-bottom: 1px solid var(--border-light); background: var(--bg-washi); }
+  .breadcrumb { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-muted); margin-bottom: 10px; }
+  .breadcrumb a { color: var(--accent-indigo); text-decoration: none; }
+  .page-title { font-family: 'Noto Serif JP', serif; font-size: 28px; font-weight: 300; letter-spacing: -0.01em; margin-bottom: 6px; }
+  .page-sub { font-size: 13px; color: var(--text-muted); }
+  .figures-wrap { padding: 52px 60px 80px; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 80px; }
+  .figure-label { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+  .fig-type { font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.16em; padding: 4px 8px; border: 1px solid; }
+  .fig-type.hero { border-color: var(--accent-indigo); color: var(--accent-indigo); background: rgba(44,64,87,0.04); }
+  .fig-type.diag { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(139,105,20,0.04); }
+  .fig-type.hist { border-color: var(--zen-bamboo); color: var(--zen-bamboo); background: rgba(114,140,105,0.04); }
+  .fig-type.sim  { border-color: var(--accent-red); color: var(--accent-red); background: rgba(200,42,42,0.04); }
+  .fig-id { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-ghost); }
+  .fig-title { font-size: 15px; font-weight: 500; color: var(--text-sumi); }
+  .fig-caption { font-size: 12px; color: var(--text-muted); margin-top: 10px; line-height: 1.6; max-width: 800px; border-left: 2px solid var(--border-paper); padding-left: 14px; }
+  .fig-frame { background: var(--zen-sand); border: 1px solid var(--border-paper); overflow: hidden; }
+  .fig-frame svg { display: block; width: 100%; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 0 — Before Computers</div>
+  <div class="page-title">Module 0.4 — Babbage and Ada: The First Programmers</div>
+  <div class="page-sub">5 figures · Chapter Hero · Difference Engine · Analytical Engine Architecture · Ada's Note G · Simulation Figure</div>
+</div>
+
+<div class="figures-wrap">
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIGURE 0.4-A  Chapter Hero — The Engine and the Algorithm
+════════════════════════════════════════════════════════════ -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 0.4-A</span>
+    <span class="fig-title">The Analytical Engine — Babbage's Vision of a General-Purpose Computer</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 560" xmlns="http://www.w3.org/2000/svg" style="height:480px">
+      <defs>
+        <linearGradient id="heroBg04" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EDE6DA"/>
+          <stop offset="100%" stop-color="#E4DDD0"/>
+        </linearGradient>
+        <linearGradient id="brassGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#D4BC88"/>
+          <stop offset="50%" stop-color="#C0A870"/>
+          <stop offset="100%" stop-color="#B09060"/>
+        </linearGradient>
+        <linearGradient id="steelGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C8C4BC"/>
+          <stop offset="100%" stop-color="#A8A4A0"/>
+        </linearGradient>
+        <filter id="engShadow">
+          <feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="#2C2C2C" flood-opacity="0.15"/>
+        </filter>
+      </defs>
+
+      <rect width="1200" height="560" fill="url(#heroBg04)"/>
+
+      <!-- ── DIFFERENCE ENGINE COLUMNS (left section) ── -->
+      <!-- Base plate -->
+      <rect x="60" y="380" width="440" height="18" rx="1" fill="url(#brassGrad)" stroke="#988050" stroke-width="1"/>
+      <!-- Column supports -->
+      <rect x="60" y="160" width="440" height="220" rx="1" fill="#D8D0C0" stroke="#B8B0A0" stroke-width="1"/>
+
+      <!-- 6 column towers -->
+      <g>
+        <!-- Tower 1 -->
+        <rect x="76" y="170" width="52" height="210" rx="1" fill="url(#steelGrad)" stroke="#A8A4A0" stroke-width="1" filter="url(#engShadow)"/>
+        <!-- Digit wheels on tower 1 -->
+        <g fill="url(#brassGrad)" stroke="#988050" stroke-width="0.8">
+          <rect x="80" y="176" width="44" height="26" rx="1"/>
+          <rect x="80" y="206" width="44" height="26" rx="1"/>
+          <rect x="80" y="236" width="44" height="26" rx="1"/>
+          <rect x="80" y="266" width="44" height="26" rx="1"/>
+          <rect x="80" y="296" width="44" height="26" rx="1"/>
+          <rect x="80" y="326" width="44" height="26" rx="1"/>
+        </g>
+        <!-- Digits on wheels T1 -->
+        <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" fill="#2C2C2C">
+          <text x="102" y="193">1</text><text x="102" y="223">4</text>
+          <text x="102" y="253">9</text><text x="102" y="283">7</text>
+          <text x="102" y="313">3</text><text x="102" y="343">2</text>
+        </g>
+
+        <!-- Tower 2 -->
+        <rect x="144" y="170" width="52" height="210" rx="1" fill="url(#steelGrad)" stroke="#A8A4A0" stroke-width="1"/>
+        <g fill="url(#brassGrad)" stroke="#988050" stroke-width="0.8">
+          <rect x="148" y="176" width="44" height="26" rx="1"/>
+          <rect x="148" y="206" width="44" height="26" rx="1"/>
+          <rect x="148" y="236" width="44" height="26" rx="1"/>
+          <rect x="148" y="266" width="44" height="26" rx="1"/>
+          <rect x="148" y="296" width="44" height="26" rx="1"/>
+          <rect x="148" y="326" width="44" height="26" rx="1"/>
+        </g>
+        <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" fill="#2C2C2C">
+          <text x="170" y="193">3</text><text x="170" y="223">6</text>
+          <text x="170" y="253">1</text><text x="170" y="283">8</text>
+          <text x="170" y="313">0</text><text x="170" y="343">5</text>
+        </g>
+
+        <!-- Tower 3 (highlighted — active column) -->
+        <rect x="212" y="160" width="52" height="220" rx="1" fill="#E0C880" stroke="#C82A2A" stroke-width="2" filter="url(#engShadow)"/>
+        <g fill="#C8A840" stroke="#A88828" stroke-width="0.8">
+          <rect x="216" y="167" width="44" height="28" rx="1"/>
+          <rect x="216" y="199" width="44" height="28" rx="1"/>
+          <rect x="216" y="231" width="44" height="28" rx="1"/>
+          <rect x="216" y="263" width="44" height="28" rx="1"/>
+          <rect x="216" y="295" width="44" height="28" rx="1"/>
+          <rect x="216" y="327" width="44" height="28" rx="1"/>
+        </g>
+        <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" fill="#2C2C2C" font-weight="500">
+          <text x="238" y="185">2</text><text x="238" y="217">8</text>
+          <text x="238" y="249">4</text><text x="238" y="281">1</text>
+          <text x="238" y="313">6</text><text x="238" y="345">9</text>
+        </g>
+        <!-- Column label -->
+        <text x="238" y="154" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" text-anchor="middle" font-weight="500">Δ²</text>
+
+        <!-- Tower 4 -->
+        <rect x="280" y="170" width="52" height="210" rx="1" fill="url(#steelGrad)" stroke="#A8A4A0" stroke-width="1"/>
+        <g fill="url(#brassGrad)" stroke="#988050" stroke-width="0.8">
+          <rect x="284" y="176" width="44" height="26" rx="1"/>
+          <rect x="284" y="206" width="44" height="26" rx="1"/>
+          <rect x="284" y="236" width="44" height="26" rx="1"/>
+          <rect x="284" y="266" width="44" height="26" rx="1"/>
+          <rect x="284" y="296" width="44" height="26" rx="1"/>
+          <rect x="284" y="326" width="44" height="26" rx="1"/>
+        </g>
+        <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" fill="#2C2C2C">
+          <text x="306" y="193">5</text><text x="306" y="223">2</text>
+          <text x="306" y="253">7</text><text x="306" y="283">4</text>
+          <text x="306" y="313">9</text><text x="306" y="343">1</text>
+        </g>
+
+        <!-- Tower 5 -->
+        <rect x="348" y="170" width="52" height="210" rx="1" fill="url(#steelGrad)" stroke="#A8A4A0" stroke-width="1"/>
+        <g fill="url(#brassGrad)" stroke="#988050" stroke-width="0.8">
+          <rect x="352" y="176" width="44" height="26" rx="1"/>
+          <rect x="352" y="206" width="44" height="26" rx="1"/>
+          <rect x="352" y="236" width="44" height="26" rx="1"/>
+          <rect x="352" y="266" width="44" height="26" rx="1"/>
+          <rect x="352" y="296" width="44" height="26" rx="1"/>
+          <rect x="352" y="326" width="44" height="26" rx="1"/>
+        </g>
+        <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" fill="#2C2C2C">
+          <text x="374" y="193">8</text><text x="374" y="223">0</text>
+          <text x="374" y="253">3</text><text x="374" y="283">6</text>
+          <text x="374" y="313">2</text><text x="374" y="343">7</text>
+        </g>
+
+        <!-- Tower 6 -->
+        <rect x="416" y="170" width="52" height="210" rx="1" fill="url(#steelGrad)" stroke="#A8A4A0" stroke-width="1"/>
+        <g fill="url(#brassGrad)" stroke="#988050" stroke-width="0.8">
+          <rect x="420" y="176" width="44" height="26" rx="1"/>
+          <rect x="420" y="206" width="44" height="26" rx="1"/>
+          <rect x="420" y="236" width="44" height="26" rx="1"/>
+          <rect x="420" y="266" width="44" height="26" rx="1"/>
+          <rect x="420" y="296" width="44" height="26" rx="1"/>
+          <rect x="420" y="326" width="44" height="26" rx="1"/>
+        </g>
+        <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle" fill="#2C2C2C">
+          <text x="442" y="193">6</text><text x="442" y="223">3</text>
+          <text x="442" y="253">8</text><text x="442" y="283">5</text>
+          <text x="442" y="313">1</text><text x="442" y="343">4</text>
+        </g>
+
+        <!-- Column labels -->
+        <g font-family="'Inter',sans-serif" font-size="9" fill="#888880" text-anchor="middle">
+          <text x="102" y="154">f(x)</text>
+          <text x="170" y="154">Δ¹</text>
+          <text x="306" y="154">Δ³</text>
+          <text x="374" y="154">Δ⁴</text>
+          <text x="442" y="154">Δ⁵</text>
+        </g>
+      </g>
+
+      <!-- Gear linkage bars between towers -->
+      <g stroke="#988050" stroke-width="2.5" fill="none" opacity="0.7">
+        <line x1="128" y1="290" x2="144" y2="290"/>
+        <line x1="196" y1="290" x2="212" y2="290"/>
+        <line x1="264" y1="290" x2="280" y2="290"/>
+        <line x1="332" y1="290" x2="348" y2="290"/>
+        <line x1="400" y1="290" x2="416" y2="290"/>
+      </g>
+
+      <!-- Printing mechanism at bottom -->
+      <rect x="70" y="398" width="420" height="30" rx="1" fill="url(#brassGrad)" stroke="#988050" stroke-width="1"/>
+      <rect x="80" y="404" width="30" height="18" rx="1" fill="#2C2C2C"/>
+      <rect x="118" y="404" width="30" height="18" rx="1" fill="#2C2C2C"/>
+      <rect x="156" y="404" width="30" height="18" rx="1" fill="#2C2C2C"/>
+      <rect x="194" y="404" width="30" height="18" rx="1" fill="#2C2C2C"/>
+      <rect x="232" y="404" width="30" height="18" rx="1" fill="#2C2C2C"/>
+      <rect x="270" y="404" width="30" height="18" rx="1" fill="#2C2C2C"/>
+      <!-- Print labels -->
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#F4EFE6" text-anchor="middle">
+        <text x="95" y="416">1</text><text x="133" y="416">4</text>
+        <text x="171" y="416">9</text><text x="209" y="416">7</text>
+        <text x="247" y="416">3</text><text x="285" y="416">2</text>
+      </g>
+      <!-- Paper strip -->
+      <rect x="70" y="428" width="300" height="14" rx="0" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">
+        <text x="80" y="439">149732  157294  164988  172814</text>
+      </g>
+      <text x="260" y="460" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" font-style="italic">printed mathematical table</text>
+
+      <!-- Engine title -->
+      <text x="260" y="510" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" font-weight="300" fill="#6E6E6E">Difference Engine No. 1 — 1822</text>
+
+      <!-- ── DIVIDER ── -->
+      <line x1="540" y1="60" x2="540" y2="500" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- ── ANALYTICAL ENGINE SCHEMATIC (right) ── -->
+      <!-- Title -->
+      <text x="870" y="80" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="16" font-weight="300" fill="#2C2C2C">Analytical Engine — 1837</text>
+      <text x="870" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">THE FIRST GENERAL-PURPOSE COMPUTER (NEVER BUILT)</text>
+
+      <!-- Four major components as architecture blocks -->
+      <!-- The Mill (CPU equivalent) -->
+      <rect x="700" y="130" width="200" height="120" rx="1" fill="#FDFDFD" stroke="#2E4057" stroke-width="2" filter="url(#engShadow)"/>
+      <rect x="700" y="130" width="200" height="28" fill="#2E4057" opacity="0.12"/>
+      <text x="800" y="150" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">THE MILL</text>
+      <text x="800" y="170" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Arithmetic Unit</text>
+      <text x="800" y="188" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">+  −  ×  ÷</text>
+      <text x="800" y="204" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">carries, shifts</text>
+      <rect x="716" y="218" width="168" height="18" fill="#2E4057" opacity="0.06"/>
+      <text x="800" y="230" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">≡ modern ALU / CPU core</text>
+
+      <!-- The Store (Memory) -->
+      <rect x="940" y="130" width="200" height="120" rx="1" fill="#FDFDFD" stroke="#728C69" stroke-width="2" filter="url(#engShadow)"/>
+      <rect x="940" y="130" width="200" height="28" fill="#728C69" opacity="0.12"/>
+      <text x="1040" y="150" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69" letter-spacing="0.1em">THE STORE</text>
+      <text x="1040" y="170" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Memory (1000 numbers)</text>
+      <text x="1040" y="188" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">50-digit decimal registers</text>
+      <text x="1040" y="204" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">read / write</text>
+      <rect x="956" y="218" width="168" height="18" fill="#728C69" opacity="0.06"/>
+      <text x="1040" y="230" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">≡ modern RAM</text>
+
+      <!-- Arrow: Store ↔ Mill -->
+      <path d="M900 190 L940 190" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#da)" marker-start="url(#da2)"/>
+      <text x="920" y="183" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">data bus</text>
+      <defs>
+        <marker id="da" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#2C2C2C"/>
+        </marker>
+        <marker id="da2" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto-start-reverse">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#2C2C2C"/>
+        </marker>
+      </defs>
+
+      <!-- The Reader (Input — punch cards) -->
+      <rect x="700" y="310" width="200" height="120" rx="1" fill="#FDFDFD" stroke="#8B6914" stroke-width="2"/>
+      <rect x="700" y="310" width="200" height="28" fill="#8B6914" opacity="0.1"/>
+      <text x="800" y="330" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914" letter-spacing="0.1em">THE READER</text>
+      <text x="800" y="350" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Punch Card Input</text>
+      <!-- Mini card -->
+      <rect x="740" y="358" width="60" height="36" rx="1" fill="#FDFDFD" stroke="#C8C4BC" stroke-width="1"/>
+      <g fill="#2C2C2C" opacity="0.7">
+        <rect x="748" y="364" width="7" height="9" rx="0"/>
+        <rect x="758" y="364" width="7" height="9" rx="0"/>
+        <rect x="778" y="364" width="7" height="9" rx="0"/>
+        <rect x="748" y="378" width="7" height="9" rx="0"/>
+        <rect x="768" y="378" width="7" height="9" rx="0"/>
+        <rect x="788" y="378" width="7" height="9" rx="0"/>
+      </g>
+      <rect x="716" y="400" width="168" height="18" fill="#8B6914" opacity="0.06"/>
+      <text x="800" y="412" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">≡ modern keyboard / I/O</text>
+
+      <!-- The Printer (Output) -->
+      <rect x="940" y="310" width="200" height="120" rx="1" fill="#FDFDFD" stroke="#C82A2A" stroke-width="2"/>
+      <rect x="940" y="310" width="200" height="28" fill="#C82A2A" opacity="0.08"/>
+      <text x="1040" y="330" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">THE PRINTER</text>
+      <text x="1040" y="350" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Output / Print</text>
+      <!-- Paper strip -->
+      <rect x="956" y="356" width="168" height="14" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="1040" y="367" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">3.14159265…</text>
+      <rect x="956" y="374" width="168" height="14" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="1040" y="385" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">2.71828182…</text>
+      <rect x="956" y="400" width="168" height="18" fill="#C82A2A" opacity="0.05"/>
+      <text x="1040" y="412" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">≡ modern display / output</text>
+
+      <!-- Arrows: Reader→Mill, Mill→Printer -->
+      <path d="M800 310 L800 250" stroke="#8B6914" stroke-width="1.5" fill="none" marker-end="url(#gold_arr)"/>
+      <text x="808" y="283" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">ops</text>
+      <defs>
+        <marker id="gold_arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#8B6914"/>
+        </marker>
+        <marker id="red_arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+      </defs>
+      <path d="M900 190 Q920 280 1040 310" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#red_arr)"/>
+      <text x="970" y="268" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">results</text>
+
+      <!-- Conditional branch label -->
+      <rect x="700" y="460" width="440" height="30" rx="1" fill="#2E4057" opacity="0.07" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="920" y="478" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Conditional Branching — the leap beyond all prior machines</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="520" width="1200" height="40" fill="rgba(44,64,87,0.06)"/>
+      <text x="60" y="544" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Fig 0.4-A</text>
+      <text x="120" y="544" font-family="'Inter',sans-serif" font-size="12" fill="#6E6E6E">Left: Difference Engine column array with brass digit wheels and printing mechanism. Right: Analytical Engine architecture — Mill (ALU), Store (RAM), Reader (I/O), and Printer (output).</text>
+      <text x="1140" y="544" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 0.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Left: The Difference Engine — a finite-difference calculator with six columns of toothed brass wheels. The highlighted column (Δ²) is the second-order difference register. The printing mechanism at the base stamps results directly onto paper, eliminating human transcription errors. Right: The Analytical Engine's four-component architecture. Unlike the Difference Engine, it included conditional branching — the ability to execute different instruction sequences based on computed results. This is the first complete description of a general-purpose programmable computer, 108 years before the first one was built.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIGURE 0.4-B  Concept Diagram — Difference Engine Operation
+════════════════════════════════════════════════════════════ -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Concept Diagram</span>
+    <span class="fig-id">FIG 0.4-B</span>
+    <span class="fig-title">Method of Finite Differences — Computing f(x) = x² Without Multiplication</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" style="height:340px">
+      <rect width="1200" height="400" fill="#F4EFE6"/>
+
+      <!-- Header -->
+      <rect x="0" y="0" width="1200" height="44" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="27" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" font-weight="300" fill="#2C2C2C">f(x) = x²  computed by repeated addition alone — no multiplication required</text>
+
+      <!-- Table columns -->
+      <g>
+        <!-- Col headers -->
+        <text x="100" y="72" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">x</text>
+        <text x="230" y="72" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">f(x) = x²</text>
+        <text x="390" y="72" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">Δ¹ (1st diff)</text>
+        <text x="550" y="72" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">Δ² (2nd diff = constant!)</text>
+
+        <!-- Vertical column dividers -->
+        <line x1="160" y1="56" x2="160" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="320" y1="56" x2="320" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="480" y1="56" x2="480" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="640" y1="56" x2="640" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+
+        <!-- Data rows -->
+        <g font-family="'JetBrains Mono',monospace" font-size="16" text-anchor="middle">
+          <!-- Row 1: x=0 -->
+          <text x="100" y="106" fill="#6E6E6E">0</text>
+          <text x="230" y="106" fill="#2C2C2C">0</text>
+
+          <!-- Row 2: x=1 -->
+          <rect x="40" y="118" width="120" height="36" fill="#EEECE6"/>
+          <text x="100" y="142" fill="#6E6E6E">1</text>
+          <rect x="170" y="118" width="120" height="36" fill="#EEECE6"/>
+          <text x="230" y="142" fill="#2C2C2C">1</text>
+          <!-- Δ¹ between row1 and row2: 1-0=1 -->
+          <text x="390" y="126" fill="#2E4057">1</text>
+          <!-- Δ² between first pair: 3-1=2 -->
+
+          <!-- Row 3: x=2 -->
+          <text x="100" y="178" fill="#6E6E6E">2</text>
+          <text x="230" y="178" fill="#2C2C2C">4</text>
+          <!-- Δ¹: 4-1=3 -->
+          <text x="390" y="162" fill="#2E4057">3</text>
+          <!-- Δ² = 2 -->
+          <text x="550" y="144" fill="#C82A2A" font-weight="500">2</text>
+
+          <!-- Row 4: x=3 -->
+          <rect x="40" y="190" width="120" height="36" fill="#EEECE6"/>
+          <rect x="170" y="190" width="120" height="36" fill="#EEECE6"/>
+          <text x="100" y="214" fill="#6E6E6E">3</text>
+          <text x="230" y="214" fill="#2C2C2C">9</text>
+          <!-- Δ¹: 9-4=5 -->
+          <text x="390" y="198" fill="#2E4057">5</text>
+          <!-- Δ² = 2 -->
+          <text x="550" y="180" fill="#C82A2A" font-weight="500">2</text>
+
+          <!-- Row 5: x=4 -->
+          <text x="100" y="250" fill="#6E6E6E">4</text>
+          <text x="230" y="250" fill="#2C2C2C">16</text>
+          <!-- Δ¹: 16-9=7 -->
+          <text x="390" y="234" fill="#2E4057">7</text>
+          <!-- Δ² = 2 -->
+          <text x="550" y="216" fill="#C82A2A" font-weight="500">2</text>
+
+          <!-- Row 6: x=5 -->
+          <rect x="40" y="262" width="120" height="36" fill="#EEECE6"/>
+          <rect x="170" y="262" width="120" height="36" fill="#EEECE6"/>
+          <text x="100" y="286" fill="#6E6E6E">5</text>
+          <text x="230" y="286" fill="#2C2C2C">25</text>
+          <!-- Δ¹: 25-16=9 -->
+          <text x="390" y="270" fill="#2E4057">9</text>
+          <!-- Δ² = 2 -->
+          <text x="550" y="252" fill="#C82A2A" font-weight="500">2</text>
+
+          <!-- Row 7: x=6 (derived, shown computed) -->
+          <text x="100" y="322" fill="#6E6E6E">6</text>
+          <!-- 25 + (9+2=11) = 36 -->
+          <text x="230" y="322" fill="#C82A2A" font-weight="500">36</text>
+          <!-- Δ¹: 11 -->
+          <text x="390" y="306" fill="#C82A2A" font-weight="400">11</text>
+          <!-- Δ²: still 2 -->
+          <text x="550" y="288" fill="#C82A2A" font-weight="500">2</text>
+        </g>
+
+        <!-- Difference arrows (right side of table) -->
+        <g stroke="#2E4057" stroke-width="1" fill="none">
+          <!-- Connecting lines between f(x) values -->
+          <line x1="270" y1="106" x2="270" y2="142" stroke-dasharray="2,2"/>
+          <line x1="270" y1="142" x2="270" y2="178" stroke-dasharray="2,2"/>
+          <line x1="270" y1="178" x2="270" y2="214" stroke-dasharray="2,2"/>
+          <line x1="270" y1="214" x2="270" y2="250" stroke-dasharray="2,2"/>
+          <line x1="270" y1="250" x2="270" y2="286" stroke-dasharray="2,2"/>
+          <line x1="270" y1="286" x2="270" y2="322" stroke-dasharray="2,2"/>
+        </g>
+
+        <!-- Arrow showing: to get next f(x), just add Δ¹, and to get next Δ¹, just add Δ² -->
+        <g stroke="#C82A2A" stroke-width="1.5" fill="none">
+          <line x1="430" y1="270" x2="430" y2="306"/>
+          <path d="M426 302 L430 310 L434 302"/>
+        </g>
+        <text x="445" y="295" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">+2</text>
+
+        <g stroke="#2E4057" stroke-width="1.5" fill="none">
+          <line x1="350" y1="250" x2="350" y2="286"/>
+          <path d="M346 282 L350 290 L354 282"/>
+        </g>
+        <text x="310" y="275" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">+9</text>
+
+        <!-- Key insight callout -->
+        <rect x="680" y="80" width="480" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+        <rect x="680" y="80" width="480" height="28" fill="#2E4057" opacity="0.08"/>
+        <text x="920" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">HOW THE ENGINE COMPUTES THE NEXT VALUE</text>
+
+        <g font-family="'Inter',sans-serif" font-size="12">
+          <text x="700" y="130" fill="#3A3A3A">Step 1: Δ² is constant for quadratics = 2</text>
+          <text x="700" y="152" fill="#3A3A3A">Step 2: Add Δ² to Δ¹ → new Δ¹</text>
+          <text x="700" y="170" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2E4057">  Δ¹ₙ = Δ¹ₙ₋₁ + 2</text>
+          <text x="700" y="192" fill="#3A3A3A">Step 3: Add new Δ¹ to f(x) → new f(x)</text>
+          <text x="700" y="210" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2E4057">  f(x+1) = f(x) + Δ¹ₙ</text>
+        </g>
+
+        <line x1="700" y1="224" x2="1140" y2="224" stroke="#E8E6DF" stroke-width="1"/>
+
+        <text x="700" y="248" font-family="'Inter',sans-serif" font-size="12" fill="#3A3A3A">To compute x=6: previous Δ¹ = 9</text>
+        <text x="700" y="266" font-family="'Inter',sans-serif" font-size="12" fill="#3A3A3A">  new Δ¹ = 9 + 2 = 11</text>
+        <text x="700" y="284" font-family="'Inter',sans-serif" font-size="12" fill="#3A3A3A">  f(6) = 25 + 11 = 36 ✓</text>
+
+        <rect x="700" y="298" width="400" height="18" fill="#C82A2A" opacity="0.07"/>
+        <text x="900" y="311" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A" font-weight="500">NO MULTIPLICATION EVER NEEDED — just addition</text>
+      </g>
+
+      <!-- Bottom -->
+      <rect x="0" y="368" width="1200" height="32" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="388" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 0.4-B · The method of finite differences. For any polynomial, repeatedly adding a constant difference eventually produces the function values. The Difference Engine mechanises this: each column is one order of difference, and each step is one addition.</text>
+      <text x="1140" y="388" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 0.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The method of finite differences applied to f(x) = x². The second-order difference (Δ²) is always 2 for any quadratic — a constant. The engine exploits this: at each step it adds Δ² to Δ¹ to produce a new first difference, then adds that to the current f(x) to produce the next f(x). No multiplication is ever performed. Babbage designed columns of digit wheels, one per order of difference, connected by an addition mechanism. The same principle applies to any polynomial up to any degree.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIGURE 0.4-C  Historical Reconstruction — Ada's Note G
+════════════════════════════════════════════════════════════ -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hist">Type B — Historical Reconstruction</span>
+    <span class="fig-id">FIG 0.4-C</span>
+    <span class="fig-title">Ada Lovelace's Note G — The First Algorithm, 1843</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 440" xmlns="http://www.w3.org/2000/svg" style="height:380px">
+      <defs>
+        <linearGradient id="noteBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#F8F2E8"/>
+          <stop offset="100%" stop-color="#F0E8DC"/>
+        </linearGradient>
+      </defs>
+
+      <rect width="1200" height="440" fill="#EDE8DE"/>
+
+      <!-- ── MANUSCRIPT PAGE (left) ── -->
+      <rect x="40" y="30" width="320" height="380" rx="1" fill="url(#noteBg)" stroke="#C8B898" stroke-width="1.5"/>
+      <!-- Page lines -->
+      <g stroke="#D8CEC0" stroke-width="0.5">
+        <line x1="60" y1="64" x2="340" y2="64"/>
+        <line x1="60" y1="84" x2="340" y2="84"/>
+        <line x1="60" y1="104" x2="340" y2="104"/>
+        <line x1="60" y1="124" x2="340" y2="124"/>
+        <line x1="60" y1="144" x2="340" y2="144"/>
+        <line x1="60" y1="164" x2="340" y2="164"/>
+        <line x1="60" y1="184" x2="340" y2="184"/>
+        <line x1="60" y1="204" x2="340" y2="204"/>
+        <line x1="60" y1="224" x2="340" y2="224"/>
+        <line x1="60" y1="244" x2="340" y2="244"/>
+        <line x1="60" y1="264" x2="340" y2="264"/>
+        <line x1="60" y1="284" x2="340" y2="284"/>
+        <line x1="60" y1="304" x2="340" y2="304"/>
+        <line x1="60" y1="324" x2="340" y2="324"/>
+        <line x1="60" y1="344" x2="340" y2="344"/>
+        <line x1="60" y1="364" x2="340" y2="364"/>
+        <line x1="60" y1="384" x2="340" y2="384"/>
+      </g>
+      <!-- Manuscript text (stylised) -->
+      <text x="200" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#6E5E4E">Note G — Bernoulli Numbers</text>
+      <!-- Simulated handwriting lines -->
+      <g font-family="'Noto Serif JP',serif" font-size="9.5" fill="#4A3A2E">
+        <text x="64" y="78">Let B₀ = 1. We seek B₁, B₂, B₃, …</text>
+        <text x="64" y="98">The general formula relates Bₙ to</text>
+        <text x="64" y="118">all preceding Bernoulli numbers.</text>
+        <text x="64" y="138">The Engine must iterate through</text>
+        <text x="64" y="158">values of n from 1 upward, at each</text>
+        <text x="64" y="178">step computing a partial sum and</text>
+        <text x="64" y="198">updating the accumulator.</text>
+        <text x="64" y="218" font-style="italic">This requires the machine to</text>
+        <text x="64" y="238" font-style="italic">repeat operations — a loop —</text>
+        <text x="64" y="258" font-style="italic">controlled by the result.</text>
+      </g>
+      <!-- Formulae section -->
+      <line x1="60" y1="272" x2="340" y2="272" stroke="#C8B898" stroke-width="0.8"/>
+      <text x="64" y="290" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2E4057">Bₙ = − Σ C(n+1,k)·Bₖ / (n+1)</text>
+      <text x="64" y="310" font-family="'Inter',sans-serif" font-size="9" fill="#6E5E4E" font-style="italic">for k = 0 to n−1</text>
+      <!-- Table fragment (Ada's actual table) -->
+      <rect x="60" y="324" width="270" height="64" fill="#FDFDFD" stroke="#D8CEC0" stroke-width="0.5"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">
+        <text x="70" y="340">n  Variable   Card op   Value</text>
+        <line x1="64" y1="344" x2="322" y2="344" stroke="#D8CEC0" stroke-width="0.3"/>
+        <text x="70" y="358">1  v₁ ← B₀    +v₀/v₁    1</text>
+        <text x="70" y="372">2  v₂ ← n     +v₁       1</text>
+        <text x="70" y="386">3  v₃ ← 2n+1  +v₂       3</text>
+      </g>
+
+      <!-- Author signature area -->
+      <text x="200" y="403" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="10" fill="#8C7858" font-style="italic">A.A. Lovelace — 1843</text>
+
+      <!-- ── ALGORITHM FLOWCHART (centre) ── -->
+      <rect x="400" y="30" width="280" height="380" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="400" y="30" width="280" height="28" fill="#2E4057" opacity="0.08"/>
+      <text x="540" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">ADA'S ALGORITHM — FLOWCHART</text>
+
+      <!-- Flowchart nodes -->
+      <!-- START -->
+      <rect x="470" y="74" width="120" height="30" rx="15" fill="#2E4057" opacity="0.9"/>
+      <text x="530" y="94" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD" font-weight="500">START</text>
+      <!-- Arrow down -->
+      <line x1="530" y1="104" x2="530" y2="122" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M526 118 L530 126 L534 118" fill="#2C2C2C"/>
+
+      <!-- Init -->
+      <rect x="450" y="126" width="160" height="34" rx="2" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="530" y="143" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">n ← 1</text>
+      <text x="530" y="156" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">acc ← 0</text>
+      <line x1="530" y1="160" x2="530" y2="178" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M526 174 L530 182 L534 174" fill="#2C2C2C"/>
+
+      <!-- Compute term -->
+      <rect x="440" y="182" width="180" height="34" rx="2" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="530" y="199" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">term ← C(n+1,k)·Bₖ</text>
+      <text x="530" y="212" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">acc ← acc + term</text>
+      <line x1="530" y1="216" x2="530" y2="234" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M526 230 L530 238 L534 230" fill="#2C2C2C"/>
+
+      <!-- Decision diamond -->
+      <polygon points="530,238 600,268 530,298 460,268" fill="#8B6914" opacity="0.12" stroke="#8B6914" stroke-width="1.5"/>
+      <text x="530" y="264" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#6E4A00">k &lt; n−1?</text>
+      <text x="530" y="277" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#6E4A00">loop test</text>
+      <!-- Yes arrow — loops back up -->
+      <path d="M460 268 Q420 268 420 200 Q420 160 450 160" stroke="#8B6914" stroke-width="1.5" fill="none"/>
+      <path d="M446 157 L454 163 L444 166" fill="#8B6914"/>
+      <text x="412" y="220" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">YES</text>
+      <text x="398" y="233" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">k++</text>
+      <!-- No arrow -->
+      <line x1="530" y1="298" x2="530" y2="316" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M526 312 L530 320 L534 312" fill="#2C2C2C"/>
+      <text x="544" y="310" font-family="'Inter',sans-serif" font-size="9" fill="#888880">NO</text>
+
+      <!-- Store result -->
+      <rect x="450" y="320" width="160" height="34" rx="2" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="530" y="337" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">Bₙ ← −acc / (n+1)</text>
+      <text x="530" y="350" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">output Bₙ</text>
+      <line x1="530" y1="354" x2="530" y2="372" stroke="#2C2C2C" stroke-width="1.5"/>
+      <path d="M526 368 L530 376 L534 368" fill="#2C2C2C"/>
+
+      <!-- END -->
+      <rect x="470" y="376" width="120" height="24" rx="12" fill="#728C69" opacity="0.8"/>
+      <text x="530" y="392" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD" font-weight="500">OUTPUT Bₙ</text>
+
+      <!-- The loop annotation -->
+      <rect x="404" y="170" width="30" height="130" rx="2" fill="#8B6914" opacity="0.06" stroke="#8B6914" stroke-width="0.8" stroke-dasharray="3,2"/>
+      <text x="394" y="240" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914" transform="rotate(-90, 394, 240)">← LOOP</text>
+
+      <!-- ── BERNOULLI TABLE (right) ── -->
+      <rect x="720" y="30" width="440" height="380" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="720" y="30" width="440" height="28" fill="#2E4057" opacity="0.08"/>
+      <text x="940" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">BERNOULLI NUMBERS — ENGINE OUTPUT</text>
+
+      <!-- Table -->
+      <rect x="730" y="64" width="420" height="30" fill="#EEECE6"/>
+      <g font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#888880" letter-spacing="0.08em" text-anchor="middle">
+        <text x="780" y="83">n</text>
+        <text x="870" y="83">Bₙ (fraction)</text>
+        <text x="1010" y="83">Bₙ (decimal)</text>
+        <text x="1110" y="83">STEPS</text>
+      </g>
+      <line x1="730" y1="94" x2="1150" y2="94" stroke="#D8D6CE" stroke-width="0.5"/>
+      <line x1="820" y1="64" x2="820" y2="380" stroke="#E8E6DF" stroke-width="0.5"/>
+      <line x1="950" y1="64" x2="950" y2="380" stroke="#E8E6DF" stroke-width="0.5"/>
+      <line x1="1070" y1="64" x2="1070" y2="380" stroke="#E8E6DF" stroke-width="0.5"/>
+
+      <!-- Data rows -->
+      <g font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">
+        <rect x="730" y="94" width="420" height="28" fill="#FDFDFD"/>
+        <text x="780" y="112" fill="#6E6E6E">0</text>
+        <text x="870" y="112" fill="#2C2C2C">1</text>
+        <text x="1010" y="112" fill="#2C2C2C">1.000000</text>
+        <text x="1110" y="112" fill="#888880">—</text>
+
+        <rect x="730" y="122" width="420" height="28" fill="#F8F7F3"/>
+        <text x="780" y="140" fill="#6E6E6E">1</text>
+        <text x="870" y="140" fill="#2C2C2C">−1/2</text>
+        <text x="1010" y="140" fill="#C82A2A">−0.500000</text>
+        <text x="1110" y="140" fill="#2E4057">4</text>
+
+        <rect x="730" y="150" width="420" height="28" fill="#FDFDFD"/>
+        <text x="780" y="168" fill="#6E6E6E">2</text>
+        <text x="870" y="168" fill="#2C2C2C">1/6</text>
+        <text x="1010" y="168" fill="#2C2C2C">0.166667</text>
+        <text x="1110" y="168" fill="#2E4057">12</text>
+
+        <rect x="730" y="178" width="420" height="28" fill="#F8F7F3"/>
+        <text x="780" y="196" fill="#6E6E6E">3</text>
+        <text x="870" y="196" fill="#888880">0</text>
+        <text x="1010" y="196" fill="#888880">0.000000</text>
+        <text x="1110" y="196" fill="#888880">—</text>
+
+        <rect x="730" y="206" width="420" height="28" fill="#FDFDFD"/>
+        <text x="780" y="224" fill="#6E6E6E">4</text>
+        <text x="870" y="224" fill="#2C2C2C">−1/30</text>
+        <text x="1010" y="224" fill="#C82A2A">−0.033333</text>
+        <text x="1110" y="224" fill="#2E4057">24</text>
+
+        <rect x="730" y="234" width="420" height="28" fill="#F8F7F3"/>
+        <text x="780" y="252" fill="#6E6E6E">6</text>
+        <text x="870" y="252" fill="#2C2C2C">1/42</text>
+        <text x="1010" y="252" fill="#2C2C2C">0.023810</text>
+        <text x="1110" y="252" fill="#2E4057">44</text>
+
+        <rect x="730" y="262" width="420" height="28" fill="#FDFDFD"/>
+        <text x="780" y="280" fill="#6E6E6E">8</text>
+        <text x="870" y="280" fill="#2C2C2C">−1/30</text>
+        <text x="1010" y="280" fill="#C82A2A">−0.033333</text>
+        <text x="1110" y="280" fill="#2E4057">72</text>
+
+        <rect x="730" y="290" width="420" height="28" fill="#F8F7F3"/>
+        <text x="780" y="308" fill="#6E6E6E">10</text>
+        <text x="870" y="308" fill="#2C2C2C">5/66</text>
+        <text x="1010" y="308" fill="#2C2C2C">0.075758</text>
+        <text x="1110" y="308" fill="#2E4057">108</text>
+      </g>
+      <line x1="730" y1="318" x2="1150" y2="318" stroke="#D8D6CE" stroke-width="0.5"/>
+
+      <!-- Insight panel -->
+      <rect x="730" y="328" width="420" height="72" fill="#2E4057" opacity="0.04"/>
+      <text x="740" y="350" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Ada recognised three key concepts:</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="740" y="368">① Looping — repeat until a condition is false</text>
+        <text x="740" y="384">② Variables — named storage for intermediate values</text>
+        <text x="740" y="400">③ Subroutines — reusable operation sequences</text>
+      </g>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="410" width="1200" height="30" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="430" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 0.4-C · Ada Lovelace's Note G (1843). Left: manuscript with algorithm description. Centre: flowchart reconstruction — the loop structure is the first documented algorithm with conditional repetition. Right: the Bernoulli number output table with operation counts.</text>
+      <text x="1140" y="430" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 0.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Ada Lovelace's Note G (1843) — the first published algorithm intended for machine execution. Left: manuscript style notes with the recursive Bernoulli formula and a fragment of her operation table. Centre: flowchart reconstruction showing the loop structure — Ada explicitly described the need for the engine to repeat a sequence of operations until a condition changes, which is the first documented algorithmic loop. Right: the output — Bernoulli numbers with operation counts showing the computational cost grows with n. Ada identified looping, variables, and subroutines as the three essential programming concepts, 100 years before those words were coined.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIGURE 0.4-D  Concept Diagram — Analytical Engine vs Modern CPU
+════════════════════════════════════════════════════════════ -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Before vs After / Comparison</span>
+    <span class="fig-id">FIG 0.4-D</span>
+    <span class="fig-title">Babbage's Analytical Engine vs Modern Von Neumann CPU — 186 Years Apart</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:270px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+
+      <!-- Left: Analytical Engine -->
+      <rect x="40" y="30" width="520" height="250" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="30" width="520" height="28" fill="#8B6914" opacity="0.12"/>
+      <text x="300" y="50" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#8B6914">Analytical Engine — 1837</text>
+
+      <!-- Four boxes -->
+      <rect x="60" y="75" width="120" height="80" rx="1" fill="#EEECE6" stroke="#8B6914" stroke-width="1.5"/>
+      <text x="120" y="110" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914">THE MILL</text>
+      <text x="120" y="126" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">+−×÷</text>
+      <text x="120" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">gear wheels</text>
+
+      <rect x="220" y="75" width="140" height="80" rx="1" fill="#EEECE6" stroke="#728C69" stroke-width="1.5"/>
+      <text x="290" y="110" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69">THE STORE</text>
+      <text x="290" y="126" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">1000 × 50-digit</text>
+      <text x="290" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">brass registers</text>
+
+      <rect x="60" y="185" width="120" height="72" rx="1" fill="#EEECE6" stroke="#8B6914" stroke-width="1"/>
+      <text x="120" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914">READER</text>
+      <text x="120" y="226" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">punch cards</text>
+      <text x="120" y="240" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">op + var cards</text>
+
+      <rect x="220" y="185" width="140" height="72" rx="1" fill="#EEECE6" stroke="#C82A2A" stroke-width="1"/>
+      <text x="290" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A">PRINTER</text>
+      <text x="290" y="226" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">stereo press</text>
+      <text x="290" y="240" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">paper output</text>
+
+      <!-- Feature list -->
+      <rect x="390" y="68" width="155" height="190" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="468" y="88" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#888880" letter-spacing="0.1em">FEATURES</text>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="400" y="108">✓ Conditional branch</text>
+        <text x="400" y="124">✓ Loop control</text>
+        <text x="400" y="140">✓ Subroutines</text>
+        <text x="400" y="156">✓ Separate I/O</text>
+        <text x="400" y="172">✓ General purpose</text>
+        <text x="400" y="188">✗ Never built</text>
+        <text x="400" y="204">✗ 25,000 parts</text>
+        <text x="400" y="220">✗ 8 tonnes</text>
+        <text x="400" y="236">✗ Hand-cranked</text>
+      </g>
+
+      <!-- VS divider -->
+      <line x1="600" y1="30" x2="600" y2="280" stroke="#D8D6CE" stroke-width="1"/>
+      <circle cx="600" cy="155" r="22" fill="#F4EFE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="600" y="151" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#888880">186</text>
+      <text x="600" y="165" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">years</text>
+
+      <!-- Right: Modern CPU -->
+      <rect x="640" y="30" width="520" height="250" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="640" y="30" width="520" height="28" fill="#2E4057" opacity="0.12"/>
+      <text x="900" y="50" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">Von Neumann CPU — 2024</text>
+
+      <!-- Four equivalent boxes -->
+      <rect x="660" y="75" width="120" height="80" rx="1" fill="#EEECE6" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="720" y="110" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057">ALU / FPU</text>
+      <text x="720" y="126" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">+−×÷ &amp; logic</text>
+      <text x="720" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">transistors</text>
+
+      <rect x="820" y="75" width="140" height="80" rx="1" fill="#EEECE6" stroke="#728C69" stroke-width="1.5"/>
+      <text x="890" y="110" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69">RAM / CACHE</text>
+      <text x="890" y="126" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">64GB+ addressable</text>
+      <text x="890" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">DRAM / SRAM</text>
+
+      <rect x="660" y="185" width="120" height="72" rx="1" fill="#EEECE6" stroke="#8B6914" stroke-width="1"/>
+      <text x="720" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914">I/O CONTROLLER</text>
+      <text x="720" y="226" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">USB, PCIe</text>
+      <text x="720" y="240" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">keyboard, disk</text>
+
+      <rect x="820" y="185" width="140" height="72" rx="1" fill="#EEECE6" stroke="#C82A2A" stroke-width="1"/>
+      <text x="890" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A">GPU / DISPLAY</text>
+      <text x="890" y="226" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">pixels, video</text>
+      <text x="890" y="240" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">screen output</text>
+
+      <!-- Feature list -->
+      <rect x="990" y="68" width="155" height="190" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="1068" y="88" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#888880" letter-spacing="0.1em">FEATURES</text>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="1000" y="108">✓ Conditional branch</text>
+        <text x="1000" y="124">✓ Loop control</text>
+        <text x="1000" y="140">✓ Subroutines</text>
+        <text x="1000" y="156">✓ Separate I/O</text>
+        <text x="1000" y="172">✓ General purpose</text>
+        <text x="1000" y="188">✓ Built, running</text>
+        <text x="1000" y="204">✓ 10¹⁰ transistors</text>
+        <text x="1000" y="220">✓ 5 nanometres</text>
+        <text x="1000" y="236">✓ 3 GHz clock</text>
+      </g>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="290" width="1200" height="30" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="310" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 0.4-D · Babbage's Analytical Engine (1837) vs a modern Von Neumann CPU (2024). The architectural mapping is exact: Mill = ALU, Store = RAM, Reader = I/O, Printer = output. The concept is identical; the implementation differs by 186 years of technology.</text>
+      <text x="1140" y="310" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 0.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Direct architectural comparison between Babbage's 1837 design and a 2024 CPU. Every major component maps exactly: The Mill (gear-based arithmetic) → ALU/FPU (transistor-based arithmetic). The Store (brass registers) → RAM/Cache (DRAM/SRAM). The Reader (punch card input) → I/O Controller (USB/PCIe). The Printer (stereotype press) → GPU/Display. The logical structure Babbage described in the 1830s is the same structure inside every computer today. What changed is purely physical — metal gears became silicon transistors.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIGURE 0.4-E  Simulation Figure — Difference Engine Step Trace
+════════════════════════════════════════════════════════════ -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type F — Simulation Figure</span>
+    <span class="fig-id">FIG 0.4-E</span>
+    <span class="fig-title">Difference Engine Simulation — Stepping Through f(x) = x²</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 340" xmlns="http://www.w3.org/2000/svg" style="height:290px">
+      <rect width="1200" height="340" fill="#F4EFE6"/>
+
+      <!-- Simulation state panels for 4 steps -->
+      <!-- STEP 0 -->
+      <rect x="40" y="30" width="240" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="30" width="240" height="26" fill="#EEECE6"/>
+      <text x="160" y="48" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">INITIAL STATE  x=0</text>
+      <!-- Column displays -->
+      <g font-family="'JetBrains Mono',monospace">
+        <!-- f(x) column -->
+        <rect x="58" y="68" width="60" height="22" fill="#2C2C2C"/>
+        <text x="88" y="83" text-anchor="middle" font-size="16" fill="#F4EFE6">0</text>
+        <text x="88" y="102" text-anchor="middle" font-size="9" fill="#888880">f(x)</text>
+
+        <!-- Δ¹ column -->
+        <rect x="140" y="68" width="60" height="22" fill="#2C2C2C"/>
+        <text x="170" y="83" text-anchor="middle" font-size="16" fill="#F4EFE6">1</text>
+        <text x="170" y="102" text-anchor="middle" font-size="9" fill="#888880">Δ¹</text>
+
+        <!-- Δ² column -->
+        <rect x="58" y="120" width="60" height="22" fill="#2E4057" opacity="0.8"/>
+        <text x="88" y="135" text-anchor="middle" font-size="16" fill="#F4EFE6">2</text>
+        <text x="88" y="154" text-anchor="middle" font-size="9" fill="#888880">Δ² = const</text>
+      </g>
+      <text x="160" y="188" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880">Output: f(0) = 0</text>
+      <rect x="58" y="198" width="204" height="22" fill="#EEECE6"/>
+      <text x="160" y="213" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#6E6E6E">0</text>
+      <text x="160" y="246" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" font-style="italic">printed so far</text>
+
+      <!-- Step arrows -->
+      <path d="M284 150 L316 150" stroke="#C82A2A" stroke-width="2" fill="none" marker-end="url(#sarr)"/>
+      <text x="300" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">step 1</text>
+      <defs>
+        <marker id="sarr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+      </defs>
+
+      <!-- STEP 1: x=1 -->
+      <rect x="320" y="30" width="240" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="320" y="30" width="240" height="26" fill="#EEECE6"/>
+      <text x="440" y="48" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">STEP 1  x=1</text>
+      <g font-family="'JetBrains Mono',monospace">
+        <rect x="338" y="68" width="60" height="22" fill="#2C2C2C"/>
+        <text x="368" y="83" text-anchor="middle" font-size="16" fill="#F4EFE6">1</text>
+        <text x="368" y="102" text-anchor="middle" font-size="9" fill="#C82A2A">f(x) ← 0+1</text>
+
+        <rect x="420" y="68" width="60" height="22" fill="#2C2C2C"/>
+        <text x="450" y="83" text-anchor="middle" font-size="16" fill="#F4EFE6">3</text>
+        <text x="450" y="102" text-anchor="middle" font-size="9" fill="#C82A2A">Δ¹ ← 1+2</text>
+
+        <rect x="338" y="120" width="60" height="22" fill="#2E4057" opacity="0.8"/>
+        <text x="368" y="135" text-anchor="middle" font-size="16" fill="#F4EFE6">2</text>
+        <text x="368" y="154" text-anchor="middle" font-size="9" fill="#888880">Δ² unchanged</text>
+      </g>
+      <text x="440" y="188" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880">Output: f(1) = 1</text>
+      <rect x="338" y="198" width="204" height="22" fill="#EEECE6"/>
+      <text x="440" y="213" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#6E6E6E">0, 1</text>
+      <text x="440" y="246" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" font-style="italic">printed so far</text>
+
+      <!-- Step arrows -->
+      <path d="M564 150 L596 150" stroke="#C82A2A" stroke-width="2" fill="none" marker-end="url(#sarr)"/>
+      <text x="580" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">step 2</text>
+
+      <!-- STEP 2: x=2 -->
+      <rect x="600" y="30" width="240" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="600" y="30" width="240" height="26" fill="#EEECE6"/>
+      <text x="720" y="48" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">STEP 2  x=2</text>
+      <g font-family="'JetBrains Mono',monospace">
+        <rect x="618" y="68" width="60" height="22" fill="#2C2C2C"/>
+        <text x="648" y="83" text-anchor="middle" font-size="16" fill="#F4EFE6">4</text>
+        <text x="648" y="102" text-anchor="middle" font-size="9" fill="#C82A2A">f(x) ← 1+3</text>
+
+        <rect x="700" y="68" width="60" height="22" fill="#2C2C2C"/>
+        <text x="730" y="83" text-anchor="middle" font-size="16" fill="#F4EFE6">5</text>
+        <text x="730" y="102" text-anchor="middle" font-size="9" fill="#C82A2A">Δ¹ ← 3+2</text>
+
+        <rect x="618" y="120" width="60" height="22" fill="#2E4057" opacity="0.8"/>
+        <text x="648" y="135" text-anchor="middle" font-size="16" fill="#F4EFE6">2</text>
+        <text x="648" y="154" text-anchor="middle" font-size="9" fill="#888880">Δ² unchanged</text>
+      </g>
+      <text x="720" y="188" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880">Output: f(2) = 4</text>
+      <rect x="618" y="198" width="204" height="22" fill="#EEECE6"/>
+      <text x="720" y="213" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#6E6E6E">0, 1, 4</text>
+      <text x="720" y="246" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" font-style="italic">printed so far</text>
+
+      <!-- Step arrows -->
+      <path d="M844 150 L876 150" stroke="#C82A2A" stroke-width="2" fill="none" marker-end="url(#sarr)"/>
+      <text x="860" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">step 3</text>
+
+      <!-- STEP 3: x=3 -->
+      <rect x="880" y="30" width="280" height="240" rx="1" fill="#FDFDFD" stroke="#8B6914" stroke-width="1.5"/>
+      <rect x="880" y="30" width="280" height="26" fill="#8B6914" opacity="0.1"/>
+      <text x="1020" y="48" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914" letter-spacing="0.1em">STEP 3  x=3</text>
+      <g font-family="'JetBrains Mono',monospace">
+        <rect x="898" y="68" width="60" height="22" fill="#2C2C2C"/>
+        <text x="928" y="83" text-anchor="middle" font-size="16" fill="#F4EFE6">9</text>
+        <text x="928" y="102" text-anchor="middle" font-size="9" fill="#8B6914">f(x) ← 4+5</text>
+
+        <rect x="980" y="68" width="60" height="22" fill="#2C2C2C"/>
+        <text x="1010" y="83" text-anchor="middle" font-size="16" fill="#F4EFE6">7</text>
+        <text x="1010" y="102" text-anchor="middle" font-size="9" fill="#8B6914">Δ¹ ← 5+2</text>
+
+        <rect x="898" y="120" width="60" height="22" fill="#2E4057" opacity="0.8"/>
+        <text x="928" y="135" text-anchor="middle" font-size="16" fill="#F4EFE6">2</text>
+        <text x="928" y="154" text-anchor="middle" font-size="9" fill="#888880">Δ² unchanged</text>
+      </g>
+      <text x="1020" y="188" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#8B6914">Output: f(3) = 9 ✓</text>
+      <rect x="898" y="198" width="244" height="22" fill="#8B6914" opacity="0.06"/>
+      <text x="1020" y="213" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8B6914">0, 1, 4, 9</text>
+      <text x="1020" y="246" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" font-style="italic">printed so far</text>
+
+      <!-- Process summary below -->
+      <rect x="40" y="288" width="1120" height="32" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="288" width="3" height="32" fill="#C82A2A"/>
+      <text x="58" y="304" font-family="'Inter',sans-serif" font-size="11" fill="#2C2C2C">Each step:</text>
+      <text x="145" y="304" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">Δ² → Δ¹  (add 2 to Δ¹)</text>
+      <text x="420" y="304" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">Δ¹ → f(x)  (add new Δ¹ to f)</text>
+      <text x="720" y="304" font-family="'Inter',sans-serif" font-size="11" fill="#888880">Two additions per step. No multiplication. Prints exact values for x².</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="310" width="1200" height="30" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="330" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 0.4-E · Simulation: Difference Engine stepping through f(x) = x². Initial state, then three steps. Each step: add Δ² to Δ¹, then add updated Δ¹ to f(x). The Δ² column never changes for a quadratic.</text>
+      <text x="1140" y="330" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 0.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Static simulation view: the Difference Engine stepping through f(x) = x² in three steps. Each register panel shows the three column values: f(x), Δ¹, and Δ² (constant 2). At each step the engine performs exactly two additions — Δ² added to Δ¹, then updated Δ¹ added to f(x). The result matches x² exactly at every step, without ever performing a multiplication. Babbage's insight was that any polynomial function can be reduced to repeated addition through this method.</div>
+</div>
+
+</div>
+</body>
+</html>

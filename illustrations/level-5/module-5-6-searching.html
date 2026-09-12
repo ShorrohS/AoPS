@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 5.6 Illustrations — Searching Algorithms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-ink:#2C2C2C;--zen-stone:#6E6E6E;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);color:var(--text-sumi);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;color:var(--text-sumi);letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--zen-indigo);color:var(--zen-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:var(--accent-red);color:var(--accent-red);background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;color:var(--text-sumi);}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 5 — Programming</div>
+  <div class="page-title">Module 5.6 — Searching Algorithms</div>
+  <div class="page-sub">3 figures · Binary Search Steps · Hash Table Lookup · Search Strategy Comparison</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 5.6-A  Binary Search — Interval Halving Diagram -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 5.6-A</span>
+    <span class="fig-title">Binary Search — Interval Halving on a Sorted Array of 32 Elements</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 440" xmlns="http://www.w3.org/2000/svg" style="height:380px">
+      <defs>
+        <linearGradient id="searchBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="440" fill="url(#searchBg)"/>
+      <rect x="0" y="0" width="1200" height="34" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">BINARY SEARCH FOR TARGET=23 IN SORTED ARRAY [0..31] — 5 STEPS MAX</text>
+      <!-- 32-element array bar -->
+      <rect x="60" y="56" width="1080" height="32" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- Index labels -->
+      <g font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880" text-anchor="middle">
+        <text x="94" y="72">0</text><text x="127" y="72">2</text><text x="161" y="72">4</text>
+        <text x="194" y="72">6</text><text x="228" y="72">8</text><text x="261" y="72">10</text>
+        <text x="295" y="72">12</text><text x="328" y="72">14</text><text x="362" y="72">16</text>
+        <text x="395" y="72">18</text><text x="429" y="72">20</text><text x="462" y="72">22</text>
+        <text x="496" y="72">24</text><text x="529" y="72">26</text><text x="563" y="72">28</text>
+        <text x="596" y="72">30</text><text x="630" y="80">idx</text>
+      </g>
+      <!-- Target marker -->
+      <rect x="428" y="56" width="34" height="32" fill="#728C69" opacity="0.3" stroke="#728C69" stroke-width="1.5"/>
+      <text x="445" y="76" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#728C69">23</text>
+      <!-- Step 1: full range, mid=15 -->
+      <text x="60" y="118" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Step 1: lo=0, hi=31 → mid=15 (value=30)  30 &gt; 23 → search LEFT half [0..14]</text>
+      <rect x="60" y="124" width="1080" height="22" fill="#EEECE6"/>
+      <rect x="60" y="124" width="540" height="22" fill="#2E4057" opacity="0.15"/>
+      <rect x="600" y="124" width="540" height="22" fill="#888880" opacity="0.2"/>
+      <line x1="600" y1="120" x2="600" y2="150" stroke="#2E4057" stroke-width="2"/>
+      <text x="600" y="116" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2E4057">mid=15</text>
+      <text x="870" y="138" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">eliminated (too high)</text>
+      <!-- Step 2: [0..14] mid=7 -->
+      <text x="60" y="172" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Step 2: lo=0, hi=14 → mid=7 (value=14)  14 &lt; 23 → search RIGHT half [8..14]</text>
+      <rect x="60" y="178" width="1080" height="22" fill="#EEECE6"/>
+      <rect x="60" y="178" width="270" height="22" fill="#888880" opacity="0.2"/>
+      <rect x="330" y="178" width="270" height="22" fill="#2E4057" opacity="0.15"/>
+      <rect x="600" y="178" width="540" height="22" fill="#888880" opacity="0.1"/>
+      <line x1="330" y1="174" x2="330" y2="204" stroke="#2E4057" stroke-width="2"/>
+      <text x="330" y="170" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2E4057">mid=7</text>
+      <!-- Step 3: [8..14] mid=11 -->
+      <text x="60" y="226" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Step 3: lo=8, hi=14 → mid=11 (value=22)  22 &lt; 23 → search RIGHT [12..14]</text>
+      <rect x="60" y="232" width="1080" height="22" fill="#EEECE6"/>
+      <rect x="60" y="232" width="465" height="22" fill="#888880" opacity="0.2"/>
+      <rect x="465" y="232" width="135" height="22" fill="#728C69" opacity="0.15"/>
+      <rect x="600" y="232" width="540" height="22" fill="#888880" opacity="0.1"/>
+      <line x1="465" y1="228" x2="465" y2="258" stroke="#2E4057" stroke-width="2"/>
+      <text x="465" y="224" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2E4057">mid=11</text>
+      <!-- Step 4: [12..14] mid=13 -->
+      <text x="60" y="280" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Step 4: lo=12, hi=14 → mid=13 (value=26)  26 &gt; 23 → search LEFT [12..12]</text>
+      <rect x="60" y="286" width="1080" height="22" fill="#EEECE6"/>
+      <rect x="465" y="286" width="67" height="22" fill="#728C69" opacity="0.2"/>
+      <rect x="532" y="286" width="68" height="22" fill="#888880" opacity="0.2"/>
+      <line x1="532" y1="282" x2="532" y2="312" stroke="#2E4057" stroke-width="2"/>
+      <!-- Step 5: single element -->
+      <text x="60" y="334" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Step 5: lo=12, hi=12 → mid=12 (value=23 = target) → FOUND at index 12!</text>
+      <rect x="60" y="340" width="1080" height="22" fill="#EEECE6"/>
+      <rect x="465" y="340" width="34" height="22" fill="#728C69" opacity="0.8"/>
+      <text x="482" y="355" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#FDFDFD">✓</text>
+      <!-- Log n annotation -->
+      <rect x="60" y="384" width="1080" height="36" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="600" y="404" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#2C2C2C">32 elements → at most log₂(32) = <tspan font-family="'JetBrains Mono',monospace" fill="#728C69">5</tspan> comparisons · 1,000,000 elements → at most <tspan font-family="'JetBrains Mono',monospace" fill="#728C69">20</tspan> comparisons</text>
+      <text x="600" y="416" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Precondition: array must be sorted · O(log n) time · O(1) space</text>
+      <!-- Footer -->
+      <rect x="0" y="426" width="1200" height="14" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="436" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 5.6-A · Binary search halves the search space on every comparison. 5 steps find any value in 32 elements. 20 steps find any value in 1,000,000 elements.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Binary search on a 32-element sorted array. Each comparison eliminates exactly half the remaining candidates. The search interval [lo, hi] shrinks from [0,31] to [0,14] to [8,14] to [12,14] to [12,12] — found in 5 steps. The maximum steps needed equals log₂(n): for n=32 that is 5, for n=1,000,000 that is 20. Binary search requires the array to be sorted — if the data arrives in arbitrary order, the cost of maintaining sorted order (via an index or sorted insert) must be weighed against the search speedup.</div>
+</div>
+
+<!-- FIG 5.6-B  Hash Table O(1) Lookup -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type B — Concept Diagram</span>
+    <span class="fig-id">FIG 5.6-B</span>
+    <span class="fig-title">Hash Table — O(1) Average Lookup via Key → Hash → Bucket</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <rect width="1200" height="380" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">HASH TABLE: KEY → HASH FUNCTION → BUCKET → VALUE</text>
+      <!-- Keys column -->
+      <text x="120" y="54" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">KEYS</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="12">
+        <rect x="40" y="60" width="160" height="32" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="120" y="81" text-anchor="middle" fill="#2C2C2C">"alice"</text>
+        <rect x="40" y="100" width="160" height="32" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="120" y="121" text-anchor="middle" fill="#2C2C2C">"bob"</text>
+        <rect x="40" y="140" width="160" height="32" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="120" y="161" text-anchor="middle" fill="#2C2C2C">"charlie"</text>
+        <rect x="40" y="180" width="160" height="32" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="120" y="201" text-anchor="middle" fill="#2C2C2C">"dave"</text>
+        <rect x="40" y="220" width="160" height="32" fill="#C82A2A" opacity="0.15" stroke="#C82A2A" stroke-width="1"/>
+        <text x="120" y="241" text-anchor="middle" fill="#C82A2A">"eve"</text>
+        <text x="120" y="264" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">↑ collision with "alice"!</text>
+      </g>
+      <!-- Hash function box -->
+      <rect x="250" y="120" width="180" height="100" fill="#2E4057" opacity="0.8" rx="1"/>
+      <text x="340" y="156" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">hash()</text>
+      <text x="340" y="174" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">key → int</text>
+      <text x="340" y="192" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">mod 8</text>
+      <!-- Hash arrows -->
+      <g stroke="#888880" stroke-width="1" fill="none">
+        <path d="M200 76 L252 155"/><path d="M200 116 L252 163"/>
+        <path d="M200 156 L252 171"/><path d="M200 196 L252 179"/>
+        <path d="M200 236 L252 155" stroke="#C82A2A"/>
+      </g>
+      <!-- Hash outputs -->
+      <g font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">
+        <text x="480" y="76" fill="#2E4057">→ 3</text>
+        <text x="480" y="116" fill="#2E4057">→ 7</text>
+        <text x="480" y="156" fill="#2E4057">→ 1</text>
+        <text x="480" y="196" fill="#2E4057">→ 5</text>
+        <text x="480" y="236" fill="#C82A2A">→ 3 ← collision!</text>
+      </g>
+      <!-- Output arrows from hash -->
+      <g stroke="#888880" stroke-width="1" fill="none">
+        <path d="M430 155 L500 76"/><path d="M430 163 L500 116"/>
+        <path d="M430 171 L500 156"/><path d="M430 179 L500 196"/>
+        <path d="M430 155 L500 236" stroke="#C82A2A"/>
+      </g>
+      <!-- Bucket array -->
+      <text x="640" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">BUCKET ARRAY (size 8)</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11">
+        <rect x="560" y="58" width="160" height="28" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="572" y="77" fill="#888880">[0] empty</text>
+        <rect x="560" y="86" width="160" height="28" fill="#FDFDFD" stroke="#728C69" stroke-width="1"/>
+        <text x="572" y="105" fill="#728C69">[1] "charlie"</text>
+        <rect x="560" y="114" width="160" height="28" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="572" y="133" fill="#888880">[2] empty</text>
+        <rect x="560" y="142" width="160" height="28" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+        <text x="572" y="161" fill="#C82A2A">[3] "alice"+"eve"</text>
+        <rect x="560" y="170" width="160" height="28" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="572" y="189" fill="#888880">[4] empty</text>
+        <rect x="560" y="198" width="160" height="28" fill="#FDFDFD" stroke="#728C69" stroke-width="1"/>
+        <text x="572" y="217" fill="#728C69">[5] "dave"</text>
+        <rect x="560" y="226" width="160" height="28" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="572" y="245" fill="#888880">[6] empty</text>
+        <rect x="560" y="254" width="160" height="28" fill="#FDFDFD" stroke="#728C69" stroke-width="1"/>
+        <text x="572" y="273" fill="#728C69">[7] "bob"</text>
+      </g>
+      <!-- Collision handling explanation -->
+      <rect x="780" y="58" width="380" height="240" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="780" y="58" width="380" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="970" y="75" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">COLLISION RESOLUTION</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="796" y="106" fill="#C82A2A" font-weight="500">Chaining (most common)</text>
+        <text x="796" y="124">Each bucket holds a linked list.</text>
+        <text x="796" y="142">Colliding keys appended to list.</text>
+        <text x="796" y="160">Lookup: O(1) avg, O(n) worst.</text>
+        <line x1="796" y1="170" x2="1140" y2="170" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="796" y="190" fill="#8B6914" font-weight="500">Open Addressing</text>
+        <text x="796" y="208">On collision: probe next slot.</text>
+        <text x="796" y="226">Linear, quadratic, double-hash.</text>
+        <text x="796" y="244">Better cache performance.</text>
+        <line x1="796" y1="254" x2="1140" y2="254" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="796" y="278" fill="#728C69" font-weight="500">Load factor = items / buckets</text>
+        <text x="796" y="296" fill="#888880">Keep &lt; 0.75 for O(1) avg performance.</text>
+      </g>
+      <!-- Operation times -->
+      <rect x="560" y="310" width="600" height="48" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <text x="700" y="330" fill="#728C69">INSERT: O(1) avg</text>
+        <text x="700" y="350" fill="#888880">O(n) worst (all collide)</text>
+        <text x="870" y="330" fill="#728C69">LOOKUP: O(1) avg</text>
+        <text x="870" y="350" fill="#888880">O(n) worst</text>
+        <text x="1040" y="330" fill="#728C69">DELETE: O(1) avg</text>
+        <text x="1040" y="350" fill="#888880">O(n) worst</text>
+      </g>
+      <!-- Footer -->
+      <rect x="0" y="364" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="376" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 5.6-B · Hash table: hash function maps key to bucket index. O(1) average for insert/lookup/delete. Collisions handled by chaining or open addressing. Load factor must be managed.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Hash table architecture. The hash function converts any key (string, integer, object) to an integer index modulo the bucket count. Keys "alice" and "eve" both hash to bucket 3 — a collision. Chaining resolves this by storing a linked list in each bucket; the worst case (all keys collide) degrades to O(n), but with a good hash function and load factor below 0.75, average performance is O(1) for insert, lookup, and delete. This is why Python dict and set, Java HashMap, and C++ unordered_map all achieve O(1) average operations — and why hash table selection and implementation is one of the most impactful data structure choices in systems programming.</div>
+</div>
+
+<!-- FIG 5.6-C  Search Strategy Comparison -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Comparison Table</span>
+    <span class="fig-id">FIG 5.6-C</span>
+    <span class="fig-title">Search Algorithm Selection Guide — Structure, Complexity, Trade-offs</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 340" xmlns="http://www.w3.org/2000/svg" style="height:280px">
+      <rect width="1200" height="340" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">SEARCH ALGORITHM SELECTION — WHEN TO USE WHAT</text>
+      <rect x="40" y="38" width="1120" height="270" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="38" width="1120" height="24" fill="#2E4057" opacity="0.08"/>
+      <g font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.08em" text-anchor="middle">
+        <text x="130" y="55">ALGORITHM</text>
+        <text x="260" y="55">DATA REQUIREMENT</text>
+        <text x="400" y="55">TIME</text>
+        <text x="510" y="55">SPACE</text>
+        <text x="620" y="55">PREPROCESSING</text>
+        <text x="960" y="55">BEST FOR</text>
+      </g>
+      <g stroke="#E8E6DF" stroke-width="0.5">
+        <line x1="200" y1="38" x2="200" y2="308"/><line x1="320" y1="38" x2="320" y2="308"/>
+        <line x1="460" y1="38" x2="460" y2="308"/><line x1="560" y1="38" x2="560" y2="308"/>
+        <line x1="700" y1="38" x2="700" y2="308"/>
+      </g>
+      <g font-family="'JetBrains Mono',monospace" font-size="11">
+        <!-- Linear -->
+        <rect x="40" y="62" width="1120" height="40" fill="#F8F7F3"/>
+        <text x="130" y="87" text-anchor="middle" fill="#C82A2A">Linear</text>
+        <text x="260" y="87" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">None — works on any array</text>
+        <text x="400" y="87" text-anchor="middle" fill="#C82A2A">O(n)</text>
+        <text x="510" y="87" text-anchor="middle" fill="#728C69">O(1)</text>
+        <text x="620" y="87" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">None</text>
+        <text x="960" y="87" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Unsorted, small, one-time searches</text>
+        <!-- Binary -->
+        <rect x="40" y="102" width="1120" height="40" fill="#FDFDFD"/>
+        <text x="130" y="127" text-anchor="middle" fill="#728C69">Binary</text>
+        <text x="260" y="127" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">Must be sorted</text>
+        <text x="400" y="127" text-anchor="middle" fill="#728C69">O(log n)</text>
+        <text x="510" y="127" text-anchor="middle" fill="#728C69">O(1)</text>
+        <text x="620" y="127" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914">Sort: O(n log n)</text>
+        <text x="960" y="127" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Sorted arrays, repeated searches</text>
+        <!-- Hash Table -->
+        <rect x="40" y="142" width="1120" height="40" fill="#F8F7F3"/>
+        <text x="130" y="167" text-anchor="middle" fill="#728C69">Hash Table</text>
+        <text x="260" y="167" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Any (via hash function)</text>
+        <text x="400" y="167" text-anchor="middle" fill="#728C69">O(1) avg</text>
+        <text x="510" y="167" text-anchor="middle" fill="#8B6914">O(n)</text>
+        <text x="620" y="167" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914">Build table: O(n)</text>
+        <text x="960" y="167" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Frequent lookups by exact key</text>
+        <!-- BST -->
+        <rect x="40" y="182" width="1120" height="40" fill="#FDFDFD"/>
+        <text x="130" y="207" text-anchor="middle" fill="#2E4057">BST</text>
+        <text x="260" y="207" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Any (dynamic)</text>
+        <text x="400" y="207" text-anchor="middle" fill="#728C69">O(log n) avg</text>
+        <text x="510" y="207" text-anchor="middle" fill="#8B6914">O(n)</text>
+        <text x="620" y="207" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Build as-you-insert</text>
+        <text x="960" y="207" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Ordered keys, range queries</text>
+        <!-- Trie -->
+        <rect x="40" y="222" width="1120" height="40" fill="#F8F7F3"/>
+        <text x="130" y="247" text-anchor="middle" fill="#8B6914">Trie</text>
+        <text x="260" y="247" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">String keys</text>
+        <text x="400" y="247" text-anchor="middle" fill="#728C69">O(k) per key</text>
+        <text x="510" y="247" text-anchor="middle" fill="#C82A2A">O(n·k)</text>
+        <text x="620" y="247" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914">Build: O(n·k)</text>
+        <text x="960" y="247" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914">Autocomplete, prefix matching</text>
+        <!-- Bloom Filter -->
+        <rect x="40" y="262" width="1120" height="46" fill="#FDFDFD"/>
+        <text x="130" y="291" text-anchor="middle" fill="#888880">Bloom Filter</text>
+        <text x="260" y="291" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Any (probabilistic)</text>
+        <text x="400" y="291" text-anchor="middle" fill="#728C69">O(1)</text>
+        <text x="510" y="291" text-anchor="middle" fill="#728C69">O(bits)</text>
+        <text x="620" y="291" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Build: O(n)</text>
+        <text x="960" y="291" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Membership test, false positives OK</text>
+      </g>
+      <!-- Footer -->
+      <rect x="0" y="322" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="335" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 5.6-C · Algorithm selection depends on: data structure, query type (exact/prefix/range), frequency of updates, and memory budget. Hash table for exact O(1) lookup. BST for ordered/range queries. Trie for string prefixes.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Search algorithm selection guide. Linear search requires no preconditions but scales poorly. Binary search gives O(log n) but requires sorted data. Hash tables achieve O(1) average for exact key lookup — the right choice for dictionaries, caches, and sets. Binary search trees (BSTs) support range queries and ordered iteration that hash tables cannot. Tries excel at string prefix matching (autocomplete). Bloom filters achieve space-efficient probabilistic membership testing at the cost of false positives. The choice is always driven by the query pattern, not just the complexity class.</div>
+</div>
+
+</div>
+</body>
+</html>

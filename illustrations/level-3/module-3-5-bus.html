@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 3.5 Illustrations — The Bus: Moving Data Around</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 3 — Machine Architecture</div>
+  <div class="page-title">Module 3.5 — The Bus: Moving Data Around</div>
+  <div class="page-sub">2 figures · System Bus Diagram · Von Neumann vs Harvard Architecture</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 3.5-A  System Bus -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 3.5-A</span>
+    <span class="fig-title">The System Bus — Address, Data, and Control Lines</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:330px">
+      <defs>
+        <linearGradient id="busBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="380" fill="url(#busBg)"/>
+
+      <!-- CPU block -->
+      <rect x="60" y="100" width="180" height="160" rx="2" fill="#FDFDFD" stroke="#2E4057" stroke-width="2"/>
+      <rect x="60" y="100" width="180" height="24" fill="#2E4057" opacity="0.1"/>
+      <text x="150" y="117" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">CPU</text>
+      <g font-family="'Inter',sans-serif" font-size="9" fill="#888880" text-anchor="middle">
+        <text x="150" y="146">ALU</text><text x="150" y="160">Registers</text>
+        <text x="150" y="174">Control Unit</text><text x="150" y="188">PC / IR</text>
+      </g>
+
+      <!-- RAM block -->
+      <rect x="440" y="100" width="160" height="160" rx="2" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="440" y="100" width="160" height="24" fill="#728C69" opacity="0.1"/>
+      <text x="520" y="117" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">RAM</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880" text-anchor="middle">
+        <text x="520" y="150">0x0000: 0xB1</text>
+        <text x="520" y="164">0x0001: 0x05</text>
+        <text x="520" y="178">0x0002: 0x03</text>
+        <text x="520" y="192">0x0003: ...</text>
+      </g>
+
+      <!-- I/O controller -->
+      <rect x="720" y="100" width="160" height="160" rx="2" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+      <rect x="720" y="100" width="160" height="24" fill="#C82A2A" opacity="0.07"/>
+      <text x="800" y="117" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">I/O</text>
+      <g font-family="'Inter',sans-serif" font-size="9" fill="#888880" text-anchor="middle">
+        <text x="800" y="150">Keyboard ctrl</text>
+        <text x="800" y="164">Display ctrl</text>
+        <text x="800" y="178">Disk ctrl</text>
+        <text x="800" y="192">USB ctrl</text>
+      </g>
+
+      <!-- ROM block -->
+      <rect x="1000" y="100" width="140" height="160" rx="2" fill="#FDFDFD" stroke="#8B6914" stroke-width="1"/>
+      <rect x="1000" y="100" width="140" height="24" fill="#8B6914" opacity="0.07"/>
+      <text x="1070" y="117" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#8B6914">ROM</text>
+      <text x="1070" y="155" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">boot code</text>
+      <text x="1070" y="168" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">firmware</text>
+
+      <!-- Address Bus (top) -->
+      <rect x="240" y="80" width="900" height="16" rx="2" fill="#C82A2A" opacity="0.7"/>
+      <line x1="150" y1="100" x2="150" y2="88" stroke="#C82A2A" stroke-width="2.5"/>
+      <line x1="520" y1="100" x2="520" y2="88" stroke="#C82A2A" stroke-width="2.5"/>
+      <line x1="800" y1="100" x2="800" y2="88" stroke="#C82A2A" stroke-width="2.5"/>
+      <line x1="1070" y1="100" x2="1070" y2="88" stroke="#C82A2A" stroke-width="2.5"/>
+      <text x="690" y="76" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#FDFDFD" letter-spacing="0.1em">ADDRESS BUS (64-bit)</text>
+
+      <!-- Data Bus (main horizontal) -->
+      <rect x="240" y="175" width="900" height="20" rx="2" fill="#2E4057" opacity="0.7"/>
+      <line x1="240" y1="180" x2="240" y2="165" stroke="#2E4057" stroke-width="2.5"/>
+      <line x1="440" y1="180" x2="440" y2="165" stroke="#2E4057" stroke-width="2.5"/>
+      <line x1="720" y1="180" x2="720" y2="165" stroke="#2E4057" stroke-width="2.5"/>
+      <line x1="1000" y1="180" x2="1000" y2="165" stroke="#2E4057" stroke-width="2.5"/>
+      <text x="690" y="188" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#FDFDFD" letter-spacing="0.1em">DATA BUS (64-bit)</text>
+
+      <!-- Control Bus (bottom) -->
+      <rect x="240" y="268" width="900" height="14" rx="2" fill="#8B6914" opacity="0.6"/>
+      <line x1="150" y1="260" x2="150" y2="268" stroke="#8B6914" stroke-width="2.5"/>
+      <line x1="520" y1="260" x2="520" y2="268" stroke="#8B6914" stroke-width="2.5"/>
+      <line x1="800" y1="260" x2="800" y2="268" stroke="#8B6914" stroke-width="2.5"/>
+      <line x1="1070" y1="260" x2="1070" y2="268" stroke="#8B6914" stroke-width="2.5"/>
+      <text x="690" y="280" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#FDFDFD" letter-spacing="0.1em">CONTROL BUS (READ/WRITE/CLK/IRQ…)</text>
+
+      <!-- Transaction annotation -->
+      <rect x="60" y="300" width="1080" height="50" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="80" y="320" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">To read RAM at address 0x0002:</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#3A3A3A">
+        <text x="80" y="340">① CPU puts 0x0002 on address bus</text>
+        <text x="420" y="340">② CPU asserts READ on control bus</text>
+        <text x="760" y="340">③ RAM puts data on data bus</text>
+        <text x="980" y="340">④ CPU reads data</text>
+      </g>
+
+      <rect x="0" y="362" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="1140" y="376" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · Module 3.5</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The system bus connects CPU, RAM, I/O controllers, and ROM through three parallel wire groups. The address bus (red, top) carries the target memory address from the CPU to all components — only the component whose address range matches responds. The data bus (indigo, middle) carries the actual data value in either direction. The control bus (gold, bottom) carries read/write signals, clock, interrupt lines, and bus arbitration signals. A single memory read requires four steps: put address on address bus, assert READ on control bus, the target component puts data on the data bus, CPU reads the data.</div>
+</div>
+
+<!-- FIG 3.5-B  Von Neumann vs Harvard -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Comparison</span>
+    <span class="fig-id">FIG 3.5-B</span>
+    <span class="fig-title">Von Neumann vs Harvard Architecture</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+
+      <!-- Von Neumann (left) -->
+      <rect x="40" y="20" width="500" height="220" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="20" width="500" height="26" fill="#2E4057" opacity="0.08"/>
+      <text x="290" y="37" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">Von Neumann Architecture</text>
+
+      <!-- Single memory -->
+      <rect x="140" y="66" width="200" height="100" rx="1" fill="#2E4057" opacity="0.15" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="240" y="108" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">SHARED MEMORY</text>
+      <text x="240" y="124" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">instructions + data</text>
+      <text x="240" y="138" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">same address space</text>
+
+      <!-- CPU -->
+      <rect x="60" y="90" width="68" height="60" rx="1" fill="#EEECE6" stroke="#2E4057" stroke-width="1"/>
+      <text x="94" y="125" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#2E4057">CPU</text>
+
+      <!-- Single bus -->
+      <line x1="128" y1="120" x2="140" y2="120" stroke="#2E4057" stroke-width="3"/>
+      <text x="108" y="148" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">one bus</text>
+
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="60" y="194">✓ Simple, flexible</text>
+        <text x="60" y="210">✓ Can use RAM for code OR data</text>
+        <text x="60" y="226">✗ Von Neumann bottleneck: can't</text>
+        <text x="60" y="238">   fetch instruction + data simultaneously</text>
+      </g>
+      <text x="290" y="258" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">x86, ARM, most general-purpose CPUs</text>
+
+      <!-- Harvard (right) -->
+      <rect x="660" y="20" width="500" height="220" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="660" y="20" width="500" height="26" fill="#728C69" opacity="0.08"/>
+      <text x="910" y="37" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">Harvard Architecture</text>
+
+      <!-- Two separate memories -->
+      <rect x="780" y="66" width="110" height="80" rx="1" fill="#2E4057" opacity="0.15" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="835" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">INSTRUCTION</text>
+      <text x="835" y="114" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">MEMORY</text>
+      <rect x="910" y="66" width="110" height="80" rx="1" fill="#728C69" opacity="0.15" stroke="#728C69" stroke-width="1.5"/>
+      <text x="965" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">DATA</text>
+      <text x="965" y="114" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">MEMORY</text>
+
+      <!-- CPU -->
+      <rect x="680" y="82" width="80" height="60" rx="1" fill="#EEECE6" stroke="#728C69" stroke-width="1"/>
+      <text x="720" y="117" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#728C69">CPU</text>
+
+      <!-- Two buses -->
+      <line x1="760" y1="100" x2="780" y2="100" stroke="#2E4057" stroke-width="2.5"/>
+      <line x1="760" y1="116" x2="910" y2="116" stroke="#728C69" stroke-width="2.5"/>
+
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="680" y="194">✓ Fetch instruction + access data</text>
+        <text x="680" y="210">  simultaneously (2× throughput)</text>
+        <text x="680" y="226">✗ Fixed split between code and data</text>
+        <text x="680" y="238">✗ More complex hardware</text>
+      </g>
+      <text x="910" y="258" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Microcontrollers, DSPs, GPU shader cores</text>
+
+      <!-- Line divider -->
+      <line x1="600" y1="20" x2="600" y2="260" stroke="#D8D6CE" stroke-width="1"/>
+
+      <rect x="0" y="264" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="1140" y="275" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · 3.5</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Von Neumann (left): instructions and data share a single memory and a single bus. Simple and flexible — the program can modify itself or use memory for either instructions or data. The bottleneck: fetching the next instruction and loading a data operand require two sequential bus cycles. Harvard (right): separate instruction and data memories with separate buses. The CPU can fetch the next instruction and access a data operand simultaneously — removing the Von Neumann bottleneck. Used in microcontrollers (AVR, PIC), DSPs, and GPU shader processors where deterministic throughput matters. Modern x86 CPUs simulate Harvard internally with separate L1 instruction and data caches in front of a unified Von Neumann memory system.</div>
+</div>
+
+<!-- FIG 3.5-C  Von Neumann vs Harvard Architecture -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Comparison</span>
+    <span class="fig-id">FIG 3.5-C</span>
+    <span class="fig-title">Von Neumann vs Harvard Architecture — One Bus vs Two</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <rect width="1200" height="360" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="34" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">VON NEUMANN vs HARVARD — MEMORY BUS ARCHITECTURE</text>
+      <!-- VON NEUMANN (left) -->
+      <text x="280" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2C2C2C">Von Neumann Architecture</text>
+      <text x="280" y="70" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">single shared memory bus</text>
+      <!-- CPU box -->
+      <rect x="100" y="90" width="160" height="80" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="180" y="128" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">CPU</text>
+      <text x="180" y="148" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">ALU + CU + Regs</text>
+      <!-- Single bus (horizontal) -->
+      <rect x="80" y="200" width="400" height="14" fill="#C82A2A" opacity="0.5"/>
+      <text x="280" y="225" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">Shared Bus (data + instructions)</text>
+      <!-- CPU to bus -->
+      <line x1="180" y1="170" x2="180" y2="200" stroke="#C82A2A" stroke-width="2"/>
+      <!-- Unified memory box -->
+      <rect x="330" y="90" width="160" height="80" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+      <text x="410" y="122" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#C82A2A">Unified</text>
+      <text x="410" y="140" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#C82A2A">Memory</text>
+      <text x="410" y="158" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">code + data mixed</text>
+      <line x1="410" y1="170" x2="410" y2="200" stroke="#C82A2A" stroke-width="2"/>
+      <!-- Von Neumann bottleneck annotation -->
+      <rect x="80" y="244" width="400" height="48" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="80" y="244" width="4" height="48" fill="#C82A2A"/>
+      <text x="96" y="262" font-family="'Noto Serif JP',serif" font-size="11" fill="#C82A2A">Von Neumann Bottleneck</text>
+      <text x="96" y="279" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Instructions and data compete for one bus.</text>
+      <text x="96" y="295" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Cannot fetch instruction while reading data.</text>
+      <!-- Divider -->
+      <line x1="590" y1="40" x2="590" y2="340" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- HARVARD (right) -->
+      <text x="900" y="54" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2C2C2C">Harvard Architecture</text>
+      <text x="900" y="70" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">separate instruction and data buses</text>
+      <!-- CPU box -->
+      <rect x="730" y="90" width="160" height="80" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="810" y="128" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">CPU</text>
+      <text x="810" y="148" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">ALU + CU + Regs</text>
+      <!-- Instruction bus -->
+      <rect x="640" y="186" width="220" height="12" fill="#2E4057" opacity="0.45"/>
+      <text x="750" y="215" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">Instruction Bus</text>
+      <!-- Data bus -->
+      <rect x="640" y="208" width="220" height="12" fill="#728C69" opacity="0.55"/>
+      <text x="750" y="236" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">Data Bus</text>
+      <!-- CPU to buses -->
+      <line x1="760" y1="170" x2="760" y2="186" stroke="#2E4057" stroke-width="2"/>
+      <line x1="810" y1="170" x2="810" y2="208" stroke="#728C69" stroke-width="2"/>
+      <!-- Instruction memory -->
+      <rect x="870" y="90" width="140" height="80" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="940" y="122" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2E4057">Instruction</text>
+      <text x="940" y="140" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2E4057">Memory</text>
+      <text x="940" y="156" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">code only</text>
+      <line x1="940" y1="170" x2="940" y2="186" stroke="#2E4057" stroke-width="2"/>
+      <!-- Data memory -->
+      <rect x="1030" y="90" width="130" height="80" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5"/>
+      <text x="1095" y="122" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#728C69">Data</text>
+      <text x="1095" y="140" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#728C69">Memory</text>
+      <text x="1095" y="156" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">data only</text>
+      <line x1="1095" y1="170" x2="1095" y2="208" stroke="#728C69" stroke-width="2"/>
+      <!-- Harvard benefit -->
+      <rect x="630" y="252" width="520" height="48" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="630" y="252" width="4" height="48" fill="#728C69"/>
+      <text x="646" y="270" font-family="'Noto Serif JP',serif" font-size="11" fill="#728C69">Harvard Advantage</text>
+      <text x="646" y="287" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fetch instruction and read/write data simultaneously.</text>
+      <text x="646" y="303" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Used in DSPs, microcontrollers, CPU instruction caches.</text>
+      <!-- Footer -->
+      <rect x="0" y="342" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="355" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 3.5-C · Von Neumann: single bus creates a bottleneck — code and data cannot transfer simultaneously. Harvard: separate buses allow concurrent instruction fetch and data access.</text>
+      <text x="1140" y="355" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · 3.5</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Von Neumann architecture (left) places all code and data in a single unified memory, accessed over one shared bus — creating the Von Neumann bottleneck where instruction fetching and data access compete. Harvard architecture (right) uses physically separate buses for instructions and data, allowing the CPU to fetch the next instruction while simultaneously reading or writing data. Modern CPUs use a hybrid: a unified DRAM but separate on-chip instruction and data caches — giving Harvard-like performance with Von Neumann-like programming simplicity.</div>
+</div>
+
+</div>
+</body>
+</html>

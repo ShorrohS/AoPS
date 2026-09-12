@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 1.1 Illustrations — What Is Electricity?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;
+    --text-sumi:#1C1C1C;--text-muted:#888880;--text-ghost:#BBBBB5;
+    --accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;
+    --border-light:#D8D6CE;--border-paper:#E8E6DF;
+    --zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);color:var(--text-sumi);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:var(--accent-red);color:var(--accent-red);background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;color:var(--text-sumi);}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 1 — Physical Computing</div>
+  <div class="page-title">Module 1.1 — What Is Electricity?</div>
+  <div class="page-sub">4 figures · Chapter Hero · Water Analogy · Circuit States · Voltage/Current Concept</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 1.1-A  Chapter Hero -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 1.1-A</span>
+    <span class="fig-title">Electricity as Controlled Flow — The Foundation of All Computing</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" style="height:420px">
+      <defs>
+        <linearGradient id="elBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E0DAD0"/>
+        </linearGradient>
+        <linearGradient id="wireGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#C82A2A" stop-opacity="0"/>
+          <stop offset="30%" stop-color="#C82A2A"/>
+          <stop offset="70%" stop-color="#C82A2A"/>
+          <stop offset="100%" stop-color="#C82A2A" stop-opacity="0"/>
+        </linearGradient>
+        <filter id="glowRed">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <rect width="1200" height="500" fill="url(#elBg)"/>
+
+      <!-- ── LARGE CIRCUIT DIAGRAM (centre) ── -->
+      <!-- Battery (left) -->
+      <rect x="80" y="200" width="40" height="100" rx="2" fill="#D8D0C0" stroke="#A8A090" stroke-width="1.5"/>
+      <!-- Battery terminals -->
+      <line x1="100" y1="200" x2="100" y2="186" stroke="#2C2C2C" stroke-width="2.5"/>
+      <line x1="90"  y1="182" x2="110" y2="182" stroke="#2C2C2C" stroke-width="3"/><!-- + -->
+      <line x1="94"  y1="194" x2="106" y2="194" stroke="#2C2C2C" stroke-width="1.5"/><!-- - -->
+      <text x="100" y="258" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#888880">9V</text>
+      <!-- Battery label -->
+      <text x="100" y="320" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">BATTERY</text>
+
+      <!-- Top wire: battery+ to bulb -->
+      <path d="M100 182 L100 120 L600 120 L600 180" stroke="#2C2C2C" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- Animated electron flow dots on top wire -->
+      <g fill="#C82A2A" opacity="0.8">
+        <circle cx="200" cy="120" r="5"/>
+        <circle cx="320" cy="120" r="5"/>
+        <circle cx="440" cy="120" r="5"/>
+        <circle cx="560" cy="120" r="5"/>
+      </g>
+      <!-- Direction arrows on top wire -->
+      <g fill="#C82A2A" opacity="0.5">
+        <polygon points="255,116 268,120 255,124"/>
+        <polygon points="375,116 388,120 375,124"/>
+        <polygon points="495,116 508,120 495,124"/>
+      </g>
+
+      <!-- Lightbulb (centre) -->
+      <circle cx="600" cy="250" r="60" fill="#EDE8DC" stroke="#2C2C2C" stroke-width="2"/>
+      <circle cx="600" cy="250" r="44" fill="#F8F2E0" stroke="#D8D0C0" stroke-width="1"/>
+      <!-- Filament -->
+      <path d="M580 260 Q590 230 600 250 Q610 270 620 240 Q622 255 620 260" stroke="#C82A2A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <!-- Glow effect -->
+      <circle cx="600" cy="250" r="35" fill="#FFECB0" opacity="0.35"/>
+      <!-- Base -->
+      <rect x="575" y="294" width="50" height="16" rx="1" fill="#C8C0B4" stroke="#A8A090" stroke-width="1"/>
+      <rect x="583" y="310" width="34" height="8" rx="1" fill="#B8B0A4" stroke="#A8A090" stroke-width="1"/>
+      <text x="600" y="336" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">BULB</text>
+
+      <!-- Bottom wire: bulb to battery- -->
+      <path d="M600 318 L600 380 L100 380 L100 300" stroke="#2C2C2C" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- Electron flow on bottom (opposite direction arrows) -->
+      <g fill="#2E4057" opacity="0.5">
+        <polygon points="445,376 432,380 445,384"/>
+        <polygon points="325,376 312,380 325,384"/>
+        <polygon points="205,376 192,380 205,384"/>
+      </g>
+
+      <!-- Voltage annotation -->
+      <line x1="60" y1="182" x2="40" y2="182" stroke="#D8D6CE" stroke-width="1" stroke-dasharray="3,2"/>
+      <line x1="60" y1="300" x2="40" y2="300" stroke="#D8D6CE" stroke-width="1" stroke-dasharray="3,2"/>
+      <line x1="40" y1="182" x2="40" y2="300" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="28" y="246" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057" transform="rotate(-90,28,246)">VOLTAGE 9V</text>
+
+      <!-- Current arrow annotation -->
+      <path d="M340 90 Q340 70 380 70" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#ela)"/>
+      <text x="390" y="66" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">current flow →</text>
+      <defs>
+        <marker id="ela" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+      </defs>
+
+      <!-- ── RIGHT SIDE: Three concepts ── -->
+      <!-- Voltage -->
+      <rect x="780" y="80" width="360" height="100" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="780" y="80" width="4" height="100" fill="#2E4057"/>
+      <text x="800" y="104" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">VOLTAGE (V)</text>
+      <text x="800" y="122" font-family="'Inter',sans-serif" font-size="12" fill="#3A3A3A">Electrical pressure — the force</text>
+      <text x="800" y="140" font-family="'Inter',sans-serif" font-size="12" fill="#3A3A3A">that pushes electrons through a wire</text>
+      <text x="800" y="160" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">Measured in Volts (V)</text>
+
+      <!-- Current -->
+      <rect x="780" y="200" width="360" height="100" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="780" y="200" width="4" height="100" fill="#C82A2A"/>
+      <text x="800" y="224" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">CURRENT (I)</text>
+      <text x="800" y="242" font-family="'Inter',sans-serif" font-size="12" fill="#3A3A3A">The flow rate of electrons</text>
+      <text x="800" y="260" font-family="'Inter',sans-serif" font-size="12" fill="#3A3A3A">through a conductor</text>
+      <text x="800" y="280" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">Measured in Amperes (A)</text>
+
+      <!-- Resistance -->
+      <rect x="780" y="320" width="360" height="100" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="780" y="320" width="4" height="100" fill="#8B6914"/>
+      <text x="800" y="344" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914" letter-spacing="0.1em">RESISTANCE (R)</text>
+      <text x="800" y="362" font-family="'Inter',sans-serif" font-size="12" fill="#3A3A3A">Opposition to electron flow</text>
+      <text x="800" y="380" font-family="'Inter',sans-serif" font-size="12" fill="#3A3A3A">— the bulb filament resists</text>
+      <text x="800" y="400" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8B6914">Measured in Ohms (Ω)</text>
+
+      <!-- Ohm's Law -->
+      <rect x="780" y="438" width="360" height="34" rx="1" fill="#2E4057" opacity="0.08" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="960" y="459" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2E4057">V = I × R  (Ohm's Law)</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="466" width="1200" height="34" fill="rgba(44,64,87,0.06)"/>
+      <text x="60" y="488" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Fig 1.1-A</text>
+      <text x="120" y="488" font-family="'Inter',sans-serif" font-size="12" fill="#6E6E6E">A simple closed circuit: battery drives electrons from negative terminal through wire, through filament (resistance), producing light and heat, back to positive terminal. Right: the three electrical quantities and Ohm's Law.</text>
+      <text x="1140" y="488" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 1.1</text>
+    </svg>
+  </div>
+  <div class="fig-caption">A complete series circuit: a 9V battery, connecting wires, and an incandescent bulb. Red dots show electron flow direction (negative to positive terminal). Current flows continuously as long as the circuit is unbroken. The three core quantities — voltage (driving force), current (flow rate), and resistance (opposition) — are related by Ohm's Law: V = I × R. For computing, the key insight is that voltage levels can represent binary states: high voltage = 1, low voltage = 0.</div>
+</div>
+
+<!-- FIG 1.1-B  Water Analogy -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Concept Diagram</span>
+    <span class="fig-id">FIG 1.1-B</span>
+    <span class="fig-title">The Water Analogy — Voltage, Current, and Resistance Made Intuitive</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <rect width="1200" height="380" fill="#F4EFE6"/>
+
+      <!-- Header -->
+      <rect x="0" y="0" width="1200" height="36" fill="#2E4057" opacity="0.06"/>
+      <text x="300" y="23" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">WATER (PLUMBING) ANALOGY</text>
+      <text x="900" y="23" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">ELECTRICAL EQUIVALENT</text>
+      <line x1="600" y1="0" x2="600" y2="380" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- ── WATER SIDE ── -->
+      <!-- Reservoir (high) -->
+      <rect x="100" y="56" width="120" height="80" rx="2" fill="#B8D4E8" stroke="#7898B8" stroke-width="1.5"/>
+      <text x="160" y="102" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#4878A8">RESERVOIR</text>
+      <text x="160" y="117" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#4878A8">(high pressure)</text>
+      <!-- Water level lines -->
+      <line x1="104" y1="76" x2="216" y2="76" stroke="#7898B8" stroke-width="0.8" stroke-dasharray="2,2"/>
+      <line x1="104" y1="90" x2="216" y2="90" stroke="#7898B8" stroke-width="0.8" stroke-dasharray="2,2"/>
+
+      <!-- Pipe down -->
+      <rect x="150" y="136" width="20" height="80" rx="2" fill="#A8C8DC" stroke="#7898B8" stroke-width="1"/>
+      <!-- Flow arrows in pipe -->
+      <g fill="#7898B8">
+        <polygon points="156,155 164,155 160,163"/>
+        <polygon points="156,175 164,175 160,183"/>
+        <polygon points="156,195 164,195 160,203"/>
+      </g>
+
+      <!-- Valve (switch) -->
+      <rect x="130" y="220" width="60" height="28" rx="2" fill="#C8A878" stroke="#A88858" stroke-width="1.5"/>
+      <text x="160" y="238" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#6E4800">VALVE</text>
+      <!-- Valve indicator - open -->
+      <line x1="148" y1="234" x2="172" y2="234" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round"/>
+
+      <!-- Pipe with narrow section (resistor) -->
+      <rect x="150" y="248" width="20" height="30" fill="#A8C8DC" stroke="#7898B8" stroke-width="1"/>
+      <!-- Narrow section -->
+      <rect x="155" y="278" width="10" height="24" fill="#7898B8" stroke="#5888A8" stroke-width="1"/>
+      <text x="195" y="292" font-family="'Inter',sans-serif" font-size="9" fill="#5888A8">narrow pipe</text>
+      <text x="195" y="304" font-family="'Inter',sans-serif" font-size="9" fill="#5888A8">(resistance)</text>
+
+      <!-- Collection basin (low) -->
+      <rect x="100" y="310" width="120" height="40" rx="2" fill="#D8EAF0" stroke="#7898B8" stroke-width="1"/>
+      <text x="160" y="335" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#4878A8">LOW BASIN</text>
+
+      <!-- Pump returning water -->
+      <path d="M220 330 Q280 330 280 96 Q280 56 220 56" stroke="#7898B8" stroke-width="2" fill="none" stroke-dasharray="6,3"/>
+      <text x="288" y="200" font-family="'Inter',sans-serif" font-size="9" fill="#7898B8" transform="rotate(90,288,200)">PUMP (battery)</text>
+
+      <!-- Labels -->
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#4878A8">
+        <text x="60" y="100">Height</text>
+        <text x="60" y="114">difference</text>
+        <text x="60" y="128">= pressure</text>
+      </g>
+      <line x1="95" y1="60" x2="95" y2="136" stroke="#4878A8" stroke-width="1" stroke-dasharray="2,2"/>
+      <path d="M95 60 L88 68 M95 136 L88 128" stroke="#4878A8" stroke-width="1" fill="none"/>
+
+      <!-- Water analogy labels -->
+      <g font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">
+        <text x="160" y="170" text-anchor="middle">Flow rate =</text>
+        <text x="160" y="185" text-anchor="middle">CURRENT</text>
+      </g>
+
+      <!-- ── ELECTRICAL SIDE ── -->
+      <!-- Battery -->
+      <rect x="740" y="56" width="50" height="100" rx="2" fill="#EDE8DC" stroke="#A8A090" stroke-width="1.5"/>
+      <line x1="765" y1="56" x2="765" y2="44" stroke="#2C2C2C" stroke-width="2.5"/>
+      <line x1="755" y1="40" x2="775" y2="40" stroke="#2C2C2C" stroke-width="3"/>
+      <line x1="759" y1="52" x2="771" y2="52" stroke="#2C2C2C" stroke-width="1.5"/>
+      <text x="765" y="112" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2C2C2C">9V</text>
+      <text x="765" y="128" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">BATTERY</text>
+      <!-- "Voltage" arrow -->
+      <line x1="715" y1="44" x2="695" y2="44" stroke="#2E4057" stroke-width="1" stroke-dasharray="2,2"/>
+      <line x1="715" y1="156" x2="695" y2="156" stroke="#2E4057" stroke-width="1" stroke-dasharray="2,2"/>
+      <line x1="695" y1="44" x2="695" y2="156" stroke="#2E4057" stroke-width="1"/>
+      <text x="688" y="105" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2E4057" transform="rotate(-90,688,105)">VOLTAGE</text>
+
+      <!-- Wire top -->
+      <path d="M765 44 L765 30 L1060 30 L1060 200" stroke="#2C2C2C" stroke-width="3" fill="none"/>
+      <!-- Electron dots -->
+      <g fill="#C82A2A" opacity="0.7">
+        <circle cx="860" cy="30" r="5"/><circle cx="960" cy="30" r="5"/>
+      </g>
+      <g fill="#C82A2A" opacity="0.4">
+        <polygon points="905,26 918,30 905,34"/>
+        <polygon points="1005,26 1018,30 1005,34"/>
+      </g>
+
+      <!-- Switch -->
+      <rect x="820" y="190" width="80" height="28" rx="2" fill="#C8A878" stroke="#A88858" stroke-width="1.5"/>
+      <text x="860" y="208" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#6E4800">SWITCH</text>
+
+      <!-- Resistor (zigzag) -->
+      <path d="M1060 236 L1060 250 L1044 256 L1076 262 L1044 268 L1076 274 L1044 280 L1076 286 L1044 292 L1060 298 L1060 310" stroke="#8B6914" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <text x="1085" y="278" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">RESISTOR</text>
+      <text x="1085" y="292" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">(bulb/wire)</text>
+
+      <!-- Wire bottom -->
+      <path d="M1060 310 L1060 350 L765 350 L765 156" stroke="#2C2C2C" stroke-width="3" fill="none"/>
+
+      <!-- Current label -->
+      <text x="860" y="372" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#C82A2A">CURRENT flows</text>
+
+      <!-- Cross-analogy table -->
+      <rect x="320" y="56" width="240" height="270" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="320" y="56" width="240" height="26" fill="#2E4057" opacity="0.07"/>
+      <text x="440" y="74" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">ANALOGY MAP</text>
+      <g font-family="'Inter',sans-serif" font-size="11">
+        <line x1="330" y1="86" x2="550" y2="86" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="340" y="102" fill="#4878A8">Water</text><text x="460" y="102" fill="#2E4057">Electricity</text>
+        <line x1="330" y1="108" x2="550" y2="108" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="340" y="126" fill="#3A3A3A">Pressure</text><text x="460" y="126" fill="#2E4057">Voltage (V)</text>
+        <line x1="330" y1="132" x2="550" y2="132" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="340" y="150" fill="#3A3A3A">Flow rate</text><text x="460" y="150" fill="#C82A2A">Current (A)</text>
+        <line x1="330" y1="156" x2="550" y2="156" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="340" y="174" fill="#3A3A3A">Narrow pipe</text><text x="460" y="174" fill="#8B6914">Resistance (Ω)</text>
+        <line x1="330" y1="180" x2="550" y2="180" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="340" y="198" fill="#3A3A3A">Valve open</text><text x="460" y="198" fill="#728C69">Switch ON</text>
+        <line x1="330" y1="204" x2="550" y2="204" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="340" y="222" fill="#3A3A3A">Valve closed</text><text x="460" y="222" fill="#888880">Switch OFF</text>
+        <line x1="330" y1="228" x2="550" y2="228" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="340" y="246" fill="#3A3A3A">Pump</text><text x="460" y="246" fill="#2E4057">Battery</text>
+        <line x1="330" y1="252" x2="550" y2="252" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="340" y="270" fill="#3A3A3A">Water volume</text><text x="460" y="270" fill="#2E4057">Charge (C)</text>
+        <line x1="330" y1="276" x2="550" y2="276" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="340" y="294" fill="#3A3A3A">Leak = no flow</text><text x="460" y="294" fill="#888880">Open circuit</text>
+      </g>
+
+      <rect x="0" y="350" width="1200" height="30" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="370" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 1.1-B · The water-pipe analogy maps every electrical concept to an intuitive physical equivalent. The valve = switch is the key insight for computing: a switch controls whether current flows, representing a binary state.</text>
+      <text x="1140" y="370" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 1.1</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The water analogy for electricity. Left: a plumbing system — reservoir (high pressure), valve (switch), narrow pipe (resistance), low basin, and pump (battery) returning water. Right: the electrical equivalent. Centre: the analogy map. The critical computing insight is the valve/switch row: an open valve allows flow (circuit ON), a closed valve blocks it (circuit OFF). A transistor is a voltage-controlled valve — the fundamental building block of all digital logic.</div>
+</div>
+
+<!-- FIG 1.1-C  Open vs Closed Circuit -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Before vs After</span>
+    <span class="fig-id">FIG 1.1-C</span>
+    <span class="fig-title">Open Circuit vs Closed Circuit — The Binary Reality of Switches</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:270px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+
+      <!-- LEFT: Open circuit -->
+      <rect x="0" y="0" width="580" height="280" fill="#F8F7F3"/>
+      <rect x="0" y="0" width="580" height="32" fill="#888880" opacity="0.1"/>
+      <text x="290" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#888880" letter-spacing="0.12em">OPEN CIRCUIT — NO CURRENT FLOWS</text>
+
+      <!-- Battery -->
+      <rect x="80" y="90" width="30" height="80" rx="1" fill="#EDE8DC" stroke="#A8A090" stroke-width="1.5"/>
+      <line x1="95" y1="90" x2="95" y2="80" stroke="#2C2C2C" stroke-width="2"/><line x1="85" y1="76" x2="105" y2="76" stroke="#2C2C2C" stroke-width="3"/>
+      <line x1="89" y1="87" x2="101" y2="87" stroke="#2C2C2C" stroke-width="1.5"/>
+      <!-- Wires -->
+      <path d="M95 76 L95 50 L440 50 L440 120" stroke="#2C2C2C" stroke-width="2.5" fill="none"/>
+      <!-- OPEN SWITCH - gap in wire -->
+      <path d="M440 120 L440 140" stroke="#2C2C2C" stroke-width="2.5"/>
+      <!-- Switch open - wire angles away -->
+      <path d="M440 140 L460 120" stroke="#2C2C2C" stroke-width="2.5"/>
+      <!-- Gap annotation -->
+      <text x="475" y="132" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">GAP</text>
+      <!-- Bulb (dim) -->
+      <circle cx="290" cy="50" r="0" fill="none"/>
+      <circle cx="290" cy="140" r="36" fill="#F0ECE4" stroke="#C8C4BC" stroke-width="1.5"/>
+      <path d="M278 148 Q284 128 290 140 Q296 152 302 134" stroke="#C8C4BC" stroke-width="2" fill="none"/>
+      <text x="290" y="193" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">bulb — OFF</text>
+      <!-- Bottom wire partial (broken) -->
+      <path d="M440 160 L440 230 L95 230 L95 170" stroke="#C8C4BC" stroke-width="2.5" fill="none" stroke-dasharray="5,3"/>
+      <!-- No electrons -->
+      <text x="290" y="55" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">no current flow</text>
+      <!-- State label -->
+      <rect x="80" y="245" width="400" height="22" fill="#888880" opacity="0.1"/>
+      <text x="280" y="260" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#888880">State = 0  (logic LOW)</text>
+
+      <!-- DIVIDER -->
+      <line x1="590" y1="0" x2="590" y2="320" stroke="#D8D6CE" stroke-width="1.5"/>
+
+      <!-- RIGHT: Closed circuit -->
+      <rect x="600" y="0" width="600" height="280" fill="#F4F3EF"/>
+      <rect x="600" y="0" width="600" height="32" fill="#728C69" opacity="0.1"/>
+      <text x="900" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#728C69" letter-spacing="0.12em">CLOSED CIRCUIT — CURRENT FLOWS</text>
+
+      <!-- Battery -->
+      <rect x="680" y="90" width="30" height="80" rx="1" fill="#EDE8DC" stroke="#A8A090" stroke-width="1.5"/>
+      <line x1="695" y1="90" x2="695" y2="80" stroke="#2C2C2C" stroke-width="2"/><line x1="685" y1="76" x2="705" y2="76" stroke="#2C2C2C" stroke-width="3"/>
+      <line x1="689" y1="87" x2="701" y2="87" stroke="#2C2C2C" stroke-width="1.5"/>
+      <!-- Full top wire -->
+      <path d="M695 76 L695 50 L1040 50 L1040 120" stroke="#2C2C2C" stroke-width="2.5" fill="none"/>
+      <!-- Electron flow -->
+      <g fill="#C82A2A" opacity="0.8"><circle cx="790" cy="50" r="5"/><circle cx="890" cy="50" r="5"/><circle cx="990" cy="50" r="5"/></g>
+      <g fill="#C82A2A" opacity="0.4"><polygon points="840,46 853,50 840,54"/><polygon points="940,46 953,50 940,54"/></g>
+      <!-- CLOSED SWITCH -->
+      <path d="M1040 120 L1040 160" stroke="#2C2C2C" stroke-width="2.5"/>
+      <line x1="1020" y1="140" x2="1060" y2="140" stroke="#2C2C2C" stroke-width="2.5"/>
+      <text x="1075" y="144" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">CLOSED</text>
+      <!-- Bulb (lit) -->
+      <circle cx="890" cy="140" r="36" fill="#FFFCE8" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="890" cy="140" r="24" fill="#FFECB0" opacity="0.6"/>
+      <path d="M878 148 Q884 126 890 140 Q896 154 902 132" stroke="#C82A2A" stroke-width="2.5" fill="none"/>
+      <text x="890" y="193" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">bulb — ON</text>
+      <!-- Full bottom wire -->
+      <path d="M1040 160 L1040 230 L695 230 L695 170" stroke="#2C2C2C" stroke-width="2.5" fill="none"/>
+      <!-- State label -->
+      <rect x="680" y="245" width="440" height="22" fill="#728C69" opacity="0.1"/>
+      <text x="900" y="260" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#728C69">State = 1  (logic HIGH)</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="288" width="1200" height="32" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="308" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 1.1-C · Open circuit (left) = switch breaks the path, no current, bulb off, logic 0. Closed circuit (right) = unbroken path, current flows, bulb lit, logic 1. This binary reality is the physical foundation of all digital computing.</text>
+      <text x="1140" y="308" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 1.1</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The two states of a switch map directly to the two binary values. Open circuit: the switch creates a gap, breaking the conducting path. No current flows. The bulb is dark. This represents logic 0 / LOW. Closed circuit: the switch connects the gap, completing the path. Current flows through the filament, producing light. This represents logic 1 / HIGH. Every bit in every computer is physically this — a switch (transistor) that is either open or closed.</div>
+</div>
+
+<!-- FIG 1.1-D  Simulation Figure — Series vs Parallel -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type F — Simulation Figure</span>
+    <span class="fig-id">FIG 1.1-D</span>
+    <span class="fig-title">Series vs Parallel Circuits — Two Bulbs, Two Behaviours</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:270px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+
+      <!-- LEFT: Series -->
+      <rect x="0" y="0" width="580" height="280" fill="#F8F7F3"/>
+      <rect x="0" y="0" width="580" height="30" fill="#2E4057" opacity="0.07"/>
+      <text x="290" y="20" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.12em">SERIES — SAME CURRENT, SPLIT VOLTAGE</text>
+
+      <!-- Battery -->
+      <rect x="60" y="100" width="24" height="80" rx="1" fill="#EDE8DC" stroke="#A8A090" stroke-width="1"/>
+      <line x1="72" y1="100" x2="72" y2="92" stroke="#2C2C2C" stroke-width="2"/><line x1="64" y1="88" x2="80" y2="88" stroke="#2C2C2C" stroke-width="2.5"/>
+      <line x1="67" y1="97" x2="77" y2="97" stroke="#2C2C2C" stroke-width="1.5"/>
+      <!-- Series wire path -->
+      <path d="M72 88 L72 60 L480 60 L480 100" stroke="#2C2C2C" stroke-width="2.5" fill="none"/>
+      <!-- Bulb 1 (series - half brightness) -->
+      <circle cx="210" cy="140" r="30" fill="#FFF8DC" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="210" cy="140" r="18" fill="#FFECB0" opacity="0.4"/>
+      <path d="M200 147 Q205 130 210 140 Q215 150 220 135" stroke="#C82A2A" stroke-width="2" fill="none" opacity="0.7"/>
+      <!-- Wire connecting bulbs -->
+      <path d="M72 60 L72 60" stroke="none"/>
+      <line x1="210" y1="110" x2="210" y2="60" stroke="#2C2C2C" stroke-width="2.5"/>
+      <line x1="210" y1="170" x2="210" y2="220" stroke="#2C2C2C" stroke-width="2.5"/>
+      <!-- Bulb 2 (series - half brightness) -->
+      <circle cx="360" cy="140" r="30" fill="#FFF8DC" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="360" cy="140" r="18" fill="#FFECB0" opacity="0.4"/>
+      <path d="M350 147 Q355 130 360 140 Q365 150 370 135" stroke="#C82A2A" stroke-width="2" fill="none" opacity="0.7"/>
+      <line x1="360" y1="110" x2="360" y2="60" stroke="#2C2C2C" stroke-width="2.5"/>
+      <line x1="360" y1="170" x2="360" y2="220" stroke="#2C2C2C" stroke-width="2.5"/>
+      <!-- Bottom wire -->
+      <path d="M480 220 L480 220 L72 220 L72 180" stroke="#2C2C2C" stroke-width="2.5" fill="none"/>
+      <line x1="210" y1="220" x2="480" y2="220" stroke="#2C2C2C" stroke-width="2.5"/>
+      <line x1="360" y1="220" x2="360" y2="220" stroke="none"/>
+
+      <!-- Annotations -->
+      <rect x="40" y="245" width="500" height="20" fill="#EEECE6"/>
+      <text x="290" y="259" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Each bulb gets 4.5V (half voltage) → dim. One bulb removed → BOTH off.</text>
+
+      <!-- Voltage split annotation -->
+      <text x="210" y="195" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">4.5V</text>
+      <text x="360" y="195" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">4.5V</text>
+
+      <!-- DIVIDER -->
+      <line x1="590" y1="0" x2="590" y2="320" stroke="#D8D6CE" stroke-width="1.5"/>
+
+      <!-- RIGHT: Parallel -->
+      <rect x="600" y="0" width="600" height="280" fill="#F4F3EF"/>
+      <rect x="600" y="0" width="600" height="30" fill="#728C69" opacity="0.08"/>
+      <text x="900" y="20" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69" letter-spacing="0.12em">PARALLEL — SAME VOLTAGE, SPLIT CURRENT</text>
+
+      <!-- Battery -->
+      <rect x="660" y="100" width="24" height="80" rx="1" fill="#EDE8DC" stroke="#A8A090" stroke-width="1"/>
+      <line x1="672" y1="100" x2="672" y2="92" stroke="#2C2C2C" stroke-width="2"/><line x1="664" y1="88" x2="680" y2="88" stroke="#2C2C2C" stroke-width="2.5"/>
+      <line x1="667" y1="97" x2="677" y2="97" stroke="#2C2C2C" stroke-width="1.5"/>
+      <!-- Main wires -->
+      <path d="M672 88 L672 50 L1080 50 L1080 180 L672 180 L672 180" stroke="#2C2C2C" stroke-width="2.5" fill="none"/>
+      <!-- Branch 1 to bulb 1 -->
+      <line x1="810" y1="50" x2="810" y2="80" stroke="#2C2C2C" stroke-width="2.5"/>
+      <line x1="810" y1="150" x2="810" y2="180" stroke="#2C2C2C" stroke-width="2.5"/>
+      <!-- Bulb 1 (full brightness) -->
+      <circle cx="810" cy="115" r="30" fill="#FFFCE8" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="810" cy="115" r="18" fill="#FFECB0" opacity="0.7"/>
+      <path d="M800 122 Q805 103 810 115 Q815 127 820 108" stroke="#C82A2A" stroke-width="2.5" fill="none"/>
+      <!-- Branch 2 to bulb 2 -->
+      <line x1="960" y1="50" x2="960" y2="80" stroke="#2C2C2C" stroke-width="2.5"/>
+      <line x1="960" y1="150" x2="960" y2="180" stroke="#2C2C2C" stroke-width="2.5"/>
+      <!-- Bulb 2 (full brightness) -->
+      <circle cx="960" cy="115" r="30" fill="#FFFCE8" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="960" cy="115" r="18" fill="#FFECB0" opacity="0.7"/>
+      <path d="M950 122 Q955 103 960 115 Q965 127 970 108" stroke="#C82A2A" stroke-width="2.5" fill="none"/>
+
+      <!-- Voltage annotation -->
+      <text x="810" y="170" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">9V</text>
+      <text x="960" y="170" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">9V</text>
+
+      <rect x="640" y="245" width="520" height="20" fill="#EEECE6"/>
+      <text x="900" y="259" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Each bulb gets full 9V → full brightness. One bulb removed → OTHER stays on.</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="290" width="1200" height="30" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="310" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 1.1-D · Series (left): same current, shared voltage — dimmer bulbs, cascade failure. Parallel (right): same voltage, shared current — full brightness, independent paths. CPU power rails use parallel; logic gates use both topologies.</text>
+      <text x="1140" y="310" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 1.1</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Series vs parallel circuits — the simulation's second exercise. Series (left): both bulbs share the same current path. Each gets half the voltage, so both glow dimly. Remove one bulb and both go out — a cascade failure. Parallel (right): each bulb has its own independent path to the battery. Each receives the full 9V and glows at full brightness. Remove one bulb and the other stays on. CPU power delivery uses massive parallel distribution for exactly this reason: independent, redundant paths.</div>
+</div>
+
+</div>
+</body>
+</html>

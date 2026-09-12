@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 7.3 — Network Sockets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 7 — Systems Programming</div>
+  <div class="page-title">Module 7.3 — Network Sockets</div>
+  <div class="page-sub">3 figures · Socket Lifecycle · TCP vs UDP · Client-Server Data Flow</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 7.3-A  Socket Lifecycle -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 7.3-A</span>
+    <span class="fig-title">TCP Socket Lifecycle — Server bind/listen/accept, Client connect</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" style="height:360px">
+      <defs><linearGradient id="skBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="420" fill="url(#skBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">TCP SOCKET LIFECYCLE — SYSTEM CALLS ON SERVER (LEFT) AND CLIENT (RIGHT)</text>
+
+      <!-- SERVER column -->
+      <text x="240" y="52" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">SERVER</text>
+      <!-- socket() -->
+      <rect x="80" y="64" width="320" height="36" fill="#2E4057" opacity="0.8" rx="1"/>
+      <text x="240" y="87" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">socket(AF_INET, SOCK_STREAM, 0)</text>
+      <!-- bind() -->
+      <path d="M240 100 L240 116" stroke="#2E4057" stroke-width="1.5" fill="none"/>
+      <path d="M236 112 L240 120 L244 112" fill="#2E4057"/>
+      <rect x="80" y="120" width="320" height="36" fill="#2E4057" opacity="0.65" rx="1"/>
+      <text x="240" y="143" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">bind(sock, port=8080)</text>
+      <!-- listen() -->
+      <path d="M240 156 L240 172" stroke="#2E4057" stroke-width="1.5" fill="none"/>
+      <path d="M236 168 L240 176 L244 168" fill="#2E4057"/>
+      <rect x="80" y="176" width="320" height="36" fill="#2E4057" opacity="0.5" rx="1"/>
+      <text x="240" y="199" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">listen(sock, backlog=5)</text>
+      <!-- accept() — blocking -->
+      <path d="M240 212 L240 228" stroke="#2E4057" stroke-width="1.5" fill="none"/>
+      <path d="M236 224 L240 232 L244 224" fill="#2E4057"/>
+      <rect x="80" y="232" width="320" height="36" fill="#728C69" opacity="0.7" rx="1"/>
+      <text x="240" y="255" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">conn = accept(sock)  ← blocks</text>
+      <!-- Arrow from client connect -->
+      <!-- recv/send -->
+      <path d="M240 268 L240 284" stroke="#728C69" stroke-width="1.5" fill="none"/>
+      <path d="M236 280 L240 288 L244 280" fill="#728C69"/>
+      <rect x="80" y="288" width="320" height="36" fill="#8B6914" opacity="0.6" rx="1"/>
+      <text x="240" y="311" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">recv(conn) / send(conn)</text>
+      <!-- close -->
+      <path d="M240 324 L240 340" stroke="#8B6914" stroke-width="1.5" fill="none"/>
+      <path d="M236 336 L240 344 L244 336" fill="#8B6914"/>
+      <rect x="80" y="344" width="320" height="36" fill="#888880" opacity="0.5" rx="1"/>
+      <text x="240" y="367" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">close(conn) / close(sock)</text>
+
+      <!-- Step labels left -->
+      <g font-family="'Inter',sans-serif" font-size="9" fill="#888880" text-anchor="end">
+        <text x="74" y="86">①</text><text x="60" y="86">create socket fd</text>
+        <text x="74" y="142">②</text><text x="60" y="142">bind to address+port</text>
+        <text x="74" y="198">③</text><text x="60" y="198">mark as listening</text>
+        <text x="74" y="254">④</text><text x="60" y="254">wait for connection</text>
+        <text x="74" y="310">⑤</text><text x="60" y="310">exchange data</text>
+        <text x="74" y="366">⑥</text><text x="60" y="366">close connection</text>
+      </g>
+
+      <!-- Divider -->
+      <line x1="600" y1="44" x2="600" y2="400" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- CLIENT column -->
+      <text x="960" y="52" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">CLIENT</text>
+      <rect x="800" y="64" width="320" height="36" fill="#728C69" opacity="0.8" rx="1"/>
+      <text x="960" y="87" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">socket(AF_INET, SOCK_STREAM, 0)</text>
+      <!-- Client skips bind (OS assigns ephemeral port) -->
+      <rect x="800" y="120" width="320" height="36" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5" rx="1"/>
+      <text x="960" y="143" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880">(no bind needed — OS assigns port)</text>
+      <!-- connect() -->
+      <path d="M960 156 L960 172" stroke="#728C69" stroke-width="1.5" fill="none"/>
+      <path d="M956 168 L960 176 L964 168" fill="#728C69"/>
+      <rect x="800" y="176" width="320" height="36" fill="#728C69" opacity="0.65" rx="1"/>
+      <text x="960" y="199" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">connect(sock, "127.0.0.1", 8080)</text>
+      <!-- TCP handshake arrow -->
+      <path d="M800 232 Q700 250 440 255" stroke="#C82A2A" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+      <path d="M444 251 L436 255 L444 259" fill="#C82A2A"/>
+      <text x="620" y="244" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">TCP 3-way handshake</text>
+      <text x="620" y="260" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">SYN → SYN-ACK → ACK</text>
+      <!-- send/recv -->
+      <path d="M960 212 L960 288" stroke="#728C69" stroke-width="1.5" fill="none" stroke-dasharray="4,2"/>
+      <rect x="800" y="288" width="320" height="36" fill="#8B6914" opacity="0.6" rx="1"/>
+      <text x="960" y="311" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">send(sock) / recv(sock)</text>
+      <!-- close -->
+      <path d="M960 324 L960 340" stroke="#8B6914" stroke-width="1.5" fill="none"/>
+      <path d="M956 336 L960 344 L964 336" fill="#8B6914"/>
+      <rect x="800" y="344" width="320" height="36" fill="#888880" opacity="0.5" rx="1"/>
+      <text x="960" y="367" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">close(sock)</text>
+
+      <!-- Footer -->
+      <rect x="0" y="400" width="1200" height="20" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="414" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 7.3-A</text>
+      <text x="120" y="414" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">TCP socket lifecycle. Server: socket→bind→listen→accept (blocks)→recv/send→close. Client: socket→connect (triggers 3-way handshake, unblocks server accept)→send/recv→close.</text>
+      <text x="1140" y="414" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 7.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">TCP socket lifecycle showing the exact sequence of system calls on both sides. The server creates a socket, binds to a port, marks it as listening, then blocks on accept() waiting for a client. When the client calls connect(), the OS performs the TCP three-way handshake (SYN → SYN-ACK → ACK) and accept() returns a new connected socket file descriptor. Both sides then exchange data via send()/recv() — these are just file I/O operations on the socket fd. Both sides call close() when finished, which triggers a TCP FIN exchange (four-way teardown). Every socket is a file descriptor — it can be passed between processes, selected with select()/poll(), or used with epoll for non-blocking I/O.</div>
+</div>
+
+<!-- FIG 7.3-B  TCP vs UDP -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Comparison</span>
+    <span class="fig-id">FIG 7.3-B</span>
+    <span class="fig-title">TCP vs UDP — Reliability, Ordering, and Overhead Trade-offs</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">TCP vs UDP — TRANSPORT LAYER PROTOCOL COMPARISON</text>
+
+      <!-- Table -->
+      <rect x="40" y="40" width="1120" height="248" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="40" width="1120" height="26" fill="#2E4057" opacity="0.08"/>
+      <g font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em" text-anchor="middle">
+        <text x="200" y="57">PROPERTY</text>
+        <text x="580" y="57">TCP</text>
+        <text x="940" y="57">UDP</text>
+      </g>
+      <line x1="400" y1="40" x2="400" y2="288" stroke="#E8E6DF" stroke-width="0.5"/>
+      <line x1="760" y1="40" x2="760" y2="288" stroke="#E8E6DF" stroke-width="0.5"/>
+
+      <g font-family="'JetBrains Mono',monospace" font-size="11">
+        <rect x="40" y="66" width="1120" height="28" fill="#F8F7F3"/>
+        <text x="200" y="85" text-anchor="middle" font-family="'Inter',sans-serif" fill="#2C2C2C">Connection</text>
+        <text x="580" y="85" text-anchor="middle" fill="#2E4057">Connection-oriented (handshake)</text>
+        <text x="940" y="85" text-anchor="middle" fill="#728C69">Connectionless (fire-and-forget)</text>
+
+        <rect x="40" y="94" width="1120" height="28" fill="#FDFDFD"/>
+        <text x="200" y="113" text-anchor="middle" font-family="'Inter',sans-serif" fill="#2C2C2C">Reliability</text>
+        <text x="580" y="113" text-anchor="middle" fill="#2E4057">Guaranteed delivery (ACK + retransmit)</text>
+        <text x="940" y="113" text-anchor="middle" fill="#728C69">Best-effort, packets may be lost</text>
+
+        <rect x="40" y="122" width="1120" height="28" fill="#F8F7F3"/>
+        <text x="200" y="141" text-anchor="middle" font-family="'Inter',sans-serif" fill="#2C2C2C">Ordering</text>
+        <text x="580" y="141" text-anchor="middle" fill="#2E4057">In-order delivery (sequence numbers)</text>
+        <text x="940" y="141" text-anchor="middle" fill="#728C69">No ordering guarantee</text>
+
+        <rect x="40" y="150" width="1120" height="28" fill="#FDFDFD"/>
+        <text x="200" y="169" text-anchor="middle" font-family="'Inter',sans-serif" fill="#2C2C2C">Flow Control</text>
+        <text x="580" y="169" text-anchor="middle" fill="#2E4057">Yes — sliding window</text>
+        <text x="940" y="169" text-anchor="middle" fill="#728C69">No</text>
+
+        <rect x="40" y="178" width="1120" height="28" fill="#F8F7F3"/>
+        <text x="200" y="197" text-anchor="middle" font-family="'Inter',sans-serif" fill="#2C2C2C">Header size</text>
+        <text x="580" y="197" text-anchor="middle" fill="#C82A2A">20–60 bytes</text>
+        <text x="940" y="197" text-anchor="middle" fill="#728C69">8 bytes</text>
+
+        <rect x="40" y="206" width="1120" height="28" fill="#FDFDFD"/>
+        <text x="200" y="225" text-anchor="middle" font-family="'Inter',sans-serif" fill="#2C2C2C">Latency</text>
+        <text x="580" y="225" text-anchor="middle" fill="#C82A2A">Higher (handshake + ACK round trips)</text>
+        <text x="940" y="225" text-anchor="middle" fill="#728C69">Lower (no handshake overhead)</text>
+
+        <rect x="40" y="234" width="1120" height="28" fill="#F8F7F3"/>
+        <text x="200" y="253" text-anchor="middle" font-family="'Inter',sans-serif" fill="#2C2C2C">Use cases</text>
+        <text x="580" y="253" text-anchor="middle" font-family="'Inter',sans-serif" fill="#2E4057">HTTP, email, file transfer, SSH</text>
+        <text x="940" y="253" text-anchor="middle" font-family="'Inter',sans-serif" fill="#728C69">DNS, video streaming, games, VoIP</text>
+
+        <rect x="40" y="262" width="1120" height="26" fill="#FDFDFD"/>
+        <text x="200" y="279" text-anchor="middle" font-family="'Inter',sans-serif" fill="#2C2C2C">SOCK_ type</text>
+        <text x="580" y="279" text-anchor="middle" fill="#2E4057">SOCK_STREAM</text>
+        <text x="940" y="279" text-anchor="middle" fill="#728C69">SOCK_DGRAM</text>
+      </g>
+
+      <rect x="0" y="302" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="315" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 7.3-B · TCP trades latency and overhead for reliability. UDP trades reliability for speed. DNS uses UDP (1 round-trip, small packet). HTTP/3 implements reliability on top of UDP (QUIC) for the best of both.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">TCP and UDP trade reliability for efficiency. TCP guarantees delivery, ordering, and flow control through sequence numbers, acknowledgements, and retransmission — at the cost of a 3-way handshake on every connection, per-packet ACKs, and a 20-byte minimum header. UDP sends datagrams independently with an 8-byte header and no handshake — packets may arrive out of order, be duplicated, or be dropped silently. DNS uses UDP because its queries fit in one small packet and the application can retry if needed. Video streaming uses UDP because a retransmitted old frame would arrive too late to display. HTTP/3 runs over QUIC, which implements reliability and congestion control inside UDP packets — combining UDP's low latency with TCP's reliability at the application layer.</div>
+</div>
+
+<!-- FIG 7.3-C  Client-Server Data Flow -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 7.3-C</span>
+    <span class="fig-title">Client-Server Data Flow — HTTP Request over TCP Socket</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">HTTP GET REQUEST OVER TCP — ANNOTATED SYSTEM CALL TRACE</text>
+
+      <!-- Client box -->
+      <rect x="40" y="44" width="200" height="220" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5" rx="1"/>
+      <rect x="40" y="44" width="200" height="24" fill="#728C69" opacity="0.12"/>
+      <text x="140" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#728C69">Client</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">
+        <text x="56" y="88">socket()</text>
+        <text x="56" y="108">connect(80)</text>
+        <text x="56" y="148">send(request)</text>
+        <text x="56" y="198">recv(response)</text>
+        <text x="56" y="238">close()</text>
+      </g>
+
+      <!-- Wire / network -->
+      <rect x="280" y="100" width="640" height="160" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="1" rx="1"/>
+      <text x="600" y="120" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">NETWORK (TCP STREAM)</text>
+
+      <!-- TCP handshake -->
+      <path d="M240 108 L280 108" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+      <path d="M276 104 L284 108 L276 112" fill="#C82A2A"/>
+      <text x="360" y="104" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">SYN</text>
+      <path d="M920 120 L240 120" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+      <path d="M244 116 L236 120 L244 124" fill="#C82A2A"/>
+      <text x="600" y="116" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">SYN-ACK</text>
+      <path d="M240 132 L280 132" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+      <path d="M276 128 L284 132 L276 136" fill="#C82A2A"/>
+      <text x="360" y="128" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">ACK</text>
+
+      <!-- HTTP request -->
+      <path d="M240 154 L920 154" stroke="#2E4057" stroke-width="2" fill="none"/>
+      <path d="M916 150 L924 154 L916 158" fill="#2E4057"/>
+      <text x="600" y="148" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2E4057">GET /index.html HTTP/1.1</text>
+
+      <!-- HTTP response -->
+      <path d="M920 190 L240 190" stroke="#8B6914" stroke-width="2" fill="none"/>
+      <path d="M244 186 L236 190 L244 194" fill="#8B6914"/>
+      <text x="600" y="184" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#8B6914">HTTP/1.1 200 OK &lt;body&gt;</text>
+
+      <!-- FIN -->
+      <path d="M240 218 L920 218" stroke="#888880" stroke-width="1.5" fill="none"/>
+      <path d="M916 214 L924 218 L916 222" fill="#888880"/>
+      <text x="600" y="214" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">FIN (close)</text>
+      <path d="M920 230 L240 230" stroke="#888880" stroke-width="1.5" fill="none"/>
+      <path d="M244 226 L236 230 L244 234" fill="#888880"/>
+      <text x="600" y="248" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">FIN-ACK</text>
+
+      <!-- Server box -->
+      <rect x="960" y="44" width="200" height="220" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5" rx="1"/>
+      <rect x="960" y="44" width="200" height="24" fill="#2E4057" opacity="0.12"/>
+      <text x="1060" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2E4057">Server :80</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">
+        <text x="976" y="88">socket()</text>
+        <text x="976" y="98">bind(80)</text>
+        <text x="976" y="108">listen()</text>
+        <text x="976" y="138">accept()</text>
+        <text x="976" y="168">recv(request)</text>
+        <text x="976" y">send(response)</text>
+        <text x="976" y="188">send(response)</text>
+        <text x="976" y="238">close()</text>
+      </g>
+
+      <!-- Footer -->
+      <rect x="0" y="280" width="1200" height="20" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="294" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 7.3-C · HTTP GET over TCP. 3-way handshake establishes connection. Client sends request bytes, server receives and sends response. FIN/FIN-ACK tears down the TCP connection.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">End-to-end HTTP GET request traced at the socket system call level. The 3-way TCP handshake (SYN/SYN-ACK/ACK) establishes the connection before any data is exchanged — this alone adds one full network round-trip latency. The HTTP request is sent via send() as raw bytes in the TCP stream. The server's recv() returns those bytes, parses the HTTP request, and uses send() to write the response. Connection teardown requires a FIN/FIN-ACK exchange. HTTP/1.1 persistent connections reuse the TCP connection for multiple requests, amortising the handshake cost. HTTP/2 multiplexes multiple requests over one connection. Understanding this trace is essential for debugging network latency and optimising server performance.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 10.1 — HTML, CSS, and JavaScript</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 10 — Web &amp; Application Development</div>
+  <div class="page-title">Module 10.1 — HTML, CSS, and JavaScript</div>
+  <div class="page-sub">3 figures · Web Technology Stack · CSS Box Model · JavaScript Event Loop</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 10.1-A  Web Technology Stack -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 10.1-A</span>
+    <span class="fig-title">Web Technology Stack — HTML Structure, CSS Presentation, JavaScript Behaviour</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <defs><linearGradient id="webBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="380" fill="url(#webBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">THREE LAYERS OF THE WEB: CONTENT · PRESENTATION · BEHAVIOUR</text>
+
+      <!-- HTML column -->
+      <rect x="40" y="44" width="320" height="300" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5" rx="1"/>
+      <rect x="40" y="44" width="320" height="36" fill="#C82A2A" opacity="0.85" rx="1"/>
+      <text x="200" y="68" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="16" fill="#FDFDFD">HTML</text>
+      <text x="200" y="92" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Structure and Content</text>
+      <!-- HTML code -->
+      <rect x="56" y="106" width="288" height="200" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">
+        <text x="68" y="128" fill="#C82A2A">&lt;!DOCTYPE html&gt;</text>
+        <text x="68" y="146" fill="#C82A2A">&lt;html&gt;</text>
+        <text x="68" y="164" fill="#888880">  &lt;head&gt;</text>
+        <text x="68" y="180" fill="#888880">    &lt;title&gt;Page&lt;/title&gt;</text>
+        <text x="68" y="196" fill="#888880">  &lt;/head&gt;</text>
+        <text x="68" y="212" fill="#728C69">  &lt;body&gt;</text>
+        <text x="68" y="228" fill="#728C69">    &lt;h1&gt;Hello&lt;/h1&gt;</text>
+        <text x="68" y="244" fill="#728C69">    &lt;p&gt;World&lt;/p&gt;</text>
+        <text x="68" y="260" fill="#728C69">    &lt;button&gt;Click&lt;/button&gt;</text>
+        <text x="68" y="276" fill="#888880">  &lt;/body&gt;</text>
+        <text x="68" y="292" fill="#C82A2A">&lt;/html&gt;</text>
+      </g>
+      <text x="200" y="328" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Semantic elements: h1, p, nav, article</text>
+      <text x="200" y="342" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Accessibility: screen readers use DOM</text>
+
+      <!-- CSS column -->
+      <rect x="440" y="44" width="320" height="300" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5" rx="1"/>
+      <rect x="440" y="44" width="320" height="36" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="600" y="68" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="16" fill="#FDFDFD">CSS</text>
+      <text x="600" y="92" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Visual Presentation</text>
+      <rect x="456" y="106" width="288" height="200" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">
+        <text x="468" y="128" fill="#2E4057">h1 {</text>
+        <text x="468" y="146" fill="#8B6914">  color: #2E4057;</text>
+        <text x="468" y="162" fill="#8B6914">  font-size: 2rem;</text>
+        <text x="468" y="178" fill="#2E4057">}</text>
+        <text x="468" y="196" fill="#2E4057">button {</text>
+        <text x="468" y="212" fill="#728C69">  background: #C82A2A;</text>
+        <text x="468" y="228" fill="#728C69">  padding: 10px 24px;</text>
+        <text x="468" y="244" fill="#728C69">  border-radius: 4px;</text>
+        <text x="468" y="260" fill="#728C69">  transition: 0.2s;</text>
+        <text x="468" y="276" fill="#2E4057">}</text>
+        <text x="468" y="292" fill="#888880">/* The visual layer */</text>
+      </g>
+      <text x="600" y="328" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Cascade, specificity, inheritance</text>
+      <text x="600" y="342" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Box model, Flexbox, Grid layout</text>
+
+      <!-- JS column -->
+      <rect x="840" y="44" width="320" height="300" fill="#FDFDFD" stroke="#8B6914" stroke-width="1.5" rx="1"/>
+      <rect x="840" y="44" width="320" height="36" fill="#8B6914" opacity="0.85" rx="1"/>
+      <text x="1000" y="68" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="16" fill="#FDFDFD">JavaScript</text>
+      <text x="1000" y="92" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Dynamic Behaviour</text>
+      <rect x="856" y="106" width="288" height="200" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">
+        <text x="868" y="128" fill="#8B6914">const btn = document</text>
+        <text x="868" y="144" fill="#8B6914">  .querySelector('button');</text>
+        <text x="868" y="162" fill="#728C69">btn.addEventListener(</text>
+        <text x="868" y="178" fill="#728C69">  'click', () =&gt; {</text>
+        <text x="868" y="194" fill="#FDFDFD">    fetch('/api/hello')</text>
+        <text x="868" y="210" fill="#728C69">    .then(r =&gt; r.json())</text>
+        <text x="868" y="226" fill="#728C69">    .then(d =&gt; {</text>
+        <text x="868" y="242" fill="#C82A2A">      document.querySelector</text>
+        <text x="868" y="258" fill="#C82A2A">       ('h1').textContent=d.msg</text>
+        <text x="868" y="274" fill="#728C69">    });</text>
+        <text x="868" y="290" fill="#BBBBB5">});</text>
+      </g>
+      <text x="1000" y="328" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">DOM manipulation, events</text>
+      <text x="1000" y="342" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Fetch API, async/await, modules</text>
+
+      <rect x="0" y="358" width="1200" height="22" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="373" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 10.1-A</text>
+      <text x="120" y="373" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">The three web layers. HTML provides structure and meaning. CSS controls visual presentation. JavaScript adds dynamic behaviour. They are intentionally separate — changing visual style shouldn't require HTML changes.</text>
+      <text x="1140" y="373" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 10.1</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The web's three-layer architecture. HTML (HyperText Markup Language) defines structure and semantic meaning — an h1 is a top-level heading, a nav is navigation, a button is interactive. CSS (Cascading Style Sheets) separates visual presentation from structure — changing the button colour requires only CSS changes. JavaScript adds dynamic behaviour — responding to user events, fetching data from APIs, updating the DOM without page reloads. This separation of concerns (SoC) means a screen reader can navigate HTML semantics without CSS, and a designer can restyle the page without touching HTML. Progressive enhancement: the page works with only HTML, looks better with CSS, and becomes interactive with JavaScript.</div>
+</div>
+
+<!-- FIG 10.1-B  CSS Box Model -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type B — Concept Diagram</span>
+    <span class="fig-id">FIG 10.1-B</span>
+    <span class="fig-title">CSS Box Model — Content, Padding, Border, Margin</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">CSS BOX MODEL — EVERY ELEMENT IS A RECTANGLE WITH FOUR LAYERS</text>
+
+      <!-- Nested boxes (centre) -->
+      <!-- Margin (outermost) -->
+      <rect x="200" y="48" width="480" height="240" fill="#888880" opacity="0.1" stroke="#888880" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="220" y="68" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">MARGIN (transparent)</text>
+      <!-- Border -->
+      <rect x="240" y="78" width="400" height="180" fill="#8B6914" opacity="0.2" stroke="#8B6914" stroke-width="2"/>
+      <text x="260" y="98" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914" letter-spacing="0.1em">BORDER</text>
+      <!-- Padding -->
+      <rect x="280" y="108" width="320" height="120" fill="#728C69" opacity="0.25" stroke="#728C69" stroke-width="1.5"/>
+      <text x="300" y="128" font-family="'Inter',sans-serif" font-size="10" fill="#728C69" letter-spacing="0.1em">PADDING</text>
+      <!-- Content -->
+      <rect x="320" y="138" width="240" height="60" fill="#2E4057" opacity="0.5"/>
+      <text x="440" y="165" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#FDFDFD">CONTENT</text>
+      <text x="440" y="183" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">width × height</text>
+
+      <!-- Dimension labels (right side) -->
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">
+        <!-- Margin annotation -->
+        <path d="M690 58 L720 58 L720 278" stroke="#888880" stroke-width="1" fill="none"/>
+        <text x="726" y="168" fill="#888880">margin: 20px</text>
+        <!-- Border annotation -->
+        <path d="M650 88 L680 88 L680 248" stroke="#8B6914" stroke-width="1" fill="none"/>
+        <text x="686" y="140" fill="#8B6914">border: 2px</text>
+        <!-- Padding annotation -->
+        <path d="M614 118 L644 118 L644 218" stroke="#728C69" stroke-width="1" fill="none"/>
+        <text x="650" y="172" fill="#728C69">padding: 24px</text>
+      </g>
+
+      <!-- box-sizing explanation -->
+      <rect x="780" y="52" width="380" height="220" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="780" y="52" width="380" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="970" y="68" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">box-sizing PROPERTY</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="796" y="96" fill="#C82A2A" font-weight="500">content-box (default)</text>
+        <text x="796" y="114">width = content only</text>
+        <text x="796" y="132">total = width + padding + border</text>
+        <text x="796" y="150" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">width:200px + pad:24 + border:2</text>
+        <text x="796" y="166" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">→ element = 252px wide</text>
+        <line x1="796" y1="178" x2="1144" y2="178" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="796" y="198" fill="#728C69" font-weight="500">border-box (recommended)</text>
+        <text x="796" y="216">width includes padding + border</text>
+        <text x="796" y="234" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">width:200px total (incl. padding)</text>
+        <text x="796" y="250" fill="#888880" font-size="9">* { box-sizing: border-box } ← industry standard</text>
+        <text x="796" y="264" fill="#888880" font-size="9">Predictable sizing: set 200px, get 200px.</text>
+      </g>
+
+      <rect x="0" y="302" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="315" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 10.1-B · Every HTML element is a box: content → padding → border → margin. border-box makes width include padding and border — the sensible default for layout calculations.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The CSS box model — every HTML element is rendered as a rectangular box with four layers. Content holds the actual text and images. Padding adds transparent space between content and border. Border is the element's visible edge. Margin is transparent space between elements. The box-sizing property controls what "width" means: content-box (default) makes width apply only to content — a 200px element with 24px padding and 2px border is actually 252px wide. border-box makes width include padding and border — a 200px element stays 200px regardless of padding. The industry standard reset * { box-sizing: border-box } applies border-box universally, eliminating the mental arithmetic of content-box layout.</div>
+</div>
+
+<!-- FIG 10.1-C  JavaScript Event Loop -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type C — Architecture Diagram</span>
+    <span class="fig-id">FIG 10.1-C</span>
+    <span class="fig-title">JavaScript Event Loop — Call Stack, Task Queue, Microtask Queue</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">JAVASCRIPT EVENT LOOP — SINGLE THREAD, NON-BLOCKING I/O</text>
+
+      <!-- Call Stack -->
+      <text x="130" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">CALL STACK</text>
+      <rect x="40" y="60" width="180" height="200" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5" rx="1"/>
+      <!-- Stack frames -->
+      <rect x="48" y="68" width="164" height="30" fill="#2E4057" opacity="0.65"/>
+      <text x="130" y="87" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">handleClick()</text>
+      <rect x="48" y="100" width="164" height="30" fill="#2E4057" opacity="0.5"/>
+      <text x="130" y="119" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">fetch('/api')</text>
+      <text x="130" y="150" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">← running now</text>
+      <text x="130" y="168" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">single thread</text>
+      <text x="130" y="186" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">one frame at a time</text>
+      <text x="130" y="248" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">stack bottom</text>
+
+      <!-- Web APIs -->
+      <text x="430" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914" letter-spacing="0.1em">BROWSER/NODE APIs</text>
+      <rect x="280" y="60" width="300" height="200" fill="#FDFDFD" stroke="#8B6914" stroke-width="1.5" rx="1"/>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <rect x="296" y="76" width="268" height="28" fill="#8B6914" opacity="0.2"/>
+        <text x="430" y="95" text-anchor="middle">setTimeout(cb, 300ms)</text>
+        <rect x="296" y="108" width="268" height="28" fill="#8B6914" opacity="0.2"/>
+        <text x="430" y="127" text-anchor="middle">fetch('/api') ← HTTP request</text>
+        <rect x="296" y="140" width="268" height="28" fill="#8B6914" opacity="0.2"/>
+        <text x="430" y="159" text-anchor="middle">addEventListener('click')</text>
+      </g>
+      <text x="430" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Run by browser internals</text>
+      <text x="430" y="226" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">(C++ threads, not JS)</text>
+      <text x="430" y="244" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Push callback when done</text>
+
+      <!-- Task Queue -->
+      <text x="730" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">TASK QUEUE (macro)</text>
+      <rect x="620" y="60" width="220" height="100" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5" rx="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#C82A2A">
+        <text x="636" y="84">timerCb()</text>
+        <text x="636" y="104">clickCb()</text>
+        <text x="636" y="124">fetchCb()</text>
+      </g>
+      <text x="730" y="178" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">← processed when stack empty</text>
+
+      <!-- Microtask Queue -->
+      <text x="730" y="212" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69" letter-spacing="0.1em">MICROTASK QUEUE</text>
+      <rect x="620" y="220" width="220" height="52" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5" rx="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">
+        <text x="636" y="240">promiseThen()</text>
+        <text x="636" y="258">queueMicrotask()</text>
+      </g>
+      <text x="730" y="286" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">← processed before next task</text>
+
+      <!-- Event Loop arrow -->
+      <rect x="870" y="60" width="290" height="220" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1" rx="1"/>
+      <rect x="870" y="60" width="290" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="1015" y="76" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">EVENT LOOP TICK</text>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="886" y="104">while (true) {</text>
+        <text x="886" y="122" fill="#2E4057">  if (stack.empty) {</text>
+        <text x="886" y="140" fill="#728C69">    drain microtasks</text>
+        <text x="886" y="158" fill="#C82A2A">    take 1 task</text>
+        <text x="886" y="176">    push to stack</text>
+        <text x="886" y="194">  }</text>
+        <text x="886" y="212" fill="#888880">  execute stack</text>
+        <text x="886" y="230">}</text>
+        <text x="886" y="254" fill="#728C69" font-size="9">Promises resolved first</text>
+        <text x="886" y="268" fill="#728C69" font-size="9">before next setTimeout</text>
+      </g>
+
+      <rect x="0" y="284" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="296" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 10.1-C · JS is single-threaded. I/O is offloaded to browser APIs. Callbacks enter Task Queue. Promise .then callbacks enter Microtask Queue (processed first). Event loop dequeues when stack empty.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">JavaScript's event loop enables non-blocking I/O on a single thread. When fetch() is called, the HTTP request is handed to the browser's C++ networking layer — the JS thread continues executing. When the response arrives, the callback enters the Task Queue. The event loop checks: if the call stack is empty, drain the Microtask Queue (Promise .then chains), then take one task from the Task Queue and push it onto the stack. This ordering explains why Promise callbacks run before setTimeout callbacks — microtasks are always drained before the next task. setTimeout(fn, 0) doesn't mean "immediately" — it means "at least 0ms later, after the current task and all microtasks complete". This model prevents blocking the UI thread with I/O while maintaining single-threaded simplicity.</div>
+</div>
+
+</div>
+</body>
+</html>

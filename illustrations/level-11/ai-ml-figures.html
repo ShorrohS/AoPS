@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level 11 — AI/ML Concepts Figure Set</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:900px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 11 — AI & Machine Learning</div>
+  <div class="page-title">Level 11 — Artificial Intelligence & Machine Learning</div>
+  <div class="page-sub">3 figures · Neural Network Architecture · Backpropagation · Gradient Descent Loss Surface</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 11-A  Neural Network Architecture -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 11-A</span>
+    <span class="fig-title">Neural Network Architecture — Layers, Neurons, Weights, Activations</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 460" xmlns="http://www.w3.org/2000/svg" style="height:410px">
+      <defs>
+        <linearGradient id="aiBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="460" fill="url(#aiBg)"/>
+
+      <!-- Layer labels -->
+      <text x="150" y="24" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">INPUT LAYER</text>
+      <text x="430" y="24" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">HIDDEN LAYER 1</text>
+      <text x="720" y="24" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">HIDDEN LAYER 2</text>
+      <text x="1010" y="24" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">OUTPUT LAYER</text>
+
+      <!-- ── INPUT NEURONS (x1, x2, x3) ── -->
+      <g>
+        <!-- x1 -->
+        <circle cx="150" cy="120" r="28" fill="#2E4057" opacity="0.8"/>
+        <text x="150" y="116" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">x₁</text>
+        <text x="150" y="132" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.65)">0.8</text>
+        <!-- x2 -->
+        <circle cx="150" cy="230" r="28" fill="#2E4057" opacity="0.8"/>
+        <text x="150" y="226" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">x₂</text>
+        <text x="150" y="242" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.65)">0.3</text>
+        <!-- x3 -->
+        <circle cx="150" cy="340" r="28" fill="#2E4057" opacity="0.8"/>
+        <text x="150" y="336" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">x₃</text>
+        <text x="150" y="352" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.65)">0.5</text>
+      </g>
+
+      <!-- ── CONNECTIONS Input → H1 ── -->
+      <g stroke="#D8D6CE" stroke-width="0.8" opacity="0.6">
+        <!-- x1 to all H1 -->
+        <line x1="178" y1="115" x2="398" y2="100"/>
+        <line x1="178" y1="120" x2="398" y2="185"/>
+        <line x1="178" y1="125" x2="398" y2="270"/>
+        <line x1="178" y1="120" x2="398" y2="355"/>
+        <!-- x2 to all H1 -->
+        <line x1="178" y1="225" x2="398" y2="100"/>
+        <line x1="178" y1="230" x2="398" y2="185"/>
+        <line x1="178" y1="235" x2="398" y2="270"/>
+        <line x1="178" y1="230" x2="398" y2="355"/>
+        <!-- x3 to all H1 -->
+        <line x1="178" y1="335" x2="398" y2="100"/>
+        <line x1="178" y1="340" x2="398" y2="185"/>
+        <line x1="178" y1="345" x2="398" y2="270"/>
+        <line x1="178" y1="340" x2="398" y2="355"/>
+      </g>
+      <!-- Highlight one weight -->
+      <line x1="178" y1="120" x2="398" y2="185" stroke="#C82A2A" stroke-width="2"/>
+      <text x="290" y="148" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#C82A2A">w=0.7</text>
+
+      <!-- ── HIDDEN LAYER 1 (4 neurons) ── -->
+      <g>
+        <circle cx="430" cy="100" r="28" fill="#C82A2A" opacity="0.7"/><text x="430" y="96" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">h₁</text><text x="430" y="112" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.7)">0.62</text>
+        <circle cx="430" cy="210" r="28" fill="#C82A2A" opacity="0.7"/><text x="430" y="206" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">h₂</text><text x="430" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.7)">0.88</text>
+        <circle cx="430" cy="310" r="28" fill="#C82A2A" opacity="0.5"/><text x="430" y="306" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">h₃</text><text x="430" y="322" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.7)">0.34</text>
+        <circle cx="430" cy="390" r="28" fill="#C82A2A" opacity="0.3"/><text x="430" y="386" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">h₄</text><text x="430" y="402" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.6)">0.12</text>
+      </g>
+
+      <!-- ── CONNECTIONS H1 → H2 ── -->
+      <g stroke="#D8D6CE" stroke-width="0.8" opacity="0.5">
+        <line x1="458" y1="95" x2="688" y2="155"/>
+        <line x1="458" y1="100" x2="688" y2="245"/>
+        <line x1="458" y1="105" x2="688" y2="335"/>
+        <line x1="458" y1="205" x2="688" y2="155"/>
+        <line x1="458" y1="210" x2="688" y2="245"/>
+        <line x1="458" y1="215" x2="688" y2="335"/>
+        <line x1="458" y1="305" x2="688" y2="155"/>
+        <line x1="458" y1="310" x2="688" y2="245"/>
+        <line x1="458" y1="315" x2="688" y2="335"/>
+        <line x1="458" y1="385" x2="688" y2="155"/>
+        <line x1="458" y1="390" x2="688" y2="245"/>
+        <line x1="458" y1="395" x2="688" y2="335"/>
+      </g>
+
+      <!-- ── HIDDEN LAYER 2 (3 neurons) ── -->
+      <g>
+        <circle cx="720" cy="155" r="28" fill="#8B6914" opacity="0.8"/><text x="720" y="151" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">h₅</text><text x="720" y="167" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.7)">0.71</text>
+        <circle cx="720" cy="255" r="28" fill="#8B6914" opacity="0.6"/><text x="720" y="251" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">h₆</text><text x="720" y="267" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.7)">0.45</text>
+        <circle cx="720" cy="355" r="28" fill="#8B6914" opacity="0.4"/><text x="720" y="351" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">h₇</text><text x="720" y="367" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.6)">0.22</text>
+      </g>
+
+      <!-- ── CONNECTIONS H2 → Output ── -->
+      <g stroke="#D8D6CE" stroke-width="0.8" opacity="0.6">
+        <line x1="748" y1="150" x2="978" y2="175"/>
+        <line x1="748" y1="155" x2="978" y2="255"/>
+        <line x1="748" y1="160" x2="978" y2="335"/>
+        <line x1="748" y1="250" x2="978" y2="175"/>
+        <line x1="748" y1="255" x2="978" y2="255"/>
+        <line x1="748" y1="260" x2="978" y2="335"/>
+        <line x1="748" y1="350" x2="978" y2="175"/>
+        <line x1="748" y1="355" x2="978" y2="255"/>
+        <line x1="748" y1="360" x2="978" y2="335"/>
+      </g>
+
+      <!-- ── OUTPUT LAYER (3 classes) ── -->
+      <g>
+        <circle cx="1010" cy="175" r="28" fill="#728C69" opacity="0.5"/><text x="1010" y="171" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">Cat</text><text x="1010" y="187" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.8)">0.12</text>
+        <circle cx="1010" cy="255" r="30" fill="#728C69" opacity="0.9" stroke="#728C69" stroke-width="2"/><text x="1010" y="251" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">Dog</text><text x="1010" y="268" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD" font-weight="500">0.84</text>
+        <circle cx="1010" cy="340" r="28" fill="#728C69" opacity="0.3"/><text x="1010" y="336" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">Fish</text><text x="1010" y="352" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.7)">0.04</text>
+      </g>
+      <!-- Prediction label -->
+      <rect x="1060" y="236" width="100" height="38" rx="1" fill="#728C69" opacity="0.9"/>
+      <text x="1110" y="252" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD" font-weight="500">PREDICTION</text>
+      <text x="1110" y="268" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">Dog 84%</text>
+
+      <!-- Neuron anatomy callout -->
+      <rect x="30" y="396" width="1140" height="48" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="50" y="416" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Neuron: z = Σ(wᵢ·xᵢ) + b  →  a = σ(z)   where σ = activation function (ReLU: max(0,z), Sigmoid: 1/(1+e⁻ᶻ))</text>
+      <text x="50" y="434" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Each neuron computes a weighted sum of its inputs, adds a bias, then applies a non-linear activation function. Non-linearity is what makes deep networks powerful.</text>
+
+      <rect x="0" y="440" width="1200" height="20" fill="rgba(44,64,87,0.06)"/>
+      <text x="600" y="455" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 11-A · Feed-forward neural network: 3-layer deep net classifying an image as Cat/Dog/Fish. Activations (brightness) show which neurons fire strongly. The network predicts "Dog" at 84% confidence.</text>
+      <text x="1140" y="455" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Level 11</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Feed-forward neural network architecture for 3-class image classification. Three input neurons receive pixel feature values. Two hidden layers apply learned weight matrices and non-linear activation functions (ReLU: max(0,z)). The output layer with softmax activation produces a probability distribution over classes — here 84% Dog, 12% Cat, 4% Fish. The highlighted red connection shows weight w=0.7 on the path from x₁ to h₂. Each neuron computes z = Σ(wᵢ·xᵢ) + b (linear combination plus bias), then a = σ(z) (non-linear activation). The non-linearity is essential: without it, any stack of layers collapses to a single linear transformation, removing all representational capacity.</div>
+</div>
+
+<!-- FIG 11-B  Backpropagation and Gradient Descent -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 11-B</span>
+    <span class="fig-title">Gradient Descent — Descending the Loss Surface</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <rect width="1200" height="360" fill="#F4EFE6"/>
+
+      <!-- Left: Loss surface (2D cross-section) -->
+      <rect x="40" y="20" width="520" height="300" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="20" width="520" height="22" fill="#2E4057" opacity="0.07"/>
+      <text x="300" y="36" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2E4057">Loss Surface — Gradient Descent Path</text>
+
+      <!-- Axes -->
+      <line x1="70" y1="280" x2="540" y2="280" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="70" y1="50" x2="70" y2="280" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="305" y="298" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">parameter w</text>
+      <text x="55" y="165" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" transform="rotate(-90,55,165)">Loss L</text>
+
+      <!-- Loss curve (bowl shape) -->
+      <path d="M80 240 Q120 110 180 75 Q240 50 300 56 Q360 62 400 90 Q450 130 500 220" stroke="#2E4057" stroke-width="2.5" fill="none"/>
+      <!-- Fill under curve -->
+      <path d="M80 240 Q120 110 180 75 Q240 50 300 56 Q360 62 400 90 Q450 130 500 220 L500 280 L80 280 Z" fill="#2E4057" opacity="0.06"/>
+
+      <!-- Global minimum marker -->
+      <circle cx="300" cy="56" r="6" fill="#728C69" opacity="0.9"/>
+      <text x="300" y="48" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">global min</text>
+
+      <!-- Local minimum (slightly higher) -->
+      <circle cx="180" cy="75" r="5" fill="#8B6914" opacity="0.7"/>
+      <text x="160" y="68" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">local min</text>
+
+      <!-- Gradient descent path (starting high, descending) -->
+      <!-- Starting point -->
+      <circle cx="460" cy="170" r="7" fill="#C82A2A" opacity="0.9"/>
+      <text x="475" y="165" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">start</text>
+
+      <!-- Steps of descent -->
+      <circle cx="430" cy="133" r="6" fill="#C82A2A" opacity="0.8"/>
+      <circle cx="400" cy="104" r="6" fill="#C82A2A" opacity="0.7"/>
+      <circle cx="370" cy="83" r="5" fill="#C82A2A" opacity="0.6"/>
+      <circle cx="340" cy="67" r="5" fill="#C82A2A" opacity="0.5"/>
+      <circle cx="315" cy="58" r="5" fill="#728C69" opacity="0.8"/>
+
+      <!-- Path connecting steps -->
+      <path d="M460 170 L430 133 L400 104 L370 83 L340 67 L315 58" stroke="#C82A2A" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+
+      <!-- Gradient arrow at one point -->
+      <path d="M400 104 L420 118" stroke="#C82A2A" stroke-width="2" fill="none" marker-end="url(#ai_arr)"/>
+      <text x="432" y="120" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">∇L (gradient)</text>
+      <defs>
+        <marker id="ai_arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+      </defs>
+
+      <!-- Update rule -->
+      <rect x="60" y="296" width="480" height="18" rx="1" fill="#2E4057" opacity="0.07"/>
+      <text x="300" y="309" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">w ← w − η · ∂L/∂w   (η = learning rate)</text>
+
+      <!-- Right: Training loop -->
+      <rect x="640" y="20" width="520" height="300" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="640" y="20" width="520" height="22" fill="#C82A2A" opacity="0.07"/>
+      <text x="900" y="36" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#C82A2A">Training Loop — Backpropagation</text>
+
+      <!-- Training loop flowchart -->
+      <rect x="730" y="54" width="180" height="32" rx="1" fill="#2E4057" opacity="0.8"/>
+      <text x="820" y="74" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">① Forward Pass</text>
+
+      <path d="M820 86 L820 104" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#ai_arr)"/>
+      <text x="830" y="98" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">predict ŷ</text>
+
+      <rect x="730" y="108" width="180" height="32" rx="1" fill="#C82A2A" opacity="0.7"/>
+      <text x="820" y="128" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">② Compute Loss</text>
+
+      <path d="M820 140 L820 158" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#ai_arr)"/>
+      <text x="830" y="153" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">L = ½(ŷ−y)²</text>
+
+      <rect x="730" y="162" width="180" height="32" rx="1" fill="#8B6914" opacity="0.7"/>
+      <text x="820" y="182" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">③ Backward Pass</text>
+
+      <path d="M820 194 L820 212" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#ai_arr)"/>
+      <text x="830" y="207" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">∂L/∂w (chain rule)</text>
+
+      <rect x="730" y="216" width="180" height="32" rx="1" fill="#728C69" opacity="0.7"/>
+      <text x="820" y="236" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">④ Update Weights</text>
+
+      <path d="M820 248 L820 266" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#ai_arr)"/>
+      <text x="830" y="261" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">w ← w − η·∂L/∂w</text>
+
+      <!-- Loop back arrow -->
+      <path d="M730 232 Q660 232 660 70 L730 70" stroke="#888880" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#ai_arr)"/>
+      <text x="652" y="152" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">repeat</text>
+      <text x="652" y="164" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">epochs</text>
+
+      <!-- Key numbers -->
+      <rect x="930" y="60" width="210" height="140" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="946" y="80" fill="#888880" font-weight="500">Typical values:</text>
+        <text x="946" y="98">Learning rate η: 0.001</text>
+        <text x="946" y="116">Batch size: 32–256</text>
+        <text x="946" y="134">Epochs: 10–100</text>
+        <text x="946" y="152">Optimizer: Adam</text>
+        <text x="946" y="170">Loss fn: cross-entropy</text>
+      </g>
+      <text x="1035" y="220" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">η too large → overshoots</text>
+      <text x="1035" y="238" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">η too small → slow</text>
+
+      <rect x="0" y="334" width="1200" height="26" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="352" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 11-B · Gradient descent on a loss surface (left): each step moves opposite the gradient ∇L. Training loop (right): forward pass computes prediction, loss measures error, backward pass (backprop via chain rule) computes gradients, weights are updated. Repeat until convergence.</text>
+      <text x="1140" y="352" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · L11</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Gradient descent on the loss landscape. The loss surface (left) shows how the loss L varies as weight w changes. The training process descends the surface by repeatedly moving opposite the gradient (∂L/∂w) — the direction of steepest ascent. Each step: w ← w − η·∂L/∂w where η is the learning rate. Too large η causes overshooting past the minimum; too small causes extremely slow convergence. The training loop (right) has four steps: forward pass (compute prediction ŷ), compute loss (measure error between ŷ and true label y), backward pass (compute all gradients via the chain rule — this is backpropagation), and weight update. This loop is repeated over the entire dataset multiple times (epochs) until the loss converges.</div>
+</div>
+
+</div>
+</body>
+</html>

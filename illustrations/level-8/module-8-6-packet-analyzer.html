@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 8.6 — Building a Packet Analyzer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 8 — Networks &amp; Protocols</div>
+  <div class="page-title">Module 8.6 — Building a Packet Analyzer</div>
+  <div class="page-sub">3 figures · Packet Capture Architecture · Protocol Demultiplexing · pcap Frame Format</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 8.6-A  Packet Capture Architecture -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 8.6-A</span>
+    <span class="fig-title">Packet Capture Architecture — NIC to Wireshark / tcpdump</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <defs><linearGradient id="pcapBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="380" fill="url(#pcapBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">PACKET CAPTURE STACK — FROM WIRE TO WIRESHARK</text>
+
+      <!-- Layer stack -->
+      <!-- NIC -->
+      <rect x="80" y="52" width="260" height="60" fill="#728C69" opacity="0.8" rx="1"/>
+      <text x="210" y="78" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">NIC (Network Interface)</text>
+      <text x="210" y="98" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">receives frames from wire/radio</text>
+
+      <path d="M210 112 L210 136" stroke="#2C2C2C" stroke-width="2" fill="none"/>
+      <path d="M206 132 L210 140 L214 132" fill="#2C2C2C"/>
+      <text x="230" y="128" font-family="'Inter',sans-serif" font-size="9" fill="#888880">copy to ring buffer</text>
+
+      <!-- Driver / kernel -->
+      <rect x="80" y="140" width="260" height="60" fill="#2E4057" opacity="0.8" rx="1"/>
+      <text x="210" y="166" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">Kernel NIC Driver</text>
+      <text x="210" y="184" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#BBBBB5">handles IRQ, copies to sk_buff</text>
+
+      <path d="M210 200 L210 224" stroke="#2C2C2C" stroke-width="2" fill="none"/>
+      <path d="M206 220 L210 228 L214 220" fill="#2C2C2C"/>
+
+      <!-- Network stack -->
+      <rect x="80" y="228" width="260" height="60" fill="#2E4057" opacity="0.6" rx="1"/>
+      <text x="210" y="254" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">Kernel Network Stack</text>
+      <text x="210" y="272" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#BBBBB5">demux to sockets, routing</text>
+
+      <!-- Promiscuous mode fork -->
+      <path d="M340 258 L420 258" stroke="#C82A2A" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+      <path d="M416 254 L424 258 L416 262" fill="#C82A2A"/>
+      <text x="380" y="244" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">promiscuous</text>
+      <text x="380" y="256" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">mode copy</text>
+
+      <!-- BPF filter -->
+      <rect x="424" y="228" width="280" height="60" fill="#8B6914" opacity="0.75" rx="1"/>
+      <text x="564" y="254" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">BPF Filter</text>
+      <text x="564" y="272" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#DDDDD5">Berkeley Packet Filter in kernel</text>
+
+      <path d="M564 288 L564 312" stroke="#8B6914" stroke-width="1.5" fill="none"/>
+      <path d="M560 308 L564 316 L568 308" fill="#8B6914"/>
+      <text x="600" y="306" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">filter expression e.g. "tcp port 80"</text>
+
+      <!-- libpcap -->
+      <rect x="424" y="316" width="280" height="44" fill="#C82A2A" opacity="0.7" rx="1"/>
+      <text x="564" y="340" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">libpcap / WinPcap</text>
+      <text x="564" y="354" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">userspace capture API</text>
+
+      <path d="M704 338 L760 338" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+      <path d="M756 334 L764 338 L756 342" fill="#C82A2A"/>
+
+      <!-- Wireshark / tcpdump / custom analyzer -->
+      <rect x="764" y="300" width="380" height="80" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5" rx="1"/>
+      <rect x="764" y="300" width="380" height="26" fill="#2E4057" opacity="0.1"/>
+      <text x="954" y="317" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2E4057">Packet Analyzer</text>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="784" y="342">Wireshark · tcpdump · custom Python/C</text>
+        <text x="784" y="360">Decode headers · filter · display · save .pcap</text>
+      </g>
+
+      <!-- Notes panel -->
+      <rect x="764" y="52" width="380" height="220" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="764" y="52" width="380" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="954" y="69" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">KEY CONCEPTS</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="784" y="98" fill="#728C69" font-weight="500">Promiscuous mode</text>
+        <text x="784" y="116">NIC passes ALL frames to kernel,</text>
+        <text x="784" y="134">not just those addressed to this host.</text>
+        <line x1="780" y1="144" x2="1128" y2="144" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="784" y="164" fill="#8B6914" font-weight="500">BPF (Berkeley Packet Filter)</text>
+        <text x="784" y="182">Kernel VM that runs filter programs.</text>
+        <text x="784" y="200">Filters packets before copying to</text>
+        <text x="784" y="218">userspace — minimises overhead.</text>
+        <line x1="780" y1="228" x2="1128" y2="228" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="784" y="248" fill="#888880" font-size="9">eBPF extends BPF for observability,</text>
+        <text x="784" y="264" fill="#888880" font-size="9">networking, security (used in Cilium).</text>
+      </g>
+
+      <rect x="0" y="362" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="375" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 8.6-A · Capture stack: NIC in promiscuous mode → kernel BPF filter → libpcap API → analyzer. BPF filters in kernel minimise data copied to userspace.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Packet capture architecture. Normally a NIC only delivers frames addressed to its MAC address. In promiscuous mode it delivers all frames it receives — enabling capture of traffic to/from other hosts on the same segment. The Berkeley Packet Filter (BPF) runs a small filter program in kernel space, dropping packets that don't match the filter expression before they are copied to userspace — this dramatically reduces overhead for filtered captures. libpcap provides a portable C API for these capabilities, used by Wireshark, tcpdump, and network monitoring tools. Modern eBPF (extended BPF) is a superset that powers Linux network observability, load balancing (Cilium), and security tools (Falco).</div>
+</div>
+
+<!-- FIG 8.6-B  Protocol Demultiplexing -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 8.6-B</span>
+    <span class="fig-title">Protocol Demultiplexing — Parsing Eth→IP→TCP→HTTP from Raw Bytes</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">PROTOCOL DEMULTIPLEXING — LAYER-BY-LAYER HEADER PARSING</text>
+
+      <!-- Raw bytes bar -->
+      <text x="60" y="54" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">RAW BYTES FROM LIBPCAP:</text>
+      <rect x="60" y="60" width="1100" height="24" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <text x="610" y="76" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">ff ff ff ff ff ff aa bb cc dd ee ff 08 00 45 00 00 3c ... 47 45 54 20 2f 20 48 54 54 50 2f 31 2e 31</text>
+
+      <!-- Parse step 1: Ethernet -->
+      <text x="60" y="110" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" letter-spacing="0.1em">① READ ETHERNET HEADER (14 bytes):</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">
+        <rect x="60" y="118" width="160" height="28" fill="#728C69" opacity="0.7"/><text x="140" y="136" fill="#FDFDFD">dst_mac</text>
+        <rect x="224" y="118" width="160" height="28" fill="#728C69" opacity="0.55"/><text x="304" y="136" fill="#FDFDFD">src_mac</text>
+        <rect x="388" y="118" width="80" height="28" fill="#8B6914" opacity="0.75"/><text x="428" y="136" fill="#FDFDFD">0x0800</text>
+        <text x="490" y="134" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">EtherType=IPv4 → parse IP next</text>
+      </g>
+
+      <!-- Parse step 2: IP -->
+      <text x="60" y="166" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" letter-spacing="0.1em">② READ IPv4 HEADER (20+ bytes):</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">
+        <rect x="60" y="174" width="60" height="28" fill="#2E4057" opacity="0.6"/><text x="90" y="192" fill="#FDFDFD">ver/ihl</text>
+        <rect x="124" y="174" width="100" height="28" fill="#2E4057" opacity="0.5"/><text x="174" y="192" fill="#FDFDFD">len/id/flg</text>
+        <rect x="228" y="174" width="60" height="28" fill="#8B6914" opacity="0.7"/><text x="258" y="192" fill="#FDFDFD">ttl/proto</text>
+        <text x="310" y="188" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">proto=6 → TCP</text>
+        <rect x="420" y="174" width="160" height="28" fill="#2E4057" opacity="0.7"/><text x="500" y="192" fill="#FDFDFD">src_ip: 192.168.1.2</text>
+        <rect x="584" y="174" width="180" height="28" fill="#2E4057" opacity="0.7"/><text x="674" y="192" fill="#FDFDFD">dst_ip: 93.184.216.34</text>
+      </g>
+
+      <!-- Parse step 3: TCP -->
+      <text x="60" y="222" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" letter-spacing="0.1em">③ READ TCP HEADER (20+ bytes):</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">
+        <rect x="60" y="230" width="100" height="28" fill="#C82A2A" opacity="0.65"/><text x="110" y="248" fill="#FDFDFD">sport: 50234</text>
+        <rect x="164" y="230" width="100" height="28" fill="#C82A2A" opacity="0.65"/><text x="214" y="248" fill="#FDFDFD">dport: 80</text>
+        <text x="290" y="246" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">port 80 = HTTP → parse HTTP next</text>
+        <rect x="500" y="230" width="120" height="28" fill="#C82A2A" opacity="0.5"/><text x="560" y="248" fill="#FDFDFD">seq/ack/flags</text>
+        <rect x="624" y="230" width="300" height="28" fill="#728C69" opacity="0.6"/><text x="774" y="248" fill="#FDFDFD">payload: "GET / HTTP/1.1..."</text>
+      </g>
+
+      <rect x="0" y="282" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="295" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 8.6-B · Demux by protocol field at each layer: EtherType selects L3 parser; IP Protocol field selects L4 parser; TCP port number selects application layer parser.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Protocol demultiplexing — how a packet analyzer identifies and parses each protocol layer from raw bytes. The EtherType field in the Ethernet header determines the next parser (0x0800 = IPv4, 0x0806 = ARP, 0x86DD = IPv6). The Protocol field in the IPv4 header selects the Layer 4 parser (6 = TCP, 17 = UDP, 1 = ICMP). The TCP/UDP destination port number suggests the application layer protocol (80 = HTTP, 443 = HTTPS, 53 = DNS). A packet analyzer implements this as a chain of parser functions, each reading its header and dispatching to the next layer's parser. Wireshark implements hundreds of protocol dissectors using this exact architecture.</div>
+</div>
+
+<!-- FIG 8.6-C  pcap File Format -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Reference Diagram</span>
+    <span class="fig-id">FIG 8.6-C</span>
+    <span class="fig-title">pcap File Format — Global Header + Per-Packet Records</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:220px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">PCAP FILE FORMAT — STRUCTURE OF A WIRESHARK CAPTURE FILE</text>
+
+      <!-- Global header -->
+      <text x="60" y="54" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">GLOBAL HEADER (24 bytes):</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <rect x="60" y="62" width="120" height="36" fill="#2E4057" opacity="0.85"/><text x="120" y="78" fill="#FDFDFD">magic</text><text x="120" y="92" fill="#BBBBB5" font-size="9">0xa1b2c3d4</text>
+        <rect x="184" y="62" width="80" height="36" fill="#2E4057" opacity="0.7"/><text x="224" y="78" fill="#FDFDFD">ver</text><text x="224" y="92" fill="#BBBBB5" font-size="9">2.4</text>
+        <rect x="268" y="62" width="100" height="36" fill="#2E4057" opacity="0.6"/><text x="318" y="78" fill="#FDFDFD">tz_off</text><text x="318" y="92" fill="#BBBBB5" font-size="9">0</text>
+        <rect x="372" y="62" width="100" height="36" fill="#2E4057" opacity="0.5"/><text x="422" y="78" fill="#FDFDFD">ts_acc</text><text x="422" y="92" fill="#BBBBB5" font-size="9">0</text>
+        <rect x="476" y="62" width="120" height="36" fill="#8B6914" opacity="0.7"/><text x="536" y="78" fill="#FDFDFD">snaplen</text><text x="536" y="92" fill="#DDDDD5" font-size="9">65535</text>
+        <rect x="600" y="62" width="120" height="36" fill="#C82A2A" opacity="0.7"/><text x="660" y="78" fill="#FDFDFD">link type</text><text x="660" y="92" fill="#DDDDD5" font-size="9">1=Ethernet</text>
+      </g>
+      <text x="800" y="82" font-family="'Inter',sans-serif" font-size="9" fill="#888880">magic number identifies byte order</text>
+      <text x="800" y="96" font-family="'Inter',sans-serif" font-size="9" fill="#888880">snaplen = max bytes captured per packet</text>
+
+      <!-- Packet record 1 -->
+      <text x="60" y="126" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" letter-spacing="0.1em">PACKET RECORD N (per-packet header + data):</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <rect x="60" y="134" width="140" height="36" fill="#728C69" opacity="0.7"/><text x="130" y="150" fill="#FDFDFD">ts_sec</text><text x="130" y="164" fill="#DDDDD5" font-size="9">1726135200</text>
+        <rect x="204" y="134" width="140" height="36" fill="#728C69" opacity="0.6"/><text x="274" y="150" fill="#FDFDFD">ts_usec</text><text x="274" y="164" fill="#DDDDD5" font-size="9">000042</text>
+        <rect x="348" y="134" width="140" height="36" fill="#728C69" opacity="0.5"/><text x="418" y="150" fill="#FDFDFD">incl_len</text><text x="418" y="164" fill="#DDDDD5" font-size="9">74 bytes</text>
+        <rect x="492" y="134" width="140" height="36" fill="#728C69" opacity="0.4"/><text x="562" y="150" fill="#FDFDFD">orig_len</text><text x="562" y="164" fill="#DDDDD5" font-size="9">74 bytes</text>
+        <rect x="636" y="134" width="520" height="36" fill="#2E4057" opacity="0.6"/><text x="896" y="150" fill="#FDFDFD">packet data (incl_len bytes)</text><text x="896" y="164" fill="#BBBBB5" font-size="9">raw frame bytes captured</text>
+      </g>
+
+      <!-- Python parsing code -->
+      <rect x="60" y="192" width="1100" height="66" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">
+        <text x="76" y="214">import struct</text>
+        <text x="76" y="232">with open("capture.pcap","rb") as f:</text>
+        <text x="76" y="250">  hdr = f.read(24);  magic, ver_maj, ver_min, tz, ts_acc, snaplen, linktype = struct.unpack("IHHiIII", hdr)</text>
+      </g>
+      <text x="1044" y="230" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">parse global header</text>
+
+      <rect x="0" y="264" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="276" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 8.6-C · pcap format: 24-byte global header followed by variable-length per-packet records. Each record has a 16-byte header with timestamp and length, followed by raw captured bytes.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The pcap file format (used by Wireshark, tcpdump, and virtually all network analysis tools). The 24-byte global header identifies the file (magic number for endianness detection), the pcap version, the maximum captured bytes per packet (snaplen), and the link-layer type (1 = Ethernet, 105 = 802.11 Wi-Fi). Each captured packet is stored as a 16-byte per-packet header — Unix timestamp in seconds and microseconds, number of bytes captured (may be less than original if truncated by snaplen), and original packet length — followed by the raw captured bytes. Reading a pcap file is straightforward: parse the global header once, then loop reading per-packet headers and their corresponding data. This is the starting point for building a packet analyzer in Python using only the struct module.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 3.4 Illustrations — Input/Output</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 3 — Machine Architecture</div>
+  <div class="page-title">Module 3.4 — Input/Output: Connecting to the World</div>
+  <div class="page-sub">2 figures · Memory-Mapped I/O · Polling vs Interrupts</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 3.4-A  Memory-Mapped I/O -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 3.4-A</span>
+    <span class="fig-title">Memory-Mapped I/O — Peripherals as Memory Addresses</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" style="height:350px">
+      <defs>
+        <linearGradient id="ioBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="400" fill="url(#ioBg)"/>
+
+      <!-- Address space map (centre) -->
+      <rect x="480" y="30" width="240" height="320" rx="1" fill="#FDFDFD" stroke="#2C2C2C" stroke-width="1.5"/>
+      <rect x="480" y="30" width="240" height="24" fill="#2E4057" opacity="0.1"/>
+      <text x="600" y="46" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">ADDRESS SPACE</text>
+
+      <!-- RAM region -->
+      <rect x="482" y="56" width="236" height="120" fill="#2E4057" opacity="0.12"/>
+      <text x="600" y="90" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">RAM</text>
+      <text x="600" y="108" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">0x0000 – 0x7FFF</text>
+      <text x="600" y="124" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">normal memory</text>
+      <text x="600" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">read/write</text>
+      <text x="486" y="60" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">0x0000</text>
+      <text x="486" y="174" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">0x7FFF</text>
+
+      <!-- MMIO keyboard register -->
+      <rect x="482" y="178" width="236" height="40" fill="#C82A2A" opacity="0.15" stroke="#C82A2A" stroke-width="1"/>
+      <text x="600" y="195" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">0x8000 KEYBOARD</text>
+      <text x="600" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">read = last keypress</text>
+
+      <!-- MMIO display -->
+      <rect x="482" y="220" width="236" height="40" fill="#728C69" opacity="0.15" stroke="#728C69" stroke-width="1"/>
+      <text x="600" y="237" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">0x8002 DISPLAY</text>
+      <text x="600" y="252" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">write = set pixel</text>
+
+      <!-- MMIO timer -->
+      <rect x="482" y="262" width="236" height="40" fill="#8B6914" opacity="0.12" stroke="#8B6914" stroke-width="1"/>
+      <text x="600" y="279" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#8B6914">0x8004 TIMER</text>
+      <text x="600" y="294" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">read = tick count</text>
+
+      <!-- ROM region -->
+      <rect x="482" y="304" width="236" height="44" fill="#888880" opacity="0.1"/>
+      <text x="600" y="320" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">0xFF00 – 0xFFFF</text>
+      <text x="600" y="336" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">ROM (boot code)</text>
+      <text x="486" y="346" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">0xFFFF</text>
+
+      <!-- CPU reading keyboard (left) -->
+      <rect x="60" y="120" width="360" height="80" rx="1" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+      <text x="240" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A">CPU reads keyboard</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">
+        <text x="80" y="162">MOV R1, [0x8000]</text>
+        <text x="80" y="178" fill="#888880">; R1 ← keypress value</text>
+      </g>
+      <!-- Arrow to address space -->
+      <path d="M420 160 L476 198" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#io_arr)"/>
+      <defs>
+        <marker id="io_arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+        <marker id="io_grn" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#728C69"/>
+        </marker>
+      </defs>
+
+      <!-- CPU writing display (right) -->
+      <rect x="780" y="120" width="360" height="80" rx="1" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5"/>
+      <text x="960" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69">CPU writes display</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">
+        <text x="800" y="162">MOV [0x8002], R2</text>
+        <text x="800" y="178" fill="#888880">; pixel ← R2</text>
+      </g>
+      <path d="M780 240 L724 240" stroke="#728C69" stroke-width="1.5" fill="none" marker-end="url(#io_grn)"/>
+
+      <!-- Peripheral icons -->
+      <!-- Keyboard icon -->
+      <rect x="60" y="240" width="160" height="80" rx="2" fill="#EEECE6" stroke="#C82A2A" stroke-width="1"/>
+      <text x="140" y="285" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#888880">⌨ Keyboard</text>
+      <text x="140" y="306" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">hardware peripheral</text>
+
+      <!-- Display icon -->
+      <rect x="980" y="240" width="160" height="80" rx="2" fill="#EEECE6" stroke="#728C69" stroke-width="1"/>
+      <text x="1060" y="285" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#888880">🖥 Display</text>
+      <text x="1060" y="306" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">hardware peripheral</text>
+
+      <!-- Key insight -->
+      <rect x="60" y="350" width="1080" height="30" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="600" y="369" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Reading/writing a peripheral register looks identical to reading/writing RAM — the same instructions work for both.</text>
+
+      <rect x="0" y="378" width="1200" height="22" fill="rgba(44,64,87,0.04)"/>
+      <text x="1140" y="393" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · Module 3.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Memory-mapped I/O maps peripheral hardware registers into the CPU's address space alongside RAM. Addresses 0x0000–0x7FFF are normal RAM. Addresses 0x8000–0x8005 map to hardware registers: reading 0x8000 returns the last keypress; writing to 0x8002 sets a display pixel. The CPU uses the exact same MOV instructions for both — no special I/O instructions needed. The memory controller routes the access to the appropriate hardware based on the address range. This is how virtually all modern embedded and desktop systems handle peripherals.</div>
+</div>
+
+<!-- FIG 3.4-B  Polling vs Interrupts -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Comparison</span>
+    <span class="fig-id">FIG 3.4-B</span>
+    <span class="fig-title">Polling vs Interrupts — Two Ways to Handle I/O Events</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+
+      <!-- LEFT: Polling -->
+      <rect x="40" y="20" width="520" height="240" rx="1" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1"/>
+      <rect x="40" y="20" width="520" height="26" fill="#C82A2A" opacity="0.07"/>
+      <text x="300" y="37" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">Polling — CPU checks repeatedly</text>
+
+      <!-- Timeline CPU tasks vs I/O wait -->
+      <text x="60" y="66" font-family="'Inter',sans-serif" font-size="9" fill="#888880">CPU timeline:</text>
+      <!-- CPU busy blocks (computing) -->
+      <rect x="60" y="72" width="30" height="20" fill="#2E4057" opacity="0.5"/><text x="75" y="85" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#FDFDFD">work</text>
+      <!-- Poll (wasted) -->
+      <rect x="92" y="72" width="20" height="20" fill="#C82A2A" opacity="0.5"/><text x="102" y="85" text-anchor="middle" font-family="'Inter',sans-serif" font-size="6" fill="#FDFDFD">poll</text>
+      <rect x="114" y="72" width="30" height="20" fill="#2E4057" opacity="0.5"/>
+      <rect x="146" y="72" width="20" height="20" fill="#C82A2A" opacity="0.5"/>
+      <rect x="168" y="72" width="30" height="20" fill="#2E4057" opacity="0.5"/>
+      <rect x="200" y="72" width="20" height="20" fill="#C82A2A" opacity="0.5"/>
+      <rect x="222" y="72" width="20" height="20" fill="#C82A2A" opacity="0.5"/>
+      <rect x="244" y="72" width="20" height="20" fill="#C82A2A" opacity="0.5"/><!-- key pressed here -->
+      <!-- I/O handled -->
+      <rect x="266" y="72" width="40" height="20" fill="#728C69" opacity="0.6"/><text x="286" y="85" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#FDFDFD">handle</text>
+      <rect x="308" y="72" width="30" height="20" fill="#2E4057" opacity="0.5"/>
+
+      <text x="60" y="112" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Pseudocode:</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">
+        <text x="60" y="128">while (true) {</text>
+        <text x="60" y="144">  do_work();</text>
+        <text x="60" y="160">  if (keyboard_ready) {</text>
+        <text x="60" y="176">    handle_key();</text>
+        <text x="60" y="192">  }  // check every loop</text>
+        <text x="60" y="208">}</text>
+      </g>
+      <rect x="60" y="220" width="480" height="24" fill="#C82A2A" opacity="0.08"/>
+      <text x="300" y="236" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">CPU wastes cycles checking even when nothing happens</text>
+
+      <!-- VS -->
+      <line x1="568" y1="20" x2="568" y2="260" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- RIGHT: Interrupts -->
+      <rect x="640" y="20" width="520" height="240" rx="1" fill="#FDFDFD" stroke="#728C69" stroke-width="1"/>
+      <rect x="640" y="20" width="520" height="26" fill="#728C69" opacity="0.08"/>
+      <text x="900" y="37" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">Interrupts — peripheral signals CPU</text>
+
+      <!-- CPU timeline (mostly working, one interrupt) -->
+      <text x="660" y="66" font-family="'Inter',sans-serif" font-size="9" fill="#888880">CPU timeline:</text>
+      <rect x="660" y="72" width="50" height="20" fill="#2E4057" opacity="0.5"/><text x="685" y="85" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#FDFDFD">work</text>
+      <rect x="712" y="72" width="50" height="20" fill="#2E4057" opacity="0.5"/>
+      <rect x="764" y="72" width="50" height="20" fill="#2E4057" opacity="0.5"/>
+      <!-- Interrupt fires! -->
+      <line x1="814" y1="62" x2="814" y2="98" stroke="#C82A2A" stroke-width="2" stroke-dasharray="3,2"/>
+      <text x="816" y="58" font-family="'Inter',sans-serif" font-size="7" fill="#C82A2A">IRQ!</text>
+      <!-- ISR runs -->
+      <rect x="816" y="72" width="40" height="20" fill="#C82A2A" opacity="0.7"/><text x="836" y="85" text-anchor="middle" font-family="'Inter',sans-serif" font-size="6" fill="#FDFDFD">ISR</text>
+      <!-- Back to work -->
+      <rect x="858" y="72" width="50" height="20" fill="#2E4057" opacity="0.5"/>
+      <rect x="910" y="72" width="50" height="20" fill="#2E4057" opacity="0.5"/>
+
+      <text x="660" y="112" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Pseudocode (interrupt handler):</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">
+        <text x="660" y="128">// ISR — runs when key pressed:</text>
+        <text x="660" y="144">void keyboard_ISR() {</text>
+        <text x="660" y="160">  handle_key();  // only when needed</text>
+        <text x="660" y="176">  return;  // resume interrupted code</text>
+        <text x="660" y="192">}</text>
+        <text x="660" y="208">// Main code runs uninterrupted:</text>
+        <text x="660" y="224" fill="#888880">while (true) { do_work(); }</text>
+      </g>
+      <rect x="660" y="244" width="480" height="16" fill="#728C69" opacity="0.08"/>
+      <text x="900" y="256" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">CPU runs at full efficiency; ISR only fires when needed</text>
+
+      <rect x="0" y="274" width="1200" height="26" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="293" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 3.4-B · Polling wastes CPU cycles checking continuously. Interrupts let the CPU run full speed; the peripheral signals via an IRQ line when it needs attention, pausing the CPU to run an ISR (Interrupt Service Routine).</text>
+      <text x="1140" y="293" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 3.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Polling vs interrupt-driven I/O. Polling (left): the CPU checks a status register on every loop iteration, wasting cycles even when no input is available. Suitable only for very simple embedded systems where the CPU has nothing better to do. Interrupts (right): the peripheral asserts an IRQ (Interrupt Request) line when it has data. The CPU hardware pauses the current instruction stream, saves state on the stack, and jumps to the Interrupt Service Routine (ISR). After the ISR completes, execution resumes exactly where it was interrupted. Modern OSs handle keyboard, network, disk, and timer events exclusively via interrupts — polling would waste 99.9% of CPU cycles.</div>
+</div>
+
+<!-- FIG 3.4-C  Polling vs Interrupts — CPU Time Efficiency -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Comparison</span>
+    <span class="fig-id">FIG 3.4-C</span>
+    <span class="fig-title">Polling vs Interrupts — CPU Utilisation Under I/O Wait</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <rect width="1200" height="360" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="34" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">POLLING vs INTERRUPT-DRIVEN I/O — CPU TIMELINE COMPARISON</text>
+      <!-- POLLING timeline -->
+      <text x="60" y="56" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">POLLING</text>
+      <!-- Timeline bar -->
+      <rect x="60" y="64" width="1100" height="28" fill="#E8E4DA" stroke="#D8D6CE" stroke-width="0.5"/>
+      <!-- CPU work -->
+      <rect x="60" y="64" width="80" height="28" fill="#2E4057" opacity="0.8"/>
+      <text x="100" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">Work</text>
+      <!-- Poll 1 -->
+      <rect x="140" y="64" width="30" height="28" fill="#C82A2A" opacity="0.6"/>
+      <text x="155" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#FDFDFD">Poll</text>
+      <!-- Wait -->
+      <rect x="170" y="64" width="30" height="28" fill="#888880" opacity="0.3"/>
+      <!-- Poll 2 -->
+      <rect x="200" y="64" width="30" height="28" fill="#C82A2A" opacity="0.6"/>
+      <!-- Wait -->
+      <rect x="230" y="64" width="30" height="28" fill="#888880" opacity="0.3"/>
+      <!-- Poll 3 -->
+      <rect x="260" y="64" width="30" height="28" fill="#C82A2A" opacity="0.6"/>
+      <!-- Wait -->
+      <rect x="290" y="64" width="30" height="28" fill="#888880" opacity="0.3"/>
+      <!-- Poll N... -->
+      <rect x="320" y="64" width="30" height="28" fill="#C82A2A" opacity="0.6"/>
+      <rect x="350" y="64" width="30" height="28" fill="#888880" opacity="0.3"/>
+      <rect x="380" y="64" width="30" height="28" fill="#C82A2A" opacity="0.6"/>
+      <rect x="410" y="64" width="30" height="28" fill="#888880" opacity="0.3"/>
+      <rect x="440" y="64" width="30" height="28" fill="#C82A2A" opacity="0.6"/>
+      <rect x="470" y="64" width="30" height="28" fill="#888880" opacity="0.3"/>
+      <rect x="500" y="64" width="30" height="28" fill="#C82A2A" opacity="0.6"/>
+      <rect x="530" y="64" width="30" height="28" fill="#888880" opacity="0.3"/>
+      <!-- IO Ready -->
+      <rect x="560" y="64" width="30" height="28" fill="#C82A2A" opacity="0.9"/>
+      <text x="575" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#FDFDFD">HIT!</text>
+      <!-- Handle + work resumes -->
+      <rect x="590" y="64" width="60" height="28" fill="#8B6914" opacity="0.7"/>
+      <text x="620" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">Handle</text>
+      <rect x="650" y="64" width="510" height="28" fill="#2E4057" opacity="0.8"/>
+      <text x="905" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">Work resumes</text>
+      <!-- Annotation: wasted cycles -->
+      <path d="M140 92 L560 92" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+      <path d="M136 88 L128 92 L136 96" fill="#C82A2A"/>
+      <path d="M564 88 L572 92 L564 96" fill="#C82A2A"/>
+      <text x="350" y="108" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">CPU wasted on polling loop — checking for ready that never came yet</text>
+
+      <!-- INTERRUPT timeline -->
+      <text x="60" y="150" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69" letter-spacing="0.1em">INTERRUPT-DRIVEN</text>
+      <!-- Timeline bar -->
+      <rect x="60" y="158" width="1100" height="28" fill="#E8E4DA" stroke="#D8D6CE" stroke-width="0.5"/>
+      <!-- CPU work (uninterrupted) -->
+      <rect x="60" y="158" width="500" height="28" fill="#2E4057" opacity="0.8"/>
+      <text x="310" y="176" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">CPU does useful work (uninterrupted)</text>
+      <!-- Hardware interrupt signal -->
+      <line x1="560" y1="150" x2="560" y2="188" stroke="#728C69" stroke-width="2" stroke-dasharray="3,2"/>
+      <path d="M555 188 L565 188 L560 196" fill="#728C69"/>
+      <text x="562" y="144" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">IRQ</text>
+      <!-- ISR handling -->
+      <rect x="560" y="158" width="60" height="28" fill="#8B6914" opacity="0.7"/>
+      <text x="590" y="176" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">ISR</text>
+      <!-- Work resumes -->
+      <rect x="620" y="158" width="540" height="28" fill="#2E4057" opacity="0.8"/>
+      <text x="890" y="176" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#FDFDFD">Work resumes immediately</text>
+      <!-- Annotation: no waste -->
+      <path d="M60 200 L560 200" stroke="#728C69" stroke-width="1.5" fill="none"/>
+      <text x="310" y="216" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">zero polling overhead — hardware notifies CPU only when ready</text>
+
+      <!-- Comparison metrics -->
+      <rect x="60" y="236" width="1100" height="100" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="60" y="236" width="1100" height="22" fill="#2E4057" opacity="0.06"/>
+      <text x="610" y="252" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">COMPARISON SUMMARY</text>
+      <!-- Table headers -->
+      <text x="200" y="276" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880">METRIC</text>
+      <text x="500" y="276" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A">POLLING</text>
+      <text x="800" y="276" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69">INTERRUPT</text>
+      <line x1="60" y1="280" x2="1160" y2="280" stroke="#E8E6DF" stroke-width="0.5"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11">
+        <text x="80" y="300" fill="#888880">CPU overhead</text>
+        <text x="500" y="300" text-anchor="middle" fill="#C82A2A">High — busy-wait loop</text>
+        <text x="800" y="300" text-anchor="middle" fill="#728C69">Near zero — hardware triggered</text>
+        <text x="80" y="320" fill="#888880">Latency</text>
+        <text x="500" y="320" text-anchor="middle" fill="#C82A2A">Up to 1 poll interval</text>
+        <text x="800" y="320" text-anchor="middle" fill="#728C69">~microseconds (ISR entry)</text>
+      </g>
+      <!-- Footer -->
+      <rect x="0" y="346" width="1200" height="14" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="356" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 3.4-C · Polling wastes CPU cycles checking I/O status; interrupts let hardware notify the CPU only when I/O completes, freeing the CPU for useful work.</text>
+      <text x="1140" y="356" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · 3.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">CPU timeline comparison between polling and interrupt-driven I/O. With polling, the CPU repeatedly checks a status register — burning cycles even when the device has nothing to report. With interrupts, the CPU runs uninterrupted until the I/O controller raises a hardware signal (IRQ), triggering the Interrupt Service Routine (ISR). After the ISR completes, the CPU resumes exactly where it left off. Modern operating systems use interrupts for virtually all I/O: keyboards, network cards, disk controllers, and timers all signal the CPU rather than requiring it to ask.</div>
+</div>
+
+</div>
+</body>
+</html>

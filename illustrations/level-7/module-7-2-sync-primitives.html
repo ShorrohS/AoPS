@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 7.2 — Synchronisation Primitives</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 7 — Systems Programming</div>
+  <div class="page-title">Module 7.2 — Synchronisation Primitives</div>
+  <div class="page-sub">3 figures · Mutex Critical Section · Deadlock Circular Wait · Semaphore Producer-Consumer</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 7.2-A  Mutex -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 7.2-A</span>
+    <span class="fig-title">Mutex — Protecting a Critical Section from Concurrent Access</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <defs><linearGradient id="mxBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="380" fill="url(#mxBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">MUTEX LOCK — ONLY ONE THREAD ENTERS CRITICAL SECTION AT A TIME</text>
+
+      <!-- Timeline columns -->
+      <text x="180" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057">THREAD A</text>
+      <text x="600" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880">MUTEX STATE</text>
+      <text x="1020" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69">THREAD B</text>
+      <line x1="400" y1="58" x2="400" y2="350" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="800" y1="58" x2="800" y2="350" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- Step 1: A acquires -->
+      <rect x="40" y="66" width="340" height="32" fill="#2E4057" opacity="0.25" rx="1"/>
+      <text x="210" y="87" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">mutex_lock(&amp;m)</text>
+      <path d="M380 82 L556 82" stroke="#2E4057" stroke-width="1.5" fill="none"/>
+      <path d="M552 78 L560 82 L552 86" fill="#2E4057"/>
+      <rect x="560" y="66" width="80" height="32" fill="#728C69" opacity="0.75"/>
+      <text x="600" y="87" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">LOCKED</text>
+
+      <!-- Step 2: A in critical section, B tries to lock -->
+      <rect x="40" y="110" width="340" height="52" fill="#2E4057" opacity="0.15" stroke="#2E4057" stroke-width="1" rx="1"/>
+      <text x="210" y="130" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">CRITICAL SECTION</text>
+      <text x="210" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">counter++</text>
+      <rect x="560" y="110" width="80" height="52" fill="#728C69" opacity="0.75"/>
+      <text x="600" y="140" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">LOCKED</text>
+
+      <!-- B tries and blocks -->
+      <rect x="820" y="110" width="340" height="52" fill="#C82A2A" opacity="0.15" rx="1"/>
+      <text x="990" y="130" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">mutex_lock(&amp;m)</text>
+      <text x="990" y="150" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">→ BLOCKS (mutex taken)</text>
+      <path d="M820 136 L644 136" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+      <path d="M648 132 L640 136 L648 140" fill="#C82A2A"/>
+
+      <!-- Step 3: A releases -->
+      <rect x="40" y="174" width="340" height="32" fill="#2E4057" opacity="0.25" rx="1"/>
+      <text x="210" y="195" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">mutex_unlock(&amp;m)</text>
+      <path d="M380 190 L556 190" stroke="#2E4057" stroke-width="1.5" fill="none"/>
+      <path d="M552 186 L560 190 L552 194" fill="#2E4057"/>
+      <rect x="560" y="174" width="80" height="32" fill="#888880" opacity="0.4"/>
+      <text x="600" y="195" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">FREE</text>
+
+      <!-- Step 4: B wakes and acquires -->
+      <path d="M644 220 L820 220" stroke="#728C69" stroke-width="1.5" fill="none"/>
+      <path d="M816 216 L824 220 L816 224" fill="#728C69"/>
+      <rect x="560" y="218" width="80" height="32" fill="#728C69" opacity="0.75"/>
+      <text x="600" y="239" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">LOCKED</text>
+      <rect x="820" y="218" width="340" height="52" fill="#728C69" opacity="0.15" stroke="#728C69" stroke-width="1" rx="1"/>
+      <text x="990" y="238" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">CRITICAL SECTION</text>
+      <text x="990" y="258" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">counter++</text>
+
+      <!-- Step 5: B releases -->
+      <rect x="820" y="280" width="340" height="32" fill="#728C69" opacity="0.25" rx="1"/>
+      <text x="990" y="301" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">mutex_unlock(&amp;m)</text>
+      <path d="M820 296 L644 296" stroke="#728C69" stroke-width="1.5" fill="none"/>
+      <path d="M648 292 L640 296 L648 300" fill="#728C69"/>
+      <rect x="560" y="280" width="80" height="32" fill="#888880" opacity="0.4"/>
+      <text x="600" y="301" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">FREE</text>
+
+      <!-- Result -->
+      <rect x="40" y="330" width="1120" height="28" fill="#FDFDFD" stroke="#728C69" stroke-width="0.5"/>
+      <text x="600" y="349" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#728C69">Result: counter incremented correctly to 2 — no race condition. Each thread ran its critical section exclusively.</text>
+
+      <rect x="0" y="362" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="375" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 7.2-A · Mutex (mutual exclusion lock). Thread B blocks when it finds the mutex locked, waits until Thread A releases it, then acquires and enters its own critical section.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Mutex (mutual exclusion lock) protecting a critical section. Thread A calls mutex_lock(), acquires the lock (mutex transitions to LOCKED), and enters the critical section. When Thread B calls mutex_lock() while the mutex is held by A, the OS suspends B — it moves to WAITING state and stops consuming CPU. When A calls mutex_unlock(), the OS wakes B, which then acquires the lock and executes its own critical section. The two increments now happen sequentially — no interleaving — and the final counter is the correct value 2. The mutex guarantees mutual exclusion (only one thread in the critical section at a time) but not ordering. pthreads: pthread_mutex_lock/unlock. C++: std::mutex with std::lock_guard.</div>
+</div>
+
+<!-- FIG 7.2-B  Deadlock -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type B — Concept Diagram</span>
+    <span class="fig-id">FIG 7.2-B</span>
+    <span class="fig-title">Deadlock — Circular Wait: Two Threads, Two Mutexes</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 340" xmlns="http://www.w3.org/2000/svg" style="height:280px">
+      <rect width="1200" height="340" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">DEADLOCK: THREAD A HOLDS M1, WANTS M2 · THREAD B HOLDS M2, WANTS M1</text>
+
+      <!-- Thread A box -->
+      <rect x="80" y="60" width="280" height="200" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5" rx="1"/>
+      <rect x="80" y="60" width="280" height="26" fill="#2E4057" opacity="0.12"/>
+      <text x="220" y="78" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">Thread A</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">
+        <text x="96" y="108">lock(M1)   ← acquired ✓</text>
+        <text x="96" y="128">/* do work */</text>
+        <text x="96" y="148" fill="#C82A2A">lock(M2)   ← BLOCKED</text>
+        <text x="96" y="168" fill="#888880">/* M2 held by B */</text>
+        <text x="96" y="188" fill="#888880">unlock(M2)</text>
+        <text x="96" y="208" fill="#888880">unlock(M1)</text>
+        <text x="96" y="228" fill="#888880">/* never reached */</text>
+      </g>
+      <text x="220" y="252" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">⚠ waiting forever for M2</text>
+
+      <!-- Mutex M1 -->
+      <rect x="430" y="80" width="130" height="60" fill="#2E4057" opacity="0.8" rx="1"/>
+      <text x="495" y="106" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">Mutex M1</text>
+      <text x="495" y="124" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#BBBBB5">held by A</text>
+
+      <!-- Mutex M2 -->
+      <rect x="640" y="80" width="130" height="60" fill="#728C69" opacity="0.8" rx="1"/>
+      <text x="705" y="106" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#FDFDFD">Mutex M2</text>
+      <text x="705" y="124" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#BBBBB5">held by B</text>
+
+      <!-- Thread B box -->
+      <rect x="840" y="60" width="280" height="200" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5" rx="1"/>
+      <rect x="840" y="60" width="280" height="26" fill="#728C69" opacity="0.12"/>
+      <text x="980" y="78" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">Thread B</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">
+        <text x="856" y="108">lock(M2)   ← acquired ✓</text>
+        <text x="856" y="128">/* do work */</text>
+        <text x="856" y="148" fill="#C82A2A">lock(M1)   ← BLOCKED</text>
+        <text x="856" y="168" fill="#888880">/* M1 held by A */</text>
+        <text x="856" y="188" fill="#888880">unlock(M1)</text>
+        <text x="856" y="208" fill="#888880">unlock(M2)</text>
+        <text x="856" y="228" fill="#888880">/* never reached */</text>
+      </g>
+      <text x="980" y="252" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">⚠ waiting forever for M1</text>
+
+      <!-- Circular arrows -->
+      <!-- A holds M1 -->
+      <path d="M360 120 L428 110" stroke="#2E4057" stroke-width="2" fill="none"/>
+      <path d="M424 106 L432 110 L424 114" fill="#2E4057"/>
+      <text x="394" y="104" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#2E4057">holds</text>
+      <!-- A wants M2 -->
+      <path d="M360 148 Q500 180 638 148" stroke="#C82A2A" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+      <path d="M634 144 L642 148 L634 152" fill="#C82A2A"/>
+      <text x="500" y="200" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">wants</text>
+      <!-- B holds M2 -->
+      <path d="M840 120 L772 110" stroke="#728C69" stroke-width="2" fill="none"/>
+      <path d="M776 106 L768 110 L776 114" fill="#728C69"/>
+      <text x="806" y="104" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">holds</text>
+      <!-- B wants M1 -->
+      <path d="M840 148 Q700 190 562 148" stroke="#C82A2A" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+      <path d="M566 144 L558 148 L566 152" fill="#C82A2A"/>
+      <text x="700" y="220" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">wants</text>
+
+      <!-- Solutions -->
+      <rect x="80" y="276" width="1040" height="40" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="100" y="294" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69">Prevention: </text>
+      <text x="184" y="294" font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">always acquire locks in the same global order (e.g. always M1 before M2) — eliminates circular wait</text>
+      <text x="100" y="310" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914">Detection: </text>
+      <text x="178" y="310" font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">resource allocation graph cycle detection; timeout + retry; lock-ordering analysis tools (helgrind, TSan)</text>
+
+      <rect x="0" y="324" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="336" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 7.2-B · Deadlock: A holds M1, wants M2. B holds M2, wants M1. Circular wait → neither thread can proceed. Both block forever unless killed.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Deadlock arising from circular wait: Thread A holds Mutex M1 and waits for M2; Thread B holds M2 and waits for M1. Neither can proceed — they wait forever. Deadlock requires four Coffman conditions simultaneously: mutual exclusion (only one thread can hold a lock), hold-and-wait (holding a lock while waiting for another), no preemption (locks cannot be forcibly taken), and circular wait. Breaking any one condition prevents deadlock. The simplest prevention: impose a global lock ordering — all threads must acquire M1 before M2. This eliminates circular wait by construction. Tools like ThreadSanitizer (TSan) detect potential deadlocks dynamically.</div>
+</div>
+
+<!-- FIG 7.2-C  Semaphore Producer-Consumer -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 7.2-C</span>
+    <span class="fig-title">Semaphore — Producer-Consumer with Bounded Buffer</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">PRODUCER-CONSUMER WITH SEMAPHORES — BUFFER SIZE N=3</text>
+
+      <!-- Producer -->
+      <rect x="40" y="52" width="220" height="220" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5" rx="1"/>
+      <rect x="40" y="52" width="220" height="26" fill="#2E4057" opacity="0.12"/>
+      <text x="150" y="69" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2E4057">Producer</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">
+        <text x="56" y="100">while True:</text>
+        <text x="56" y="118">  item = produce()</text>
+        <text x="56" y="138" fill="#2E4057">  sem_wait(empty)</text>
+        <text x="56" y="158" fill="#888880">  // empty-- (slots)</text>
+        <text x="56" y="178" fill="#8B6914">  mutex_lock(buf)</text>
+        <text x="56" y="198">  buffer.push(item)</text>
+        <text x="56" y="218" fill="#8B6914">  mutex_unlock(buf)</text>
+        <text x="56" y="238" fill="#728C69">  sem_post(full)</text>
+        <text x="56" y="258" fill="#888880">  // full++ (items)</text>
+      </g>
+
+      <!-- Buffer visualisation -->
+      <text x="560" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">BUFFER (capacity 3)</text>
+      <!-- Buffer slots -->
+      <g font-family="'JetBrains Mono',monospace" font-size="13" text-anchor="middle">
+        <rect x="440" y="64" width="80" height="48" fill="#728C69" opacity="0.7" stroke="#728C69" stroke-width="1"/><text x="480" y="94" fill="#FDFDFD">A</text>
+        <rect x="524" y="64" width="80" height="48" fill="#728C69" opacity="0.7" stroke="#728C69" stroke-width="1"/><text x="564" y="94" fill="#FDFDFD">B</text>
+        <rect x="608" y="64" width="80" height="48" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="1" stroke-dasharray="4,2"/><text x="648" y="94" fill="#888880">—</text>
+      </g>
+      <!-- Semaphore states -->
+      <rect x="440" y="130" width="248" height="60" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <text x="490" y="152" fill="#2E4057">empty = 1</text>
+        <text x="490" y="170" fill="#888880">(1 free slot)</text>
+        <text x="636" y="152" fill="#728C69">full  = 2</text>
+        <text x="636" y="170" fill="#888880">(2 items)</text>
+      </g>
+      <!-- Semaphore semantics -->
+      <rect x="440" y="206" width="248" height="70" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="564" y="224" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#888880" letter-spacing="0.1em">SEMAPHORE SEMANTICS</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10">
+        <text x="452" y="244" fill="#C82A2A">sem_wait(s): s--</text>
+        <text x="452" y="260" fill="#888880">block if s == 0</text>
+        <text x="452" y="276" fill="#728C69">sem_post(s): s++</text>
+      </g>
+
+      <!-- Consumer -->
+      <rect x="940" y="52" width="220" height="220" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5" rx="1"/>
+      <rect x="940" y="52" width="220" height="26" fill="#728C69" opacity="0.12"/>
+      <text x="1050" y="69" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#728C69">Consumer</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">
+        <text x="956" y="100">while True:</text>
+        <text x="956" y="118" fill="#728C69">  sem_wait(full)</text>
+        <text x="956" y="138" fill="#888880">  // full-- (items)</text>
+        <text x="956" y="158" fill="#8B6914">  mutex_lock(buf)</text>
+        <text x="956" y="178">  item = buffer.pop()</text>
+        <text x="956" y="198" fill="#8B6914">  mutex_unlock(buf)</text>
+        <text x="956" y="218" fill="#2E4057">  sem_post(empty)</text>
+        <text x="956" y="238" fill="#888880">  // empty++ (slots)</text>
+        <text x="956" y="258">  consume(item)</text>
+      </g>
+
+      <!-- Arrows -->
+      <path d="M260 140 L438 100" stroke="#2E4057" stroke-width="1.5" fill="none"/>
+      <path d="M434 97 L442 101 L434 105" fill="#2E4057"/>
+      <path d="M690 100 L938 140" stroke="#728C69" stroke-width="1.5" fill="none"/>
+      <path d="M934 137 L942 141 L934 145" fill="#728C69"/>
+
+      <!-- Blocking annotation -->
+      <rect x="40" y="286" width="1120" height="22" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="600" y="301" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Producer blocks on sem_wait(empty) when buffer full. Consumer blocks on sem_wait(full) when buffer empty. Mutex prevents concurrent buffer access.</text>
+
+      <rect x="0" y="308" width="1200" height="12" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="317" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 7.2-C · Two semaphores (empty, full) coordinate producer and consumer. Mutex protects the actual buffer. Semaphores handle the capacity and availability signalling.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Bounded-buffer producer-consumer using two semaphores and one mutex. Semaphore empty (initialised to N) counts available slots — the producer decrements it before adding; if empty=0, the producer blocks. Semaphore full (initialised to 0) counts available items — the consumer decrements it before removing; if full=0, the consumer blocks. A mutex protects the actual buffer operations from concurrent access. This classic synchronisation pattern appears in operating system I/O buffers, message queues, thread pool task queues, and network socket receive buffers. Two semaphores handle the bounded capacity; the mutex handles mutual exclusion — each solves a different problem.</div>
+</div>
+
+</div>
+</body>
+</html>

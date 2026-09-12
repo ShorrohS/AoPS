@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 0.1 Illustrations — Why Did Humans Need to Compute?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-paper:#F4F3EF; --bg-washi:#FDFDFD; --bg-warm:#EEECE6; --bg-canvas:#F8F7F3;
+    --text-sumi:#1C1C1C; --text-body:#3A3A3A; --text-muted:#888880; --text-ghost:#BBBBB5;
+    --accent-red:#C82A2A; --accent-indigo:#1C2D42; --accent-gold:#8B6914;
+    --border-light:#D8D6CE; --border-paper:#E8E6DF;
+    --zen-sand:#F4EFE6; --zen-ink:#2C2C2C; --zen-stone:#6E6E6E;
+    --zen-bamboo:#728C69; --zen-indigo:#2E4057;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg-paper); color: var(--text-sumi); font-family: 'Inter', sans-serif; font-weight: 300; }
+
+  .page-header {
+    padding: 40px 60px 32px;
+    border-bottom: 1px solid var(--border-light);
+    background: var(--bg-washi);
+  }
+  .breadcrumb { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-muted); margin-bottom: 10px; }
+  .breadcrumb a { color: var(--accent-indigo); text-decoration: none; }
+  .page-title { font-family: 'Noto Serif JP', serif; font-size: 28px; font-weight: 300; color: var(--text-sumi); letter-spacing: -0.01em; margin-bottom: 6px; }
+  .page-sub { font-size: 13px; color: var(--text-muted); }
+
+  .figures-wrap { padding: 52px 60px 80px; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 80px; }
+
+  .figure-block {}
+  .figure-label {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+  }
+  .fig-type {
+    font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.16em;
+    padding: 4px 8px; border: 1px solid;
+  }
+  .fig-type.hero   { border-color: var(--accent-indigo); color: var(--accent-indigo); background: rgba(44,64,87,0.04); }
+  .fig-type.diag   { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(139,105,20,0.04); }
+  .fig-type.hist   { border-color: var(--zen-bamboo); color: var(--zen-bamboo); background: rgba(114,140,105,0.04); }
+  .fig-type.sim    { border-color: var(--accent-red); color: var(--accent-red); background: rgba(200,42,42,0.04); }
+  .fig-id { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-ghost); }
+  .fig-title { font-size: 15px; font-weight: 500; color: var(--text-sumi); }
+  .fig-caption { font-size: 12px; color: var(--text-muted); margin-top: 10px; line-height: 1.6; max-width: 800px; border-left: 2px solid var(--border-paper); padding-left: 14px; }
+
+  .fig-frame {
+    background: var(--zen-sand);
+    border: 1px solid var(--border-paper);
+    overflow: hidden;
+  }
+  .fig-frame svg { display: block; width: 100%; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 0 — Before Computers</div>
+  <div class="page-title">Module 0.1 — Why Did Humans Need to Compute?</div>
+  <div class="page-sub">4 figures · Chapter Hero · Concept Diagrams · Process Timeline</div>
+</div>
+
+<div class="figures-wrap">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FIGURE 0.1-A  Chapter Hero — The Scale Problem
+  ════════════════════════════════════════════════════════════ -->
+  <div class="figure-block">
+    <div class="figure-label">
+      <span class="fig-type hero">Type A — Chapter Hero</span>
+      <span class="fig-id">FIG 0.1-A</span>
+      <span class="fig-title">The Scale Problem — Human Computation at Its Limits</span>
+    </div>
+    <div class="fig-frame">
+      <svg viewBox="0 0 1200 620" xmlns="http://www.w3.org/2000/svg" style="height:520px">
+        <defs>
+          <linearGradient id="heroFade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F4EFE6"/>
+            <stop offset="100%" stop-color="#EDE8DE"/>
+          </linearGradient>
+          <pattern id="gridPat" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <line x1="40" y1="0" x2="40" y2="40" stroke="#D8D6CE" stroke-width="0.4"/>
+            <line x1="0" y1="40" x2="40" y2="40" stroke="#D8D6CE" stroke-width="0.4"/>
+          </pattern>
+        </defs>
+        <!-- Background -->
+        <rect width="1200" height="620" fill="url(#heroFade)"/>
+        <rect width="1200" height="620" fill="url(#gridPat)" opacity="0.5"/>
+
+        <!-- ── LEFT PANEL: Census clerk illustration ── -->
+        <!-- Desk surface -->
+        <rect x="60" y="310" width="380" height="180" rx="1" fill="#E8E4DA" stroke="#C8C4BA" stroke-width="1"/>
+        <!-- Stacks of paper on desk -->
+        <g opacity="0.9">
+          <!-- Stack 1 -->
+          <rect x="80" y="240" width="90" height="6" fill="#FDFDFD" stroke="#C8C4BA" stroke-width="0.5"/>
+          <rect x="82" y="234" width="90" height="6" fill="#FDFDFD" stroke="#C8C4BA" stroke-width="0.5"/>
+          <rect x="84" y="228" width="90" height="6" fill="#FDFDFD" stroke="#C8C4BA" stroke-width="0.5"/>
+          <rect x="86" y="222" width="90" height="6" fill="#FDFDFD" stroke="#C8C4BA" stroke-width="0.5"/>
+          <rect x="88" y="216" width="90" height="6" fill="#FDFDFD" stroke="#C8C4BA" stroke-width="0.5"/>
+          <rect x="90" y="210" width="90" height="6" fill="#FDFDFD" stroke="#C8C4BA" stroke-width="0.5"/>
+          <rect x="92" y="204" width="90" height="6" fill="#FDFDFD" stroke="#C8C4BA" stroke-width="0.5"/>
+          <rect x="94" y="198" width="90" height="6" fill="#FDFDFD" stroke="#C8C4BA" stroke-width="0.5"/>
+          <!-- Stack 2 -->
+          <rect x="210" y="250" width="80" height="5" fill="#FDFDFD" stroke="#C8C4BA" stroke-width="0.5"/>
+          <rect x="212" y="245" width="80" height="5" fill="#FDFDFD" stroke="#C8C4BA" stroke-width="0.5"/>
+          <rect x="214" y="240" width="80" height="5" fill="#FDFDFD" stroke="#C8C4BA" stroke-width="0.5"/>
+          <rect x="216" y="235" width="80" height="5" fill="#FDFDFD" stroke="#C8C4BA" stroke-width="0.5"/>
+          <rect x="218" y="230" width="80" height="5" fill="#FDFDFD" stroke="#C8C4BA" stroke-width="0.5"/>
+          <!-- Stack 3 -->
+          <rect x="320" y="265" width="100" height="5" fill="#FDFDFD" stroke="#C8C4BA" stroke-width="0.5"/>
+          <rect x="322" y="260" width="100" height="5" fill="#FDFDFD" stroke="#C8C4BA" stroke-width="0.5"/>
+          <rect x="324" y="255" width="100" height="5" fill="#FDFDFD" stroke="#C8C4BA" stroke-width="0.5"/>
+        </g>
+
+        <!-- Tally sheet on desk -->
+        <rect x="130" y="315" width="220" height="160" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+        <!-- Tally ruled lines -->
+        <g stroke="#E8E6DF" stroke-width="0.7">
+          <line x1="145" y1="335" x2="335" y2="335"/>
+          <line x1="145" y1="355" x2="335" y2="355"/>
+          <line x1="145" y1="375" x2="335" y2="375"/>
+          <line x1="145" y1="395" x2="335" y2="395"/>
+          <line x1="145" y1="415" x2="335" y2="415"/>
+          <line x1="145" y1="435" x2="335" y2="435"/>
+          <line x1="215" y1="315" x2="215" y2="475"/>
+          <line x1="280" y1="315" x2="280" y2="475"/>
+        </g>
+        <!-- Tally marks -->
+        <g fill="none" stroke="#3A3A3A" stroke-width="1">
+          <!-- Row 1 tally 5 -->
+          <line x1="150" y1="340" x2="150" y2="350"/><line x1="155" y1="340" x2="155" y2="350"/>
+          <line x1="160" y1="340" x2="160" y2="350"/><line x1="165" y1="340" x2="165" y2="350"/>
+          <line x1="147" y1="342" x2="168" y2="348"/>
+          <!-- Row 1 col2 -->
+          <line x1="222" y1="340" x2="222" y2="350"/><line x1="227" y1="340" x2="227" y2="350"/>
+          <line x1="232" y1="340" x2="232" y2="350"/>
+          <!-- Row 2 -->
+          <line x1="150" y1="360" x2="150" y2="370"/><line x1="155" y1="360" x2="155" y2="370"/>
+          <line x1="160" y1="360" x2="160" y2="370"/><line x1="165" y1="360" x2="165" y2="370"/>
+          <line x1="147" y1="362" x2="168" y2="368"/>
+          <line x1="170" y1="360" x2="170" y2="370"/><line x1="175" y1="360" x2="175" y2="370"/>
+          <line x1="180" y1="360" x2="180" y2="370"/><line x1="185" y1="360" x2="185" y2="370"/>
+          <line x1="167" y1="362" x2="188" y2="368"/>
+          <!-- Row 3 partial -->
+          <line x1="150" y1="380" x2="150" y2="390"/><line x1="155" y1="380" x2="155" y2="390"/>
+          <line x1="160" y1="380" x2="160" y2="390"/>
+          <!-- Error marks in red -->
+          <line x1="225" y1="378" x2="240" y2="388" stroke="#C82A2A" stroke-width="1.5"/>
+          <line x1="240" y1="378" x2="225" y2="388" stroke="#C82A2A" stroke-width="1.5"/>
+        </g>
+        <!-- Error annotation -->
+        <text x="255" y="388" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" font-style="italic">error</text>
+
+        <!-- ── MIDDLE: TIME VISUALIZATION ── -->
+        <line x1="500" y1="80" x2="500" y2="560" stroke="#D8D6CE" stroke-width="1"/>
+
+        <!-- Central stat display -->
+        <rect x="520" y="150" width="280" height="320" fill="none"/>
+        <!-- Large "8" years text -->
+        <text x="660" y="300" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="120" font-weight="300" fill="#2E4057" opacity="0.12">8</text>
+        <text x="660" y="295" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="80" font-weight="300" fill="#2C2C2C">8</text>
+        <text x="660" y="328" text-anchor="middle" font-family="'Inter',sans-serif" font-size="12" font-weight="500" fill="#888880" letter-spacing="0.18em" text-transform="uppercase">YEARS</text>
+        <text x="660" y="350" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="300" fill="#888880">to complete the 1880 census</text>
+
+        <!-- Calendar years bar -->
+        <rect x="538" y="380" width="244" height="32" fill="#E8E4DA"/>
+        <rect x="538" y="380" width="4" height="32" fill="#2E4057"/>
+        <!-- 1880 mark -->
+        <rect x="538" y="380" width="1.5" height="38" fill="#2C2C2C"/>
+        <text x="538" y="428" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C" text-anchor="middle">1880</text>
+        <!-- 1888 mark -->
+        <rect x="734" y="380" width="1.5" height="38" fill="#C82A2A"/>
+        <text x="734" y="428" font-family="'JetBrains Mono',monospace" font-size="10" fill="#C82A2A" text-anchor="middle">1888</text>
+        <!-- fill bar -->
+        <rect x="538" y="385" width="196" height="22" fill="#C82A2A" opacity="0.18"/>
+        <text x="636" y="400" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" letter-spacing="0.08em">8 YEARS</text>
+        <!-- next census arrow -->
+        <rect x="734" y="380" width="48" height="32" fill="none"/>
+        <path d="M734 396 L782 396" stroke="#888880" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="760" y="374" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880" text-anchor="middle">1890</text>
+        <path d="M782 396 L778 392 M782 396 L778 400" stroke="#888880" stroke-width="1" fill="none"/>
+        <text x="760" y="445" font-family="'Inter',sans-serif" font-size="9" fill="#888880" text-anchor="middle" font-style="italic">next census already due</text>
+
+        <!-- ── RIGHT PANEL: The three problems ── -->
+        <rect x="880" y="100" width="280" height="420" fill="rgba(44,64,87,0.03)" stroke="#D8D6CE" stroke-width="1"/>
+
+        <!-- Problem 1 -->
+        <rect x="880" y="100" width="3" height="420" fill="#2E4057"/>
+        <text x="900" y="130" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#888880" letter-spacing="0.14em">PROBLEM 01</text>
+        <text x="900" y="150" font-family="'Noto Serif JP',serif" font-size="14" font-weight="400" fill="#2C2C2C">Census Counting</text>
+        <text x="900" y="168" font-family="'Inter',sans-serif" font-size="11" font-weight="300" fill="#6E6E6E">50 million people</text>
+        <text x="900" y="184" font-family="'Inter',sans-serif" font-size="11" font-weight="300" fill="#6E6E6E">8 years of manual work</text>
+        <!-- mini bar -->
+        <rect x="900" y="194" width="200" height="6" fill="#E8E6DF"/>
+        <rect x="900" y="194" width="160" height="6" fill="#C82A2A" opacity="0.5"/>
+
+        <line x1="900" y1="222" x2="1140" y2="222" stroke="#E8E6DF" stroke-width="1"/>
+
+        <!-- Problem 2 -->
+        <text x="900" y="248" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#888880" letter-spacing="0.14em">PROBLEM 02</text>
+        <text x="900" y="268" font-family="'Noto Serif JP',serif" font-size="14" font-weight="400" fill="#2C2C2C">Navigation Tables</text>
+        <text x="900" y="286" font-family="'Inter',sans-serif" font-size="11" font-weight="300" fill="#6E6E6E">Millions of arithmetic ops</text>
+        <text x="900" y="302" font-family="'Inter',sans-serif" font-size="11" font-weight="300" fill="#6E6E6E">Ships lost at sea</text>
+        <rect x="900" y="312" width="200" height="6" fill="#E8E6DF"/>
+        <rect x="900" y="312" width="200" height="6" fill="#C82A2A" opacity="0.5"/>
+
+        <line x1="900" y1="340" x2="1140" y2="340" stroke="#E8E6DF" stroke-width="1"/>
+
+        <!-- Problem 3 -->
+        <text x="900" y="366" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#888880" letter-spacing="0.14em">PROBLEM 03</text>
+        <text x="900" y="386" font-family="'Noto Serif JP',serif" font-size="14" font-weight="400" fill="#2C2C2C">Artillery Trajectories</text>
+        <text x="900" y="404" font-family="'Inter',sans-serif" font-size="11" font-weight="300" fill="#6E6E6E">Thousands of ballistic calcs</text>
+        <text x="900" y="420" font-family="'Inter',sans-serif" font-size="11" font-weight="300" fill="#6E6E6E">Military disadvantage</text>
+        <rect x="900" y="430" width="200" height="6" fill="#E8E6DF"/>
+        <rect x="900" y="430" width="180" height="6" fill="#C82A2A" opacity="0.5"/>
+
+        <!-- Common cause label at bottom -->
+        <rect x="900" y="468" width="240" height="36" fill="#2E4057" opacity="0.06"/>
+        <text x="1020" y="488" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">SAME ROOT CAUSE</text>
+        <text x="1020" y="500" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="300" fill="#6E6E6E">repetitive arithmetic at scale</text>
+
+        <!-- ── Bottom caption strip ── -->
+        <rect x="0" y="570" width="1200" height="50" fill="rgba(44,64,87,0.06)"/>
+        <text x="60" y="594" font-family="'Noto Serif JP',serif" font-size="13" font-weight="300" fill="#2C2C2C">Fig 0.1-A</text>
+        <text x="120" y="594" font-family="'Inter',sans-serif" font-size="12" font-weight="300" fill="#6E6E6E">The Scale Problem — human computation breaks down when asked to perform millions of identical operations without error</text>
+        <text x="1140" y="594" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 0.1</text>
+      </svg>
+    </div>
+    <div class="fig-caption">The three historical crises that demanded mechanical computation. Left: a census clerk's tally desk overwhelmed with paper. Centre: an 8-year completion timeline — already overlapping the next mandatory census. Right: the three independent problems sharing a single root cause — repetitive arithmetic at human scale.</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FIGURE 0.1-B  Concept Diagram — What Is Computation?
+  ════════════════════════════════════════════════════════════ -->
+  <div class="figure-block">
+    <div class="figure-label">
+      <span class="fig-type diag">Type C — Concept Diagram</span>
+      <span class="fig-id">FIG 0.1-B</span>
+      <span class="fig-title">What Is Computation? — Symbol, Rule, Manipulation</span>
+    </div>
+    <div class="fig-frame">
+      <svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" style="height:340px">
+        <rect width="1200" height="400" fill="#F4EFE6"/>
+
+        <!-- Three-part concept: Symbol → Rule → Result -->
+        <!-- Dividers -->
+        <line x1="0" y1="60" x2="1200" y2="60" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="400" y1="60" x2="400" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="800" y1="60" x2="800" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+
+        <!-- Column headers -->
+        <text x="200" y="42" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.14em">SYMBOL</text>
+        <text x="600" y="42" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.14em">RULE</text>
+        <text x="1000" y="42" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.14em">RESULT</text>
+
+        <!-- SYMBOL column -->
+        <!-- Bead on abacus -->
+        <line x1="110" y1="130" x2="290" y2="130" stroke="#2C2C2C" stroke-width="2"/>
+        <circle cx="150" cy="130" r="14" fill="#FDFDFD" stroke="#2C2C2C" stroke-width="1.5"/>
+        <circle cx="175" cy="130" r="14" fill="#FDFDFD" stroke="#2C2C2C" stroke-width="1.5"/>
+        <circle cx="200" cy="130" r="14" fill="#2E4057"/>
+        <circle cx="225" cy="130" r="14" fill="#2E4057"/>
+        <circle cx="250" cy="130" r="14" fill="#FDFDFD" stroke="#2C2C2C" stroke-width="1.5"/>
+        <text x="200" y="164" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">bead position = digit value</text>
+
+        <!-- Gear position -->
+        <circle cx="200" cy="240" r="38" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+        <circle cx="200" cy="240" r="26" fill="none" stroke="#2C2C2C" stroke-width="1"/>
+        <circle cx="200" cy="240" r="4" fill="#2C2C2C"/>
+        <!-- Marker tooth -->
+        <rect x="197" y="196" width="6" height="12" rx="1" fill="#C82A2A"/>
+        <text x="200" y="296" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">wheel angle = digit (0–9)</text>
+        <!-- Voltage level -->
+        <rect x="140" y="322" width="120" height="28" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+        <rect x="140" y="322" width="60" height="28" fill="#2E4057" opacity="0.15"/>
+        <text x="170" y="340" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">5V</text>
+        <text x="230" y="340" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#888880">0V</text>
+        <text x="200" y="368" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">voltage level = 1 or 0</text>
+
+        <!-- → arrows -->
+        <path d="M390 200 L410 200" stroke="#C82A2A" stroke-width="2" fill="none" marker-end="url(#arr2)"/>
+        <path d="M790 200 L810 200" stroke="#C82A2A" stroke-width="2" fill="none" marker-end="url(#arr2)"/>
+        <defs>
+          <marker id="arr2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+            <path d="M0,1 L7,4 L0,7 Z" fill="#C82A2A"/>
+          </marker>
+        </defs>
+
+        <!-- RULE column -->
+        <!-- Rule box -->
+        <rect x="450" y="100" width="300" height="220" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+        <rect x="450" y="100" width="300" height="28" fill="#2E4057" opacity="0.06"/>
+        <text x="600" y="119" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.1em">DEFINED OPERATION</text>
+
+        <text x="600" y="158" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="18" fill="#2C2C2C">A + B → C</text>
+        <line x1="470" y1="174" x2="730" y2="174" stroke="#E8E6DF" stroke-width="1"/>
+        <text x="600" y="196" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#6E6E6E">IF gear = 9</text>
+        <text x="600" y="214" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#6E6E6E">THEN advance next</text>
+        <line x1="470" y1="228" x2="730" y2="228" stroke="#E8E6DF" stroke-width="1"/>
+        <text x="600" y="250" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#6E6E6E">IF voltage HIGH</text>
+        <text x="600" y="268" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#6E6E6E">THEN output = 1</text>
+        <text x="600" y="306" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880" font-style="italic">same rule, different medium</text>
+
+        <!-- RESULT column -->
+        <!-- Output symbol -->
+        <text x="1000" y="160" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="52" font-weight="300" fill="#2C2C2C">42</text>
+        <line x1="900" y1="178" x2="1100" y2="178" stroke="#E8E6DF" stroke-width="1"/>
+        <text x="1000" y="210" text-anchor="middle" font-family="'Inter',sans-serif" font-size="12" font-weight="300" fill="#6E6E6E">a new symbol is produced</text>
+        <text x="1000" y="228" text-anchor="middle" font-family="'Inter',sans-serif" font-size="12" font-weight="300" fill="#6E6E6E">encoding the result</text>
+
+        <!-- Key equation -->
+        <rect x="880" y="265" width="240" height="56" fill="#2E4057" opacity="0.06" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="1000" y="289" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.12em">COMPUTATION =</text>
+        <text x="1000" y="307" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" font-weight="300" fill="#2C2C2C">Manipulating symbols</text>
+        <text x="1000" y="323" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" font-weight="300" fill="#2C2C2C">according to rules</text>
+
+        <!-- Bottom rule -->
+        <rect x="0" y="368" width="1200" height="32" fill="rgba(44,64,87,0.04)"/>
+        <text x="60" y="388" font-family="'Inter',sans-serif" font-size="11" font-weight="300" fill="#6E6E6E">Fig 0.1-B · A human doing long division, a gear in a calculator, and a transistor in a chip are all performing the same abstract act: manipulating symbols by rules.</text>
+        <text x="1140" y="388" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 0.1</text>
+      </svg>
+    </div>
+    <div class="fig-caption">Computation is substrate-independent. The medium changes — beads, gears, voltage — but the abstract structure is identical: a symbol has a state, a rule specifies a transformation, a new symbol emerges.</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FIGURE 0.1-C  Process Diagram — Computation Evolution Timeline
+  ════════════════════════════════════════════════════════════ -->
+  <div class="figure-block">
+    <div class="figure-label">
+      <span class="fig-type diag">Type D — Process / Timeline</span>
+      <span class="fig-id">FIG 0.1-C</span>
+      <span class="fig-title">Evolution of Human Computation — From Tally Sticks to Transistors</span>
+    </div>
+    <div class="fig-frame">
+      <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+        <rect width="1200" height="280" fill="#F4EFE6"/>
+
+        <!-- Timeline spine -->
+        <line x1="60" y1="140" x2="1140" y2="140" stroke="#2C2C2C" stroke-width="1.5"/>
+        <!-- Arrow end -->
+        <path d="M1135 135 L1145 140 L1135 145" fill="none" stroke="#2C2C2C" stroke-width="1.5"/>
+
+        <!-- Era shading bands -->
+        <rect x="60" y="100" width="260" height="80" fill="#728C69" opacity="0.06"/>
+        <rect x="320" y="100" width="260" height="80" fill="#2E4057" opacity="0.05"/>
+        <rect x="580" y="100" width="200" height="80" fill="#8B6914" opacity="0.06"/>
+        <rect x="780" y="100" width="180" height="80" fill="#C82A2A" opacity="0.05"/>
+        <rect x="960" y="100" width="180" height="80" fill="#2E4057" opacity="0.08"/>
+
+        <!-- ── NODE 1: Abacus ~2400 BC ── -->
+        <circle cx="120" cy="140" r="7" fill="#728C69"/>
+        <line x1="120" y1="133" x2="120" y2="88" stroke="#728C69" stroke-width="1"/>
+        <rect x="60" y="60" width="120" height="28" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="120" y="76" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="10" fill="#2C2C2C">Abacus</text>
+        <text x="120" y="158" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">~2400 BC</text>
+        <text x="120" y="172" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8.5" fill="#888880">external state</text>
+
+        <!-- ── NODE 2: Napier 1617 ── -->
+        <circle cx="230" cy="140" r="7" fill="#728C69"/>
+        <line x1="230" y1="147" x2="230" y2="196" stroke="#728C69" stroke-width="1"/>
+        <rect x="170" y="196" width="120" height="28" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="230" y="212" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="10" fill="#2C2C2C">Napier's Bones</text>
+        <text x="230" y="123" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">1617</text>
+        <text x="230" y="113" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8.5" fill="#888880">lookup tables</text>
+
+        <!-- ── NODE 3: Pascaline 1642 ── -->
+        <circle cx="360" cy="140" r="7" fill="#2E4057"/>
+        <line x1="360" y1="133" x2="360" y2="88" stroke="#2E4057" stroke-width="1"/>
+        <rect x="295" y="60" width="130" height="28" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="360" y="76" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="10" fill="#2C2C2C">Pascaline</text>
+        <text x="360" y="158" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">1642</text>
+        <text x="360" y="172" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8.5" fill="#888880">mech. carry</text>
+
+        <!-- ── NODE 4: Stepped Reckoner 1694 ── -->
+        <circle cx="480" cy="140" r="7" fill="#2E4057"/>
+        <line x1="480" y1="147" x2="480" y2="196" stroke="#2E4057" stroke-width="1"/>
+        <rect x="405" y="196" width="150" height="28" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="480" y="212" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="10" fill="#2C2C2C">Stepped Reckoner</text>
+        <text x="480" y="123" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">1694</text>
+        <text x="480" y="113" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8.5" fill="#888880">all 4 operations</text>
+
+        <!-- ── NODE 5: Babbage 1822 ── -->
+        <circle cx="630" cy="140" r="8" fill="#8B6914"/>
+        <line x1="630" y1="133" x2="630" y2="88" stroke="#8B6914" stroke-width="1"/>
+        <rect x="565" y="60" width="130" height="28" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="630" y="76" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="10" fill="#2C2C2C">Difference Engine</text>
+        <text x="630" y="158" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#8B6914">1822</text>
+        <text x="630" y="172" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8.5" fill="#888880">programmable</text>
+
+        <!-- ── NODE 6: Hollerith 1890 ── -->
+        <circle cx="800" cy="140" r="8" fill="#C82A2A"/>
+        <line x1="800" y1="147" x2="800" y2="196" stroke="#C82A2A" stroke-width="1"/>
+        <rect x="730" y="196" width="140" height="28" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="800" y="212" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="10" fill="#2C2C2C">Hollerith Tabulator</text>
+        <text x="800" y="123" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">1890</text>
+        <text x="800" y="113" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8.5" fill="#888880">punch card input</text>
+
+        <!-- ── NODE 7: ENIAC 1945 ── -->
+        <circle cx="1000" cy="140" r="10" fill="#2E4057"/>
+        <line x1="1000" y1="133" x2="1000" y2="80" stroke="#2E4057" stroke-width="1.5"/>
+        <rect x="930" y="54" width="140" height="26" fill="#2E4057" opacity="0.9"/>
+        <text x="1000" y="70" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">ENIAC</text>
+        <text x="1000" y="162" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2E4057">1945</text>
+        <text x="1000" y="177" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8.5" fill="#888880">electronic, general-purpose</text>
+
+        <!-- ── NODE 8: Transistor 1947 ── -->
+        <circle cx="1100" cy="140" r="10" fill="#2E4057"/>
+        <line x1="1100" y1="147" x2="1100" y2="206" stroke="#2E4057" stroke-width="1.5"/>
+        <rect x="1030" y="206" width="140" height="26" fill="#2E4057" opacity="0.9"/>
+        <text x="1100" y="221" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Transistor</text>
+        <text x="1100" y="123" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2E4057">1947</text>
+        <text x="1100" y="113" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8.5" fill="#888880">silicon era begins</text>
+
+        <!-- Era labels -->
+        <text x="190" y="248" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69" letter-spacing="0.1em">MANUAL AIDS</text>
+        <text x="420" y="248" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">MECHANICAL</text>
+        <text x="680" y="248" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#8B6914" letter-spacing="0.1em">ANALYTICAL</text>
+        <text x="870" y="248" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">ELECTRO-MECH</text>
+        <text x="1050" y="248" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">ELECTRONIC</text>
+
+        <!-- Fig caption -->
+        <rect x="0" y="258" width="1200" height="22" fill="rgba(44,64,87,0.04)"/>
+        <text x="60" y="273" font-family="'Inter',sans-serif" font-size="10" font-weight="300" fill="#6E6E6E">Fig 0.1-C · Each node represents a leap in computational medium — the abstract operation stays identical; only the physical substrate accelerates.</text>
+        <text x="1140" y="273" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · 0.1</text>
+      </svg>
+    </div>
+    <div class="fig-caption">Computation timeline from 2400 BC to 1947. Five eras of substrate: manual aids, mechanical calculators, analytical engines, electro-mechanical tabulators, and electronic computers. The abstract concept of symbol manipulation is constant throughout.</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FIGURE 0.1-D  Simulation Figure — Census Tally Comparison
+  ════════════════════════════════════════════════════════════ -->
+  <div class="figure-block">
+    <div class="figure-label">
+      <span class="fig-type sim">Type F — Simulation Figure</span>
+      <span class="fig-id">FIG 0.1-D</span>
+      <span class="fig-title">Human vs Machine — Census Tally Speed Comparison</span>
+    </div>
+    <div class="fig-frame">
+      <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:310px">
+        <rect width="1200" height="360" fill="#F4EFE6"/>
+
+        <!-- Left half: Human tally -->
+        <rect x="0" y="0" width="600" height="310" fill="#F8F7F3"/>
+        <rect x="0" y="0" width="600" height="40" fill="#EEECE6"/>
+        <text x="300" y="26" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#888880" letter-spacing="0.12em">HUMAN COMPUTER — 1880</text>
+
+        <!-- Human tally grid -->
+        <rect x="40" y="60" width="520" height="200" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+        <!-- Grid lines -->
+        <g stroke="#E8E6DF" stroke-width="0.5">
+          <line x1="40" y1="90" x2="560" y2="90"/>
+          <line x1="40" y1="120" x2="560" y2="120"/>
+          <line x1="40" y1="150" x2="560" y2="150"/>
+          <line x1="40" y1="180" x2="560" y2="180"/>
+          <line x1="40" y1="210" x2="560" y2="210"/>
+          <line x1="40" y1="240" x2="560" y2="240"/>
+          <line x1="160" y1="60" x2="160" y2="260"/>
+          <line x1="280" y1="60" x2="280" y2="260"/>
+          <line x1="400" y1="60" x2="400" y2="260"/>
+          <line x1="520" y1="60" x2="520" y2="260"/>
+        </g>
+        <!-- Column headers -->
+        <text x="100" y="78" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" font-weight="500" fill="#888880" letter-spacing="0.1em">AGE 0–10</text>
+        <text x="220" y="78" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" font-weight="500" fill="#888880" letter-spacing="0.1em">AGE 11–20</text>
+        <text x="340" y="78" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" font-weight="500" fill="#888880" letter-spacing="0.1em">AGE 21–40</text>
+        <text x="460" y="78" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" font-weight="500" fill="#888880" letter-spacing="0.1em">AGE 41+</text>
+        <!-- Tally marks in cells -->
+        <g stroke="#3A3A3A" stroke-width="1" fill="none">
+          <line x1="55" y1="98" x2="55" y2="112"/><line x1="61" y1="98" x2="61" y2="112"/>
+          <line x1="67" y1="98" x2="67" y2="112"/><line x1="73" y1="98" x2="73" y2="112"/>
+          <line x1="52" y1="100" x2="76" y2="110"/>
+          <line x1="80" y1="98" x2="80" y2="112"/><line x1="86" y1="98" x2="86" y2="112"/>
+          <line x1="77" y1="100" x2="89" y2="108"/>
+          <!-- Row 2 -->
+          <line x1="55" y1="128" x2="55" y2="142"/><line x1="61" y1="128" x2="61" y2="142"/>
+          <line x1="67" y1="128" x2="67" y2="142"/><line x1="73" y1="128" x2="73" y2="142"/>
+          <line x1="52" y1="130" x2="76" y2="140"/>
+          <!-- Row 3 with error -->
+          <line x1="55" y1="158" x2="55" y2="172"/><line x1="61" y1="158" x2="61" y2="172"/>
+        </g>
+        <!-- Error cross -->
+        <line x1="80" y1="158" x2="100" y2="172" stroke="#C82A2A" stroke-width="1.5"/>
+        <line x1="100" y1="158" x2="80" y2="172" stroke="#C82A2A" stroke-width="1.5"/>
+        <text x="105" y="168" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">!</text>
+
+        <!-- Completion bar - partial -->
+        <rect x="40" y="272" width="520" height="20" fill="#E8E6DF"/>
+        <rect x="40" y="272" width="78" height="20" fill="#728C69" opacity="0.6"/>
+        <text x="300" y="285" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">15% complete after 1 year</text>
+
+        <!-- Time label -->
+        <rect x="40" y="300" width="520" height="20" fill="none"/>
+        <text x="300" y="315" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="18" font-weight="300" fill="#C82A2A">8 years</text>
+
+        <!-- Right half: Machine tally -->
+        <rect x="600" y="0" width="600" height="310" fill="#F0EDE8"/>
+        <rect x="600" y="0" width="600" height="40" fill="#2E4057" opacity="0.1"/>
+        <text x="900" y="26" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" font-weight="500" fill="#2E4057" letter-spacing="0.12em">HOLLERITH TABULATOR — 1890</text>
+
+        <!-- Machine result grid - complete -->
+        <rect x="640" y="60" width="520" height="200" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+        <!-- All cells filled -->
+        <g stroke="#E8E6DF" stroke-width="0.5">
+          <line x1="640" y1="90" x2="1160" y2="90"/>
+          <line x1="640" y1="120" x2="1160" y2="120"/>
+          <line x1="640" y1="150" x2="1160" y2="150"/>
+          <line x1="640" y1="180" x2="1160" y2="180"/>
+          <line x1="640" y1="210" x2="1160" y2="210"/>
+          <line x1="640" y1="240" x2="1160" y2="240"/>
+          <line x1="760" y1="60" x2="760" y2="260"/>
+          <line x1="880" y1="60" x2="880" y2="260"/>
+          <line x1="1000" y1="60" x2="1000" y2="260"/>
+          <line x1="1120" y1="60" x2="1120" y2="260"/>
+        </g>
+        <!-- Column headers -->
+        <text x="700" y="78" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" font-weight="500" fill="#888880" letter-spacing="0.1em">AGE 0–10</text>
+        <text x="820" y="78" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" font-weight="500" fill="#888880" letter-spacing="0.1em">AGE 11–20</text>
+        <text x="940" y="78" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" font-weight="500" fill="#888880" letter-spacing="0.1em">AGE 21–40</text>
+        <text x="1060" y="78" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" font-weight="500" fill="#888880" letter-spacing="0.1em">AGE 41+</text>
+        <!-- Numbers in all cells -->
+        <g font-family="'JetBrains Mono',monospace" font-size="13" fill="#2C2C2C" text-anchor="middle">
+          <text x="700" y="110">12,847</text><text x="820" y="110">9,324</text><text x="940" y="110">18,441</text><text x="1060" y="110">6,102</text>
+          <text x="700" y="140">11,203</text><text x="820" y="140">8,891</text><text x="940" y="140">19,776</text><text x="1060" y="140">7,304</text>
+          <text x="700" y="170">13,508</text><text x="820" y="170">10,127</text><text x="940" y="170">17,623</text><text x="1060" y="170">5,847</text>
+          <text x="700" y="200">12,091</text><text x="820" y="200">9,456</text><text x="940" y="200">20,334</text><text x="1060" y="200">8,219</text>
+          <text x="700" y="230">11,782</text><text x="820" y="230">8,643</text><text x="940" y="230">16,987</text><text x="1060" y="230">6,571</text>
+          <text x="700" y="254">10,934</text><text x="820" y="254">9,012</text><text x="940" y="254">18,855</text><text x="1060" y="254">7,098</text>
+        </g>
+
+        <!-- Completion bar - full -->
+        <rect x="640" y="272" width="520" height="20" fill="#728C69" opacity="0.6"/>
+        <text x="900" y="285" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">100% complete</text>
+
+        <!-- Time label -->
+        <text x="900" y="315" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="18" font-weight="300" fill="#2E4057">6 weeks</text>
+
+        <!-- Centre divider with VS -->
+        <line x1="600" y1="0" x2="600" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+        <circle cx="600" cy="155" r="20" fill="#F4EFE6" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="600" y="161" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" font-weight="400" fill="#888880">vs</text>
+
+        <!-- Bottom strip -->
+        <rect x="0" y="330" width="1200" height="30" fill="rgba(44,64,87,0.04)"/>
+        <text x="60" y="350" font-family="'Inter',sans-serif" font-size="10" font-weight="300" fill="#6E6E6E">Fig 0.1-D · Simulation static figure: human clerk (left) vs Hollerith tabulator (right). 1880 census: 8 years manually; 1890 census: 6 weeks with punch cards.</text>
+        <text x="1140" y="350" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · 0.1</text>
+      </svg>
+    </div>
+    <div class="fig-caption">Static rendering of the Module 0.1 simulation. Left: a partial human census tally with an error highlighted in row 3. Right: the Hollerith tabulator output — complete, error-free, in 6 weeks. The 78× speed improvement was not incremental; it was civilizational.</div>
+  </div>
+
+</div><!-- end figures-wrap -->
+</body>
+</html>

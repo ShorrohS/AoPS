@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 5.3 Illustrations — Algorithms: Introduction to Complexity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-ink:#2C2C2C;--zen-stone:#6E6E6E;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);color:var(--text-sumi);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;color:var(--text-sumi);letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-block{}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--zen-indigo);color:var(--zen-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:var(--accent-red);color:var(--accent-red);background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;color:var(--text-sumi);}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 5 — Programming</div>
+  <div class="page-title">Module 5.3 — Introduction to Algorithms and Complexity</div>
+  <div class="page-sub">3 figures · Big-O Growth Curves · Algorithm vs Brute Force · Complexity Class Table</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 5.3-A  Big-O Growth Curves -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 5.3-A</span>
+    <span class="fig-title">Big-O Growth Curves — How Different Complexities Scale</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 520" xmlns="http://www.w3.org/2000/svg" style="height:460px">
+      <defs>
+        <linearGradient id="algoBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="520" fill="url(#algoBg)"/>
+      <!-- Chart area -->
+      <rect x="80" y="40" width="880" height="400" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- Axes -->
+      <line x1="80" y1="440" x2="960" y2="440" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="80" y1="40" x2="80" y2="440" stroke="#2C2C2C" stroke-width="1.5"/>
+      <!-- Axis labels -->
+      <text x="520" y="470" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880">Input size n</text>
+      <text x="44" y="240" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880" transform="rotate(-90,44,240)">Operations</text>
+      <!-- X ticks -->
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880" text-anchor="middle">
+        <text x="168" y="454">10</text><text x="256" y="454">20</text><text x="344" y="454">30</text>
+        <text x="432" y="454">40</text><text x="520" y="454">50</text><text x="608" y="454">60</text>
+        <text x="696" y="454">70</text><text x="784" y="454">80</text><text x="872" y="454">90</text>
+      </g>
+      <!-- Grid lines -->
+      <g stroke="#E8E6DF" stroke-width="0.5" stroke-dasharray="4,3">
+        <line x1="80" y1="140" x2="960" y2="140"/><line x1="80" y1="240" x2="960" y2="240"/>
+        <line x1="80" y1="340" x2="960" y2="340"/>
+        <line x1="168" y1="40" x2="168" y2="440"/><line x1="344" y1="40" x2="344" y2="440"/>
+        <line x1="520" y1="40" x2="520" y2="440"/><line x1="696" y1="40" x2="696" y2="440"/>
+        <line x1="872" y1="40" x2="872" y2="440"/>
+      </g>
+      <!-- O(1) — constant -->
+      <line x1="80" y1="420" x2="960" y2="420" stroke="#728C69" stroke-width="2.5"/>
+      <!-- O(log n) -->
+      <path d="M80 400 Q200 360 344 340 Q520 325 696 316 Q784 312 960 308" stroke="#728C69" stroke-width="2" fill="none" stroke-dasharray="6,3"/>
+      <!-- O(n) — linear -->
+      <line x1="80" y1="430" x2="960" y2="70" stroke="#2E4057" stroke-width="2.5"/>
+      <!-- O(n log n) -->
+      <path d="M80 428 Q200 360 344 300 Q520 240 696 195 Q784 175 870 160" stroke="#2E4057" stroke-width="2" fill="none" stroke-dasharray="6,3"/>
+      <!-- O(n²) -->
+      <path d="M80 438 Q200 420 344 380 Q432 340 520 280 Q608 200 660 140 Q700 100 730 60" stroke="#8B6914" stroke-width="2.5" fill="none"/>
+      <!-- O(2^n) — grows off chart quickly -->
+      <path d="M80 440 Q100 439 120 438 Q160 435 200 420 Q240 390 270 340 Q290 300 310 240 Q320 200 330 130" stroke="#C82A2A" stroke-width="2.5" fill="none"/>
+      <!-- O(n!) — even steeper -->
+      <path d="M80 440 Q90 440 100 439 Q120 438 140 430 Q160 415 180 380 Q200 330 220 250 Q235 190 250 80" stroke="#C82A2A" stroke-width="2" fill="none" stroke-dasharray="4,2" opacity="0.7"/>
+      <!-- Labels panel right -->
+      <rect x="980" y="40" width="200" height="420" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="1080" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#888880" letter-spacing="0.12em">COMPLEXITY CLASS</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="12">
+        <line x1="992" y1="88" x2="1020" y2="88" stroke="#728C69" stroke-width="2.5"/>
+        <text x="1028" y="93" fill="#728C69">O(1)</text>
+        <text x="1028" y="107" font-family="'Inter',sans-serif" font-size="9" fill="#888880">constant</text>
+        <line x1="992" y1="128" x2="1020" y2="128" stroke="#728C69" stroke-width="2" stroke-dasharray="6,3"/>
+        <text x="1028" y="133" fill="#728C69">O(log n)</text>
+        <text x="1028" y="147" font-family="'Inter',sans-serif" font-size="9" fill="#888880">logarithmic</text>
+        <line x1="992" y1="168" x2="1020" y2="168" stroke="#2E4057" stroke-width="2.5"/>
+        <text x="1028" y="173" fill="#2E4057">O(n)</text>
+        <text x="1028" y="187" font-family="'Inter',sans-serif" font-size="9" fill="#888880">linear</text>
+        <line x1="992" y1="208" x2="1020" y2="208" stroke="#2E4057" stroke-width="2" stroke-dasharray="6,3"/>
+        <text x="1028" y="213" fill="#2E4057">O(n log n)</text>
+        <text x="1028" y="227" font-family="'Inter',sans-serif" font-size="9" fill="#888880">linearithmic</text>
+        <line x1="992" y1="248" x2="1020" y2="248" stroke="#8B6914" stroke-width="2.5"/>
+        <text x="1028" y="253" fill="#8B6914">O(n²)</text>
+        <text x="1028" y="267" font-family="'Inter',sans-serif" font-size="9" fill="#888880">quadratic</text>
+        <line x1="992" y1="288" x2="1020" y2="288" stroke="#C82A2A" stroke-width="2.5"/>
+        <text x="1028" y="293" fill="#C82A2A">O(2ⁿ)</text>
+        <text x="1028" y="307" font-family="'Inter',sans-serif" font-size="9" fill="#888880">exponential</text>
+        <line x1="992" y1="328" x2="1020" y2="328" stroke="#C82A2A" stroke-width="2" stroke-dasharray="4,2" opacity="0.7"/>
+        <text x="1028" y="333" fill="#C82A2A" opacity="0.7">O(n!)</text>
+        <text x="1028" y="347" font-family="'Inter',sans-serif" font-size="9" fill="#888880" opacity="0.7">factorial</text>
+      </g>
+      <!-- Feasibility zones -->
+      <rect x="80" y="380" width="880" height="60" fill="#728C69" opacity="0.04"/>
+      <text x="520" y="370" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">FEASIBLE FOR LARGE n</text>
+      <rect x="80" y="40" width="880" height="200" fill="#C82A2A" opacity="0.02"/>
+      <text x="520" y="56" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">INFEASIBLE FOR LARGE n (grows off chart)</text>
+      <!-- Footer -->
+      <rect x="0" y="490" width="1200" height="30" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="509" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Fig 5.3-A</text>
+      <text x="120" y="509" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Big-O growth curves showing how algorithm runtime scales with input size n. O(1) and O(log n) remain flat. O(2ⁿ) and O(n!) become infeasible before n=50 on any hardware.</text>
+      <text x="1140" y="509" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 5.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Big-O growth curves showing seven complexity classes. O(1) is constant — runtime does not depend on input size at all (array index lookup). O(log n) barely grows (binary search). O(n) grows linearly (linear scan). O(n log n) is the best possible for comparison-based sorting (merge sort, heap sort). O(n²) grows quickly (bubble sort, nested loops). O(2ⁿ) and O(n!) are computationally infeasible beyond tiny inputs — an O(2ⁿ) algorithm processing n=100 items would require more operations than atoms in the observable universe.</div>
+</div>
+
+<!-- FIG 5.3-B  Algorithm vs Brute Force — Binary Search vs Linear Search -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Comparison</span>
+    <span class="fig-id">FIG 5.3-B</span>
+    <span class="fig-title">Linear Search vs Binary Search — The Algorithmic Advantage</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <rect width="1200" height="380" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="34" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">FINDING TARGET 73 IN A SORTED ARRAY OF 16 ELEMENTS</text>
+      <!-- Array -->
+      <g font-family="'JetBrains Mono',monospace" font-size="11">
+        <text x="60" y="62" fill="#888880">Index:</text>
+        <text x="60" y="80" fill="#888880">Value:</text>
+      </g>
+      <!-- 16 cells -->
+      <g font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">
+        <!-- Index row -->
+        <text x="130" y="62" fill="#888880">0</text><text x="186" y="62" fill="#888880">1</text>
+        <text x="242" y="62" fill="#888880">2</text><text x="298" y="62" fill="#888880">3</text>
+        <text x="354" y="62" fill="#888880">4</text><text x="410" y="62" fill="#888880">5</text>
+        <text x="466" y="62" fill="#888880">6</text><text x="522" y="62" fill="#888880">7</text>
+        <text x="578" y="62" fill="#888880">8</text><text x="634" y="62" fill="#888880">9</text>
+        <text x="690" y="62" fill="#888880">10</text><text x="746" y="62" fill="#888880">11</text>
+        <text x="802" y="62" fill="#888880">12</text><text x="858" y="62" fill="#888880">13</text>
+        <text x="914" y="62" fill="#888880">14</text><text x="970" y="62" fill="#888880">15</text>
+        <!-- Value cells -->
+        <g fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1">
+          <rect x="103" y="66" width="54" height="30"/><text x="130" y="86" fill="#2C2C2C">3</text>
+          <rect x="159" y="66" width="54" height="30"/><text x="186" y="86" fill="#2C2C2C">8</text>
+          <rect x="215" y="66" width="54" height="30"/><text x="242" y="86" fill="#2C2C2C">15</text>
+          <rect x="271" y="66" width="54" height="30"/><text x="298" y="86" fill="#2C2C2C">22</text>
+          <rect x="327" y="66" width="54" height="30"/><text x="354" y="86" fill="#2C2C2C">31</text>
+          <rect x="383" y="66" width="54" height="30"/><text x="410" y="86" fill="#2C2C2C">45</text>
+          <rect x="439" y="66" width="54" height="30"/><text x="466" y="86" fill="#2C2C2C">52</text>
+          <rect x="495" y="66" width="54" height="30"/><text x="522" y="86" fill="#2C2C2C">61</text>
+          <rect x="551" y="66" width="54" height="30"/><text x="578" y="86" fill="#2C2C2C">67</text>
+          <rect x="607" y="66" width="54" height="30"/><text x="634" y="86" fill="#2C2C2C">70</text>
+          <rect x="663" y="66" width="54" height="30"/><text x="690" y="86" fill="#2C2C2C">72</text>
+          <rect x="719" y="66" width="54" height="30" stroke="#728C69" stroke-width="2"/><text x="746" y="86" fill="#728C69" font-weight="500">73</text>
+          <rect x="775" y="66" width="54" height="30"/><text x="802" y="86" fill="#2C2C2C">78</text>
+          <rect x="831" y="66" width="54" height="30"/><text x="858" y="86" fill="#2C2C2C">84</text>
+          <rect x="887" y="66" width="54" height="30"/><text x="914" y="86" fill="#2C2C2C">91</text>
+          <rect x="943" y="66" width="54" height="30"/><text x="970" y="86" fill="#2C2C2C">99</text>
+        </g>
+      </g>
+      <!-- Target label -->
+      <text x="746" y="108" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">TARGET</text>
+      <!-- LINEAR SEARCH trace -->
+      <text x="60" y="138" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">LINEAR SEARCH — checks each element left to right</text>
+      <g fill="#C82A2A" opacity="0.15">
+        <rect x="103" y="144" width="54" height="22"/><rect x="159" y="144" width="54" height="22"/>
+        <rect x="215" y="144" width="54" height="22"/><rect x="271" y="144" width="54" height="22"/>
+        <rect x="327" y="144" width="54" height="22"/><rect x="383" y="144" width="54" height="22"/>
+        <rect x="439" y="144" width="54" height="22"/><rect x="495" y="144" width="54" height="22"/>
+        <rect x="551" y="144" width="54" height="22"/><rect x="607" y="144" width="54" height="22"/>
+        <rect x="663" y="144" width="54" height="22"/>
+      </g>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle" fill="#C82A2A">
+        <text x="130" y="158">1</text><text x="186" y="158">2</text><text x="242" y="158">3</text>
+        <text x="298" y="158">4</text><text x="354" y="158">5</text><text x="410" y="158">6</text>
+        <text x="466" y="158">7</text><text x="522" y="158">8</text><text x="578" y="158">9</text>
+        <text x="634" y="158">10</text><text x="690" y="158">11</text>
+      </g>
+      <rect x="719" y="144" width="54" height="22" fill="#C82A2A" opacity="0.7"/>
+      <text x="746" y="158" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">12 ✓</text>
+      <text x="850" y="178" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">12 comparisons — O(n) worst case = 16</text>
+      <!-- BINARY SEARCH trace -->
+      <text x="60" y="210" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69" letter-spacing="0.1em">BINARY SEARCH — divide and conquer</text>
+      <!-- Step 1: mid=7 (61<73 → right half) -->
+      <rect x="495" y="218" width="54" height="22" fill="#728C69" opacity="0.3"/>
+      <text x="522" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">①mid</text>
+      <text x="730" y="232" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">61 &lt; 73 → search right half [8..15]</text>
+      <!-- Step 2: mid=11 (73=73 → found!) -->
+      <rect x="719" y="250" width="54" height="22" fill="#728C69" opacity="0.6"/>
+      <text x="746" y="264" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">②mid</text>
+      <text x="730" y="264" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">73 = 73 → FOUND at index 11!</text>
+      <text x="730" y="282" font-family="'Inter',sans-serif" font-size="10" fill="#728C69" font-weight="500">2 comparisons — O(log n) = log₂(16) = 4 max</text>
+      <!-- Comparison summary -->
+      <rect x="60" y="310" width="1080" height="50" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="350" y="332" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#C82A2A">Linear:  up to 1,000,000 checks for n=1M</text>
+      <text x="350" y="352" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#728C69">Binary:  at most 20 checks for n=1M</text>
+      <text x="900" y="342" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880">50,000× faster for n=1,000,000</text>
+      <!-- Footer -->
+      <rect x="0" y="368" width="1200" height="12" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="376" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 5.3-B · Same data, same target, radically different search strategies. Binary search requires the array to be sorted — a precondition that makes the algorithmic advantage possible.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Linear search versus binary search finding value 73 in a sorted 16-element array. Linear search checks every element left to right — finding 73 at index 11 requires 12 comparisons, and the worst case is 16. Binary search exploits the sorted order: compare the middle element (61 at index 7), determine which half contains the target, repeat. Found in 2 comparisons. For a 1-million-element array, linear search may require 1,000,000 checks; binary search needs at most 20 (log₂ 1,000,000 ≈ 20). The right algorithm dominates hardware speed.</div>
+</div>
+
+<!-- FIG 5.3-C  Complexity Class Reference Table -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Reference Table</span>
+    <span class="fig-id">FIG 5.3-C</span>
+    <span class="fig-title">Algorithm Complexity Reference — Real Operation Counts at Scale</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" style="height:340px">
+      <rect width="1200" height="400" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="34" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">ACTUAL OPERATION COUNTS: n=10, n=100, n=1000, n=1,000,000</text>
+      <!-- Table -->
+      <rect x="40" y="44" width="1120" height="318" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- Header row -->
+      <rect x="40" y="44" width="1120" height="26" fill="#2E4057" opacity="0.08"/>
+      <g font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">
+        <text x="130" y="61" text-anchor="middle">COMPLEXITY</text>
+        <text x="290" y="61" text-anchor="middle">NAME</text>
+        <text x="460" y="61" text-anchor="middle">n = 10</text>
+        <text x="620" y="61" text-anchor="middle">n = 100</text>
+        <text x="800" y="61" text-anchor="middle">n = 1,000</text>
+        <text x="1010" y="61" text-anchor="middle">n = 1,000,000</text>
+      </g>
+      <!-- Col dividers -->
+      <g stroke="#E8E6DF" stroke-width="0.5">
+        <line x1="200" y1="44" x2="200" y2="362"/><line x1="380" y1="44" x2="380" y2="362"/>
+        <line x1="540" y1="44" x2="540" y2="362"/><line x1="700" y1="44" x2="700" y2="362"/>
+        <line x1="900" y1="44" x2="900" y2="362"/>
+      </g>
+      <!-- Data rows -->
+      <g font-family="'JetBrains Mono',monospace" font-size="12">
+        <!-- O(1) -->
+        <rect x="40" y="70" width="1120" height="36" fill="#F8F7F3"/>
+        <text x="130" y="94" text-anchor="middle" fill="#728C69">O(1)</text>
+        <text x="290" y="94" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">constant</text>
+        <text x="460" y="94" text-anchor="middle" fill="#728C69">1</text>
+        <text x="620" y="94" text-anchor="middle" fill="#728C69">1</text>
+        <text x="800" y="94" text-anchor="middle" fill="#728C69">1</text>
+        <text x="1010" y="94" text-anchor="middle" fill="#728C69">1</text>
+        <!-- O(log n) -->
+        <rect x="40" y="106" width="1120" height="36" fill="#FDFDFD"/>
+        <text x="130" y="130" text-anchor="middle" fill="#728C69">O(log n)</text>
+        <text x="290" y="130" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">logarithmic</text>
+        <text x="460" y="130" text-anchor="middle" fill="#728C69">3</text>
+        <text x="620" y="130" text-anchor="middle" fill="#728C69">7</text>
+        <text x="800" y="130" text-anchor="middle" fill="#728C69">10</text>
+        <text x="1010" y="130" text-anchor="middle" fill="#728C69">20</text>
+        <!-- O(n) -->
+        <rect x="40" y="142" width="1120" height="36" fill="#F8F7F3"/>
+        <text x="130" y="166" text-anchor="middle" fill="#2E4057">O(n)</text>
+        <text x="290" y="166" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">linear</text>
+        <text x="460" y="166" text-anchor="middle" fill="#2E4057">10</text>
+        <text x="620" y="166" text-anchor="middle" fill="#2E4057">100</text>
+        <text x="800" y="166" text-anchor="middle" fill="#2E4057">1,000</text>
+        <text x="1010" y="166" text-anchor="middle" fill="#2E4057">1,000,000</text>
+        <!-- O(n log n) -->
+        <rect x="40" y="178" width="1120" height="36" fill="#FDFDFD"/>
+        <text x="130" y="202" text-anchor="middle" fill="#2E4057">O(n log n)</text>
+        <text x="290" y="202" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">linearithmic</text>
+        <text x="460" y="202" text-anchor="middle" fill="#2E4057">33</text>
+        <text x="620" y="202" text-anchor="middle" fill="#2E4057">664</text>
+        <text x="800" y="202" text-anchor="middle" fill="#2E4057">9,966</text>
+        <text x="1010" y="202" text-anchor="middle" fill="#2E4057">19,931,568</text>
+        <!-- O(n²) -->
+        <rect x="40" y="214" width="1120" height="36" fill="#F8F7F3"/>
+        <text x="130" y="238" text-anchor="middle" fill="#8B6914">O(n²)</text>
+        <text x="290" y="238" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">quadratic</text>
+        <text x="460" y="238" text-anchor="middle" fill="#8B6914">100</text>
+        <text x="620" y="238" text-anchor="middle" fill="#8B6914">10,000</text>
+        <text x="800" y="238" text-anchor="middle" fill="#8B6914">1,000,000</text>
+        <text x="1010" y="238" text-anchor="middle" fill="#8B6914">10¹²</text>
+        <!-- O(n³) -->
+        <rect x="40" y="250" width="1120" height="36" fill="#FDFDFD"/>
+        <text x="130" y="274" text-anchor="middle" fill="#8B6914">O(n³)</text>
+        <text x="290" y="274" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">cubic</text>
+        <text x="460" y="274" text-anchor="middle" fill="#8B6914">1,000</text>
+        <text x="620" y="274" text-anchor="middle" fill="#8B6914">1,000,000</text>
+        <text x="800" y="274" text-anchor="middle" fill="#8B6914">10⁹</text>
+        <text x="1010" y="274" text-anchor="middle" fill="#C82A2A">10¹⁸ ✗</text>
+        <!-- O(2^n) -->
+        <rect x="40" y="286" width="1120" height="36" fill="#FDF0F0"/>
+        <text x="130" y="310" text-anchor="middle" fill="#C82A2A">O(2ⁿ)</text>
+        <text x="290" y="310" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">exponential</text>
+        <text x="460" y="310" text-anchor="middle" fill="#C82A2A">1,024</text>
+        <text x="620" y="310" text-anchor="middle" fill="#C82A2A">10³⁰ ✗</text>
+        <text x="800" y="310" text-anchor="middle" fill="#C82A2A">infeasible</text>
+        <text x="1010" y="310" text-anchor="middle" fill="#C82A2A">infeasible</text>
+        <!-- O(n!) -->
+        <rect x="40" y="322" width="1120" height="40" fill="#FDF0F0"/>
+        <text x="130" y="348" text-anchor="middle" fill="#C82A2A">O(n!)</text>
+        <text x="290" y="348" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">factorial</text>
+        <text x="460" y="348" text-anchor="middle" fill="#C82A2A">3,628,800</text>
+        <text x="620" y="348" text-anchor="middle" fill="#C82A2A">10¹⁵⁷ ✗</text>
+        <text x="800" y="348" text-anchor="middle" fill="#C82A2A">infeasible</text>
+        <text x="1010" y="348" text-anchor="middle" fill="#C82A2A">infeasible</text>
+      </g>
+      <!-- Footer -->
+      <rect x="0" y="374" width="1200" height="26" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="392" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Fig 5.3-C</text>
+      <text x="120" y="392" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Actual operation counts. O(2ⁿ) with n=100 exceeds 10³⁰ — more than the number of atoms on Earth. Choosing the right algorithm matters far more than choosing faster hardware.</text>
+      <text x="1140" y="392" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 5.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Concrete operation counts for seven complexity classes across four input sizes. The table makes the abstract growth rates visceral: an O(n log n) algorithm handles a million inputs in ~20 million operations — fine for a modern processor. An O(n²) algorithm requires a trillion — still possible but slow. An O(2ⁿ) algorithm on 100 inputs requires 10³⁰ operations — physically impossible on any computer that could ever be built. Algorithm selection is not an optimisation — it is the difference between a program that finishes and one that never will.</div>
+</div>
+
+</div>
+</body>
+</html>

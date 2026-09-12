@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 12.3 — Retrieval-Augmented Generation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 12 — Advanced AI</div>
+  <div class="page-title">Module 12.3 — Retrieval-Augmented Generation</div>
+  <div class="page-sub">3 figures · RAG Pipeline · Semantic vs Keyword Search · RAG vs Fine-tuning</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 12.3-A  RAG Pipeline -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 12.3-A</span>
+    <span class="fig-title">RAG Pipeline — Document Chunking, Embedding, Retrieval, Generation</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" style="height:340px">
+      <defs><linearGradient id="ragBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="400" fill="url(#ragBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">RAG ARCHITECTURE — GROUND LLM RESPONSES IN RETRIEVED DOCUMENTS</text>
+
+      <!-- OFFLINE PHASE -->
+      <rect x="40" y="44" width="1120" height="144" fill="#FDFDFD" stroke="#2E4057" stroke-width="1" rx="1"/>
+      <rect x="40" y="44" width="1120" height="24" fill="#2E4057" opacity="0.1"/>
+      <text x="600" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.14em">OFFLINE: INDEXING PHASE (done once, before any query)</text>
+
+      <!-- Indexing pipeline -->
+      <rect x="60" y="78" width="120" height="44" fill="#2E4057" opacity="0.7" rx="1"/>
+      <text x="120" y="96" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Documents</text>
+      <text x="120" y="112" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">PDFs, URLs,</text>
+      <text x="120" y="124" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">databases</text>
+      <path d="M180 100 L206 100" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <path d="M202 96 L210 100 L202 104" fill="#2C2C2C"/>
+
+      <rect x="210" y="78" width="120" height="44" fill="#2E4057" opacity="0.55" rx="1"/>
+      <text x="270" y="96" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Chunk</text>
+      <text x="270" y="112" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">~512 tokens</text>
+      <text x="270" y="124" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">with overlap</text>
+      <path d="M330 100 L356 100" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <path d="M352 96 L360 100 L352 104" fill="#2C2C2C"/>
+
+      <rect x="360" y="78" width="160" height="44" fill="#728C69" opacity="0.65" rx="1"/>
+      <text x="440" y="96" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Embed chunks</text>
+      <text x="440" y="112" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">ada-002 or</text>
+      <text x="440" y="124" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">sentence-transformers</text>
+      <path d="M520 100 L546 100" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <path d="M542 96 L550 100 L542 104" fill="#2C2C2C"/>
+
+      <rect x="550" y="78" width="160" height="44" fill="#8B6914" opacity="0.7" rx="1"/>
+      <text x="630" y="96" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Vector Store</text>
+      <text x="630" y="112" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">Pinecone, Qdrant,</text>
+      <text x="630" y="124" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">pgvector, Chroma</text>
+
+      <!-- ONLINE PHASE -->
+      <rect x="40" y="210" width="1120" height="170" fill="#FDFDFD" stroke="#728C69" stroke-width="1" rx="1"/>
+      <rect x="40" y="210" width="1120" height="24" fill="#728C69" opacity="0.1"/>
+      <text x="600" y="226" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69" letter-spacing="0.14em">ONLINE: QUERY PHASE (per user question)</text>
+
+      <!-- Query flow -->
+      <rect x="60" y="244" width="140" height="44" fill="#C82A2A" opacity="0.65" rx="1"/>
+      <text x="130" y="262" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">User Query</text>
+      <text x="130" y="278" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">"What is…?"</text>
+      <path d="M200 266 L226 266" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+      <path d="M222 262 L230 266 L222 270" fill="#C82A2A"/>
+
+      <rect x="230" y="244" width="130" height="44" fill="#728C69" opacity="0.65" rx="1"/>
+      <text x="295" y="262" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Embed query</text>
+      <text x="295" y="278" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">same model</text>
+      <path d="M360 266 L386 266" stroke="#728C69" stroke-width="1.5" fill="none"/>
+      <path d="M382 262 L390 266 L382 270" fill="#728C69"/>
+
+      <rect x="390" y="244" width="130" height="44" fill="#8B6914" opacity="0.65" rx="1"/>
+      <text x="455" y="262" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Retrieve top-K</text>
+      <text x="455" y="278" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">similarity search</text>
+      <path d="M520 266 L546 266" stroke="#8B6914" stroke-width="1.5" fill="none"/>
+      <path d="M542 262 L550 266 L542 270" fill="#8B6914"/>
+
+      <rect x="550" y="244" width="160" height="44" fill="#2E4057" opacity="0.6" rx="1"/>
+      <text x="630" y="262" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Build prompt</text>
+      <text x="630" y="278" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">context + query</text>
+      <path d="M710 266 L736 266" stroke="#2E4057" stroke-width="1.5" fill="none"/>
+      <path d="M732 262 L740 266 L732 270" fill="#2E4057"/>
+
+      <rect x="740" y="244" width="120" height="44" fill="#C82A2A" opacity="0.7" rx="1"/>
+      <text x="800" y="262" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">LLM generate</text>
+      <text x="800" y="278" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">grounded answer</text>
+      <path d="M860 266 L886 266" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+      <path d="M882 262 L890 266 L882 270" fill="#C82A2A"/>
+
+      <rect x="890" y="244" width="240" height="44" fill="#728C69" opacity="0.7" rx="1"/>
+      <text x="1010" y="262" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Cited Answer</text>
+      <text x="1010" y="278" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">+ source references</text>
+
+      <!-- Prompt template example -->
+      <rect x="60" y="310" width="1080" height="54" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <text x="80" y="328" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">PROMPT TEMPLATE:</text>
+      <text x="80" y="344" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">Context: [retrieved chunk 1] [retrieved chunk 2] [retrieved chunk 3]</text>
+      <text x="80" y="358" font-family="'JetBrains Mono',monospace" font-size="10" fill="#C82A2A">Question: What is the transformer architecture?</text>
+      <text x="80" y="370" font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">Answer based only on the provided context:</text>
+
+      <rect x="0" y="382" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="395" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 12.3-A · RAG: index documents offline (chunk→embed→store). At query time: embed query→retrieve similar chunks→build prompt with context→LLM generates grounded answer with citations.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Retrieval-Augmented Generation (RAG) grounds LLM responses in a document corpus. Offline: documents are chunked (typically 256–512 tokens with 50-token overlap between chunks), embedded into vector representations, and stored in a vector database. Online: the user's question is embedded with the same model, the top-K most similar chunks are retrieved by vector similarity, and these chunks are injected into the LLM's prompt as context. The LLM generates an answer conditioned on both the question and the retrieved context — dramatically reducing hallucination and enabling citation of sources. RAG solves LLMs' two biggest limitations: knowledge cutoff (inject current documents at inference time) and hallucination on specific facts (ground the model in retrieved evidence rather than parametric memory).</div>
+</div>
+
+<!-- FIG 12.3-B  Semantic vs Keyword Search -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Comparison</span>
+    <span class="fig-id">FIG 12.3-B</span>
+    <span class="fig-title">Semantic Search vs Keyword Search — Understanding vs Matching</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">QUERY: "how do I make my code faster" — KEYWORD vs SEMANTIC RESULTS</text>
+
+      <!-- Query box -->
+      <rect x="40" y="44" width="1120" height="30" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <text x="600" y="64" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#728C69">"how do I make my code faster"</text>
+
+      <!-- Keyword search (left) -->
+      <rect x="40" y="88" width="540" height="180" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5" rx="1"/>
+      <rect x="40" y="88" width="540" height="26" fill="#C82A2A" opacity="0.1"/>
+      <text x="310" y="105" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">BM25 Keyword Search</text>
+      <text x="310" y="122" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">matches exact words: "code", "faster", "make"</text>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="60" y="146">✓ "How to make your Python code faster"</text>
+        <text x="60" y="164">✓ "Making code faster with caching"</text>
+        <text x="60" y="182" fill="#C82A2A">✗ "Performance optimisation techniques"</text>
+        <text x="60" y="200" fill="#C82A2A">✗ "Profiling and bottleneck analysis"</text>
+        <text x="60" y="218" fill="#C82A2A">✗ "Reducing algorithmic complexity"</text>
+        <text x="60" y="238" fill="#888880" font-size="9">Misses synonyms and related concepts</text>
+        <text x="60" y="252" fill="#888880" font-size="9">Exact word match required</text>
+      </g>
+
+      <!-- Semantic search (right) -->
+      <rect x="620" y="88" width="540" height="180" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5" rx="1"/>
+      <rect x="620" y="88" width="540" height="26" fill="#728C69" opacity="0.1"/>
+      <text x="890" y="105" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">Vector Semantic Search</text>
+      <text x="890" y="122" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">finds documents about the same concept</text>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="640" y="146">✓ "How to make your Python code faster"</text>
+        <text x="640" y="164">✓ "Performance optimisation techniques"</text>
+        <text x="640" y="182">✓ "Profiling and bottleneck analysis"</text>
+        <text x="640" y="200">✓ "Algorithmic complexity reduction"</text>
+        <text x="640" y="218">✓ "CPU cache-friendly data structures"</text>
+        <text x="640" y="238" fill="#728C69" font-size="9">Understands meaning, not just words</text>
+        <text x="640" y="252" fill="#728C69" font-size="9">Finds relevant docs even with no word overlap</text>
+      </g>
+
+      <rect x="0" y="282" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="295" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 12.3-B · Keyword search matches exact tokens. Semantic search understands meaning — "performance optimisation" and "make code faster" have different words but the same meaning, so semantic search surfaces both.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Semantic search vs keyword search on the same query. BM25 (keyword search) scores documents by exact word frequency — it finds documents containing "code" and "faster" but misses "performance optimisation", "profiling", and "algorithmic complexity" — all directly relevant, zero keyword overlap. Vector semantic search embeds both the query and documents into the same semantic space, finding documents by meaning rather than word match. The query "how do I make my code faster" and the document "reducing algorithmic complexity" share no words but are semantically close — the embedding model learned that these concepts are related from training data. In practice, hybrid search (BM25 + vector search, scores combined) outperforms either alone — BM25 excels at precise keyword matches (product names, IDs), semantic search handles meaning and synonymy.</div>
+</div>
+
+<!-- FIG 12.3-C  RAG vs Fine-tuning -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type E — Comparison</span>
+    <span class="fig-id">FIG 12.3-C</span>
+    <span class="fig-title">RAG vs Fine-tuning vs Prompting — When to Use Each Approach</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">KNOWLEDGE INJECTION STRATEGIES — CAPABILITY, COST, FRESHNESS TRADE-OFFS</text>
+
+      <rect x="40" y="40" width="1120" height="228" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="40" width="1120" height="26" fill="#2E4057" opacity="0.08"/>
+      <g font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.08em" text-anchor="middle">
+        <text x="170" y="57">APPROACH</text>
+        <text x="380" y="57">HOW IT WORKS</text>
+        <text x="600" y="57">KNOWLEDGE FRESHNESS</text>
+        <text x="790" y="57">COST</text>
+        <text x="1010" y="57">BEST FOR</text>
+      </g>
+      <g stroke="#E8E6DF" stroke-width="0.5">
+        <line x1="280" y1="40" x2="280" y2="268"/><line x1="480" y1="40" x2="480" y2="268"/>
+        <line x1="720" y1="40" x2="720" y2="268"/><line x1="860" y1="40" x2="860" y2="268"/>
+      </g>
+      <!-- Prompting row -->
+      <rect x="40" y="66" width="1120" height="50" fill="#F8F7F3"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <text x="170" y="95" fill="#888880">Prompting</text>
+        <text x="380" y="88" font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">Inject knowledge in system</text>
+        <text x="380" y="104" font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">prompt or few-shot examples</text>
+        <text x="600" y="95" fill="#728C69">Real-time (per call)</text>
+        <text x="790" y="88" fill="#728C69">$ low</text>
+        <text x="790" y="104" font-family="'Inter',sans-serif" font-size="9" fill="#888880">per-token cost only</text>
+        <text x="1010" y="88" font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">Quick experiments,</text>
+        <text x="1010" y="104" font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">small knowledge sets</text>
+      </g>
+      <!-- RAG row -->
+      <rect x="40" y="116" width="1120" height="50" fill="#FDFDFD"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <text x="170" y="145" fill="#728C69">RAG</text>
+        <text x="380" y="138" font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">Embed docs, retrieve at</text>
+        <text x="380" y="154" font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">runtime, inject context</text>
+        <text x="600" y="145" fill="#728C69">Live (update docs any time)</text>
+        <text x="790" y="138" fill="#8B6914">$$ medium</text>
+        <text x="790" y="154" font-family="'Inter',sans-serif" font-size="9" fill="#888880">embed + retrieve cost</text>
+        <text x="1010" y="138" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Large knowledge bases,</text>
+        <text x="1010" y="154" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">grounded responses, citations</text>
+      </g>
+      <!-- Fine-tuning row -->
+      <rect x="40" y="166" width="1120" height="50" fill="#F8F7F3"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <text x="170" y="195" fill="#C82A2A">Fine-tuning</text>
+        <text x="380" y="188" font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">Retrain model weights on</text>
+        <text x="380" y="204" font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">domain-specific data</text>
+        <text x="600" y="195" fill="#C82A2A">Static (until next retrain)</text>
+        <text x="790" y="188" fill="#C82A2A">$$$ high</text>
+        <text x="790" y="204" font-family="'Inter',sans-serif" font-size="9" fill="#888880">GPU hours to train</text>
+        <text x="1010" y="188" font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">Specific tone/style,</text>
+        <text x="1010" y="204" font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">domain vocabulary</text>
+      </g>
+      <!-- Combined row -->
+      <rect x="40" y="216" width="1120" height="52" fill="#2E4057" opacity="0.05"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <text x="170" y="245" fill="#2E4057">RAG + FT</text>
+        <text x="380" y="238" font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">Fine-tune for style/behaviour,</text>
+        <text x="380" y="254" font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">RAG for knowledge</text>
+        <text x="600" y="245" fill="#728C69">Live knowledge + fixed style</text>
+        <text x="790" y="245" fill="#C82A2A">$$$ high</text>
+        <text x="1010" y="238" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Production systems with</text>
+        <text x="1010" y="254" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">brand voice + live data</text>
+      </g>
+
+      <rect x="0" y="282" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="295" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 12.3-C · RAG is the default choice for knowledge-intensive tasks. Fine-tuning changes model behaviour/style. Prompting is cheapest. RAG + fine-tuning for high-stakes production systems.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Three strategies for incorporating domain knowledge into LLM responses. Prompting (in-context learning) injects knowledge directly into the prompt — free to update but limited by context window length and per-call cost. RAG retrieves relevant chunks at runtime from an external knowledge base — knowledge can be updated by changing the indexed documents, the LLM weights never change. Fine-tuning trains the model weights on domain data, baking knowledge into parameters — powerful for behavioural changes (tone, format, domain vocabulary) but expensive, requires retraining when knowledge updates, and can cause "forgetting" of general capabilities. The practical heuristic: start with RAG (much cheaper and updatable), add fine-tuning only if RAG cannot achieve the required behaviour or latency.</div>
+</div>
+
+</div>
+</body>
+</html>

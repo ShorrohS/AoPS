@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 12.5 — AI Ethics and Safety</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 12 — Advanced AI</div>
+  <div class="page-title">Module 12.5 — AI Ethics and Safety</div>
+  <div class="page-sub">3 figures · AI Risk Taxonomy · Bias Pipeline · Alignment and Constitutional AI</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 12.5-A  AI Risk Taxonomy -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 12.5-A</span>
+    <span class="fig-title">AI Risk Taxonomy — Capability, Misuse, Accident, Alignment</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <defs><linearGradient id="esBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="380" fill="url(#esBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">AI RISK TAXONOMY — FOUR CATEGORIES OF AI HARM AND CONCERN</text>
+
+      <!-- 4 risk quadrants -->
+      <!-- Misuse (top-left) -->
+      <rect x="40" y="44" width="520" height="280" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5" rx="1"/>
+      <rect x="40" y="44" width="520" height="30" fill="#C82A2A" opacity="0.12"/>
+      <text x="300" y="64" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#C82A2A">Misuse Risks</text>
+      <text x="300" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">AI used intentionally for harm</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="60" y="112">• Disinformation and deepfakes at scale</text>
+        <text x="60" y="132">• Cyberweapons and automated attacks</text>
+        <text x="60" y="152">• Manipulation and social engineering</text>
+        <text x="60" y="172">• Surveillance and authoritarian control</text>
+        <text x="60" y="192">• Fraud, impersonation, identity theft</text>
+        <line x1="56" y1="202" x2="544" y2="202" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="60" y="222" fill="#888880" font-size="9">Mitigation: access controls, content filtering,</text>
+        <text x="60" y="238" fill="#888880" font-size="9">usage policies, legal frameworks</text>
+        <text x="60" y="258" fill="#C82A2A" font-size="9">Key principle: dual-use technology cannot be</text>
+        <text x="60" y="274" fill="#C82A2A" font-size="9">made safe by technical means alone</text>
+        <text x="60" y="294" fill="#888880" font-size="9">Near-term concern · Already occurring</text>
+        <text x="60" y="310" fill="#888880" font-size="9">Example: LLM-generated spear-phishing emails</text>
+      </g>
+
+      <!-- Alignment risks (top-right) -->
+      <rect x="640" y="44" width="520" height="280" fill="#FDFDFD" stroke="#8B6914" stroke-width="1.5" rx="1"/>
+      <rect x="640" y="44" width="520" height="30" fill="#8B6914" opacity="0.1"/>
+      <text x="900" y="64" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#8B6914">Alignment Risks</text>
+      <text x="900" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">AI pursues wrong objectives</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="656" y="112">• Reward hacking (gaming the metric)</text>
+        <text x="656" y="132">• Specification gaming (literal compliance)</text>
+        <text x="656" y="152">• Power-seeking behaviour (instrumental)</text>
+        <text x="656" y="172">• Distribution shift (fails in new contexts)</text>
+        <text x="656" y="192">• Deceptive alignment (passes tests)</text>
+        <line x1="652" y1="202" x2="1144" y2="202" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="656" y="222" fill="#888880" font-size="9">Mitigation: RLHF, Constitutional AI, red-teaming,</text>
+        <text x="656" y="238" fill="#888880" font-size="9">interpretability research, oversight mechanisms</text>
+        <text x="656" y="258" fill="#8B6914" font-size="9">The alignment problem: specifying what we want</text>
+        <text x="656" y="274" fill="#8B6914" font-size="9">in a way a powerful optimiser can't subvert</text>
+        <text x="656" y="294" fill="#888880" font-size="9">Longer-term concern · Active research area</text>
+        <text x="656" y="310" fill="#888880" font-size="9">Anthropic, OpenAI, DeepMind alignment teams</text>
+      </g>
+
+      <!-- Bottom strip: short-term near-term harms -->
+      <rect x="40" y="340" width="1120" height="24" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="600" y="356" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Accident risks: unintended harm from deployment errors · Fairness/bias: disparate impact on protected groups · Privacy: training data memorisation</text>
+
+      <rect x="0" y="362" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="375" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 12.5-A · AI risk categories. Misuse: intentional harm by bad actors. Alignment: AI optimises wrong objective. Accident: deployment errors. Fairness: disparate impact. Each requires different mitigations.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">AI risk taxonomy. Misuse risks arise from deliberate bad actors using AI capabilities for harm — generating disinformation, cyberattacks, fraud. Technical filters help but cannot fully prevent misuse of general-purpose systems. Alignment risks are more subtle: a powerful optimiser given the wrong objective will pursue it in unexpected ways — the famous "paperclip maximiser" thought experiment illustrates how an AI optimising for a simple goal could behave catastrophically. Accident risks are unintended harms from deployment errors, edge cases, or distributional shift. Fairness and bias risks arise from unrepresentative training data producing models that perform worse for underrepresented groups. These categories are not exclusive — many real harms involve multiple risk types simultaneously.</div>
+</div>
+
+<!-- FIG 12.5-B  Bias Pipeline -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 12.5-B</span>
+    <span class="fig-title">Bias in Machine Learning — From Biased Data to Biased Decisions</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">ML BIAS PIPELINE — HOW SOCIETAL BIAS ENTERS AND AMPLIFIES THROUGH ML SYSTEMS</text>
+
+      <!-- Pipeline stages -->
+      <g>
+        <!-- Historical data -->
+        <rect x="30" y="60" width="180" height="70" fill="#C82A2A" opacity="0.65" rx="1"/>
+        <text x="120" y="84" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Historical Data</text>
+        <text x="120" y="102" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">reflects past</text>
+        <text x="120" y="118" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">discrimination</text>
+        <path d="M210 95 L236 95" stroke="#C82A2A" stroke-width="2" fill="none"/>
+        <path d="M232 91 L240 95 L232 99" fill="#C82A2A"/>
+
+        <!-- Data collection -->
+        <rect x="240" y="60" width="180" height="70" fill="#C82A2A" opacity="0.5" rx="1"/>
+        <text x="330" y="84" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Data Collection</text>
+        <text x="330" y="102" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">sampling bias</text>
+        <text x="330" y="118" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">underrepresentation</text>
+        <path d="M420 95 L446 95" stroke="#C82A2A" stroke-width="2" fill="none"/>
+        <path d="M442 91 L450 95 L442 99" fill="#C82A2A"/>
+
+        <!-- Labelling -->
+        <rect x="450" y="60" width="180" height="70" fill="#8B6914" opacity="0.65" rx="1"/>
+        <text x="540" y="84" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Labelling</text>
+        <text x="540" y="102" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">human annotator</text>
+        <text x="540" y="118" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">subjectivity</text>
+        <path d="M630 95 L656 95" stroke="#8B6914" stroke-width="2" fill="none"/>
+        <path d="M652 91 L660 95 L652 99" fill="#8B6914"/>
+
+        <!-- Model training -->
+        <rect x="660" y="60" width="180" height="70" fill="#8B6914" opacity="0.5" rx="1"/>
+        <text x="750" y="84" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Training</text>
+        <text x="750" y="102" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">optimise for avg</text>
+        <text x="750" y="118" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">ignores minorities</text>
+        <path d="M840 95 L866 95" stroke="#8B6914" stroke-width="2" fill="none"/>
+        <path d="M862 91 L870 95 L862 99" fill="#8B6914"/>
+
+        <!-- Deployment -->
+        <rect x="870" y="60" width="180" height="70" fill="#2E4057" opacity="0.65" rx="1"/>
+        <text x="960" y="84" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Deployment</text>
+        <text x="960" y="102" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">automated decisions</text>
+        <text x="960" y="118" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">hiring, lending, bail</text>
+        <path d="M1050 95 L1076 95" stroke="#2E4057" stroke-width="2" fill="none"/>
+        <path d="M1072 91 L1080 95 L1072 99" fill="#2E4057"/>
+
+        <!-- Real-world impact -->
+        <rect x="1080" y="60" width="100" height="70" fill="#C82A2A" opacity="0.8" rx="1"/>
+        <text x="1130" y="84" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="11" fill="#FDFDFD">Harm</text>
+        <text x="1130" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">disparate impact</text>
+        <text x="1130" y="116" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">on protected groups</text>
+      </g>
+
+      <!-- Amplification arrow -->
+      <path d="M30 148 Q600 180 1180 148" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="5,3"/>
+      <path d="M1176 144 L1184 148 L1176 152" fill="#C82A2A"/>
+      <text x="600" y="168" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">Feedback loop: biased decisions → biased outcomes → biased future training data</text>
+
+      <!-- Mitigations -->
+      <rect x="30" y="196" width="1140" height="80" fill="#FDFDFD" stroke="#728C69" stroke-width="0.5"/>
+      <rect x="30" y="196" width="4" height="80" fill="#728C69"/>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="48" y="216" font-weight="500" fill="#728C69">Mitigation approaches</text>
+        <text x="48" y="234">Data: audit for representation gaps · Collect more data from underrepresented groups · Careful sampling strategies</text>
+        <text x="48" y="252">Model: fairness constraints during training · Equalised odds / demographic parity metrics · Adversarial debiasing</text>
+        <text x="48" y="270" fill="#888880" font-size="9">No universal definition of "fairness" — different criteria are mathematically incompatible (Impossibility theorem). Requires stakeholder input.</text>
+      </g>
+
+      <rect x="0" y="284" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="296" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 12.5-B · Bias enters at every stage: historical data, collection, labelling, training, deployment. Automated decisions amplify and perpetuate existing societal inequalities. Auditing and fairness constraints are essential.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">ML bias pipeline — how societal inequalities enter, persist, and amplify through machine learning systems. Biased historical data (e.g., hiring records reflecting past discrimination) is collected non-uniformly (underrepresenting minorities), labelled by annotators with subconscious biases, used to train models that optimise average accuracy (performing worst on underrepresented groups), and deployed in high-stakes automated decision systems. A feedback loop compounds the problem: biased hiring decisions produce biased future employment records, which become biased future training data. Real cases: COMPAS recidivism algorithm (racially disparate predictions), Amazon's hiring tool (discriminated against women), facial recognition (higher error rates for darker skin). Auditing for disparate impact and applying fairness constraints are necessary but not sufficient — there is no single mathematical definition of "fairness" that satisfies all intuitive requirements simultaneously.</div>
+</div>
+
+<!-- FIG 12.5-C  Constitutional AI and Alignment -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 12.5-C</span>
+    <span class="fig-title">Constitutional AI — RLHF and Self-Critique for Safer LLMs</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">ALIGNMENT TECHNIQUES — RLHF AND CONSTITUTIONAL AI</text>
+
+      <!-- RLHF (left) -->
+      <rect x="40" y="44" width="520" height="224" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5" rx="1"/>
+      <rect x="40" y="44" width="520" height="26" fill="#2E4057" opacity="0.12"/>
+      <text x="300" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">RLHF (Reinforcement Learning from Human Feedback)</text>
+
+      <!-- RLHF steps -->
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="60" y="96" fill="#2E4057" font-weight="500">① Supervised fine-tuning</text>
+        <text x="60" y="114">Human demonstrate high-quality responses</text>
+        <line x1="56" y1="122" x2="544" y2="122" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="60" y="142" fill="#2E4057" font-weight="500">② Reward model training</text>
+        <text x="60" y="160">Human raters rank model outputs A vs B</text>
+        <text x="60" y="178">Reward model learns human preferences</text>
+        <line x1="56" y1="186" x2="544" y2="186" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="60" y="206" fill="#2E4057" font-weight="500">③ PPO optimisation</text>
+        <text x="60" y="224">RL optimises policy to maximise reward</text>
+        <text x="60" y="242" fill="#888880" font-size="9">KL penalty prevents reward hacking</text>
+        <text x="60" y="256" fill="#888880" font-size="9">InstructGPT → GPT-4 · Claude · Gemini</text>
+      </g>
+
+      <!-- Constitutional AI (right) -->
+      <rect x="640" y="44" width="520" height="224" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5" rx="1"/>
+      <rect x="640" y="44" width="520" height="26" fill="#728C69" opacity="0.12"/>
+      <text x="900" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">Constitutional AI (Anthropic, 2022)</text>
+
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="656" y="96" fill="#728C69" font-weight="500">① Define a "constitution"</text>
+        <text x="656" y="114">List of principles: "be helpful, harmless,</text>
+        <text x="656" y="132">honest" — explicitly stated rules</text>
+        <line x1="652" y1="140" x2="1144" y2="140" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="656" y="160" fill="#728C69" font-weight="500">② Supervised self-critique</text>
+        <text x="656" y="178">Model critiques own outputs against constitution</text>
+        <text x="656" y="196">Revises to be more compliant</text>
+        <line x1="652" y1="204" x2="1144" y2="204" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="656" y="224" fill="#728C69" font-weight="500">③ RLAIF (AI feedback)</text>
+        <text x="656" y="242">AI model rates responses vs constitution</text>
+        <text x="656" y="256" fill="#888880" font-size="9">Scales without human labellers</text>
+        <text x="656" y="268" fill="#888880" font-size="9">Used in Claude training (Anthropic)</text>
+      </g>
+
+      <rect x="0" y="282" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="295" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 12.5-C · RLHF: human preferences train a reward model, RL optimises policy. Constitutional AI: explicit principles + self-critique + AI feedback. Both aim to make LLMs helpful, harmless, and honest.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Two major alignment techniques. RLHF (Reinforcement Learning from Human Feedback) was the key innovation that transformed GPT-3 (capable but unreliable) into InstructGPT and eventually GPT-4. Human raters compare model outputs, a reward model learns their preferences, and Proximal Policy Optimisation (PPO) adjusts the model to generate higher-reward responses. A KL-divergence penalty prevents the model from deviating too far from its original capabilities. Constitutional AI (Anthropic) addresses RLHF's scaling bottleneck — human labelling is expensive. Instead: write explicit principles, have the model critique its own outputs against those principles, then use an AI model as the "human rater" (RLAIF). This enables alignment training to scale without proportional human annotation cost. Both approaches target the core alignment challenge: encoding human values into an optimisation objective without creating unexpected loopholes.</div>
+</div>
+
+</div>
+</body>
+</html>

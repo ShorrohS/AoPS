@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level 8 — Networks & Protocols Figure Set</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:900px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 8 — Networks & Protocols</div>
+  <div class="page-title">Level 8 — Networks & Protocols Figure Set</div>
+  <div class="page-sub">3 figures · OSI Layer Stack · DNS Resolution · TCP vs UDP + Packet Structure</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 8-A  OSI Layer Stack -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 8-A</span>
+    <span class="fig-title">Network Layer Stack — From Physical Bits to Application Data</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 440" xmlns="http://www.w3.org/2000/svg" style="height:390px">
+      <defs>
+        <linearGradient id="netBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="440" fill="url(#netBg)"/>
+
+      <!-- SENDER stack (left) -->
+      <text x="240" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">SENDER (your browser)</text>
+      <!-- RECEIVER stack (right) -->
+      <text x="940" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">RECEIVER (web server)</text>
+
+      <!-- Layer boxes - sender -->
+      <g>
+        <!-- Layer 7: Application -->
+        <rect x="60" y="32" width="360" height="44" rx="1" fill="#2E4057" opacity="0.8"/>
+        <text x="240" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#FDFDFD" letter-spacing="0.08em">7 APPLICATION</text>
+        <text x="240" y="66" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.65)">HTTP, DNS, FTP, SMTP</text>
+        <!-- 6 -->
+        <rect x="60" y="80" width="360" height="36" rx="1" fill="#2E4057" opacity="0.6"/>
+        <text x="240" y="98" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">6 PRESENTATION  <tspan font-family="'JetBrains Mono'" font-size="9" opacity="0.7">TLS, encoding</tspan></text>
+        <!-- 5 -->
+        <rect x="60" y="120" width="360" height="36" rx="1" fill="#2E4057" opacity="0.5"/>
+        <text x="240" y="138" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">5 SESSION  <tspan font-family="'JetBrains Mono'" font-size="9" opacity="0.7">WebSockets, RPC</tspan></text>
+        <!-- 4 -->
+        <rect x="60" y="160" width="360" height="44" rx="1" fill="#C82A2A" opacity="0.75"/>
+        <text x="240" y="180" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#FDFDFD">4 TRANSPORT</text>
+        <text x="240" y="194" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.7)">TCP, UDP — port numbers</text>
+        <!-- 3 -->
+        <rect x="60" y="208" width="360" height="44" rx="1" fill="#8B6914" opacity="0.75"/>
+        <text x="240" y="228" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#FDFDFD">3 NETWORK</text>
+        <text x="240" y="242" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.7)">IP — routing between networks</text>
+        <!-- 2 -->
+        <rect x="60" y="256" width="360" height="36" rx="1" fill="#728C69" opacity="0.75"/>
+        <text x="240" y="274" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">2 DATA LINK  <tspan font-family="'JetBrains Mono'" font-size="9">Ethernet, Wi-Fi — MAC</tspan></text>
+        <!-- 1 -->
+        <rect x="60" y="296" width="360" height="36" rx="1" fill="#728C69" opacity="0.5"/>
+        <text x="240" y="314" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">1 PHYSICAL  <tspan font-family="'JetBrains Mono'" font-size="9">bits on wire/radio</tspan></text>
+      </g>
+
+      <!-- Encapsulation arrows (data goes down on send) -->
+      <g fill="#888880">
+        <polygon points="235,336 245,336 240,346"/><text x="240" y="360" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">SEND ↓</text>
+        <text x="240" y="374" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">each layer adds header</text>
+      </g>
+
+      <!-- Physical medium (centre) -->
+      <rect x="480" y="296" width="240" height="36" rx="1" fill="#2C2C2C" opacity="0.7"/>
+      <text x="600" y="318" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#F4EFE6">PHYSICAL MEDIUM</text>
+      <text x="600" y="332" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="rgba(244,239,230,0.6)">bits travel across network</text>
+
+      <!-- RECEIVER stack (right, mirrored) -->
+      <g>
+        <rect x="780" y="32" width="360" height="44" rx="1" fill="#2E4057" opacity="0.8"/>
+        <text x="960" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#FDFDFD" letter-spacing="0.08em">7 APPLICATION</text>
+        <text x="960" y="66" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.65)">HTTP request received</text>
+        <rect x="780" y="80" width="360" height="36" rx="1" fill="#2E4057" opacity="0.6"/>
+        <text x="960" y="98" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">6 PRESENTATION</text>
+        <rect x="780" y="120" width="360" height="36" rx="1" fill="#2E4057" opacity="0.5"/>
+        <text x="960" y="138" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">5 SESSION</text>
+        <rect x="780" y="160" width="360" height="44" rx="1" fill="#C82A2A" opacity="0.75"/>
+        <text x="960" y="180" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#FDFDFD">4 TRANSPORT (TCP)</text>
+        <text x="960" y="194" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.7)">reassemble segments</text>
+        <rect x="780" y="208" width="360" height="44" rx="1" fill="#8B6914" opacity="0.75"/>
+        <text x="960" y="228" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#FDFDFD">3 NETWORK (IP)</text>
+        <text x="960" y="242" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(255,255,255,0.7)">check destination IP</text>
+        <rect x="780" y="256" width="360" height="36" rx="1" fill="#728C69" opacity="0.75"/>
+        <text x="960" y="278" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">2 DATA LINK  <tspan font-family="'JetBrains Mono'" font-size="9">check MAC addr</tspan></text>
+        <rect x="780" y="296" width="360" height="36" rx="1" fill="#728C69" opacity="0.5"/>
+        <text x="960" y="318" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#FDFDFD">1 PHYSICAL</text>
+      </g>
+
+      <!-- Receive arrows (data goes up on receive) -->
+      <g fill="#888880">
+        <polygon points="955,336 965,346 960,336"/><polygon points="955,346 965,346 960,336"/>
+        <text x="960" y="360" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">RECV ↑</text>
+        <text x="960" y="374" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">each layer strips header</text>
+      </g>
+
+      <!-- Horizontal encapsulation arrow labels -->
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880" text-anchor="middle">
+        <text x="600" y="55">HTTP message</text>
+        <text x="600" y="99">+ TLS header</text>
+        <text x="600" y="138">+ session data</text>
+        <text x="600" y="185">+ TCP header</text>
+        <text x="600" y="228">+ IP header</text>
+        <text x="600" y="275">+ Ethernet frame</text>
+      </g>
+
+      <rect x="0" y="410" width="1200" height="30" fill="rgba(44,64,87,0.06)"/>
+      <text x="600" y="430" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Fig 8-A · Network layer stack. Each layer adds its own header on send (encapsulation) and strips it on receive (decapsulation). Data travels down the sender's stack, across the physical medium, and up the receiver's stack.</text>
+      <text x="1140" y="430" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Level 8</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The network layer stack. Each layer adds its header when sending (encapsulation) and removes it when receiving (decapsulation). Application layer: HTTP request "GET / HTTP/1.1". Transport layer (TCP): adds source/destination port numbers, sequence numbers, and reliability mechanisms. Network layer (IP): adds source/destination IP addresses for routing across networks. Data Link (Ethernet): adds MAC addresses for delivery on the local network. Physical: actual electrical or radio signals. A web request traverses all seven layers twice — down on the client, up on the server.</div>
+</div>
+
+<!-- FIG 8-B  DNS Resolution -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 8-B</span>
+    <span class="fig-title">DNS Resolution — How a Hostname Becomes an IP Address</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+
+      <!-- Header -->
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Resolving "www.example.com" → 93.184.216.34</text>
+
+      <!-- Actors -->
+      <!-- Browser -->
+      <rect x="40" y="52" width="120" height="60" rx="1" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="100" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Browser</text>
+      <text x="100" y="96" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">checks cache</text>
+
+      <!-- Resolver -->
+      <rect x="220" y="52" width="160" height="60" rx="1" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+      <text x="300" y="78" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">Local Resolver</text>
+      <text x="300" y="92" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">OS / router</text>
+      <text x="300" y="104" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">8.8.8.8 (Google)</text>
+
+      <!-- Root DNS -->
+      <rect x="450" y="52" width="160" height="60" rx="1" fill="#FDFDFD" stroke="#8B6914" stroke-width="1"/>
+      <text x="530" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914">Root DNS</text>
+      <text x="530" y="98" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">13 root servers</text>
+
+      <!-- TLD DNS -->
+      <rect x="680" y="52" width="160" height="60" rx="1" fill="#FDFDFD" stroke="#728C69" stroke-width="1"/>
+      <text x="760" y="78" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">TLD Nameserver</text>
+      <text x="760" y="92" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">.com nameserver</text>
+
+      <!-- Auth DNS -->
+      <rect x="910" y="52" width="200" height="60" rx="1" fill="#FDFDFD" stroke="#2E4057" stroke-width="1"/>
+      <text x="1010" y="78" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">Authoritative NS</text>
+      <text x="1010" y="92" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">example.com NS</text>
+
+      <!-- Arrows numbered -->
+      <g font-family="'Inter',sans-serif" font-size="8" fill="#888880">
+        <!-- 1: browser → resolver -->
+        <path d="M162 72 L218 72" stroke="#2C2C2C" stroke-width="1.5" fill="none" marker-end="url(#dns_arr)"/>
+        <text x="190" y="66">① query</text>
+        <!-- 2: resolver → root -->
+        <path d="M382 72 L448 72" stroke="#8B6914" stroke-width="1.5" fill="none" marker-end="url(#dns_arr)"/>
+        <text x="415" y="66">② who is .com?</text>
+        <!-- Root replies -->
+        <path d="M448 88 L382 88" stroke="#8B6914" stroke-width="1" fill="none" stroke-dasharray="3,2" marker-end="url(#dns_arr)"/>
+        <text x="415" y="102">③ .com NS addr</text>
+        <!-- 4: resolver → TLD -->
+        <path d="M612 72 L678 72" stroke="#728C69" stroke-width="1.5" fill="none" marker-end="url(#dns_arr)"/>
+        <text x="645" y="66">④ who is example?</text>
+        <path d="M678 88 L612 88" stroke="#728C69" stroke-width="1" fill="none" stroke-dasharray="3,2" marker-end="url(#dns_arr)"/>
+        <text x="645" y="102">⑤ auth NS addr</text>
+        <!-- 6: resolver → auth -->
+        <path d="M842 72 L908 72" stroke="#2E4057" stroke-width="1.5" fill="none" marker-end="url(#dns_arr)"/>
+        <text x="875" y="66">⑥ IP for www?</text>
+        <path d="M908 88 L842 88" stroke="#2E4057" stroke-width="1" fill="none" stroke-dasharray="3,2" marker-end="url(#dns_arr)"/>
+        <text x="875" y="102">⑦ 93.184.216.34</text>
+        <!-- 8: resolver → browser -->
+        <path d="M218 88 L162 88" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="3,2" marker-end="url(#dns_arr)"/>
+        <text x="190" y="102">⑧ IP addr</text>
+        <defs>
+          <marker id="dns_arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+            <path d="M0,0 L7,3.5 L0,7 Z" fill="#2C2C2C"/>
+          </marker>
+        </defs>
+      </g>
+
+      <!-- Result box -->
+      <rect x="40" y="148" width="1120" height="30" rx="1" fill="#728C69" opacity="0.12"/>
+      <text x="600" y="167" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#728C69">www.example.com → 93.184.216.34  (cached for TTL seconds)</text>
+
+      <!-- DNS Record types -->
+      <rect x="40" y="194" width="1120" height="70" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#3A3A3A">
+        <text x="60" y="218">A record:      hostname → IPv4 address</text>
+        <text x="60" y="236">AAAA record:   hostname → IPv6 address</text>
+        <text x="60" y="254">CNAME record:  alias → canonical hostname</text>
+        <text x="430" y="218">MX record:  domain → mail server</text>
+        <text x="430" y="236">TXT record: arbitrary text (SPF, DKIM)</text>
+        <text x="430" y="254">NS record:  domain → nameserver</text>
+        <text x="800" y="236" fill="#888880">TTL = Time To Live (seconds cached)</text>
+      </g>
+
+      <rect x="0" y="278" width="1200" height="22" fill="rgba(44,64,87,0.04)"/>
+      <text x="1140" y="293" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · L8</text>
+    </svg>
+  </div>
+  <div class="fig-caption">DNS resolution is a hierarchical lookup. The browser checks its local cache (steps are skipped if cached). The OS resolver queries its configured DNS server (e.g. 8.8.8.8). The resolver works up the hierarchy: asks the Root nameserver which server handles .com, asks the .com TLD server which server handles example.com, then asks the authoritative nameserver for the A record. The IP address is returned and cached for the TTL duration. Typical DNS resolution takes 20–100ms on the first request; sub-millisecond from cache. This 8-step dance happens for every new hostname — which is why DNS caching is critical for web performance.</div>
+</div>
+
+</div>
+</body>
+</html>

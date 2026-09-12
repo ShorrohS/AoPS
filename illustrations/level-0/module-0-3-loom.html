@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 0.3 Illustrations — The Loom That Taught Computers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-paper:#F4F3EF; --bg-washi:#FDFDFD; --bg-warm:#EEECE6; --bg-canvas:#F8F7F3;
+    --text-sumi:#1C1C1C; --text-body:#3A3A3A; --text-muted:#888880; --text-ghost:#BBBBB5;
+    --accent-red:#C82A2A; --accent-indigo:#1C2D42; --accent-gold:#8B6914;
+    --border-light:#D8D6CE; --border-paper:#E8E6DF;
+    --zen-sand:#F4EFE6; --zen-ink:#2C2C2C; --zen-stone:#6E6E6E;
+    --zen-bamboo:#728C69; --zen-indigo:#2E4057;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg-paper); color: var(--text-sumi); font-family: 'Inter', sans-serif; font-weight: 300; }
+  .page-header { padding: 40px 60px 32px; border-bottom: 1px solid var(--border-light); background: var(--bg-washi); }
+  .breadcrumb { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-muted); margin-bottom: 10px; }
+  .breadcrumb a { color: var(--accent-indigo); text-decoration: none; }
+  .page-title { font-family: 'Noto Serif JP', serif; font-size: 28px; font-weight: 300; color: var(--text-sumi); letter-spacing: -0.01em; margin-bottom: 6px; }
+  .page-sub { font-size: 13px; color: var(--text-muted); }
+  .figures-wrap { padding: 52px 60px 80px; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 80px; }
+  .figure-block {}
+  .figure-label { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+  .fig-type { font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.16em; padding: 4px 8px; border: 1px solid; }
+  .fig-type.hero  { border-color: var(--accent-indigo); color: var(--accent-indigo); background: rgba(44,64,87,0.04); }
+  .fig-type.diag  { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(139,105,20,0.04); }
+  .fig-type.hist  { border-color: var(--zen-bamboo); color: var(--zen-bamboo); background: rgba(114,140,105,0.04); }
+  .fig-type.sim   { border-color: var(--accent-red); color: var(--accent-red); background: rgba(200,42,42,0.04); }
+  .fig-id { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-ghost); }
+  .fig-title { font-size: 15px; font-weight: 500; color: var(--text-sumi); }
+  .fig-caption { font-size: 12px; color: var(--text-muted); margin-top: 10px; line-height: 1.6; max-width: 800px; border-left: 2px solid var(--border-paper); padding-left: 14px; }
+  .fig-frame { background: var(--zen-sand); border: 1px solid var(--border-paper); overflow: hidden; }
+  .fig-frame svg { display: block; width: 100%; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 0 — Before Computers</div>
+  <div class="page-title">Module 0.3 — The Loom That Taught Computers</div>
+  <div class="page-sub">5 figures · Chapter Hero · Loom Anatomy · Punch Card Encoding · Stored Instructions Concept · Simulation Figure</div>
+</div>
+
+<div class="figures-wrap">
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIGURE 0.3-A  Chapter Hero — The Jacquard Loom
+════════════════════════════════════════════════════════════ -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 0.3-A</span>
+    <span class="fig-title">The Jacquard Loom — Instructions Stored in Holes</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 580" xmlns="http://www.w3.org/2000/svg" style="height:500px">
+      <defs>
+        <linearGradient id="loomBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EDE8DF"/>
+          <stop offset="100%" stop-color="#E4DDD4"/>
+        </linearGradient>
+        <linearGradient id="woodGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#C8B898"/>
+          <stop offset="50%" stop-color="#B8A888"/>
+          <stop offset="100%" stop-color="#C8B898"/>
+        </linearGradient>
+        <linearGradient id="fabricGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#D8D4CC"/>
+          <stop offset="100%" stop-color="#C8C4BC"/>
+        </linearGradient>
+        <pattern id="warpThreads" x="0" y="0" width="12" height="1" patternUnits="userSpaceOnUse">
+          <line x1="6" y1="0" x2="6" y2="1" stroke="#A8A4A0" stroke-width="0.8"/>
+        </pattern>
+        <pattern id="weftWeave" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+          <rect width="12" height="12" fill="#2E4057" opacity="0.7"/>
+          <rect x="12" y="12" width="12" height="12" fill="#2E4057" opacity="0.7"/>
+          <rect x="12" y="0" width="12" height="12" fill="#728C69" opacity="0.6"/>
+          <rect x="0" y="12" width="12" height="12" fill="#728C69" opacity="0.6"/>
+        </pattern>
+        <filter id="woodShadow">
+          <feDropShadow dx="3" dy="4" stdDeviation="5" flood-color="#2C2C2C" flood-opacity="0.18"/>
+        </filter>
+      </defs>
+
+      <!-- Background -->
+      <rect width="1200" height="580" fill="url(#loomBg)"/>
+      <!-- Floor texture -->
+      <rect x="0" y="460" width="1200" height="120" fill="#D8D2C8" opacity="0.4"/>
+      <line x1="0" y1="460" x2="1200" y2="460" stroke="#C8C4BC" stroke-width="1"/>
+
+      <!-- ══ LOOM FRAME (left side) ══ -->
+      <!-- Main vertical posts -->
+      <rect x="80" y="60" width="28" height="400" rx="2" fill="url(#woodGrad)" stroke="#A89878" stroke-width="1" filter="url(#woodShadow)"/>
+      <rect x="420" y="60" width="28" height="400" rx="2" fill="url(#woodGrad)" stroke="#A89878" stroke-width="1"/>
+      <!-- Top cross beam -->
+      <rect x="76" y="56" width="376" height="22" rx="2" fill="url(#woodGrad)" stroke="#A89878" stroke-width="1" filter="url(#woodShadow)"/>
+      <!-- Bottom cross beam -->
+      <rect x="76" y="436" width="376" height="22" rx="2" fill="url(#woodGrad)" stroke="#A89878" stroke-width="1"/>
+      <!-- Mid beam -->
+      <rect x="76" y="250" width="376" height="14" rx="1" fill="url(#woodGrad)" stroke="#A89878" stroke-width="1"/>
+
+      <!-- ══ WARP THREADS ══ -->
+      <rect x="108" y="80" width="312" height="350" fill="url(#warpThreads)" opacity="0.8"/>
+
+      <!-- ══ WOVEN FABRIC section at bottom ══ -->
+      <rect x="108" y="320" width="312" height="110" fill="url(#weftWeave)" opacity="0.85"/>
+      <!-- Fabric border -->
+      <rect x="108" y="320" width="312" height="110" fill="none" stroke="#A8A4A0" stroke-width="0.5"/>
+
+      <!-- ══ HEDDLES (horizontal bars controlling warp) ══ -->
+      <g fill="none" stroke="#6E6A66" stroke-width="1.5">
+        <line x1="108" y1="190" x2="420" y2="190"/>
+        <line x1="108" y1="210" x2="420" y2="210"/>
+        <line x1="108" y1="230" x2="420" y2="230"/>
+        <!-- Heddle eyelets -->
+        <g stroke-width="0.8" opacity="0.6">
+          <circle cx="132" cy="190" r="4"/><circle cx="156" cy="190" r="4"/><circle cx="180" cy="190" r="4"/>
+          <circle cx="204" cy="190" r="4"/><circle cx="228" cy="190" r="4"/><circle cx="252" cy="190" r="4"/>
+          <circle cx="276" cy="190" r="4"/><circle cx="300" cy="190" r="4"/><circle cx="324" cy="190" r="4"/>
+          <circle cx="348" cy="190" r="4"/><circle cx="372" cy="190" r="4"/><circle cx="396" cy="190" r="4"/>
+        </g>
+        <!-- Heddle lift hooks (some raised, some lowered = pattern control) -->
+        <g stroke="#2E4057" stroke-width="1.2">
+          <!-- Raised heddles (hole in card = thread lifted = weave under) -->
+          <line x1="132" y1="160" x2="132" y2="190"/><line x1="180" y1="148" x2="180" y2="190"/>
+          <line x1="252" y1="155" x2="252" y2="190"/><line x1="300" y1="148" x2="300" y2="190"/>
+          <line x1="372" y1="160" x2="372" y2="190"/>
+          <!-- Lowered heddles -->
+          <line x1="156" y1="200" x2="156" y2="230"/><line x1="204" y1="200" x2="204" y2="230"/>
+          <line x1="228" y1="200" x2="228" y2="230"/><line x1="276" y1="200" x2="276" y2="230"/>
+          <line x1="324" y1="200" x2="324" y2="230"/><line x1="348" y1="200" x2="348" y2="230"/>
+          <line x1="396" y1="200" x2="396" y2="230"/>
+        </g>
+      </g>
+
+      <!-- ══ JACQUARD HEAD (top attachment box) ══ -->
+      <rect x="85" y="14" width="358" height="60" rx="2" fill="#C8B898" stroke="#A89878" stroke-width="1.5" filter="url(#woodShadow)"/>
+      <!-- Card reader needles coming through head -->
+      <g stroke="#6E6A66" stroke-width="1">
+        <line x1="120" y1="14" x2="120" y2="36"/>
+        <line x1="144" y1="14" x2="144" y2="36"/>
+        <line x1="168" y1="14" x2="168" y2="36"/>
+        <line x1="192" y1="14" x2="192" y2="36"/>
+        <line x1="216" y1="14" x2="216" y2="36"/>
+        <line x1="240" y1="14" x2="240" y2="36"/>
+        <line x1="264" y1="14" x2="264" y2="36"/>
+        <line x1="288" y1="14" x2="288" y2="36"/>
+        <line x1="312" y1="14" x2="312" y2="36"/>
+        <line x1="336" y1="14" x2="336" y2="36"/>
+        <line x1="360" y1="14" x2="360" y2="36"/>
+        <line x1="384" y1="14" x2="384" y2="36"/>
+        <line x1="408" y1="14" x2="408" y2="36"/>
+      </g>
+      <text x="264" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8C7858" letter-spacing="0.1em">JACQUARD HEAD — 1804</text>
+
+      <!-- ══ PUNCH CARD CHAIN (center-right, hanging from top) ══ -->
+      <!-- Card chain loop -->
+      <g>
+        <!-- Individual cards -->
+        <!-- Card 1 (active, at reader) -->
+        <rect x="500" y="30" width="140" height="90" rx="1" fill="#FDFDFD" stroke="#2C2C2C" stroke-width="1.5"/>
+        <polygon points="500,30 516,30 500,44" fill="#F4EFE6"/>
+        <!-- Holes in card 1 -->
+        <g fill="#1A1A1A">
+          <rect x="515" y="44" width="10" height="14" rx="1"/>
+          <rect x="533" y="44" width="10" height="14" rx="1"/>
+          <!-- blank -->
+          <rect x="569" y="44" width="10" height="14" rx="1"/>
+          <rect x="587" y="44" width="10" height="14" rx="1"/>
+          <!-- blank -->
+          <rect x="515" y="68" width="10" height="14" rx="1"/>
+          <!-- blank -->
+          <rect x="551" y="68" width="10" height="14" rx="1"/>
+          <rect x="569" y="68" width="10" height="14" rx="1"/>
+          <!-- blank -->
+          <rect x="605" y="68" width="10" height="14" rx="1"/>
+          <rect x="623" y="68" width="10" height="14" rx="1"/>
+        </g>
+        <!-- Active card highlight -->
+        <rect x="500" y="30" width="140" height="90" fill="none" stroke="#C82A2A" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="640" y="78" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" font-style="italic">active card</text>
+
+        <!-- Card 2 below -->
+        <rect x="504" y="126" width="136" height="80" rx="1" fill="#F8F7F3" stroke="#C8C4BC" stroke-width="1"/>
+        <polygon points="504,126 518,126 504,138" fill="#F4EFE6"/>
+        <g fill="#2C2C2C" opacity="0.6">
+          <rect x="518" y="138" width="9" height="12" rx="1"/>
+          <rect x="548" y="138" width="9" height="12" rx="1"/>
+          <rect x="578" y="138" width="9" height="12" rx="1"/>
+          <rect x="518" y="158" width="9" height="12" rx="1"/>
+          <rect x="533" y="158" width="9" height="12" rx="1"/>
+          <rect x="578" y="158" width="9" height="12" rx="1"/>
+          <rect x="608" y="158" width="9" height="12" rx="1"/>
+        </g>
+
+        <!-- Card 3 -->
+        <rect x="508" y="212" width="132" height="76" rx="1" fill="#F4F3F0" stroke="#C8C4BC" stroke-width="0.8"/>
+        <polygon points="508,212 520,212 508,222" fill="#F4EFE6"/>
+        <g fill="#2C2C2C" opacity="0.4">
+          <rect x="522" y="222" width="8" height="11" rx="1"/>
+          <rect x="552" y="222" width="8" height="11" rx="1"/>
+          <rect x="582" y="222" width="8" height="11" rx="1"/>
+          <rect x="522" y="240" width="8" height="11" rx="1"/>
+          <rect x="567" y="240" width="8" height="11" rx="1"/>
+        </g>
+
+        <!-- Connecting loops between cards -->
+        <g stroke="#A89878" stroke-width="2" fill="none">
+          <path d="M510 120 Q490 122 492 132 Q494 142 512 142"/>
+          <path d="M510 206 Q490 208 492 218 Q494 228 516 228"/>
+        </g>
+      </g>
+
+      <!-- ══ BINARY ANNOTATION PANEL (right) ══ -->
+      <rect x="700" y="40" width="420" height="380" rx="1" fill="rgba(44,64,87,0.04)" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="700" y="40" width="420" height="30" fill="#2E4057" opacity="0.08"/>
+      <text x="910" y="61" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">HOLE = INSTRUCTION</text>
+
+      <!-- Large punch card diagram with binary annotation -->
+      <rect x="724" y="86" width="372" height="220" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <polygon points="724,86 748,86 724,108" fill="#F4EFE6"/>
+
+      <!-- Card columns with annotations -->
+      <g font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle">
+        <!-- Col 1 -->
+        <text x="752" y="82" fill="#888880">C1</text>
+        <rect x="740" y="110" width="18" height="26" rx="1" fill="#2C2C2C"/>
+        <text x="749" y="150" fill="#2E4057" font-weight="500">●</text>
+        <text x="749" y="167" fill="#2E4057" font-size="9">HOLE</text>
+        <text x="749" y="180" fill="#2E4057" font-size="9">= 1</text>
+        <rect x="740" y="190" width="18" height="26" rx="1" fill="#2C2C2C"/>
+        <rect x="740" y="232" width="18" height="26" rx="1" fill="none" stroke="#D8D6CE" stroke-width="1"/>
+
+        <!-- Col 2 -->
+        <text x="780" y="82" fill="#888880">C2</text>
+        <rect x="768" y="110" width="18" height="26" rx="1" fill="none" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="777" y="150" fill="#888880" font-size="9">○</text>
+        <text x="777" y="167" fill="#888880" font-size="9">BLANK</text>
+        <text x="777" y="180" fill="#888880" font-size="9">= 0</text>
+        <rect x="768" y="190" width="18" height="26" rx="1" fill="#2C2C2C"/>
+        <rect x="768" y="232" width="18" height="26" rx="1" fill="#2C2C2C"/>
+
+        <!-- Col 3 -->
+        <text x="808" y="82" fill="#888880">C3</text>
+        <rect x="796" y="110" width="18" height="26" rx="1" fill="#2C2C2C"/>
+        <rect x="796" y="153" width="18" height="26" rx="1" fill="none" stroke="#D8D6CE" stroke-width="1"/>
+        <rect x="796" y="190" width="18" height="26" rx="1" fill="none" stroke="#D8D6CE" stroke-width="1"/>
+        <rect x="796" y="232" width="18" height="26" rx="1" fill="#2C2C2C"/>
+
+        <!-- Col 4 -->
+        <text x="836" y="82" fill="#888880">C4</text>
+        <rect x="824" y="110" width="18" height="26" rx="1" fill="none" stroke="#D8D6CE" stroke-width="1"/>
+        <rect x="824" y="153" width="18" height="26" rx="1" fill="#2C2C2C"/>
+        <rect x="824" y="190" width="18" height="26" rx="1" fill="#2C2C2C"/>
+        <rect x="824" y="232" width="18" height="26" rx="1" fill="none" stroke="#D8D6CE" stroke-width="1"/>
+
+        <!-- Col 5 -->
+        <text x="864" y="82" fill="#888880">C5</text>
+        <rect x="852" y="110" width="18" height="26" rx="1" fill="#2C2C2C"/>
+        <rect x="852" y="153" width="18" height="26" rx="1" fill="#2C2C2C"/>
+        <rect x="852" y="190" width="18" height="26" rx="1" fill="none" stroke="#D8D6CE" stroke-width="1"/>
+        <rect x="852" y="232" width="18" height="26" rx="1" fill="#2C2C2C"/>
+
+        <!-- Col 6 -->
+        <text x="892" y="82" fill="#888880">C6</text>
+        <rect x="880" y="110" width="18" height="26" rx="1" fill="none" stroke="#D8D6CE" stroke-width="1"/>
+        <rect x="880" y="153" width="18" height="26" rx="1" fill="none" stroke="#D8D6CE" stroke-width="1"/>
+        <rect x="880" y="190" width="18" height="26" rx="1" fill="#2C2C2C"/>
+        <rect x="880" y="232" width="18" height="26" rx="1" fill="none" stroke="#D8D6CE" stroke-width="1"/>
+      </g>
+
+      <!-- Binary readout -->
+      <rect x="724" y="315" width="372" height="28" fill="#EEECE6"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">
+        <text x="749" y="333" fill="#2E4057">1</text>
+        <text x="777" y="333" fill="#888880">0</text>
+        <text x="805" y="333" fill="#2E4057">1</text>
+        <text x="833" y="333" fill="#888880">0</text>
+        <text x="861" y="333" fill="#2E4057">1</text>
+        <text x="889" y="333" fill="#888880">0</text>
+      </g>
+      <text x="980" y="333" font-family="'JetBrains Mono',monospace" font-size="11" fill="#888880">= row pattern</text>
+
+      <!-- Row labels -->
+      <g font-family="'Inter',sans-serif" font-size="9" fill="#888880">
+        <text x="715" y="126">ROW 1</text>
+        <text x="715" y="168">ROW 2</text>
+        <text x="715" y="205">ROW 3</text>
+        <text x="715" y="248">ROW 4</text>
+      </g>
+
+      <!-- Insight panel -->
+      <rect x="720" y="352" width="376" height="56" fill="#2E4057" opacity="0.06" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="730" y="372" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Each card row = one pick of the shuttle</text>
+      <text x="730" y="390" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Hole present → needle passes through → heddle lifts → thread crosses over</text>
+      <text x="730" y="406" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Hole absent → needle blocked → heddle stays → thread passes under</text>
+
+      <!-- Connection arrow: card to loom -->
+      <path d="M500 75 Q470 68 444 68" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#carmk)"/>
+      <defs>
+        <marker id="carmk" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+      </defs>
+      <text x="472" y="58" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">reads card</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="540" width="1200" height="40" fill="rgba(44,64,87,0.06)"/>
+      <text x="60" y="564" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Fig 0.3-A</text>
+      <text x="120" y="564" font-family="'Inter',sans-serif" font-size="12" fill="#6E6E6E">Jacquard loom (1804) with punch card chain. Left: loom frame with warp threads, heddles, and woven fabric section. Centre: punch card chain (active card highlighted red). Right: annotated card showing hole = 1, blank = 0.</text>
+      <text x="1140" y="564" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 0.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The Jacquard loom (1804) — the first machine to execute stored instructions. Left: the loom frame with vertical warp threads interlaced with horizontal weft threads producing a woven pattern. The Jacquard head at the top reads the active punch card. Right: the card encoding — a hole allows a needle to pass through, raising the corresponding heddle and lifting that warp thread; a blank blocks the needle, leaving the thread down. Each row of holes encodes one weft pick. The sequence of cards is a program.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIGURE 0.3-B  Concept Diagram — Punch Card Encoding Grid
+════════════════════════════════════════════════════════════ -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Concept Diagram</span>
+    <span class="fig-id">FIG 0.3-B</span>
+    <span class="fig-title">Punch Card Encoding — Pattern to Holes to Binary</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 480" xmlns="http://www.w3.org/2000/svg" style="height:420px">
+      <rect width="1200" height="480" fill="#F4EFE6"/>
+
+      <!-- Three-stage flow: Pattern → Card → Binary -->
+      <!-- Stage labels -->
+      <rect x="0" y="0" width="1200" height="44" fill="#2E4057" opacity="0.06"/>
+      <text x="200" y="27" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">STAGE 1 — WEAVE PATTERN</text>
+      <text x="600" y="27" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">STAGE 2 — PUNCH CARD</text>
+      <text x="1000" y="27" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">STAGE 3 — BINARY ENCODING</text>
+      <line x1="400" y1="44" x2="400" y2="440" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="800" y1="44" x2="800" y2="440" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- ── STAGE 1: Weave Pattern Grid ── -->
+      <!-- 8×8 weave grid -->
+      <g>
+        <!-- Grid cells: filled = weft over warp (dark thread on top) -->
+        <!-- Row 1: 1 0 1 0 1 0 1 0 -->
+        <rect x="76" y="70" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="114" y="70" width="36" height="36" fill="#D8D6CE"/>
+        <rect x="152" y="70" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="190" y="70" width="36" height="36" fill="#D8D6CE"/>
+        <rect x="228" y="70" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="266" y="70" width="36" height="36" fill="#D8D6CE"/>
+        <rect x="304" y="70" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="342" y="70" width="36" height="36" fill="#D8D6CE"/>
+        <!-- Row 2: 0 1 0 1 0 1 0 1 -->
+        <rect x="76" y="108" width="36" height="36" fill="#728C69" opacity="0.7"/>
+        <rect x="114" y="108" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="152" y="108" width="36" height="36" fill="#728C69" opacity="0.7"/>
+        <rect x="190" y="108" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="228" y="108" width="36" height="36" fill="#728C69" opacity="0.7"/>
+        <rect x="266" y="108" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="304" y="108" width="36" height="36" fill="#728C69" opacity="0.7"/>
+        <rect x="342" y="108" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <!-- Row 3: 1 1 0 0 1 1 0 0 (diamond fragment) -->
+        <rect x="76" y="146" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="114" y="146" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="152" y="146" width="36" height="36" fill="#728C69" opacity="0.7"/>
+        <rect x="190" y="146" width="36" height="36" fill="#728C69" opacity="0.7"/>
+        <rect x="228" y="146" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="266" y="146" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="304" y="146" width="36" height="36" fill="#728C69" opacity="0.7"/>
+        <rect x="342" y="146" width="36" height="36" fill="#728C69" opacity="0.7"/>
+        <!-- Row 4: 0 0 1 1 0 0 1 1 -->
+        <rect x="76" y="184" width="36" height="36" fill="#728C69" opacity="0.7"/>
+        <rect x="114" y="184" width="36" height="36" fill="#728C69" opacity="0.7"/>
+        <rect x="152" y="184" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="190" y="184" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="228" y="184" width="36" height="36" fill="#728C69" opacity="0.7"/>
+        <rect x="266" y="184" width="36" height="36" fill="#728C69" opacity="0.7"/>
+        <rect x="304" y="184" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="342" y="184" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <!-- Row 5: same as row 4 -->
+        <rect x="76" y="222" width="36" height="36" fill="#728C69" opacity="0.7"/>
+        <rect x="114" y="222" width="36" height="36" fill="#728C69" opacity="0.7"/>
+        <rect x="152" y="222" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="190" y="222" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="228" y="222" width="36" height="36" fill="#728C69" opacity="0.7"/>
+        <rect x="266" y="222" width="36" height="36" fill="#728C69" opacity="0.7"/>
+        <rect x="304" y="222" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+        <rect x="342" y="222" width="36" height="36" fill="#2E4057" opacity="0.8"/>
+
+        <!-- Grid lines over pattern -->
+        <g stroke="#FDFDFD" stroke-width="0.5" opacity="0.3">
+          <line x1="76" y1="70" x2="378" y2="70"/>
+          <line x1="76" y1="108" x2="378" y2="108"/>
+          <line x1="76" y1="146" x2="378" y2="146"/>
+          <line x1="76" y1="184" x2="378" y2="184"/>
+          <line x1="76" y1="222" x2="378" y2="222"/>
+          <line x1="76" y1="258" x2="378" y2="258"/>
+          <line x1="76" y1="70" x2="76" y2="258"/>
+          <line x1="114" y1="70" x2="114" y2="258"/>
+          <line x1="152" y1="70" x2="152" y2="258"/>
+          <line x1="190" y1="70" x2="190" y2="258"/>
+          <line x1="228" y1="70" x2="228" y2="258"/>
+          <line x1="266" y1="70" x2="266" y2="258"/>
+          <line x1="304" y1="70" x2="304" y2="258"/>
+          <line x1="342" y1="70" x2="342" y2="258"/>
+          <line x1="378" y1="70" x2="378" y2="258"/>
+        </g>
+
+        <!-- Legend for stage 1 -->
+        <rect x="76" y="278" width="16" height="16" fill="#2E4057" opacity="0.8"/>
+        <text x="100" y="291" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">weft over warp (dark)</text>
+        <rect x="200" y="278" width="16" height="16" fill="#728C69" opacity="0.7"/>
+        <text x="224" y="291" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">warp over weft (light)</text>
+
+        <!-- Row arrows pointing right to card stage -->
+        <path d="M384 87 L396 87" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#rmk)"/>
+        <path d="M384 126 L396 126" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#rmk)"/>
+        <path d="M384 164 L396 164" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#rmk)"/>
+        <path d="M384 202 L396 202" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#rmk)"/>
+        <path d="M384 240 L396 240" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#rmk)"/>
+        <defs>
+          <marker id="rmk" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+            <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+          </marker>
+        </defs>
+      </g>
+
+      <!-- ── STAGE 2: Punch Card ── -->
+      <rect x="420" y="60" width="340" height="240" rx="1" fill="#FDFDFD" stroke="#2C2C2C" stroke-width="1.5"/>
+      <polygon points="420,60 444,60 420,82" fill="#F4EFE6"/>
+      <!-- Column guides at top -->
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880" text-anchor="middle">
+        <text x="448" y="56">1</text><text x="476" y="56">2</text><text x="504" y="56">3</text>
+        <text x="532" y="56">4</text><text x="560" y="56">5</text><text x="588" y="56">6</text>
+        <text x="616" y="56">7</text><text x="644" y="56">8</text>
+      </g>
+      <!-- Row labels at left -->
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880" text-anchor="end">
+        <text x="414" y="92">R1</text>
+        <text x="414" y="130">R2</text>
+        <text x="414" y="168">R3</text>
+        <text x="414" y="206">R4</text>
+        <text x="414" y="244">R5</text>
+      </g>
+      <!-- Row separator lines -->
+      <g stroke="#E8E6DF" stroke-width="0.5">
+        <line x1="420" y1="100" x2="760" y2="100"/>
+        <line x1="420" y1="138" x2="760" y2="138"/>
+        <line x1="420" y1="176" x2="760" y2="176"/>
+        <line x1="420" y1="214" x2="760" y2="214"/>
+        <line x1="436" y1="60" x2="436" y2="300"/>
+        <line x1="464" y1="60" x2="464" y2="300"/>
+        <line x1="492" y1="60" x2="492" y2="300"/>
+        <line x1="520" y1="60" x2="520" y2="300"/>
+        <line x1="548" y1="60" x2="548" y2="300"/>
+        <line x1="576" y1="60" x2="576" y2="300"/>
+        <line x1="604" y1="60" x2="604" y2="300"/>
+        <line x1="632" y1="60" x2="632" y2="300"/>
+        <line x1="660" y1="60" x2="660" y2="300"/>
+        <line x1="688" y1="60" x2="688" y2="300"/>
+        <line x1="716" y1="60" x2="716" y2="300"/>
+        <line x1="744" y1="60" x2="744" y2="300"/>
+      </g>
+
+      <!-- Holes: Row 1: 1 0 1 0 1 0 1 0 -->
+      <g fill="#1A1A1A">
+        <!-- R1 -->
+        <rect x="438" y="72" width="22" height="22" rx="2"/>
+        <rect x="494" y="72" width="22" height="22" rx="2"/>
+        <rect x="550" y="72" width="22" height="22" rx="2"/>
+        <rect x="606" y="72" width="22" height="22" rx="2"/>
+        <!-- R2 -->
+        <rect x="466" y="110" width="22" height="22" rx="2"/>
+        <rect x="522" y="110" width="22" height="22" rx="2"/>
+        <rect x="578" y="110" width="22" height="22" rx="2"/>
+        <rect x="634" y="110" width="22" height="22" rx="2"/>
+        <!-- R3 -->
+        <rect x="438" y="148" width="22" height="22" rx="2"/>
+        <rect x="466" y="148" width="22" height="22" rx="2"/>
+        <rect x="550" y="148" width="22" height="22" rx="2"/>
+        <rect x="578" y="148" width="22" height="22" rx="2"/>
+        <!-- R4 -->
+        <rect x="494" y="186" width="22" height="22" rx="2"/>
+        <rect x="522" y="186" width="22" height="22" rx="2"/>
+        <rect x="606" y="186" width="22" height="22" rx="2"/>
+        <rect x="634" y="186" width="22" height="22" rx="2"/>
+        <!-- R5 -->
+        <rect x="494" y="224" width="22" height="22" rx="2"/>
+        <rect x="522" y="224" width="22" height="22" rx="2"/>
+        <rect x="606" y="224" width="22" height="22" rx="2"/>
+        <rect x="634" y="224" width="22" height="22" rx="2"/>
+      </g>
+
+      <!-- Arrows stage 2 → stage 3 -->
+      <path d="M766 87 L792 87" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#rmk)"/>
+      <path d="M766 126 L792 126" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#rmk)"/>
+      <path d="M766 164 L792 164" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#rmk)"/>
+      <path d="M766 202 L792 202" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#rmk)"/>
+      <path d="M766 240 L792 240" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#rmk)"/>
+
+      <!-- ── STAGE 3: Binary Encoding ── -->
+      <rect x="820" y="60" width="340" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- Row labels -->
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880" text-anchor="end">
+        <text x="814" y="92">R1</text>
+        <text x="814" y="130">R2</text>
+        <text x="814" y="168">R3</text>
+        <text x="814" y="206">R4</text>
+        <text x="814" y="244">R5</text>
+      </g>
+      <!-- Binary rows -->
+      <g font-family="'JetBrains Mono',monospace" font-size="18" font-weight="400" text-anchor="middle">
+        <!-- R1: 1 0 1 0 1 0 1 0 -->
+        <text x="848" y="96" fill="#2E4057">1</text>
+        <text x="876" y="96" fill="#888880">0</text>
+        <text x="904" y="96" fill="#2E4057">1</text>
+        <text x="932" y="96" fill="#888880">0</text>
+        <text x="960" y="96" fill="#2E4057">1</text>
+        <text x="988" y="96" fill="#888880">0</text>
+        <text x="1016" y="96" fill="#2E4057">1</text>
+        <text x="1044" y="96" fill="#888880">0</text>
+        <text x="1120" y="96" font-size="11" fill="#C82A2A">10101010</text>
+        <!-- R2: 0 1 0 1 0 1 0 1 -->
+        <text x="848" y="134" fill="#888880">0</text>
+        <text x="876" y="134" fill="#2E4057">1</text>
+        <text x="904" y="134" fill="#888880">0</text>
+        <text x="932" y="134" fill="#2E4057">1</text>
+        <text x="960" y="134" fill="#888880">0</text>
+        <text x="988" y="134" fill="#2E4057">1</text>
+        <text x="1016" y="134" fill="#888880">0</text>
+        <text x="1044" y="134" fill="#2E4057">1</text>
+        <text x="1120" y="134" font-size="11" fill="#C82A2A">01010101</text>
+        <!-- R3: 1 1 0 0 1 1 0 0 -->
+        <text x="848" y="172" fill="#2E4057">1</text>
+        <text x="876" y="172" fill="#2E4057">1</text>
+        <text x="904" y="172" fill="#888880">0</text>
+        <text x="932" y="172" fill="#888880">0</text>
+        <text x="960" y="172" fill="#2E4057">1</text>
+        <text x="988" y="172" fill="#2E4057">1</text>
+        <text x="1016" y="172" fill="#888880">0</text>
+        <text x="1044" y="172" fill="#888880">0</text>
+        <text x="1120" y="172" font-size="11" fill="#C82A2A">11001100</text>
+        <!-- R4: 0 0 1 1 0 0 1 1 -->
+        <text x="848" y="210" fill="#888880">0</text>
+        <text x="876" y="210" fill="#888880">0</text>
+        <text x="904" y="210" fill="#2E4057">1</text>
+        <text x="932" y="210" fill="#2E4057">1</text>
+        <text x="960" y="210" fill="#888880">0</text>
+        <text x="988" y="210" fill="#888880">0</text>
+        <text x="1016" y="210" fill="#2E4057">1</text>
+        <text x="1044" y="210" fill="#2E4057">1</text>
+        <text x="1120" y="210" font-size="11" fill="#C82A2A">00110011</text>
+        <!-- R5: same as R4 -->
+        <text x="848" y="248" fill="#888880">0</text>
+        <text x="876" y="248" fill="#888880">0</text>
+        <text x="904" y="248" fill="#2E4057">1</text>
+        <text x="932" y="248" fill="#2E4057">1</text>
+        <text x="960" y="248" fill="#888880">0</text>
+        <text x="988" y="248" fill="#888880">0</text>
+        <text x="1016" y="248" fill="#2E4057">1</text>
+        <text x="1044" y="248" fill="#2E4057">1</text>
+        <text x="1120" y="248" font-size="11" fill="#C82A2A">00110011</text>
+      </g>
+      <!-- Row separator lines -->
+      <g stroke="#E8E6DF" stroke-width="0.5">
+        <line x1="820" y1="106" x2="1160" y2="106"/>
+        <line x1="820" y1="144" x2="1160" y2="144"/>
+        <line x1="820" y1="182" x2="1160" y2="182"/>
+        <line x1="820" y1="220" x2="1160" y2="220"/>
+        <line x1="1100" y1="60" x2="1100" y2="300"/>
+      </g>
+      <text x="1130" y="56" font-family="'Inter',sans-serif" font-size="9" fill="#888880">byte</text>
+
+      <!-- Insight callout bottom -->
+      <rect x="60" y="330" width="1080" height="60" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="60" y="330" width="4" height="60" fill="#C82A2A"/>
+      <text x="80" y="352" font-family="'Noto Serif JP',serif" font-size="14" fill="#2C2C2C">The fundamental equivalence: weave pattern row = punch card row = binary byte</text>
+      <text x="80" y="372" font-family="'Inter',sans-serif" font-size="12" fill="#6E6E6E">A sequence of cards is a sequence of bytes. The loom executes them in order. Babbage saw this and named the idea a "program."</text>
+      <text x="80" y="388" font-family="'Inter',sans-serif" font-size="12" fill="#888880">150 years later, Hollerith encoded census data the same way. 200 years later, CPU instruction bytes follow the same principle.</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="450" width="1200" height="30" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="470" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 0.3-B · Three-stage encoding: weave pattern → punch card holes → binary representation. Each row in the pattern maps to one row of holes, which maps to one binary byte.</text>
+      <text x="1140" y="470" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 0.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The encoding pipeline. Stage 1: a 5-row weave pattern where dark cells indicate the weft thread passing over the warp. Stage 2: the corresponding punch card — a hole appears wherever the weft must cross over (dark cell = 1 = hole). Stage 3: each row reads as a binary byte. Row 1 (1 0 1 0 1 0 1 0) produces a plain alternating twill; Row 3 (1 1 0 0 1 1 0 0) produces a wider herringbone. The sequence of cards is the complete fabric program.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIGURE 0.3-C  Concept Diagram — Stored Instructions Concept
+════════════════════════════════════════════════════════════ -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Concept Diagram</span>
+    <span class="fig-id">FIG 0.3-C</span>
+    <span class="fig-title">Stored Instructions — From Card Chain to Stored Program</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:310px">
+      <rect width="1200" height="360" fill="#F4EFE6"/>
+
+      <!-- Era 1: Jacquard (1804) -->
+      <rect x="40" y="50" width="220" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="50" width="220" height="28" fill="#728C69" opacity="0.15"/>
+      <text x="150" y="69" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69" letter-spacing="0.12em">JACQUARD · 1804</text>
+      <!-- Card chain visual -->
+      <g font-family="'JetBrains Mono',monospace" font-size="9">
+        <!-- Cards stacked -->
+        <rect x="68" y="94" width="90" height="50" rx="1" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+        <text x="113" y="107" text-anchor="middle" fill="#888880" font-size="8">CARD 1 — ACTIVE</text>
+        <g fill="#2C2C2C"><rect x="76" y="112" width="6" height="8" rx="0"/><rect x="86" y="112" width="6" height="8" rx="0"/>
+          <rect x="106" y="112" width="6" height="8" rx="0"/><rect x="136" y="112" width="6" height="8" rx="0"/></g>
+        <rect x="72" y="150" width="90" height="44" rx="1" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="1"/>
+        <text x="117" y="163" text-anchor="middle" fill="#888880" font-size="8">CARD 2</text>
+        <g fill="#2C2C2C" opacity="0.5"><rect x="80" y="168" width="6" height="8" rx="0"/>
+          <rect x="100" y="168" width="6" height="8" rx="0"/><rect x="140" y="168" width="6" height="8" rx="0"/></g>
+        <rect x="76" y="200" width="90" height="40" rx="1" fill="#F4F3F0" stroke="#D8D6CE" stroke-width="0.8"/>
+        <text x="121" y="213" text-anchor="middle" fill="#888880" font-size="8">CARD 3</text>
+        <g fill="#2C2C2C" opacity="0.3"><rect x="84" y="218" width="6" height="8" rx="0"/>
+          <rect x="120" y="218" width="6" height="8" rx="0"/><rect x="144" y="218" width="6" height="8" rx="0"/></g>
+        <!-- Dots for more cards -->
+        <text x="113" y="253" text-anchor="middle" fill="#888880">· · ·</text>
+      </g>
+      <text x="150" y="292" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Physical card chain</text>
+      <text x="150" y="308" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">= sequential program</text>
+      <!-- Key feature tag -->
+      <rect x="55" y="322" width="170" height="18" fill="#728C69" opacity="0.12"/>
+      <text x="140" y="334" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" font-weight="500">SEQUENTIAL EXECUTION</text>
+
+      <!-- Arrow 1→2 -->
+      <path d="M264 170 L300 170" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#fwd)"/>
+      <text x="282" y="158" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Babbage</text>
+      <text x="282" y="170" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">1822</text>
+      <defs>
+        <marker id="fwd" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+      </defs>
+
+      <!-- Era 2: Hollerith (1890) -->
+      <rect x="305" y="50" width="220" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="305" y="50" width="220" height="28" fill="#8B6914" opacity="0.12"/>
+      <text x="415" y="69" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914" letter-spacing="0.12em">HOLLERITH · 1890</text>
+      <!-- Data cards visual -->
+      <rect x="330" y="90" width="170" height="180" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- Stack of data cards -->
+      <rect x="336" y="96" width="158" height="80" rx="1" fill="#FDFDFD" stroke="#C8C4BC" stroke-width="1"/>
+      <text x="415" y="112" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">CENSUS RECORD</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="8" fill="#6E6E6E">
+        <text x="342" y="128">AGE: 34</text>
+        <text x="342" y="142">SEX: M</text>
+        <text x="342" y="156">STATE: NY</text>
+        <text x="342" y="170">OCC: FARMER</text>
+      </g>
+      <!-- Holes row at bottom of card -->
+      <g fill="#1A1A1A">
+        <rect x="342" y="178" width="8" height="8" rx="0"/>
+        <rect x="362" y="178" width="8" height="8" rx="0"/>
+        <rect x="402" y="178" width="8" height="8" rx="0"/>
+        <rect x="442" y="178" width="8" height="8" rx="0"/>
+        <rect x="462" y="178" width="8" height="8" rx="0"/>
+        <rect x="482" y="178" width="8" height="8" rx="0"/>
+      </g>
+      <!-- Second card peeking -->
+      <rect x="340" y="186" width="154" height="36" rx="1" fill="#F8F7F3" stroke="#D8D6CE" stroke-width="0.8"/>
+      <text x="417" y="208" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">next record…</text>
+
+      <text x="415" y="292" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Cards encode data,</text>
+      <text x="415" y="308" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">not just instructions</text>
+      <rect x="320" y="322" width="170" height="18" fill="#8B6914" opacity="0.1"/>
+      <text x="405" y="334" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914" font-weight="500">DATA + PROGRAM SEPARATION</text>
+
+      <!-- Arrow 2→3 -->
+      <path d="M529 170 L565 170" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#fwd)"/>
+      <text x="547" y="158" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Von</text>
+      <text x="547" y="170" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Neumann</text>
+
+      <!-- Era 3: Von Neumann / Stored Program (1945) -->
+      <rect x="570" y="50" width="220" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="570" y="50" width="220" height="28" fill="#2E4057" opacity="0.12"/>
+      <text x="680" y="69" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.12em">VON NEUMANN · 1945</text>
+      <!-- RAM grid -->
+      <g>
+        <text x="680" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">RAM — INSTRUCTIONS + DATA TOGETHER</text>
+        <!-- Memory cells -->
+        <g font-family="'JetBrains Mono',monospace" font-size="10">
+          <rect x="582" y="108" width="196" height="20" fill="#EEECE6" stroke="#D8D6CE" stroke-width="0.5"/>
+          <text x="590" y="122" fill="#888880">0x00</text><text x="640" y="122" fill="#2E4057">MOV R1, 5</text>
+          <rect x="582" y="128" width="196" height="20" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+          <text x="590" y="142" fill="#888880">0x01</text><text x="640" y="142" fill="#2E4057">ADD R1, R2</text>
+          <rect x="582" y="148" width="196" height="20" fill="#EEECE6" stroke="#D8D6CE" stroke-width="0.5"/>
+          <text x="590" y="162" fill="#888880">0x02</text><text x="640" y="162" fill="#2E4057">STR R1, 0x10</text>
+          <rect x="582" y="168" width="196" height="20" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+          <text x="590" y="182" fill="#888880">0x03</text><text x="640" y="182" fill="#728C69">42 ← data</text>
+          <rect x="582" y="188" width="196" height="20" fill="#EEECE6" stroke="#D8D6CE" stroke-width="0.5"/>
+          <text x="590" y="202" fill="#888880">0x04</text><text x="640" y="202" fill="#728C69">17 ← data</text>
+          <rect x="582" y="208" width="196" height="20" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+          <text x="590" y="222" fill="#888880">0x05</text><text x="640" y="222" fill="#2E4057">JMP 0x00</text>
+          <text x="680" y="248" text-anchor="middle" fill="#888880" font-size="9">···</text>
+        </g>
+      </g>
+      <text x="680" y="292" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Instructions and data</text>
+      <text x="680" y="308" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">share one memory</text>
+      <rect x="585" y="322" width="170" height="18" fill="#2E4057" opacity="0.1"/>
+      <text x="670" y="334" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" font-weight="500">STORED-PROGRAM ARCHITECTURE</text>
+
+      <!-- Arrow 3→4 -->
+      <path d="M794 170 L830 170" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#fwd)"/>
+      <text x="812" y="158" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">every</text>
+      <text x="812" y="170" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">CPU</text>
+
+      <!-- Era 4: Modern CPU (2024) -->
+      <rect x="835" y="50" width="320" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="835" y="50" width="320" height="28" fill="#C82A2A" opacity="0.08"/>
+      <text x="995" y="69" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.12em">MODERN CPU · 2024</text>
+
+      <!-- CPU block -->
+      <rect x="855" y="88" width="280" height="180" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- PC register -->
+      <rect x="865" y="96" width="80" height="28" fill="#FDFDFD" stroke="#2E4057" stroke-width="1"/>
+      <text x="905" y="113" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">PC = 0x04</text>
+      <!-- IR register -->
+      <rect x="955" y="96" width="90" height="28" fill="#FDFDFD" stroke="#2E4057" stroke-width="1"/>
+      <text x="1000" y="113" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2E4057">IR = JMP 0x00</text>
+      <!-- ALU -->
+      <rect x="865" y="136" width="80" height="48" fill="#FDFDFD" stroke="#8B6914" stroke-width="1"/>
+      <text x="905" y="164" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914" font-weight="500">ALU</text>
+      <!-- Cache -->
+      <rect x="960" y="136" width="80" height="48" fill="#FDFDFD" stroke="#728C69" stroke-width="1"/>
+      <text x="1000" y="164" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" font-weight="500">L1 CACHE</text>
+      <!-- Bus at bottom -->
+      <rect x="865" y="196" width="258" height="16" fill="#2C2C2C" opacity="0.1" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="994" y="207" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880" letter-spacing="0.08em">MEMORY BUS</text>
+      <!-- RAM block -->
+      <rect x="865" y="222" width="258" height="34" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="994" y="243" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">RAM — instructions + data</text>
+
+      <text x="995" y="292" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Same core idea,</text>
+      <text x="995" y="308" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">220 years later</text>
+      <rect x="855" y="322" width="270" height="18" fill="#C82A2A" opacity="0.08"/>
+      <text x="990" y="334" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" font-weight="500">JACQUARD'S IDEA, IN SILICON</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="334" width="1200" height="26" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="352" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 0.3-C · The lineage of stored instructions. Jacquard's card chain (1804) → Hollerith's data cards (1890) → Von Neumann's RAM model (1945) → modern CPU (2024). The concept is identical; only the medium changed.</text>
+      <text x="1140" y="352" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 0.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The intellectual lineage of stored instructions. Jacquard (1804): instructions as a physical card chain — sequential, unmodifiable. Hollerith (1890): cards encode data records, separating program logic from data content. Von Neumann (1945): instructions and data share the same memory — the program can now inspect and modify itself. Modern CPUs (2024): the identical architecture, shrunk to nanometre scale. The Jacquard loom's core insight — that instructions can be stored externally and executed in order — flows unbroken through 220 years of computing.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIGURE 0.3-D  Historical Reconstruction — Jacquard's Workshop
+════════════════════════════════════════════════════════════ -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hist">Type B — Historical Reconstruction</span>
+    <span class="fig-id">FIG 0.3-D</span>
+    <span class="fig-title">Jacquard's Workshop — Lyon, 1804</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" style="height:340px">
+      <defs>
+        <linearGradient id="workshopBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#E8E2D8"/>
+          <stop offset="70%" stop-color="#DDD8CE"/>
+          <stop offset="100%" stop-color="#D0CCBE"/>
+        </linearGradient>
+        <linearGradient id="wallGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C8C0B0"/>
+          <stop offset="100%" stop-color="#B8B0A0"/>
+        </linearGradient>
+        <pattern id="wallPat" x="0" y="0" width="60" height="30" patternUnits="userSpaceOnUse">
+          <rect width="60" height="30" fill="none" stroke="#B0A898" stroke-width="0.5" opacity="0.4"/>
+        </pattern>
+      </defs>
+
+      <!-- Background -->
+      <rect width="1200" height="400" fill="url(#workshopBg)"/>
+      <!-- Wall -->
+      <rect x="0" y="0" width="1200" height="200" fill="url(#wallGrad)"/>
+      <rect x="0" y="0" width="1200" height="200" fill="url(#wallPat)" opacity="0.3"/>
+      <!-- Floor -->
+      <rect x="0" y="300" width="1200" height="100" fill="#C8BCA8"/>
+      <!-- Floor boards -->
+      <g stroke="#B8AC98" stroke-width="1" opacity="0.5">
+        <line x1="0" y1="310" x2="1200" y2="310"/>
+        <line x1="0" y1="330" x2="1200" y2="330"/>
+        <line x1="0" y1="350" x2="1200" y2="350"/>
+        <line x1="100" y1="300" x2="100" y2="400"/>
+        <line x1="280" y1="300" x2="280" y2="400"/>
+        <line x1="460" y1="300" x2="460" y2="400"/>
+        <line x1="640" y1="300" x2="640" y2="400"/>
+        <line x1="820" y1="300" x2="820" y2="400"/>
+        <line x1="1000" y1="300" x2="1000" y2="400"/>
+      </g>
+
+      <!-- Window (light source) -->
+      <rect x="100" y="20" width="120" height="140" rx="2" fill="#E8F0E8" stroke="#A89878" stroke-width="2"/>
+      <rect x="100" y="20" width="120" height="140" fill="rgba(255,255,240,0.3)"/>
+      <line x1="160" y1="20" x2="160" y2="160" stroke="#A89878" stroke-width="1.5"/>
+      <line x1="100" y1="90" x2="220" y2="90" stroke="#A89878" stroke-width="1.5"/>
+      <!-- Window light rays -->
+      <path d="M220 40 L340 100" stroke="#E8E0C8" stroke-width="15" opacity="0.15"/>
+      <path d="M220 90 L380 140" stroke="#E8E0C8" stroke-width="10" opacity="0.12"/>
+
+      <!-- ── LOOM (main left) ── -->
+      <!-- Frame verticals -->
+      <rect x="300" y="60" width="20" height="250" rx="1" fill="#C8A878" stroke="#A88858" stroke-width="1"/>
+      <rect x="520" y="60" width="20" height="250" rx="1" fill="#C8A878" stroke="#A88858" stroke-width="1"/>
+      <!-- Cross beams -->
+      <rect x="296" y="56" width="248" height="16" rx="1" fill="#C8A878" stroke="#A88858" stroke-width="1"/>
+      <rect x="296" y="286" width="248" height="16" rx="1" fill="#C8A878" stroke="#A88858" stroke-width="1"/>
+      <rect x="296" y="190" width="248" height="10" rx="1" fill="#B89868" stroke="#A88858" stroke-width="0.8"/>
+
+      <!-- Warp threads -->
+      <g stroke="#D8D0C0" stroke-width="0.8" opacity="0.9">
+        <line x1="320" y1="72" x2="320" y2="286"/>
+        <line x1="332" y1="72" x2="332" y2="286"/>
+        <line x1="344" y1="72" x2="344" y2="286"/>
+        <line x1="356" y1="72" x2="356" y2="286"/>
+        <line x1="368" y1="72" x2="368" y2="286"/>
+        <line x1="380" y1="72" x2="380" y2="286"/>
+        <line x1="392" y1="72" x2="392" y2="286"/>
+        <line x1="404" y1="72" x2="404" y2="286"/>
+        <line x1="416" y1="72" x2="416" y2="286"/>
+        <line x1="428" y1="72" x2="428" y2="286"/>
+        <line x1="440" y1="72" x2="440" y2="286"/>
+        <line x1="452" y1="72" x2="452" y2="286"/>
+        <line x1="464" y1="72" x2="464" y2="286"/>
+        <line x1="476" y1="72" x2="476" y2="286"/>
+        <line x1="488" y1="72" x2="488" y2="286"/>
+        <line x1="500" y1="72" x2="500" y2="286"/>
+        <line x1="512" y1="72" x2="512" y2="286"/>
+      </g>
+
+      <!-- Woven fabric at bottom of loom -->
+      <rect x="320" y="220" width="196" height="66" fill="#7888A0" opacity="0.6"/>
+      <!-- Weave pattern hints -->
+      <g fill="#5E7090" opacity="0.7">
+        <rect x="320" y="220" width="12" height="6"/><rect x="344" y="220" width="12" height="6"/>
+        <rect x="368" y="220" width="12" height="6"/><rect x="392" y="220" width="12" height="6"/>
+        <rect x="332" y="226" width="12" height="6"/><rect x="356" y="226" width="12" height="6"/>
+        <rect x="320" y="232" width="12" height="6"/><rect x="344" y="232" width="12" height="6"/>
+      </g>
+
+      <!-- Jacquard head atop loom -->
+      <rect x="304" y="28" width="232" height="32" rx="1" fill="#B89868" stroke="#A88858" stroke-width="1.5"/>
+      <!-- Needles -->
+      <g stroke="#888070" stroke-width="0.8">
+        <line x1="316" y1="28" x2="316" y2="42"/><line x1="328" y1="28" x2="328" y2="42"/>
+        <line x1="340" y1="28" x2="340" y2="42"/><line x1="352" y1="28" x2="352" y2="42"/>
+        <line x1="364" y1="28" x2="364" y2="42"/><line x1="376" y1="28" x2="376" y2="42"/>
+        <line x1="388" y1="28" x2="388" y2="42"/><line x1="400" y1="28" x2="400" y2="42"/>
+        <line x1="412" y1="28" x2="412" y2="42"/><line x1="424" y1="28" x2="424" y2="42"/>
+        <line x1="436" y1="28" x2="436" y2="42"/><line x1="448" y1="28" x2="448" y2="42"/>
+        <line x1="460" y1="28" x2="460" y2="42"/><line x1="472" y1="28" x2="472" y2="42"/>
+        <line x1="484" y1="28" x2="484" y2="42"/><line x1="496" y1="28" x2="496" y2="42"/>
+        <line x1="508" y1="28" x2="508" y2="42"/>
+        <line x1="520" y1="28" x2="520" y2="42"/>
+      </g>
+
+      <!-- Card hanging from head -->
+      <rect x="370" y="2" width="100" height="28" rx="1" fill="#F8F4EC" stroke="#C8C4BC" stroke-width="1"/>
+      <polygon points="370,2 384,2 370,14" fill="#EDE8DF"/>
+      <g fill="#2C2C2C" opacity="0.8">
+        <rect x="378" y="8" width="6" height="8" rx="0"/>
+        <rect x="390" y="8" width="6" height="8" rx="0"/>
+        <rect x="414" y="8" width="6" height="8" rx="0"/>
+        <rect x="438" y="8" width="6" height="8" rx="0"/>
+        <rect x="450" y="8" width="6" height="8" rx="0"/>
+      </g>
+
+      <!-- ── CARD STORAGE RACK (right of loom) ── -->
+      <!-- Rack frame -->
+      <rect x="570" y="80" width="180" height="200" rx="1" fill="#B89868" stroke="#A88858" stroke-width="1.5"/>
+      <rect x="575" y="85" width="170" height="190" fill="#C8B888" opacity="0.3"/>
+      <!-- Shelves -->
+      <g stroke="#A88858" stroke-width="1">
+        <line x1="575" y1="110" x2="745" y2="110"/>
+        <line x1="575" y1="135" x2="745" y2="135"/>
+        <line x1="575" y1="160" x2="745" y2="160"/>
+        <line x1="575" y1="185" x2="745" y2="185"/>
+        <line x1="575" y1="210" x2="745" y2="210"/>
+        <line x1="575" y1="235" x2="745" y2="235"/>
+        <line x1="575" y1="260" x2="745" y2="260"/>
+      </g>
+      <!-- Cards on shelves (card fronts) -->
+      <g>
+        <rect x="580" y="90" width="12" height="18" fill="#F0EAE0" stroke="#C8C4BC" stroke-width="0.5"/>
+        <rect x="594" y="90" width="12" height="18" fill="#F0EAE0" stroke="#C8C4BC" stroke-width="0.5"/>
+        <rect x="608" y="90" width="12" height="18" fill="#F0EAE0" stroke="#C8C4BC" stroke-width="0.5"/>
+        <rect x="622" y="90" width="12" height="18" fill="#F0EAE0" stroke="#C8C4BC" stroke-width="0.5"/>
+        <rect x="636" y="90" width="12" height="18" fill="#F0EAE0" stroke="#C8C4BC" stroke-width="0.5"/>
+
+        <rect x="580" y="115" width="12" height="18" fill="#F0EAE0" stroke="#C8C4BC" stroke-width="0.5"/>
+        <rect x="594" y="115" width="12" height="18" fill="#F0EAE0" stroke="#C8C4BC" stroke-width="0.5"/>
+        <rect x="608" y="115" width="12" height="18" fill="#F0EAE0" stroke="#C8C4BC" stroke-width="0.5"/>
+
+        <rect x="580" y="140" width="12" height="18" fill="#F0EAE0" stroke="#C8C4BC" stroke-width="0.5"/>
+        <rect x="594" y="140" width="12" height="18" fill="#F0EAE0" stroke="#C8C4BC" stroke-width="0.5"/>
+        <rect x="608" y="140" width="12" height="18" fill="#F0EAE0" stroke="#C8C4BC" stroke-width="0.5"/>
+        <rect x="622" y="140" width="12" height="18" fill="#F0EAE0" stroke="#C8C4BC" stroke-width="0.5"/>
+      </g>
+      <text x="660" y="186" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="10" fill="#8C7858">card</text>
+      <text x="660" y="200" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="10" fill="#8C7858">library</text>
+
+      <!-- Label the rack -->
+      <text x="660" y="300" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" font-style="italic">stored card programs</text>
+
+      <!-- ── FINISHED FABRIC ROLL (right) ── -->
+      <!-- Roller -->
+      <rect x="800" y="140" width="30" height="160" rx="15" fill="#C8A878" stroke="#A88858" stroke-width="1"/>
+      <!-- Fabric rolled up -->
+      <path d="M815 140 Q870 120 900 160 Q930 200 900 240 Q870 280 815 300" fill="#7888A0" opacity="0.5" stroke="#6878A0" stroke-width="1"/>
+      <path d="M815 140 Q840 130 860 155 Q880 180 860 210 Q840 240 815 300" fill="#7888A0" opacity="0.4"/>
+      <!-- Fabric drape -->
+      <path d="M815 300 Q860 310 900 290 Q960 270 1000 280" stroke="#6878A0" stroke-width="2" fill="#7888A0" opacity="0.3"/>
+
+      <!-- ── WORKER SILHOUETTE ── -->
+      <!-- Simplified operator figure -->
+      <circle cx="200" cy="190" r="18" fill="#6E5E4E"/>
+      <rect x="187" y="208" width="26" height="60" rx="2" fill="#7E6E5E"/>
+      <!-- Arm extended toward loom -->
+      <rect x="213" y="218" width="60" height="10" rx="5" fill="#7E6E5E"/>
+      <text x="200" y="280" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="10" fill="#8C7858">operator</text>
+
+      <!-- Annotation labels -->
+      <rect x="300" y="348" width="90" height="20" fill="rgba(44,64,87,0.06)"/>
+      <text x="345" y="362" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">Jacquard loom</text>
+      <rect x="555" y="348" width="90" height="20" fill="rgba(139,105,20,0.08)"/>
+      <text x="600" y="362" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">card library</text>
+      <rect x="790" y="348" width="90" height="20" fill="rgba(114,140,105,0.08)"/>
+      <text x="835" y="362" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">output fabric</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="372" width="1200" height="28" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="390" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 0.3-D · Historical reconstruction: Jacquard's workshop, Lyon 1804. Operator at left feeds punch cards into the Jacquard head. Card library at centre stores multiple patterns (programs). Woven silk fabric accumulates on the right-hand roller.</text>
+      <text x="1140" y="390" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 0.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Historical reconstruction of a Jacquard loom workshop, Lyon 1804. An operator feeds the active punch card to the Jacquard head, which reads each hole and controls the heddle harness below. A card library on the right holds multiple pattern programs — different cards produce different fabrics on the same loom. This is the first practical separation of hardware (loom) from software (card programs), a concept Babbage explicitly borrowed when designing the Analytical Engine.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIGURE 0.3-E  Simulation Figure — Card Pattern Designer State
+════════════════════════════════════════════════════════════ -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type F — Simulation Figure</span>
+    <span class="fig-id">FIG 0.3-E</span>
+    <span class="fig-title">Card Pattern Simulator — 8×8 Weave Grid with Binary Output</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <rect width="1200" height="360" fill="#F4EFE6"/>
+
+      <!-- Simulation UI mockup -->
+      <!-- Left: Interactive grid -->
+      <rect x="40" y="30" width="340" height="280" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="30" width="340" height="28" fill="#EEECE6"/>
+      <text x="210" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">PATTERN EDITOR — CLICK TO TOGGLE</text>
+
+      <!-- 8×8 grid of cells -->
+      <!-- Diamond pattern encoded -->
+      <!-- Rows: 0,0,0,1,0,0,0,0 / 0,0,1,1,1,0,0,0 / 0,1,1,0,1,1,0,0 / 1,1,0,0,0,1,1,0 / 0,1,1,0,1,1,0,0 / 0,0,1,1,1,0,0,0 / 0,0,0,1,0,0,0,0 / 0,0,0,0,0,0,0,0 -->
+      <g>
+        <!-- Cell size 32×32, starting at x=48, y=64 -->
+        <!-- Row 1: 0 0 0 1 0 0 0 0 -->
+        <rect x="48" y="64" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="80" y="64" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="112" y="64" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="144" y="64" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="176" y="64" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="208" y="64" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="240" y="64" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="272" y="64" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <!-- Row 2: 0 0 1 1 1 0 0 0 -->
+        <rect x="48" y="94" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="80" y="94" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="112" y="94" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="144" y="94" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="176" y="94" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="208" y="94" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="240" y="94" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="272" y="94" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <!-- Row 3: 0 1 1 0 1 1 0 0 -->
+        <rect x="48" y="124" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="80" y="124" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="112" y="124" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="144" y="124" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="176" y="124" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="208" y="124" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="240" y="124" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="272" y="124" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <!-- Row 4: 1 1 0 0 0 1 1 0 -->
+        <rect x="48" y="154" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="80" y="154" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="112" y="154" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="144" y="154" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="176" y="154" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="208" y="154" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="240" y="154" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="272" y="154" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <!-- Row 5: 0 1 1 0 1 1 0 0 -->
+        <rect x="48" y="184" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="80" y="184" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="112" y="184" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="144" y="184" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="176" y="184" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="208" y="184" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="240" y="184" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="272" y="184" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <!-- Row 6: 0 0 1 1 1 0 0 0 -->
+        <rect x="48" y="214" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="80" y="214" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="112" y="214" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="144" y="214" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="176" y="214" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="208" y="214" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="240" y="214" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="272" y="214" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <!-- Row 7: 0 0 0 1 0 0 0 0 -->
+        <rect x="48" y="244" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="80" y="244" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="112" y="244" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="144" y="244" width="30" height="28" fill="#2E4057" opacity="0.8"/>
+        <rect x="176" y="244" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="208" y="244" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="240" y="244" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="272" y="244" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <!-- Row 8: all 0 -->
+        <rect x="48" y="274" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="80" y="274" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="112" y="274" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="144" y="274" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="176" y="274" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="208" y="274" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="240" y="274" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+        <rect x="272" y="274" width="30" height="28" fill="#F4F2EE" stroke="#E8E6DF" stroke-width="0.5"/>
+      </g>
+
+      <!-- Middle: Generated card -->
+      <rect x="420" y="30" width="300" height="280" rx="1" fill="#FDFDFD" stroke="#2C2C2C" stroke-width="1.5"/>
+      <rect x="420" y="30" width="300" height="28" fill="#EEECE6"/>
+      <text x="570" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">GENERATED PUNCH CARD</text>
+      <polygon points="420,58 440,58 420,76" fill="#F4EFE6"/>
+      <!-- Card holes matching diamond pattern -->
+      <g fill="#1A1A1A">
+        <!-- R1 -->
+        <rect x="500" y="68" width="14" height="18" rx="1"/>
+        <!-- R2 -->
+        <rect x="468" y="100" width="14" height="18" rx="1"/>
+        <rect x="486" y="100" width="14" height="18" rx="1"/>
+        <rect x="504" y="100" width="14" height="18" rx="1"/>
+        <!-- R3 -->
+        <rect x="450" y="132" width="14" height="18" rx="1"/>
+        <rect x="468" y="132" width="14" height="18" rx="1"/>
+        <rect x="504" y="132" width="14" height="18" rx="1"/>
+        <rect x="522" y="132" width="14" height="18" rx="1"/>
+        <!-- R4 -->
+        <rect x="432" y="164" width="14" height="18" rx="1"/>
+        <rect x="450" y="164" width="14" height="18" rx="1"/>
+        <rect x="522" y="164" width="14" height="18" rx="1"/>
+        <rect x="540" y="164" width="14" height="18" rx="1"/>
+        <!-- R5 -->
+        <rect x="450" y="196" width="14" height="18" rx="1"/>
+        <rect x="468" y="196" width="14" height="18" rx="1"/>
+        <rect x="504" y="196" width="14" height="18" rx="1"/>
+        <rect x="522" y="196" width="14" height="18" rx="1"/>
+        <!-- R6 -->
+        <rect x="468" y="228" width="14" height="18" rx="1"/>
+        <rect x="486" y="228" width="14" height="18" rx="1"/>
+        <rect x="504" y="228" width="14" height="18" rx="1"/>
+        <!-- R7 -->
+        <rect x="500" y="260" width="14" height="18" rx="1"/>
+      </g>
+
+      <!-- Right: Binary output panel -->
+      <rect x="760" y="30" width="400" height="280" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="760" y="30" width="400" height="28" fill="#EEECE6"/>
+      <text x="960" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.1em">BINARY SEQUENCE (CARD PROGRAM)</text>
+      <!-- Binary rows -->
+      <g font-family="'JetBrains Mono',monospace" font-size="13">
+        <text x="775" y="86" fill="#888880">R1:</text>
+        <text x="820" y="86" fill="#2E4057">0 0 0 </text><text x="892" y="86" fill="#C82A2A">1</text><text x="908" y="86" fill="#2E4057"> 0 0 0 0</text>
+        <text x="775" y="114" fill="#888880">R2:</text>
+        <text x="820" y="114" fill="#2E4057">0 0 </text><text x="866" y="114" fill="#C82A2A">1 1 1</text><text x="922" y="114" fill="#2E4057"> 0 0 0</text>
+        <text x="775" y="142" fill="#888880">R3:</text>
+        <text x="820" y="142" fill="#2E4057">0 </text><text x="838" y="142" fill="#C82A2A">1 1</text><text x="880" y="142" fill="#2E4057"> 0 </text><text x="912" y="142" fill="#C82A2A">1 1</text><text x="942" y="142" fill="#2E4057"> 0 0</text>
+        <text x="775" y="170" fill="#888880">R4:</text>
+        <text x="820" y="170" fill="#C82A2A">1 1</text><text x="856" y="170" fill="#2E4057"> 0 0 0 </text><text x="924" y="170" fill="#C82A2A">1 1</text><text x="954" y="170" fill="#2E4057"> 0</text>
+        <text x="775" y="198" fill="#888880">R5:</text>
+        <text x="820" y="198" fill="#2E4057">0 </text><text x="838" y="198" fill="#C82A2A">1 1</text><text x="880" y="198" fill="#2E4057"> 0 </text><text x="912" y="198" fill="#C82A2A">1 1</text><text x="942" y="198" fill="#2E4057"> 0 0</text>
+        <text x="775" y="226" fill="#888880">R6:</text>
+        <text x="820" y="226" fill="#2E4057">0 0 </text><text x="866" y="226" fill="#C82A2A">1 1 1</text><text x="922" y="226" fill="#2E4057"> 0 0 0</text>
+        <text x="775" y="254" fill="#888880">R7:</text>
+        <text x="820" y="254" fill="#2E4057">0 0 0 </text><text x="892" y="254" fill="#C82A2A">1</text><text x="908" y="254" fill="#2E4057"> 0 0 0 0</text>
+        <text x="775" y="282" fill="#888880">R8:</text>
+        <text x="820" y="282" fill="#2E4057">0 0 0 0 0 0 0 0</text>
+      </g>
+
+      <!-- Pattern name label on editor -->
+      <rect x="50" y="308" width="120" height="18" fill="rgba(46,64,87,0.08)"/>
+      <text x="110" y="321" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">Diamond motif</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="328" width="1200" height="32" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="348" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 0.3-E · Simulation static view. Left: 8×8 pattern editor (diamond motif, dark = weft over). Centre: generated punch card with corresponding holes. Right: binary representation — each row is one card row, 1s in red = holes = weft lifts.</text>
+      <text x="1140" y="348" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 0.3</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Static view of the Module 0.3 simulation. Left: the 8×8 pattern editor with a diamond motif drawn — dark cells indicate where the weft thread passes over the warp. Centre: the automatically generated punch card with holes punched at the corresponding positions. Right: the binary encoding — each row produces one byte of pattern data, with 1s (red) corresponding to holes and thread lifts. The complete 8-row card is the program that produces the diamond weave.</div>
+</div>
+
+</div><!-- end figures-wrap -->
+</body>
+</html>

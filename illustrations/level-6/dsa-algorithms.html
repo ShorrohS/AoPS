@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level 6 — Algorithm Visualisation Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:var(--accent-red);color:var(--accent-red);background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:900px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 6 — Data Structures & Algorithms</div>
+  <div class="page-title">Level 6 Part B — Algorithm Visualisation Atlas</div>
+  <div class="page-sub">4 figures · Sorting Comparison · BFS vs DFS · Dijkstra · Big-O Growth Curves</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 6B-A  Sorting Comparison -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 6B-A</span>
+    <span class="fig-title">Sorting Algorithm Comparison — Bubble vs Merge vs Quick</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" style="height:370px">
+      <defs>
+        <linearGradient id="algBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="420" fill="url(#algBg)"/>
+
+      <!-- Input array -->
+      <text x="600" y="24" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Input: [64, 34, 25, 12, 22, 11, 90]</text>
+
+      <!-- ── BUBBLE SORT ── -->
+      <rect x="30" y="38" width="360" height="360" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="30" y="38" width="360" height="22" fill="#C82A2A" opacity="0.08"/>
+      <text x="210" y="53" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#C82A2A">Bubble Sort — O(n²)</text>
+
+      <!-- Pass 1 visualization: bars -->
+      <text x="42" y="78" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Pass 1 (compare adjacent, swap if out of order):</text>
+      <!-- Input bars -->
+      <g transform="translate(42,84)">
+        <g fill="#C82A2A" opacity="0.6">
+          <rect x="0" y="0" width="20" height="64" rx="1"/><text x="10" y="75" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">64</text>
+          <rect x="24" y="34" width="20" height="30" rx="1"/><text x="34" y="75" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">34</text>
+          <rect x="48" y="39" width="20" height="25" rx="1"/><text x="58" y="75" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">25</text>
+          <rect x="72" y="52" width="20" height="12" rx="1"/><text x="82" y="75" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">12</text>
+          <rect x="96" y="42" width="20" height="22" rx="1"/><text x="106" y="75" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">22</text>
+          <rect x="120" y="53" width="20" height="11" rx="1"/><text x="130" y="75" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">11</text>
+          <rect x="144" y="0" width="20" height="90" rx="1" opacity="0.9"/><text x="154" y="75" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">90</text>
+        </g>
+        <!-- 90 bubbles to end - highlight -->
+        <rect x="144" y="0" width="20" height="90" rx="1" fill="#C82A2A" opacity="0.9" stroke="#C82A2A" stroke-width="1.5"/>
+        <text x="154" y="-6" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#C82A2A">max bubbles ↑</text>
+      </g>
+
+      <!-- After pass 1 -->
+      <text x="42" y="178" font-family="'Inter',sans-serif" font-size="9" fill="#888880">After pass 1: [34, 25, 12, 22, 11, 64, 90]</text>
+      <!-- After pass N (sorted) -->
+      <text x="42" y="196" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Requires n² comparisons for n elements</text>
+
+      <!-- Stats -->
+      <rect x="42" y="210" width="330" height="90" rx="1" fill="#C82A2A" opacity="0.06"/>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="56" y="232">Time:   O(n²) worst/avg · O(n) best</text>
+        <text x="56" y="250">Space:  O(1) in-place</text>
+        <text x="56" y="268">Stable: Yes</text>
+        <text x="56" y="286">Use:    Teaching only · never in production</text>
+      </g>
+
+      <!-- Pass count visual (7 passes needed) -->
+      <g fill="#C82A2A" opacity="0.5">
+        <rect x="42" y="312" width="18" height="10" rx="1"/>
+        <rect x="64" y="312" width="18" height="10" rx="1"/>
+        <rect x="86" y="312" width="18" height="10" rx="1"/>
+        <rect x="108" y="312" width="18" height="10" rx="1"/>
+        <rect x="130" y="312" width="18" height="10" rx="1"/>
+        <rect x="152" y="312" width="18" height="10" rx="1"/>
+        <rect x="174" y="312" width="18" height="10" rx="1"/>
+      </g>
+      <text x="206" y="322" font-family="'Inter',sans-serif" font-size="9" fill="#888880">7 passes · 21 comparisons</text>
+      <text x="210" y="356" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">n=1000 → ~500,000 comparisons</text>
+
+      <!-- ── MERGE SORT ── -->
+      <rect x="420" y="38" width="360" height="360" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="420" y="38" width="360" height="22" fill="#2E4057" opacity="0.08"/>
+      <text x="600" y="53" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2E4057">Merge Sort — O(n log n)</text>
+
+      <!-- Divide tree -->
+      <g font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">
+        <!-- Level 0: full array -->
+        <rect x="436" y="64" width="320" height="20" rx="1" fill="#2E4057" opacity="0.15"/>
+        <text x="596" y="78" fill="#2E4057">[64, 34, 25, 12, 22, 11, 90]</text>
+        <!-- Split lines -->
+        <line x1="596" y1="84" x2="516" y2="100" stroke="#888880" stroke-width="1"/>
+        <line x1="596" y1="84" x2="676" y2="100" stroke="#888880" stroke-width="1"/>
+        <!-- Level 1 -->
+        <rect x="440" y="100" width="148" height="18" rx="1" fill="#2E4057" opacity="0.1"/>
+        <text x="514" y="113" fill="#2E4057">[64, 34, 25, 12]</text>
+        <rect x="600" y="100" width="128" height="18" rx="1" fill="#2E4057" opacity="0.1"/>
+        <text x="664" y="113" fill="#2E4057">[22, 11, 90]</text>
+        <!-- Level 2 -->
+        <line x1="514" y1="118" x2="476" y2="134" stroke="#888880" stroke-width="1"/>
+        <line x1="514" y1="118" x2="550" y2="134" stroke="#888880" stroke-width="1"/>
+        <rect x="446" y="134" width="60" height="16" rx="1" fill="#2E4057" opacity="0.08"/>
+        <text x="476" y="146" fill="#2E4057">[64, 34]</text>
+        <rect x="520" y="134" width="60" height="16" rx="1" fill="#2E4057" opacity="0.08"/>
+        <text x="550" y="146" fill="#2E4057">[25, 12]</text>
+        <!-- Level 3 (singles) -->
+        <line x1="476" y1="150" x2="460" y2="163" stroke="#888880" stroke-width="0.8"/>
+        <line x1="476" y1="150" x2="492" y2="163" stroke="#888880" stroke-width="0.8"/>
+        <rect x="450" y="163" width="20" height="14" rx="1" fill="#728C69" opacity="0.4"/>
+        <text x="460" y="174" fill="#728C69">64</text>
+        <rect x="482" y="163" width="20" height="14" rx="1" fill="#728C69" opacity="0.4"/>
+        <text x="492" y="174" fill="#728C69">34</text>
+        <!-- Merge back arrow -->
+        <path d="M520 196 L520 210" stroke="#728C69" stroke-width="1" fill="none"/>
+        <text x="530" y="206" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">merge</text>
+      </g>
+
+      <!-- MERGE step visualization -->
+      <rect x="436" y="215" width="320" height="60" rx="1" fill="#728C69" opacity="0.1"/>
+      <text x="446" y="234" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">MERGE: [34,64] + [12,25] → [12,25,34,64]</text>
+      <text x="446" y="252" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Compare heads, take smaller, advance pointer</text>
+
+      <!-- Stats -->
+      <rect x="436" y="284" width="320" height="90" rx="1" fill="#2E4057" opacity="0.06"/>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="450" y="306">Time:  O(n log n) all cases</text>
+        <text x="450" y="324">Space: O(n) — needs auxiliary array</text>
+        <text x="450" y="342">Stable: Yes</text>
+        <text x="450" y="360">Use:  Linked lists, external sort, stable sort</text>
+      </g>
+      <text x="596" y="394" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">n=1000 → ~10,000 comparisons</text>
+
+      <!-- ── QUICK SORT ── -->
+      <rect x="810" y="38" width="360" height="360" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="810" y="38" width="360" height="22" fill="#8B6914" opacity="0.1"/>
+      <text x="990" y="53" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#8B6914">Quick Sort — O(n log n) avg</text>
+
+      <!-- Partition step -->
+      <text x="824" y="78" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Choose pivot (last element): 90</text>
+      <!-- Array with pivot -->
+      <g transform="translate(824,84)">
+        <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+          <rect x="0" y="0" width="30" height="28" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+          <text x="15" y="19" fill="#3A3A3A">64</text>
+          <rect x="34" y="0" width="30" height="28" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+          <text x="49" y="19" fill="#3A3A3A">34</text>
+          <rect x="68" y="0" width="30" height="28" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+          <text x="83" y="19" fill="#3A3A3A">25</text>
+          <rect x="102" y="0" width="30" height="28" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+          <text x="117" y="19" fill="#3A3A3A">12</text>
+          <rect x="136" y="0" width="30" height="28" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+          <text x="151" y="19" fill="#3A3A3A">22</text>
+          <rect x="170" y="0" width="30" height="28" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+          <text x="185" y="19" fill="#3A3A3A">11</text>
+          <rect x="204" y="0" width="30" height="28" rx="1" fill="#8B6914" opacity="0.7" stroke="#8B6914" stroke-width="1.5"/>
+          <text x="219" y="19" fill="#FDFDFD">90</text>
+          <text x="219" y="40" fill="#8B6914" font-size="8">PIVOT</text>
+        </g>
+      </g>
+
+      <!-- After partition -->
+      <text x="824" y="152" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Partition: all &lt; 90 go left, all &gt; 90 go right:</text>
+      <g transform="translate(824,158)">
+        <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+          <!-- Left partition (all < 90) -->
+          <rect x="0" y="0" width="198" height="28" rx="1" fill="#2E4057" opacity="0.1" stroke="#2E4057" stroke-width="1"/>
+          <text x="99" y="19" fill="#2E4057">64  34  25  12  22  11</text>
+          <rect x="202" y="0" width="30" height="28" rx="1" fill="#8B6914" opacity="0.7" stroke="#8B6914" stroke-width="1.5"/>
+          <text x="217" y="19" fill="#FDFDFD">90</text>
+          <text x="99" y="38" font-size="8" fill="#2E4057">recurse on this</text>
+        </g>
+      </g>
+
+      <!-- Stats -->
+      <rect x="824" y="230" width="330" height="110" rx="1" fill="#8B6914" opacity="0.06"/>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="838" y="252">Time:  O(n log n) avg · O(n²) worst</text>
+        <text x="838" y="270">Space: O(log n) recursive stack</text>
+        <text x="838" y="288">Stable: No</text>
+        <text x="838" y="306">Use:  Default sort (introsort in std libs)</text>
+        <text x="838" y="324">Worst: sorted input with bad pivot choice</text>
+      </g>
+      <text x="990" y="364" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8B6914">n=1000 → ~10,000 avg comparisons</text>
+
+      <rect x="0" y="398" width="1200" height="22" fill="rgba(44,64,87,0.04)"/>
+      <text x="1140" y="414" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · Level 6 Part B</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Three sorting algorithms on 7 elements. Bubble Sort (O(n²)): repeatedly compare adjacent pairs and swap — the maximum "bubbles" to the right on each pass. Simple but impractical: 1000 elements require ~500,000 comparisons. Merge Sort (O(n log n)): recursively split into halves, sort each half, merge back — guaranteed n log n at all times but requires O(n) extra memory. Quick Sort (O(n log n) average): choose a pivot, partition around it, recurse on each partition — fastest in practice due to cache efficiency, but O(n²) worst case on sorted input with naive pivot selection. Production sort implementations (C++ std::sort, Python timsort) use hybrid strategies to avoid worst cases.</div>
+</div>
+
+<!-- FIG 6B-B  BFS vs DFS -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Concept Diagram</span>
+    <span class="fig-id">FIG 6B-B</span>
+    <span class="fig-title">BFS vs DFS — Two Graph Traversal Strategies</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 340" xmlns="http://www.w3.org/2000/svg" style="height:290px">
+      <rect width="1200" height="340" fill="#F4EFE6"/>
+
+      <!-- Left: BFS -->
+      <rect x="40" y="20" width="520" height="280" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="20" width="520" height="24" fill="#728C69" opacity="0.1"/>
+      <text x="300" y="37" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">BFS — Breadth-First Search (uses Queue)</text>
+
+      <!-- Tree nodes - BFS order: level by level -->
+      <!-- Level 0 -->
+      <circle cx="300" cy="72" r="18" fill="#728C69" opacity="0.9"/><text x="300" y="77" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">1</text>
+      <!-- Level 1 -->
+      <line x1="286" y1="88" x2="200" y2="112" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="185" cy="122" r="18" fill="#728C69" opacity="0.7"/><text x="185" y="127" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">2</text>
+      <line x1="314" y1="88" x2="400" y2="112" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="415" cy="122" r="18" fill="#728C69" opacity="0.7"/><text x="415" y="127" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">3</text>
+      <!-- Level 2 -->
+      <line x1="172" y1="138" x2="130" y2="162" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="118" cy="172" r="18" fill="#728C69" opacity="0.5"/><text x="118" y="177" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">4</text>
+      <line x1="198" y1="138" x2="240" y2="162" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="252" cy="172" r="18" fill="#728C69" opacity="0.5"/><text x="252" y="177" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">5</text>
+      <line x1="402" y1="138" x2="360" y2="162" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="348" cy="172" r="18" fill="#728C69" opacity="0.5"/><text x="348" y="177" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">6</text>
+      <line x1="428" y1="138" x2="470" y2="162" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="482" cy="172" r="18" fill="#728C69" opacity="0.5"/><text x="482" y="177" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">7</text>
+
+      <!-- BFS order label -->
+      <text x="300" y="220" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69" font-weight="500">Visit order: 1 → 2 → 3 → 4 → 5 → 6 → 7</text>
+      <text x="300" y="238" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Level-by-level · uses Queue</text>
+      <rect x="60" y="248" width="480" height="36" rx="1" fill="#728C69" opacity="0.08"/>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="80" y="262">✓ Finds shortest path (unweighted)</text>
+        <text x="80" y="278">✓ Level-order traversal, nearest-neighbour</text>
+      </g>
+
+      <!-- VS divider -->
+      <line x1="574" y1="20" x2="574" y2="300" stroke="#D8D6CE" stroke-width="1.5"/>
+
+      <!-- Right: DFS -->
+      <rect x="640" y="20" width="520" height="280" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="640" y="20" width="520" height="24" fill="#C82A2A" opacity="0.07"/>
+      <text x="900" y="37" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">DFS — Depth-First Search (uses Stack)</text>
+
+      <!-- Same tree - DFS order: go deep first -->
+      <circle cx="900" cy="72" r="18" fill="#C82A2A" opacity="0.9"/><text x="900" y="77" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">1</text>
+      <!-- Go left deep first -->
+      <line x1="886" y1="88" x2="800" y2="112" stroke="#C82A2A" stroke-width="2"/>
+      <circle cx="785" cy="122" r="18" fill="#C82A2A" opacity="0.7"/><text x="785" y="127" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">2</text>
+      <line x1="914" y1="88" x2="1000" y2="112" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="1015" cy="122" r="18" fill="#C82A2A" opacity="0.3"/><text x="1015" y="127" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">6</text>
+      <!-- Go deep left-left -->
+      <line x1="772" y1="138" x2="730" y2="162" stroke="#C82A2A" stroke-width="2"/>
+      <circle cx="718" cy="172" r="18" fill="#C82A2A" opacity="0.6"/><text x="718" y="177" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">3</text>
+      <line x1="798" y1="138" x2="840" y2="162" stroke="#C82A2A" stroke-width="1.5"/>
+      <circle cx="852" cy="172" r="18" fill="#C82A2A" opacity="0.4"/><text x="852" y="177" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">5</text>
+      <!-- Level 3 under 3 -->
+      <line x1="706" y1="188" x2="680" y2="208" stroke="#C82A2A" stroke-width="1.5"/>
+      <circle cx="668" cy="218" r="16" fill="#C82A2A" opacity="0.5"/><text x="668" y="223" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">4</text>
+      <line x1="1002" y1="138" x2="960" y2="162" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="948" cy="172" r="18" fill="#C82A2A" opacity="0.25"/><text x="948" y="177" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">7</text>
+
+      <!-- DFS order label -->
+      <text x="900" y="250" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A" font-weight="500">Visit order: 1 → 2 → 3 → 4 → 5 → 6 → 7</text>
+      <text x="900" y="268" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Deep-first (pre-order shown) · uses Stack/recursion</text>
+      <rect x="660" y="278" width="480" height="20" rx="1" fill="#C82A2A" opacity="0.06"/>
+      <text x="900" y="292" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">✓ Maze solving, topological sort, cycle detection</text>
+
+      <rect x="0" y="312" width="1200" height="28" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="331" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 6B-B · BFS visits nodes level by level using a queue — guarantees shortest path on unweighted graphs. DFS goes as deep as possible before backtracking using a stack — memory efficient, suits maze/cycle detection.</text>
+      <text x="1140" y="331" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · L6B</text>
+    </svg>
+  </div>
+  <div class="fig-caption">BFS vs DFS traversal of the same tree. BFS (left, green): uses a Queue — dequeue a node, process it, enqueue all its unvisited neighbours. This processes all nodes at distance 1, then all at distance 2, etc. Guarantees the shortest path in unweighted graphs. DFS (right, red): uses a Stack (or recursion) — push a node, process it, push its first unvisited neighbour immediately. Goes as deep as possible before backtracking. Both are O(V+E) time. BFS uses O(V) space for the queue (wide graphs are expensive). DFS uses O(h) stack space where h is the tree height (tall/deep graphs are expensive). Choice depends on the problem: shortest path → BFS; maze solving, topological sort, cycle detection → DFS.</div>
+</div>
+
+<!-- FIG 6B-C  Big-O Growth Curves -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Concept Diagram</span>
+    <span class="fig-id">FIG 6B-C</span>
+    <span class="fig-title">Big-O Growth Curves — Why Complexity Matters at Scale</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:310px">
+      <rect width="1200" height="360" fill="#F4EFE6"/>
+
+      <!-- Chart area -->
+      <rect x="100" y="20" width="680" height="300" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- Axes -->
+      <line x1="100" y1="320" x2="780" y2="320" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="100" y1="20" x2="100" y2="320" stroke="#2C2C2C" stroke-width="1.5"/>
+
+      <!-- X axis labels -->
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880" text-anchor="middle">
+        <text x="100" y="334">1</text>
+        <text x="220" y="334">10</text>
+        <text x="340" y="334">100</text>
+        <text x="460" y="334">1K</text>
+        <text x="580" y="334">10K</text>
+        <text x="700" y="334">100K</text>
+        <text x="780" y="334">n</text>
+      </g>
+
+      <!-- Y axis labels -->
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880" text-anchor="end">
+        <text x="95" y="324">1</text>
+        <text x="95" y="270">10</text>
+        <text x="95" y="216">100</text>
+        <text x="95" y="162">1K</text>
+        <text x="95" y="108">10K</text>
+        <text x="95" y="54">ops</text>
+      </g>
+
+      <!-- Grid lines -->
+      <g stroke="#E8E6DF" stroke-width="0.5">
+        <line x1="100" y1="270" x2="780" y2="270"/>
+        <line x1="100" y1="216" x2="780" y2="216"/>
+        <line x1="100" y1="162" x2="780" y2="162"/>
+        <line x1="100" y1="108" x2="780" y2="108"/>
+        <line x1="220" y1="20" x2="220" y2="320"/>
+        <line x1="340" y1="20" x2="340" y2="320"/>
+        <line x1="460" y1="20" x2="460" y2="320"/>
+        <line x1="580" y1="20" x2="580" y2="320"/>
+        <line x1="700" y1="20" x2="700" y2="320"/>
+      </g>
+
+      <!-- O(1) - constant -->
+      <line x1="100" y1="316" x2="780" y2="316" stroke="#728C69" stroke-width="2.5"/>
+      <!-- O(log n) -->
+      <path d="M100 316 Q220 296 340 283 Q460 272 580 263 Q700 255 780 250" stroke="#2E4057" stroke-width="2" fill="none"/>
+      <!-- O(n) - linear -->
+      <path d="M100 316 Q220 302 340 288 Q460 256 580 216 Q700 162 780 120" stroke="#8B6914" stroke-width="2" fill="none"/>
+      <!-- O(n log n) -->
+      <path d="M100 316 Q220 300 340 280 Q460 244 580 195 Q700 130 780 78" stroke="#8B6914" stroke-width="2" fill="none" stroke-dasharray="6,3"/>
+      <!-- O(n²) - quadratic -->
+      <path d="M100 316 Q180 308 220 296 Q300 272 340 248 Q420 194 460 144 Q520 74 560 32" stroke="#C82A2A" stroke-width="2.5" fill="none"/>
+      <!-- O(2^n) - exponential (shoots off fast) -->
+      <path d="M100 316 Q130 314 150 310 Q180 296 200 270 Q220 220 240 140" stroke="#C82A2A" stroke-width="2" fill="none" stroke-dasharray="4,2" opacity="0.7"/>
+
+      <!-- Labels on right -->
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#3A3A3A">
+        <text x="795" y="318" fill="#728C69">O(1)</text>
+        <text x="795" y="253" fill="#2E4057">O(log n)</text>
+        <text x="795" y="120" fill="#8B6914">O(n)</text>
+        <text x="795" y="80" fill="#8B6914">O(n log n)</text>
+        <text x="795" y="44" fill="#C82A2A">O(n²)</text>
+        <text x="248" y="128" fill="#C82A2A" font-size="9">O(2ⁿ)</text>
+      </g>
+
+      <!-- Real-world examples table (right) -->
+      <rect x="900" y="20" width="280" height="320" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="900" y="20" width="280" height="22" fill="#2E4057" opacity="0.07"/>
+      <text x="1040" y="35" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.08em">REAL EXAMPLES</text>
+      <g font-family="'Inter',sans-serif" font-size="10">
+        <text x="912" y="60" fill="#728C69" font-weight="500">O(1)</text>
+        <text x="912" y="76" fill="#888880">Hash table lookup</text>
+        <text x="912" y="92" fill="#888880">Array index access</text>
+        <line x1="908" y1="100" x2="1172" y2="100" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="912" y="116" fill="#2E4057" font-weight="500">O(log n)</text>
+        <text x="912" y="132" fill="#888880">Binary search</text>
+        <text x="912" y="148" fill="#888880">BST search (balanced)</text>
+        <line x1="908" y1="156" x2="1172" y2="156" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="912" y="172" fill="#8B6914" font-weight="500">O(n)</text>
+        <text x="912" y="188" fill="#888880">Linear search</text>
+        <text x="912" y="204" fill="#888880">Single loop</text>
+        <line x1="908" y1="212" x2="1172" y2="212" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="912" y="228" fill="#8B6914" font-weight="500">O(n log n)</text>
+        <text x="912" y="244" fill="#888880">Merge sort, quicksort</text>
+        <text x="912" y="260" fill="#888880">Heapsort</text>
+        <line x1="908" y1="268" x2="1172" y2="268" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="912" y="284" fill="#C82A2A" font-weight="500">O(n²)</text>
+        <text x="912" y="300" fill="#888880">Bubble/insertion sort</text>
+        <text x="912" y="316" fill="#888880">Nested loops</text>
+      </g>
+
+      <rect x="0" y="344" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="1140" y="356" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · L6B</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Big-O growth curves on a log-log scale. O(1) is horizontal — constant time regardless of input. O(log n) grows barely at all — doubling the input only adds one step. O(n) grows proportionally — twice the data, twice the time. O(n log n) is slightly worse but acceptable for large inputs (merge sort on a million items: ~20 million operations). O(n²) becomes unusable at scale: a million items need a trillion operations. O(2ⁿ) (exponential) shoots off the chart almost immediately — viable only for n &lt; 30. Choosing an algorithm is choosing a curve; at n=10,000 the difference between O(n²) and O(n log n) is 10,000,000 vs 133,000 — a 75× difference that compounds rapidly.</div>
+</div>
+
+</div>
+</body>
+</html>

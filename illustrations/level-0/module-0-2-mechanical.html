@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 0.2 Illustrations — Early Mechanical Computation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-paper:#F4F3EF; --bg-washi:#FDFDFD; --bg-warm:#EEECE6; --bg-canvas:#F8F7F3;
+    --text-sumi:#1C1C1C; --text-body:#3A3A3A; --text-muted:#888880; --text-ghost:#BBBBB5;
+    --accent-red:#C82A2A; --accent-indigo:#1C2D42; --accent-gold:#8B6914;
+    --border-light:#D8D6CE; --border-paper:#E8E6DF;
+    --zen-sand:#F4EFE6; --zen-ink:#2C2C2C; --zen-stone:#6E6E6E;
+    --zen-bamboo:#728C69; --zen-indigo:#2E4057;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg-paper); color: var(--text-sumi); font-family: 'Inter', sans-serif; font-weight: 300; }
+
+  .page-header { padding: 40px 60px 32px; border-bottom: 1px solid var(--border-light); background: var(--bg-washi); }
+  .breadcrumb { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-muted); margin-bottom: 10px; }
+  .breadcrumb a { color: var(--accent-indigo); text-decoration: none; }
+  .page-title { font-family: 'Noto Serif JP', serif; font-size: 28px; font-weight: 300; color: var(--text-sumi); letter-spacing: -0.01em; margin-bottom: 6px; }
+  .page-sub { font-size: 13px; color: var(--text-muted); }
+
+  .figures-wrap { padding: 52px 60px 80px; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 80px; }
+
+  .figure-block {}
+  .figure-label { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+  .fig-type { font-size: 9px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.16em; padding: 4px 8px; border: 1px solid; }
+  .fig-type.hero  { border-color: var(--accent-indigo); color: var(--accent-indigo); background: rgba(44,64,87,0.04); }
+  .fig-type.diag  { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(139,105,20,0.04); }
+  .fig-type.hist  { border-color: var(--zen-bamboo); color: var(--zen-bamboo); background: rgba(114,140,105,0.04); }
+  .fig-type.sim   { border-color: var(--accent-red); color: var(--accent-red); background: rgba(200,42,42,0.04); }
+  .fig-id { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-ghost); }
+  .fig-title { font-size: 15px; font-weight: 500; color: var(--text-sumi); }
+  .fig-caption { font-size: 12px; color: var(--text-muted); margin-top: 10px; line-height: 1.6; max-width: 800px; border-left: 2px solid var(--border-paper); padding-left: 14px; }
+  .fig-frame { background: var(--zen-sand); border: 1px solid var(--border-paper); overflow: hidden; }
+  .fig-frame svg { display: block; width: 100%; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 0 — Before Computers</div>
+  <div class="page-title">Module 0.2 — Early Mechanical Computation</div>
+  <div class="page-sub">5 figures · Chapter Hero · Napier's Bones · Pascaline Carry · Mechanical Comparison Table · Simulation Figure</div>
+</div>
+
+<div class="figures-wrap">
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIGURE 0.2-A  Chapter Hero — The Mechanical Calculator Workshop
+════════════════════════════════════════════════════════════ -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 0.2-A</span>
+    <span class="fig-title">The Mechanical Calculator — Arithmetic Encoded in Metal and Motion</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 580" xmlns="http://www.w3.org/2000/svg" style="height:480px">
+      <defs>
+        <linearGradient id="bg02" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#F0EAE0"/>
+          <stop offset="100%" stop-color="#E8E2D8"/>
+        </linearGradient>
+        <linearGradient id="metalGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EDEAE4"/>
+          <stop offset="40%" stop-color="#D8D4CC"/>
+          <stop offset="100%" stop-color="#C8C4BC"/>
+        </linearGradient>
+        <linearGradient id="wheelGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#E8E4DC"/>
+          <stop offset="100%" stop-color="#C4C0B8"/>
+        </linearGradient>
+        <filter id="softShadow">
+          <feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="#2C2C2C" flood-opacity="0.12"/>
+        </filter>
+      </defs>
+
+      <!-- Background -->
+      <rect width="1200" height="580" fill="url(#bg02)"/>
+      <!-- Subtle cross-hatch texture -->
+      <line x1="0" y1="0" x2="1200" y2="580" stroke="#D8D4CC" stroke-width="0.3" opacity="0.4"/>
+      <line x1="0" y1="580" x2="1200" y2="0" stroke="#D8D4CC" stroke-width="0.3" opacity="0.4"/>
+
+      <!-- ── PASCALINE BODY (centre-left) ── -->
+      <!-- Main cabinet -->
+      <rect x="180" y="200" width="420" height="120" rx="2" fill="url(#metalGrad)" stroke="#A8A4A0" stroke-width="1.5" filter="url(#softShadow)"/>
+      <!-- Top face -->
+      <rect x="185" y="205" width="410" height="30" rx="1" fill="#DEDAD4" stroke="#A8A4A0" stroke-width="0.5"/>
+      <!-- Decorative border on cabinet -->
+      <rect x="192" y="210" width="396" height="18" rx="0" fill="none" stroke="#B8B4B0" stroke-width="0.5"/>
+
+      <!-- Result windows (6 digit display slots) -->
+      <g fill="#1A1A1A">
+        <!-- Window frames -->
+        <rect x="205" y="246" width="50" height="40" rx="1" fill="#2C2C2C"/>
+        <rect x="268" y="246" width="50" height="40" rx="1" fill="#2C2C2C"/>
+        <rect x="331" y="246" width="50" height="40" rx="1" fill="#2C2C2C"/>
+        <rect x="394" y="246" width="50" height="40" rx="1" fill="#2C2C2C"/>
+        <rect x="457" y="246" width="50" height="40" rx="1" fill="#2C2C2C"/>
+        <rect x="520" y="246" width="50" height="40" rx="1" fill="#2C2C2C"/>
+        <!-- Display numerals -->
+        <text x="230" y="274" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="20" font-weight="400" fill="#F4EFE6">3</text>
+        <text x="293" y="274" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="20" font-weight="400" fill="#F4EFE6">4</text>
+        <text x="356" y="274" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="20" font-weight="400" fill="#F4EFE6">7</text>
+        <text x="419" y="274" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="20" font-weight="400" fill="#F4EFE6">0</text>
+        <text x="482" y="274" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="20" font-weight="400" fill="#F4EFE6">0</text>
+        <text x="545" y="274" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="20" font-weight="400" fill="#F4EFE6">8</text>
+      </g>
+
+      <!-- ── INPUT WHEELS below cabinet ── -->
+      <!-- 6 toothed input wheels -->
+      <g>
+        <!-- Wheel 1 -->
+        <circle cx="230" cy="360" r="32" fill="url(#wheelGrad)" stroke="#8C8884" stroke-width="1.5"/>
+        <circle cx="230" cy="360" r="22" fill="#D8D4CC" stroke="#8C8884" stroke-width="1"/>
+        <circle cx="230" cy="360" r="5" fill="#6E6A66"/>
+        <!-- Teeth on wheel 1 -->
+        <g fill="#A8A4A0" stroke="#8C8884" stroke-width="0.5">
+          <rect x="228" y="324" width="4" height="8" rx="1"/>
+          <rect x="246" y="328" width="4" height="8" rx="1" transform="rotate(36,248,364)"/>
+          <rect x="258" y="342" width="4" height="8" rx="1" transform="rotate(72,232,364)"/>
+          <rect x="228" y="388" width="4" height="8" rx="1"/>
+          <rect x="212" y="376" width="4" height="8" rx="1" transform="rotate(-72,228,360)"/>
+          <rect x="200" y="344" width="4" height="8" rx="1" transform="rotate(-36,228,360)"/>
+        </g>
+        <!-- Digit on wheel -->
+        <text x="230" y="365" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2C2C2C">3</text>
+
+        <!-- Wheel 2 -->
+        <circle cx="293" cy="360" r="32" fill="url(#wheelGrad)" stroke="#8C8884" stroke-width="1.5"/>
+        <circle cx="293" cy="360" r="22" fill="#D8D4CC" stroke="#8C8884" stroke-width="1"/>
+        <circle cx="293" cy="360" r="5" fill="#6E6A66"/>
+        <g fill="#A8A4A0" stroke="#8C8884" stroke-width="0.5">
+          <rect x="291" y="324" width="4" height="8" rx="1"/>
+          <rect x="291" y="388" width="4" height="8" rx="1"/>
+          <rect x="257" y="358" width="8" height="4" rx="1"/>
+          <rect x="325" y="358" width="8" height="4" rx="1"/>
+        </g>
+        <text x="293" y="365" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2C2C2C">4</text>
+
+        <!-- Wheel 3 (at 9, about to carry) -->
+        <circle cx="356" cy="360" r="32" fill="#E4DDD4" stroke="#C82A2A" stroke-width="2"/>
+        <circle cx="356" cy="360" r="22" fill="#D8D4CC" stroke="#C82A2A" stroke-width="1"/>
+        <circle cx="356" cy="360" r="5" fill="#C82A2A"/>
+        <g fill="#A8A4A0" stroke="#8C8884" stroke-width="0.5">
+          <rect x="354" y="324" width="4" height="8" rx="1"/>
+          <rect x="354" y="388" width="4" height="8" rx="1"/>
+          <rect x="320" y="358" width="8" height="4" rx="1"/>
+          <rect x="384" y="358" width="8" height="4" rx="1"/>
+        </g>
+        <text x="356" y="365" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#C82A2A">9</text>
+        <!-- Carry arrow emerging from wheel 3 -->
+        <path d="M388 340 Q410 310 430 330" stroke="#C82A2A" stroke-width="2" fill="none" stroke-dasharray="4,2"/>
+        <path d="M427 326 L434 333 L424 336" fill="#C82A2A"/>
+        <text x="408" y="305" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" letter-spacing="0.06em">CARRY →</text>
+
+        <!-- Wheel 4 (receiving carry) -->
+        <circle cx="419" cy="360" r="32" fill="#EDE8E0" stroke="#8B6914" stroke-width="2"/>
+        <circle cx="419" cy="360" r="22" fill="#D8D4CC" stroke="#8B6914" stroke-width="1"/>
+        <circle cx="419" cy="360" r="5" fill="#8B6914"/>
+        <g fill="#A8A4A0" stroke="#8C8884" stroke-width="0.5">
+          <rect x="417" y="324" width="4" height="8" rx="1"/>
+          <rect x="417" y="388" width="4" height="8" rx="1"/>
+        </g>
+        <text x="419" y="365" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#8B6914">0</text>
+
+        <!-- Wheel 5 -->
+        <circle cx="482" cy="360" r="32" fill="url(#wheelGrad)" stroke="#8C8884" stroke-width="1.5"/>
+        <circle cx="482" cy="360" r="22" fill="#D8D4CC" stroke="#8C8884" stroke-width="1"/>
+        <circle cx="482" cy="360" r="5" fill="#6E6A66"/>
+        <text x="482" y="365" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2C2C2C">0</text>
+
+        <!-- Wheel 6 -->
+        <circle cx="545" cy="360" r="32" fill="url(#wheelGrad)" stroke="#8C8884" stroke-width="1.5"/>
+        <circle cx="545" cy="360" r="22" fill="#D8D4CC" stroke="#8C8884" stroke-width="1"/>
+        <circle cx="545" cy="360" r="5" fill="#6E6A66"/>
+        <text x="545" y="365" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2C2C2C">8</text>
+      </g>
+
+      <!-- Gear linkage between wheel 3 and 4 -->
+      <line x1="388" y1="360" x2="403" y2="360" stroke="#8C8884" stroke-width="3" stroke-linecap="round"/>
+
+      <!-- ── NAPIER'S BONES (right side) ── -->
+      <!-- Background panel -->
+      <rect x="680" y="130" width="420" height="320" rx="1" fill="#EDE8DF" stroke="#C8C4BC" stroke-width="1" filter="url(#softShadow)"/>
+      <rect x="688" y="138" width="404" height="20" fill="#2E4057" opacity="0.08"/>
+      <text x="890" y="153" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.14em">NAPIER'S BONES — ROD SET</text>
+
+      <!-- Individual rods -->
+      <g>
+        <!-- Rod for 3 -->
+        <rect x="700" y="162" width="44" height="268" rx="1" fill="#FDFDFD" stroke="#C8C4BC" stroke-width="1"/>
+        <rect x="700" y="162" width="44" height="22" fill="#D8D4CC"/>
+        <text x="722" y="178" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2C2C2C" font-weight="500">3</text>
+        <!-- cells -->
+        <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#3A3A3A" text-anchor="middle">
+          <line x1="700" y1="184" x2="744" y2="184" stroke="#E8E6DF" stroke-width="0.5"/>
+          <text x="722" y="200">0/3</text>
+          <line x1="700" y1="207" x2="744" y2="207" stroke="#E8E6DF" stroke-width="0.5"/>
+          <text x="722" y="223">0/6</text>
+          <line x1="700" y1="230" x2="744" y2="230" stroke="#E8E6DF" stroke-width="0.5"/>
+          <text x="722" y="246">0/9</text>
+          <line x1="700" y1="253" x2="744" y2="253" stroke="#E8E6DF" stroke-width="0.5"/>
+          <text x="722" y="269">1/2</text>
+          <line x1="700" y1="276" x2="744" y2="276" stroke="#E8E6DF" stroke-width="0.5"/>
+          <text x="722" y="292">1/5</text>
+          <line x1="700" y1="299" x2="744" y2="299" stroke="#E8E6DF" stroke-width="0.5"/>
+          <text x="722" y="315">1/8</text>
+          <line x1="700" y1="322" x2="744" y2="322" stroke="#E8E6DF" stroke-width="0.5"/>
+          <text x="722" y="338">2/1</text>
+          <line x1="700" y1="345" x2="744" y2="345" stroke="#E8E6DF" stroke-width="0.5"/>
+          <text x="722" y="361">2/4</text>
+          <line x1="700" y1="368" x2="744" y2="368" stroke="#E8E6DF" stroke-width="0.5"/>
+          <text x="722" y="384">2/7</text>
+          <line x1="700" y1="391" x2="744" y2="391" stroke="#E8E6DF" stroke-width="0.5"/>
+          <text x="722" y="407">3/0</text>
+        </g>
+        <!-- diagonal dividers in cells -->
+        <g stroke="#E8E6DF" stroke-width="0.5">
+          <line x1="700" y1="207" x2="744" y2="184"/>
+          <line x1="700" y1="230" x2="744" y2="207"/>
+          <line x1="700" y1="253" x2="744" y2="230"/>
+          <line x1="700" y1="276" x2="744" y2="253"/>
+          <line x1="700" y1="299" x2="744" y2="276"/>
+          <line x1="700" y1="322" x2="744" y2="299"/>
+          <line x1="700" y1="345" x2="744" y2="322"/>
+          <line x1="700" y1="368" x2="744" y2="345"/>
+          <line x1="700" y1="391" x2="744" y2="368"/>
+          <line x1="700" y1="414" x2="744" y2="391"/>
+        </g>
+
+        <!-- Rod for 5 -->
+        <rect x="748" y="162" width="44" height="268" rx="1" fill="#FDFDFD" stroke="#C8C4BC" stroke-width="1"/>
+        <rect x="748" y="162" width="44" height="22" fill="#D8D4CC"/>
+        <text x="770" y="178" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2C2C2C" font-weight="500">5</text>
+        <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#3A3A3A" text-anchor="middle">
+          <text x="770" y="200">0/5</text>
+          <text x="770" y="223">1/0</text>
+          <text x="770" y="246">1/5</text>
+          <text x="770" y="269">2/0</text>
+          <text x="770" y="292">2/5</text>
+          <text x="770" y="315">3/0</text>
+          <text x="770" y="338">3/5</text>
+          <text x="770" y="361">4/0</text>
+          <text x="770" y="384">4/5</text>
+          <text x="770" y="407">5/0</text>
+        </g>
+        <g stroke="#E8E6DF" stroke-width="0.5">
+          <line x1="748" y1="184" x2="792" y2="184"/>
+          <line x1="748" y1="207" x2="792" y2="207"/>
+          <line x1="748" y1="230" x2="792" y2="230"/>
+          <line x1="748" y1="253" x2="792" y2="253"/>
+          <line x1="748" y1="276" x2="792" y2="276"/>
+          <line x1="748" y1="299" x2="792" y2="299"/>
+          <line x1="748" y1="322" x2="792" y2="322"/>
+          <line x1="748" y1="345" x2="792" y2="345"/>
+          <line x1="748" y1="368" x2="792" y2="368"/>
+          <line x1="748" y1="391" x2="792" y2="391"/>
+          <line x1="748" y1="207" x2="792" y2="184"/>
+          <line x1="748" y1="230" x2="792" y2="207"/>
+          <line x1="748" y1="253" x2="792" y2="230"/>
+          <line x1="748" y1="276" x2="792" y2="253"/>
+          <line x1="748" y1="299" x2="792" y2="276"/>
+          <line x1="748" y1="322" x2="792" y2="299"/>
+          <line x1="748" y1="345" x2="792" y2="322"/>
+          <line x1="748" y1="368" x2="792" y2="345"/>
+          <line x1="748" y1="391" x2="792" y2="368"/>
+          <line x1="748" y1="414" x2="792" y2="391"/>
+        </g>
+
+        <!-- Rod for 7 -->
+        <rect x="796" y="162" width="44" height="268" rx="1" fill="#FDFDFD" stroke="#C8C4BC" stroke-width="1"/>
+        <rect x="796" y="162" width="44" height="22" fill="#D8D4CC"/>
+        <text x="818" y="178" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2C2C2C" font-weight="500">7</text>
+        <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#3A3A3A" text-anchor="middle">
+          <text x="818" y="200">0/7</text>
+          <text x="818" y="223">1/4</text>
+          <text x="818" y="246">2/1</text>
+          <text x="818" y="269">2/8</text>
+          <text x="818" y="292">3/5</text>
+          <text x="818" y="315">4/2</text>
+          <text x="818" y="338">4/9</text>
+          <text x="818" y="361">5/6</text>
+          <text x="818" y="384">6/3</text>
+          <text x="818" y="407">7/0</text>
+        </g>
+        <g stroke="#E8E6DF" stroke-width="0.5">
+          <line x1="796" y1="184" x2="840" y2="184"/><line x1="796" y1="207" x2="840" y2="207"/>
+          <line x1="796" y1="230" x2="840" y2="230"/><line x1="796" y1="253" x2="840" y2="253"/>
+          <line x1="796" y1="276" x2="840" y2="276"/><line x1="796" y1="299" x2="840" y2="299"/>
+          <line x1="796" y1="322" x2="840" y2="322"/><line x1="796" y1="345" x2="840" y2="345"/>
+          <line x1="796" y1="368" x2="840" y2="368"/><line x1="796" y1="391" x2="840" y2="391"/>
+          <line x1="796" y1="207" x2="840" y2="184"/><line x1="796" y1="230" x2="840" y2="207"/>
+          <line x1="796" y1="253" x2="840" y2="230"/><line x1="796" y1="276" x2="840" y2="253"/>
+          <line x1="796" y1="299" x2="840" y2="276"/><line x1="796" y1="322" x2="840" y2="299"/>
+          <line x1="796" y1="345" x2="840" y2="322"/><line x1="796" y1="368" x2="840" y2="345"/>
+          <line x1="796" y1="391" x2="840" y2="368"/><line x1="796" y1="414" x2="840" y2="391"/>
+        </g>
+
+        <!-- Row 6 highlight (multiplier=6) -->
+        <rect x="700" y="299" width="396" height="23" fill="#C82A2A" opacity="0.08" stroke="#C82A2A" stroke-width="0.5"/>
+        <text x="862" y="314" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" font-weight="500">× 6 →</text>
+      </g>
+
+      <!-- Index rod on far left -->
+      <rect x="656" y="162" width="40" height="268" rx="1" fill="#D8D4CC" stroke="#C8C4BC" stroke-width="1"/>
+      <rect x="656" y="162" width="40" height="22" fill="#B8B4AC"/>
+      <text x="676" y="178" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" font-weight="500">×</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#6E6E6E" text-anchor="middle">
+        <text x="676" y="200">1</text><text x="676" y="223">2</text>
+        <text x="676" y="246">3</text><text x="676" y="269">4</text>
+        <text x="676" y="292">5</text>
+        <text x="676" y="315" fill="#C82A2A" font-weight="500">6</text>
+        <text x="676" y="338">7</text><text x="676" y="361">8</text>
+        <text x="676" y="384">9</text><text x="676" y="407">10</text>
+      </g>
+      <g stroke="#E8E6DF" stroke-width="0.5">
+        <line x1="656" y1="184" x2="696" y2="184"/><line x1="656" y1="207" x2="696" y2="207"/>
+        <line x1="656" y1="230" x2="696" y2="230"/><line x1="656" y1="253" x2="696" y2="253"/>
+        <line x1="656" y1="276" x2="696" y2="276"/><line x1="656" y1="299" x2="696" y2="299"/>
+        <line x1="656" y1="322" x2="696" y2="322"/><line x1="656" y1="345" x2="696" y2="345"/>
+        <line x1="656" y1="368" x2="696" y2="368"/><line x1="656" y1="391" x2="696" y2="391"/>
+      </g>
+
+      <!-- Result annotation panel -->
+      <rect x="680" y="460" width="360" height="50" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="690" y="479" font-family="'Inter',sans-serif" font-size="10" fill="#888880" font-weight="500" letter-spacing="0.1em">357 × 6 = ?</text>
+      <text x="690" y="497" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2C2C2C">2/4 | (4+0)/4+5 | 4/2 → 2142</text>
+      <text x="1040" y="479" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">diagonal addition</text>
+
+      <!-- Labels -->
+      <text x="390" y="186" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">PASCALINE — 1642</text>
+      <text x="390" y="430" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880" font-style="italic">input wheels — one per decimal digit</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="538" width="1200" height="42" fill="rgba(44,64,87,0.06)"/>
+      <text x="60" y="562" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Fig 0.2-A</text>
+      <text x="120" y="562" font-family="'Inter',sans-serif" font-size="12" fill="#6E6E6E">Left: Pascal's Pascaline with six digit wheels — wheel 3 reads 9 and is about to carry to wheel 4. Right: Napier's Bones rod set with multiplier row 6 highlighted.</text>
+      <text x="1140" y="562" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 0.2</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The two great mechanical calculation inventions side by side. Left: the Pascaline (1642) — six interlocked decimal wheels. Wheel 3 is at digit 9, highlighted in red, about to trigger a carry cascade to wheel 4 (gold). Right: Napier's Bones (1617) — multiplication encoded as rod engravings. Row 6 is selected; diagonal addition of the highlighted cells yields 357 × 6 = 2142.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIGURE 0.2-B  Concept Diagram — Pascaline Carry Mechanism
+════════════════════════════════════════════════════════════ -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Concept Diagram</span>
+    <span class="fig-id">FIG 0.2-B</span>
+    <span class="fig-title">The Mechanical Carry — How 9 + 1 Advances the Next Wheel</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" style="height:360px">
+      <rect width="1200" height="420" fill="#F4EFE6"/>
+
+      <!-- Phase labels across top -->
+      <rect x="0" y="0" width="1200" height="44" fill="#2E4057" opacity="0.06"/>
+      <text x="200" y="28" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">STEP 1 — BEFORE</text>
+      <text x="600" y="28" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.14em">STEP 2 — CARRY TRIGGERED</text>
+      <text x="1000" y="28" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914" letter-spacing="0.14em">STEP 3 — AFTER CARRY</text>
+
+      <!-- Vertical dividers -->
+      <line x1="400" y1="44" x2="400" y2="380" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="800" y1="44" x2="800" y2="380" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- === STEP 1 === -->
+      <!-- Tens wheel at 9 -->
+      <circle cx="140" cy="200" r="70" fill="#EEECE6" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="140" cy="200" r="50" fill="#F4EFE6" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- Digits around wheel -->
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#6E6E6E" text-anchor="middle">
+        <text x="140" y="137">0</text>
+        <text x="175" y="148">1</text>
+        <text x="196" y="180">2</text>
+        <text x="196" y="222">3</text>
+        <text x="175" y="254">4</text>
+        <text x="140" y="268">5</text>
+        <text x="105" y="254">6</text>
+        <text x="84" y="222">7</text>
+        <text x="84" y="180">8</text>
+      </g>
+      <!-- Active digit 9 at top -->
+      <text x="105" y="148" font-family="'JetBrains Mono',monospace" font-size="15" fill="#C82A2A" font-weight="500" text-anchor="middle">9</text>
+      <!-- Reading window -->
+      <rect x="107" y="130" width="28" height="20" rx="1" fill="none" stroke="#C82A2A" stroke-width="1.5"/>
+      <!-- Centre hub -->
+      <circle cx="140" cy="200" r="10" fill="#2C2C2C"/>
+      <text x="140" y="204" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#F4EFE6">T</text>
+
+      <!-- Units wheel at anything -->
+      <circle cx="270" cy="200" r="50" fill="#EEECE6" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="270" cy="200" r="34" fill="#F4EFE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="270" y="158" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2C2C2C" text-anchor="middle">1</text>
+      <rect x="253" y="143" width="20" height="16" rx="1" fill="none" stroke="#2C2C2C" stroke-width="1"/>
+      <circle cx="270" cy="200" r="7" fill="#2C2C2C"/>
+      <text x="270" y="204" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#F4EFE6">U</text>
+
+      <!-- Arrow: +1 being added -->
+      <path d="M290 185 Q310 165 330 180" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <text x="330" y="165" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2C2C2C">+1</text>
+
+      <!-- Linkage bar between wheels step 1 -->
+      <line x1="190" y1="200" x2="220" y2="200" stroke="#B8B4B0" stroke-width="3" stroke-linecap="round"/>
+      <text x="140" y="295" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880">tens = 9</text>
+      <text x="270" y="275" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#888880">units = 1</text>
+
+      <!-- === STEP 2 === -->
+      <!-- Tens wheel at 9→0 spinning -->
+      <circle cx="540" cy="200" r="70" fill="#EEECE6" stroke="#C82A2A" stroke-width="2"/>
+      <circle cx="540" cy="200" r="50" fill="#F4EFE6" stroke="#C82A2A" stroke-width="1.5" stroke-dasharray="6,3"/>
+      <!-- Spinning motion arcs -->
+      <path d="M490 160 A70,70 0 0 1 590 160" stroke="#C82A2A" stroke-width="1.5" fill="none" opacity="0.4"/>
+      <path d="M480 180 A70,70 0 0 1 600 180" stroke="#C82A2A" stroke-width="1.5" fill="none" opacity="0.3"/>
+      <path d="M470 200 A70,70 0 0 1 610 200" stroke="#C82A2A" stroke-width="1.5" fill="none" opacity="0.2"/>
+      <!-- 9 moving up/away -->
+      <text x="505" y="150" font-family="'JetBrains Mono',monospace" font-size="14" fill="#C82A2A" opacity="0.4">9</text>
+      <!-- 0 arriving at window -->
+      <text x="520" y="142" font-family="'JetBrains Mono',monospace" font-size="15" fill="#C82A2A" font-weight="500" text-anchor="middle">0</text>
+      <rect x="507" y="127" width="28" height="20" rx="1" fill="#C82A2A" opacity="0.12" stroke="#C82A2A" stroke-width="1.5"/>
+      <circle cx="540" cy="200" r="10" fill="#C82A2A"/>
+      <text x="540" y="204" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">T</text>
+
+      <!-- Carry signal emanating -->
+      <g stroke="#C82A2A" stroke-width="1.5" fill="none">
+        <line x1="610" y1="200" x2="630" y2="200"/>
+        <line x1="615" y1="193" x2="630" y2="200"/>
+        <line x1="615" y1="207" x2="630" y2="200"/>
+        <!-- Ripple lines -->
+        <path d="M600 185 Q615 200 600 215" opacity="0.5"/>
+        <path d="M608 180 Q628 200 608 220" opacity="0.3"/>
+      </g>
+      <text x="620" y="175" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" font-weight="500" letter-spacing="0.08em">CARRY PULSE</text>
+
+      <!-- Units wheel shows 2 -->
+      <circle cx="670" cy="200" r="50" fill="#EEECE6" stroke="#C82A2A" stroke-width="1.5"/>
+      <circle cx="670" cy="200" r="34" fill="#F4EFE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="670" y="158" font-family="'JetBrains Mono',monospace" font-size="13" fill="#C82A2A" text-anchor="middle">2</text>
+      <rect x="653" y="143" width="20" height="16" rx="1" fill="none" stroke="#C82A2A" stroke-width="1.5"/>
+      <circle cx="670" cy="200" r="7" fill="#C82A2A"/>
+      <text x="670" y="204" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#FDFDFD">U</text>
+
+      <line x1="590" y1="200" x2="620" y2="200" stroke="#C82A2A" stroke-width="3" stroke-linecap="round"/>
+
+      <text x="540" y="295" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#C82A2A">overflow → 0, pulse sent</text>
+      <text x="670" y="275" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#C82A2A">units = 2</text>
+
+      <!-- === STEP 3 === -->
+      <!-- Tens wheel settled at 0 -->
+      <circle cx="920" cy="200" r="70" fill="#EEECE6" stroke="#8B6914" stroke-width="2"/>
+      <circle cx="920" cy="200" r="50" fill="#F4EFE6" stroke="#D8D6CE" stroke-width="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#6E6E6E" text-anchor="middle">
+        <text x="952" y="148">1</text><text x="972" y="180">2</text>
+        <text x="972" y="222">3</text><text x="952" y="254">4</text>
+        <text x="920" y="268">5</text><text x="888" y="254">6</text>
+        <text x="868" y="222">7</text><text x="868" y="180">8</text>
+        <text x="888" y="148">9</text>
+      </g>
+      <text x="920" y="137" font-family="'JetBrains Mono',monospace" font-size="15" fill="#8B6914" font-weight="500" text-anchor="middle">0</text>
+      <rect x="907" y="122" width="28" height="20" rx="1" fill="none" stroke="#8B6914" stroke-width="1.5"/>
+      <circle cx="920" cy="200" r="10" fill="#8B6914"/>
+      <text x="920" y="204" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">T</text>
+
+      <!-- Units wheel at 2 -->
+      <circle cx="1060" cy="200" r="50" fill="#EEECE6" stroke="#8B6914" stroke-width="1.5"/>
+      <circle cx="1060" cy="200" r="34" fill="#F4EFE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="1060" y="158" font-family="'JetBrains Mono',monospace" font-size="13" fill="#8B6914" text-anchor="middle">2</text>
+      <rect x="1043" y="143" width="20" height="16" rx="1" fill="none" stroke="#8B6914" stroke-width="1.5"/>
+      <circle cx="1060" cy="200" r="7" fill="#8B6914"/>
+
+      <line x1="990" y1="200" x2="1010" y2="200" stroke="#B8B4B0" stroke-width="3" stroke-linecap="round"/>
+
+      <!-- Result callout -->
+      <rect x="860" y="292" width="240" height="48" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="980" y="313" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#2C2C2C">19 + 1 = 20</text>
+      <text x="980" y="331" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#8B6914">carry resolved · tens = 0, hundreds +1</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="388" width="1200" height="32" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="408" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 0.2-B · Three-phase carry sequence. When the units wheel exceeds 9, it emits a carry pulse (red) that advances the tens wheel by exactly 1. This mechanical rule is identical to the carry bit in binary addition.</text>
+      <text x="1140" y="408" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 0.2</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The Pascaline carry mechanism in three phases. Step 1: units wheel is at 1, tens wheel is at 9. Step 2: adding 1 causes the units wheel to advance to 2 and overflow, sending a carry pulse to the tens wheel (red). Step 3: the tens wheel has advanced from 9 to 0 (gold), the carry is resolved. This same logical structure — overflow produces a carry to the next column — appears in every binary adder ever built.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIGURE 0.2-C  Process Diagram — Napier's Bones Step-by-Step
+════════════════════════════════════════════════════════════ -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 0.2-C</span>
+    <span class="fig-title">Napier's Bones — How 357 × 6 Works Step by Step</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <rect width="1200" height="380" fill="#F4EFE6"/>
+
+      <!-- Step 1 box -->
+      <rect x="40" y="60" width="220" height="260" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="60" width="220" height="28" fill="#2E4057" opacity="0.08"/>
+      <text x="150" y="80" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.12em">STEP 1 — PLACE RODS</text>
+
+      <!-- Mini rod display in step 1 -->
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <!-- Index col -->
+        <rect x="55" y="92" width="28" height="200" fill="#D8D4CC" stroke="#C8C4BC" stroke-width="0.5"/>
+        <text x="69" y="108" fill="#888880">×</text>
+        <text x="69" y="131" fill="#6E6E6E">1</text><text x="69" y="154" fill="#6E6E6E">2</text>
+        <text x="69" y="177" fill="#6E6E6E">3</text><text x="69" y="200" fill="#6E6E6E">4</text>
+        <text x="69" y="223" fill="#6E6E6E">5</text>
+        <text x="69" y="246" fill="#C82A2A" font-weight="500">6</text>
+        <text x="69" y="269" fill="#6E6E6E">7</text><text x="69" y="283" fill="#6E6E6E">8</text>
+
+        <!-- Rod 3 -->
+        <rect x="87" y="92" width="32" height="200" fill="#FDFDFD" stroke="#C8C4BC" stroke-width="0.5"/>
+        <rect x="87" y="92" width="32" height="17" fill="#D8D4CC"/><text x="103" y="104" fill="#2C2C2C" font-weight="500">3</text>
+        <text x="103" y="131" fill="#3A3A3A">0/3</text><text x="103" y="154" fill="#3A3A3A">0/6</text>
+        <text x="103" y="177" fill="#3A3A3A">0/9</text><text x="103" y="200" fill="#3A3A3A">1/2</text>
+        <text x="103" y="223" fill="#3A3A3A">1/5</text>
+        <text x="103" y="246" fill="#C82A2A" font-weight="500">1/8</text>
+        <text x="103" y="269" fill="#3A3A3A">2/1</text>
+
+        <!-- Rod 5 -->
+        <rect x="123" y="92" width="32" height="200" fill="#FDFDFD" stroke="#C8C4BC" stroke-width="0.5"/>
+        <rect x="123" y="92" width="32" height="17" fill="#D8D4CC"/><text x="139" y="104" fill="#2C2C2C" font-weight="500">5</text>
+        <text x="139" y="131" fill="#3A3A3A">0/5</text><text x="139" y="154" fill="#3A3A3A">1/0</text>
+        <text x="139" y="177" fill="#3A3A3A">1/5</text><text x="139" y="200" fill="#3A3A3A">2/0</text>
+        <text x="139" y="223" fill="#3A3A3A">2/5</text>
+        <text x="139" y="246" fill="#C82A2A" font-weight="500">3/0</text>
+        <text x="139" y="269" fill="#3A3A3A">3/5</text>
+
+        <!-- Rod 7 -->
+        <rect x="159" y="92" width="32" height="200" fill="#FDFDFD" stroke="#C8C4BC" stroke-width="0.5"/>
+        <rect x="159" y="92" width="32" height="17" fill="#D8D4CC"/><text x="175" y="104" fill="#2C2C2C" font-weight="500">7</text>
+        <text x="175" y="131" fill="#3A3A3A">0/7</text><text x="175" y="154" fill="#3A3A3A">1/4</text>
+        <text x="175" y="177" fill="#3A3A3A">2/1</text><text x="175" y="200" fill="#3A3A3A">2/8</text>
+        <text x="175" y="223" fill="#3A3A3A">3/5</text>
+        <text x="175" y="246" fill="#C82A2A" font-weight="500">4/2</text>
+        <text x="175" y="269" fill="#3A3A3A">4/9</text>
+      </g>
+      <!-- row 6 highlight -->
+      <rect x="55" y="235" width="136" height="22" fill="#C82A2A" opacity="0.08"/>
+      <text x="215" y="248" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">← row 6</text>
+      <text x="150" y="318" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Place rods 3, 5, 7</text>
+      <text x="150" y="334" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">read row 6</text>
+
+      <!-- Arrow 1→2 -->
+      <path d="M265 190 L300 190" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#a1)"/>
+      <defs>
+        <marker id="a1" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+      </defs>
+
+      <!-- Step 2 box — diagonal cell reading -->
+      <rect x="305" y="60" width="280" height="260" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="305" y="60" width="280" height="28" fill="#2E4057" opacity="0.08"/>
+      <text x="445" y="80" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.12em">STEP 2 — READ DIAGONALS</text>
+
+      <!-- Diagonal strip visual -->
+      <!-- Three cell boxes in a row -->
+      <g font-family="'JetBrains Mono',monospace" text-anchor="middle">
+        <!-- Cell 1 (rod 3, row 6): 1/8 -->
+        <rect x="325" y="110" width="70" height="70" fill="#EEECE6" stroke="#C82A2A" stroke-width="1.5"/>
+        <line x1="325" y1="180" x2="395" y2="110" stroke="#C82A2A" stroke-width="1"/>
+        <text x="350" y="150" font-size="16" fill="#C82A2A" font-weight="400">1/8</text>
+        <text x="360" y="200" font-size="10" fill="#888880">rod 3 × 6</text>
+
+        <!-- Cell 2 (rod 5, row 6): 3/0 -->
+        <rect x="415" y="110" width="70" height="70" fill="#EEECE6" stroke="#C82A2A" stroke-width="1.5"/>
+        <line x1="415" y1="180" x2="485" y2="110" stroke="#C82A2A" stroke-width="1"/>
+        <text x="440" y="150" font-size="16" fill="#C82A2A" font-weight="400">3/0</text>
+        <text x="450" y="200" font-size="10" fill="#888880">rod 5 × 6</text>
+
+        <!-- Cell 3 (rod 7, row 6): 4/2 -->
+        <rect x="505" y="110" width="70" height="70" fill="#EEECE6" stroke="#C82A2A" stroke-width="1.5"/>
+        <line x1="505" y1="180" x2="575" y2="110" stroke="#C82A2A" stroke-width="1"/>
+        <text x="530" y="150" font-size="16" fill="#C82A2A" font-weight="400">4/2</text>
+        <text x="540" y="200" font-size="10" fill="#888880">rod 7 × 6</text>
+      </g>
+
+      <!-- Diagonal column labels -->
+      <text x="360" y="230" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">hundreds</text>
+      <text x="450" y="230" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">tens</text>
+      <text x="540" y="230" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">units</text>
+
+      <!-- Diagonal column arrows showing addition zones -->
+      <path d="M395 130 Q430 120 415 130" stroke="#8B6914" stroke-width="1" fill="none" stroke-dasharray="3,2"/>
+      <path d="M485 130 Q520 120 505 130" stroke="#8B6914" stroke-width="1" fill="none" stroke-dasharray="3,2"/>
+      <text x="407" y="107" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">add diagonals</text>
+
+      <!-- Addition boxes at bottom of step 2 -->
+      <rect x="325" y="255" width="240" height="44" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="335" y="272" font-family="'JetBrains Mono',monospace" font-size="10" fill="#6E6E6E">1 | (8+3) | (0+4) | 2</text>
+      <text x="335" y="290" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">= 1 | 11 | 4 | 2  (carry the 1)</text>
+
+      <!-- Arrow 2→3 -->
+      <path d="M590 190 L625 190" stroke="#C82A2A" stroke-width="1.5" fill="none" marker-end="url(#a1)"/>
+
+      <!-- Step 3 box — result assembly -->
+      <rect x="630" y="60" width="260" height="260" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="630" y="60" width="260" height="28" fill="#2E4057" opacity="0.08"/>
+      <text x="760" y="80" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.12em">STEP 3 — CARRY AND SUM</text>
+
+      <!-- Column sum diagram -->
+      <g font-family="'JetBrains Mono',monospace" text-anchor="middle">
+        <text x="680" y="120" font-size="11" fill="#888880">thousands</text>
+        <text x="730" y="120" font-size="11" fill="#888880">hundreds</text>
+        <text x="800" y="120" font-size="11" fill="#888880">tens</text>
+        <text x="855" y="120" font-size="11" fill="#888880">units</text>
+
+        <!-- Column values -->
+        <text x="680" y="150" font-size="14" fill="#6E6E6E">—</text>
+        <text x="730" y="150" font-size="14" fill="#3A3A3A">1</text>
+        <text x="800" y="150" font-size="14" fill="#3A3A3A">8+3</text>
+        <text x="855" y="150" font-size="14" fill="#3A3A3A">0+4</text>
+
+        <line x1="650" y1="162" x2="880" y2="162" stroke="#D8D6CE" stroke-width="0.5"/>
+
+        <text x="680" y="185" font-size="14" fill="#6E6E6E">—</text>
+        <text x="730" y="185" font-size="14" fill="#3A3A3A">1</text>
+        <text x="800" y="185" font-size="14" fill="#8B6914">11</text>
+        <text x="855" y="185" font-size="14" fill="#3A3A3A">4</text>
+
+        <!-- Carry annotation -->
+        <text x="750" y="210" font-size="10" fill="#C82A2A">carry 1</text>
+        <path d="M770 205 L730 198" stroke="#C82A2A" stroke-width="1" fill="none" marker-end="url(#a1)"/>
+
+        <text x="680" y="230" font-size="14" fill="#3A3A3A">—</text>
+        <text x="730" y="230" font-size="14" fill="#2C2C2C" font-weight="500">2</text>
+        <text x="800" y="230" font-size="14" fill="#2C2C2C" font-weight="500">1</text>
+        <text x="855" y="230" font-size="14" fill="#2C2C2C" font-weight="500">4</text>
+        <text x="900" y="230" font-size="14" fill="#2C2C2C" font-weight="500">2</text>
+      </g>
+
+      <!-- Result callout -->
+      <rect x="650" y="262" width="220" height="40" fill="#2E4057" opacity="0.08" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="760" y="278" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">357 × 6 = 2142</text>
+      <text x="760" y="294" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">verified</text>
+
+      <!-- Right panel: key insight -->
+      <rect x="920" y="60" width="240" height="260" rx="1" fill="#2E4057" opacity="0.05" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="920" y="60" width="240" height="28" fill="#2E4057" opacity="0.08"/>
+      <text x="1040" y="80" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.12em">KEY INSIGHT</text>
+
+      <text x="930" y="110" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Napier's key idea:</text>
+      <text x="930" y="136" font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">Multiplication tables</text>
+      <text x="930" y="152" font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">encoded as physical</text>
+      <text x="930" y="168" font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">rod engravings.</text>
+      <line x1="930" y1="180" x2="1140" y2="180" stroke="#E8E6DF" stroke-width="1"/>
+      <text x="930" y="200" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Hard problem →</text>
+      <text x="930" y="220" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">easy lookups</text>
+      <line x1="930" y1="232" x2="1140" y2="232" stroke="#E8E6DF" stroke-width="1"/>
+      <text x="930" y="252" font-family="'Inter',sans-serif" font-size="11" fill="#888880">Same principle as</text>
+      <text x="930" y="268" font-family="'Inter',sans-serif" font-size="11" fill="#888880">CPU lookup tables</text>
+      <text x="930" y="284" font-family="'Inter',sans-serif" font-size="11" fill="#888880">and ROM tables today.</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="350" width="1200" height="30" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="370" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 0.2-C · Three-step Napier's Bones multiplication process. Place rods → read row → add diagonals → carry. The hard work of multiplication is pre-computed into the rod engravings.</text>
+      <text x="1140" y="370" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 0.2</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Napier's Bones: 357 × 6 in three steps. Place rods 3, 5, 7. Read row 6: cells show 1/8, 3/0, 4/2. Add diagonals left-to-right: 1 | (8+3) | (0+4) | 2 → carry the 1 from 11 → result 2142. The multiplication problem has been reduced to a sequence of additions — a lookup strategy still used in CPU microcode tables.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIGURE 0.2-D  Historical Comparison Table
+════════════════════════════════════════════════════════════ -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hist">Type B — Historical Comparison</span>
+    <span class="fig-id">FIG 0.2-D</span>
+    <span class="fig-title">Mechanical Calculator Lineage — Key Innovations Across Five Machines</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:280px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+
+      <!-- Table header row -->
+      <rect x="40" y="40" width="1120" height="36" fill="#2E4057" opacity="0.1"/>
+      <g font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em" text-anchor="middle">
+        <text x="140" y="62">DEVICE</text>
+        <text x="280" y="62">YEAR</text>
+        <text x="430" y="62">INVENTOR</text>
+        <text x="620" y="62">OPERATION</text>
+        <text x="820" y="62">KEY INNOVATION</text>
+        <text x="1040" y="62">COMPUTING LEGACY</text>
+      </g>
+      <!-- Column dividers -->
+      <g stroke="#D8D6CE" stroke-width="1">
+        <line x1="200" y1="40" x2="200" y2="300"/>
+        <line x1="360" y1="40" x2="360" y2="300"/>
+        <line x1="500" y1="40" x2="500" y2="300"/>
+        <line x1="740" y1="40" x2="740" y2="300"/>
+        <line x1="900" y1="40" x2="900" y2="300"/>
+      </g>
+
+      <!-- Row 1: Abacus -->
+      <rect x="40" y="76" width="1120" height="40" fill="#FDFDFD"/>
+      <rect x="40" y="76" width="4" height="40" fill="#728C69"/>
+      <text x="140" y="100" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Abacus</text>
+      <text x="280" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#6E6E6E">~2400 BC</text>
+      <text x="430" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Ancient Mesopotamia</text>
+      <text x="620" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">Add / Subtract</text>
+      <text x="820" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">External state storage</text>
+      <text x="1040" y="100" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#728C69">Registers, memory</text>
+
+      <!-- Row 2: Napier's Bones -->
+      <rect x="40" y="116" width="1120" height="40" fill="#F8F7F3"/>
+      <rect x="40" y="116" width="4" height="40" fill="#728C69"/>
+      <text x="140" y="140" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Napier's Bones</text>
+      <text x="280" y="140" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#6E6E6E">1617</text>
+      <text x="430" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">John Napier</text>
+      <text x="620" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">Multiply (via add)</text>
+      <text x="820" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">Encoded lookup tables</text>
+      <text x="1040" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#728C69">ROM / lookup tables</text>
+
+      <!-- Row 3: Pascaline -->
+      <rect x="40" y="156" width="1120" height="40" fill="#FDFDFD"/>
+      <rect x="40" y="156" width="4" height="40" fill="#2E4057"/>
+      <text x="140" y="180" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Pascaline</text>
+      <text x="280" y="180" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#6E6E6E">1642</text>
+      <text x="430" y="180" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Blaise Pascal</text>
+      <text x="620" y="180" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">Add / Subtract</text>
+      <text x="820" y="180" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#C82A2A" font-weight="500">Automatic carry propagation</text>
+      <text x="1040" y="180" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#2E4057">Carry bit in every ALU</text>
+
+      <!-- Row 4: Stepped Reckoner -->
+      <rect x="40" y="196" width="1120" height="40" fill="#F8F7F3"/>
+      <rect x="40" y="196" width="4" height="40" fill="#2E4057"/>
+      <text x="140" y="220" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Stepped Reckoner</text>
+      <text x="280" y="220" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#6E6E6E">1694</text>
+      <text x="430" y="220" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Leibniz</text>
+      <text x="620" y="220" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">All 4 operations</text>
+      <text x="820" y="220" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">Variable-engagement drum</text>
+      <text x="1040" y="220" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#2E4057">Shifter / multiplier units</text>
+
+      <!-- Row 5: Difference Engine -->
+      <rect x="40" y="236" width="1120" height="40" fill="#FDFDFD"/>
+      <rect x="40" y="236" width="4" height="40" fill="#8B6914"/>
+      <text x="140" y="260" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Difference Engine</text>
+      <text x="280" y="260" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#6E6E6E">1822</text>
+      <text x="430" y="260" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Charles Babbage</text>
+      <text x="620" y="260" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">Polynomial evaluation</text>
+      <text x="820" y="260" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#8B6914" font-weight="500">Programmable operation</text>
+      <text x="1040" y="260" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#8B6914">Stored-program concept</text>
+
+      <!-- Outer border -->
+      <rect x="40" y="40" width="1120" height="236" fill="none" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- Legend -->
+      <rect x="0" y="290" width="1200" height="30" fill="rgba(44,64,87,0.04)"/>
+      <g font-family="'Inter',sans-serif" font-size="9">
+        <rect x="60" y="299" width="3" height="12" fill="#728C69"/>
+        <text x="68" y="309" fill="#888880">Manual aid era</text>
+        <rect x="180" y="299" width="3" height="12" fill="#2E4057"/>
+        <text x="188" y="309" fill="#888880">Mechanical calculation era</text>
+        <rect x="380" y="299" width="3" height="12" fill="#8B6914"/>
+        <text x="388" y="309" fill="#888880">Proto-programmable era</text>
+        <text x="1140" y="309" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · 0.2</text>
+      </g>
+    </svg>
+  </div>
+  <div class="fig-caption">The mechanical calculator lineage. Each machine contributed exactly one critical innovation that appears in modern computers: external state storage (registers), lookup encoding (ROM), automatic carry (ALU carry flag), variable gear engagement (barrel shifter), and programmability (stored-program architecture).</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FIGURE 0.2-E  Simulation Figure — Virtual Pascaline State
+════════════════════════════════════════════════════════════ -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type F — Simulation Figure</span>
+    <span class="fig-id">FIG 0.2-E</span>
+    <span class="fig-title">Virtual Pascaline — Accumulator State: 999 + 1 (Multi-Digit Carry)</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 340" xmlns="http://www.w3.org/2000/svg" style="height:290px">
+      <rect width="1200" height="340" fill="#F4EFE6"/>
+
+      <!-- Before state -->
+      <rect x="60" y="50" width="480" height="220" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="60" y="50" width="480" height="30" fill="#EEECE6"/>
+      <text x="300" y="71" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#888880" letter-spacing="0.12em">BEFORE — ACCUMULATOR: 999</text>
+
+      <!-- 4 wheels at 9 9 9 0 -->
+      <g font-family="'JetBrains Mono',monospace">
+        <!-- Display windows -->
+        <rect x="85" y="100" width="80" height="60" rx="1" fill="#1A1A1A"/>
+        <text x="125" y="140" text-anchor="middle" font-size="30" fill="#F4EFE6" font-weight="300">0</text>
+        <text x="125" y="155" text-anchor="middle" font-size="8" fill="#888880">thousands</text>
+
+        <rect x="185" y="100" width="80" height="60" rx="1" fill="#1A1A1A"/>
+        <text x="225" y="140" text-anchor="middle" font-size="30" fill="#C82A2A">9</text>
+        <text x="225" y="155" text-anchor="middle" font-size="8" fill="#C82A2A">hundreds</text>
+
+        <rect x="285" y="100" width="80" height="60" rx="1" fill="#1A1A1A"/>
+        <text x="325" y="140" text-anchor="middle" font-size="30" fill="#C82A2A">9</text>
+        <text x="325" y="155" text-anchor="middle" font-size="8" fill="#C82A2A">tens</text>
+
+        <rect x="385" y="100" width="80" height="60" rx="1" fill="#1A1A1A"/>
+        <text x="425" y="140" text-anchor="middle" font-size="30" fill="#C82A2A">9</text>
+        <text x="425" y="155" text-anchor="middle" font-size="8" fill="#C82A2A">units</text>
+      </g>
+
+      <!-- Carry chain indicators below wheels -->
+      <g fill="none" stroke="#C82A2A" stroke-width="1.5">
+        <path d="M425 170 Q425 195 395 195 Q370 195 340 190"/>
+        <path d="M325 170 Q325 205 295 205 Q265 205 235 200"/>
+        <path d="M225 170 Q225 215 195 215 Q165 215 135 210"/>
+      </g>
+      <text x="380" y="192" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">carry 1</text>
+      <text x="278" y="202" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">carry 2</text>
+      <text x="175" y="212" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">carry 3</text>
+
+      <!-- +1 input -->
+      <rect x="100" y="232" width="360" height="24" fill="#EEECE6"/>
+      <text x="280" y="248" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#6E6E6E">INPUT: + 1</text>
+
+      <!-- Arrow -->
+      <path d="M545 160 L610 160" stroke="#C82A2A" stroke-width="2" fill="none" marker-end="url(#a1b)"/>
+      <defs>
+        <marker id="a1b" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+      </defs>
+      <text x="577" y="150" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">cascade</text>
+
+      <!-- After state -->
+      <rect x="620" y="50" width="480" height="220" rx="1" fill="#FDFDFD" stroke="#8B6914" stroke-width="1.5"/>
+      <rect x="620" y="50" width="480" height="30" fill="#EEECE6"/>
+      <text x="860" y="71" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#8B6914" letter-spacing="0.12em">AFTER — ACCUMULATOR: 1000</text>
+
+      <g font-family="'JetBrains Mono',monospace">
+        <rect x="645" y="100" width="80" height="60" rx="1" fill="#1A1A1A"/>
+        <text x="685" y="140" text-anchor="middle" font-size="30" fill="#8B6914">1</text>
+        <text x="685" y="155" text-anchor="middle" font-size="8" fill="#8B6914">thousands</text>
+
+        <rect x="745" y="100" width="80" height="60" rx="1" fill="#1A1A1A"/>
+        <text x="785" y="140" text-anchor="middle" font-size="30" fill="#F4EFE6" font-weight="300">0</text>
+        <text x="785" y="155" text-anchor="middle" font-size="8" fill="#888880">hundreds</text>
+
+        <rect x="845" y="100" width="80" height="60" rx="1" fill="#1A1A1A"/>
+        <text x="885" y="140" text-anchor="middle" font-size="30" fill="#F4EFE6" font-weight="300">0</text>
+        <text x="885" y="155" text-anchor="middle" font-size="8" fill="#888880">tens</text>
+
+        <rect x="945" y="100" width="80" height="60" rx="1" fill="#1A1A1A"/>
+        <text x="985" y="140" text-anchor="middle" font-size="30" fill="#F4EFE6" font-weight="300">0</text>
+        <text x="985" y="155" text-anchor="middle" font-size="8" fill="#888880">units</text>
+      </g>
+
+      <!-- Carry settled indicators -->
+      <g fill="none" stroke="#8B6914" stroke-width="1" stroke-dasharray="3,2">
+        <line x1="985" y1="170" x2="985" y2="185"/>
+        <line x1="885" y1="170" x2="885" y2="185"/>
+        <line x1="785" y1="170" x2="785" y2="185"/>
+        <line x1="685" y1="170" x2="685" y2="185"/>
+      </g>
+      <g font-family="'Inter',sans-serif" font-size="8" fill="#8B6914" text-anchor="middle">
+        <text x="985" y="196">settled</text><text x="885" y="196">settled</text>
+        <text x="785" y="196">settled</text><text x="685" y="196">settled</text>
+      </g>
+
+      <!-- Sequential carry note -->
+      <rect x="640" y="232" width="440" height="24" fill="#EEECE6"/>
+      <text x="860" y="248" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Sequential carry: 3 wheel-advances propagate one at a time — a known flaw solved by carry lookahead in 1950s CPUs</text>
+
+      <!-- Bottom strip -->
+      <rect x="0" y="306" width="1200" height="34" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="328" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 0.2-E · Simulation static: adding 1 to 999. All three digit wheels are at 9 (red). The carry cascades through all wheels sequentially (left), settling to 1000 (right, gold). This sequential carry chain is the performance bottleneck Pascal could not solve.</text>
+      <text x="1140" y="328" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 0.2</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The Pascaline's most revealing edge case: adding 1 to 999. All three wheels are at 9 (highlighted red) before. Each carry must wait for the previous wheel to complete its rotation before advancing the next. After: all three wheels have settled to 0 and the thousands wheel has advanced to 1 (gold). This sequential carry delay — O(n) for n carry wheels — motivated the carry lookahead adder designs of the 1950s, still present in every modern CPU.</div>
+</div>
+
+</div><!-- end figures-wrap -->
+</body>
+</html>

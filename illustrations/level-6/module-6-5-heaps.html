@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 6.5 — Heaps and Priority Queues</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:#F4EFE6;border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 6 — Data Structures &amp; Algorithms</div>
+  <div class="page-title">Module 6.5 — Heaps and Priority Queues</div>
+  <div class="page-sub">3 figures · Max-Heap Structure · Sift-Up and Sift-Down · Priority Queue Applications</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 6.5-A  Max-Heap Structure -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 6.5-A</span>
+    <span class="fig-title">Max-Heap — Tree View and Array Representation Side by Side</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" style="height:360px">
+      <defs>
+        <linearGradient id="heapBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="420" fill="url(#heapBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">MAX-HEAP: EVERY NODE ≥ ITS CHILDREN — ARRAY-BACKED COMPLETE BINARY TREE</text>
+
+      <!-- TREE (left) -->
+      <text x="280" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">TREE VIEW</text>
+      <!-- Root 100 -->
+      <circle cx="280" cy="86" r="28" fill="#2E4057" opacity="0.9"/>
+      <text x="280" y="94" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="16" fill="#FDFDFD">100</text>
+      <text x="280" y="70" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">i=1</text>
+      <!-- Level 2 -->
+      <line x1="256" y1="110" x2="180" y2="154" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="304" y1="110" x2="380" y2="154" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="162" cy="170" r="24" fill="#2E4057" opacity="0.72"/>
+      <text x="162" y="178" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">85</text>
+      <text x="162" y="156" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">i=2</text>
+      <circle cx="398" cy="170" r="24" fill="#2E4057" opacity="0.72"/>
+      <text x="398" y="178" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" fill="#FDFDFD">72</text>
+      <text x="398" y="156" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">i=3</text>
+      <!-- Level 3 -->
+      <line x1="140" y1="192" x2="96" y2="236" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="184" y1="192" x2="228" y2="236" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="376" y1="192" x2="332" y2="236" stroke="#2C2C2C" stroke-width="1.5"/>
+      <line x1="420" y1="192" x2="464" y2="236" stroke="#2C2C2C" stroke-width="1.5"/>
+      <circle cx="78" cy="252" r="22" fill="#728C69" opacity="0.8"/>
+      <text x="78" y="260" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">60</text>
+      <text x="78" y="238" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">i=4</text>
+      <circle cx="246" cy="252" r="22" fill="#728C69" opacity="0.8"/>
+      <text x="246" y="260" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">55</text>
+      <text x="246" y="238" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">i=5</text>
+      <circle cx="314" cy="252" r="22" fill="#728C69" opacity="0.8"/>
+      <text x="314" y="260" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">40</text>
+      <text x="314" y="238" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">i=6</text>
+      <circle cx="482" cy="252" r="22" fill="#728C69" opacity="0.8"/>
+      <text x="482" y="260" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">30</text>
+      <text x="482" y="238" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">i=7</text>
+
+      <!-- Heap property annotation -->
+      <rect x="60" y="300" width="480" height="60" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="300" y="322" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#2E4057">Max-heap property: A[i] ≥ A[2i] and A[i] ≥ A[2i+1]</text>
+      <text x="300" y="340" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">100≥85, 100≥72, 85≥60, 85≥55, 72≥40, 72≥30 ✓</text>
+      <text x="300" y="356" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">Maximum always at root — O(1) peek</text>
+
+      <!-- ARRAY (right) -->
+      <text x="870" y="52" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">ARRAY VIEW (1-indexed)</text>
+      <!-- Index row -->
+      <g font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle" fill="#888880">
+        <text x="630" y="78">idx:</text>
+        <text x="700" y="78">1</text><text x="760" y="78">2</text>
+        <text x="820" y="78">3</text><text x="880" y="78">4</text>
+        <text x="940" y="78">5</text><text x="1000" y="78">6</text>
+        <text x="1060" y="78">7</text>
+      </g>
+      <!-- Value cells -->
+      <g font-family="'JetBrains Mono',monospace" font-size="14" text-anchor="middle">
+        <rect x="672" y="86" width="56" height="40" fill="#2E4057" opacity="0.9" stroke="#2E4057" stroke-width="1"/>
+        <text x="700" y="112" fill="#FDFDFD">100</text>
+        <rect x="732" y="86" width="56" height="40" fill="#2E4057" opacity="0.72" stroke="#2E4057" stroke-width="1"/>
+        <text x="760" y="112" fill="#FDFDFD">85</text>
+        <rect x="792" y="86" width="56" height="40" fill="#2E4057" opacity="0.72" stroke="#2E4057" stroke-width="1"/>
+        <text x="820" y="112" fill="#FDFDFD">72</text>
+        <rect x="852" y="86" width="56" height="40" fill="#728C69" opacity="0.8" stroke="#728C69" stroke-width="1"/>
+        <text x="880" y="112" fill="#FDFDFD">60</text>
+        <rect x="912" y="86" width="56" height="40" fill="#728C69" opacity="0.8" stroke="#728C69" stroke-width="1"/>
+        <text x="940" y="112" fill="#FDFDFD">55</text>
+        <rect x="972" y="86" width="56" height="40" fill="#728C69" opacity="0.8" stroke="#728C69" stroke-width="1"/>
+        <text x="1000" y="112" fill="#FDFDFD">40</text>
+        <rect x="1032" y="86" width="56" height="40" fill="#728C69" opacity="0.8" stroke="#728C69" stroke-width="1"/>
+        <text x="1060" y="112" fill="#FDFDFD">30</text>
+      </g>
+
+      <!-- Index arithmetic panel -->
+      <rect x="630" y="150" width="530" height="200" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="630" y="150" width="530" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="895" y="167" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">ARRAY INDEX ARITHMETIC (1-indexed)</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="12">
+        <text x="650" y="198" fill="#2E4057">parent(i)   = ⌊i / 2⌋</text>
+        <text x="650" y="220" fill="#728C69">left(i)     = 2 × i</text>
+        <text x="650" y="242" fill="#728C69">right(i)    = 2 × i + 1</text>
+        <line x1="646" y1="254" x2="1144" y2="254" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="650" y="274" fill="#888880">node 2 (85): parent=1, left=4, right=5</text>
+        <text x="650" y="294" fill="#888880">node 3 (72): parent=1, left=6, right=7</text>
+        <text x="650" y="314" fill="#888880">No pointers needed — pure arithmetic</text>
+        <text x="650" y="332" fill="#8B6914">→ Better cache performance than pointer trees</text>
+      </g>
+
+      <!-- Footer -->
+      <rect x="0" y="398" width="1200" height="22" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="413" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 6.5-A</text>
+      <text x="120" y="413" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Max-heap stored as 1-indexed array. Parent/child relationships are computed arithmetically — no pointers. The root (index 1) always holds the maximum. Complete binary tree shape ensures height = ⌊log₂ n⌋.</text>
+      <text x="1140" y="413" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 6.5</text>
+    </svg>
+  </div>
+  <div class="fig-caption">A max-heap of 7 elements stored as a 1-indexed array. The heap property (every node ≥ its children) guarantees the maximum is always at index 1, accessible in O(1). Parent-child relationships are computed arithmetically: parent(i) = ⌊i/2⌋, left(i) = 2i, right(i) = 2i+1 — no pointers required. This array-backed representation makes heaps extremely cache-efficient compared to pointer-based trees: all elements occupy a contiguous memory block, and accessing a child is a multiply-by-two rather than a pointer dereference. The complete binary tree shape (filled level by level) guarantees height = ⌊log₂ n⌋, bounding all operations to O(log n).</div>
+</div>
+
+<!-- FIG 6.5-B  Sift-Up and Sift-Down -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 6.5-B</span>
+    <span class="fig-title">Heap Insert (Sift-Up) and Extract-Max (Sift-Down)</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <rect width="1200" height="380" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">INSERT 90 (SIFT-UP) · EXTRACT MAX (SIFT-DOWN) ON HEAP [100, 85, 72, 60, 55, 40, 30]</text>
+
+      <!-- SIFT-UP (left) -->
+      <text x="270" y="52" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">Insert 90 → Sift Up</text>
+      <!-- Step 1: 90 placed at end (leaf) -->
+      <text x="60" y="74" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">STEP 1: append at end</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <rect x="60" y="80" width="44" height="28" fill="#2E4057" opacity="0.8"/><text x="82" y="99" fill="#FDFDFD">100</text>
+        <rect x="108" y="80" width="44" height="28" fill="#2E4057" opacity="0.6"/><text x="130" y="99" fill="#FDFDFD">85</text>
+        <rect x="156" y="80" width="44" height="28" fill="#2E4057" opacity="0.6"/><text x="178" y="99" fill="#FDFDFD">72</text>
+        <rect x="204" y="80" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="226" y="99" fill="#FDFDFD">60</text>
+        <rect x="252" y="80" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="274" y="99" fill="#FDFDFD">55</text>
+        <rect x="300" y="80" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="322" y="99" fill="#FDFDFD">40</text>
+        <rect x="348" y="80" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="370" y="99" fill="#FDFDFD">30</text>
+        <rect x="396" y="80" width="44" height="28" fill="#C82A2A" opacity="0.8" stroke="#C82A2A" stroke-width="1.5"/><text x="418" y="99" fill="#FDFDFD">90</text>
+        <text x="418" y="118" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">new</text>
+      </g>
+      <!-- Step 2: 90 > parent 60 → swap -->
+      <text x="60" y="140" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" letter-spacing="0.1em">STEP 2: 90 &gt; parent(55) at i=5? No. parent(60) at i=4? → swap</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <rect x="60" y="148" width="44" height="28" fill="#2E4057" opacity="0.8"/><text x="82" y="167" fill="#FDFDFD">100</text>
+        <rect x="108" y="148" width="44" height="28" fill="#2E4057" opacity="0.6"/><text x="130" y="167" fill="#FDFDFD">85</text>
+        <rect x="156" y="148" width="44" height="28" fill="#2E4057" opacity="0.6"/><text x="178" y="167" fill="#FDFDFD">72</text>
+        <rect x="204" y="148" width="44" height="28" fill="#C82A2A" opacity="0.8" stroke="#C82A2A" stroke-width="1.5"/><text x="226" y="167" fill="#FDFDFD">90</text>
+        <rect x="252" y="148" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="274" y="167" fill="#FDFDFD">55</text>
+        <rect x="300" y="148" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="322" y="167" fill="#FDFDFD">40</text>
+        <rect x="348" y="148" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="370" y="167" fill="#FDFDFD">30</text>
+        <rect x="396" y="148" width="44" height="28" fill="#728C69" opacity="0.5"/><text x="418" y="167" fill="#FDFDFD">60</text>
+        <text x="226" y="186" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">↑swapped</text>
+      </g>
+      <!-- Step 3: 90 > parent 85 → swap again -->
+      <text x="60" y="208" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" letter-spacing="0.1em">STEP 3: 90 &gt; parent(85) → swap again</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <rect x="60" y="216" width="44" height="28" fill="#2E4057" opacity="0.8"/><text x="82" y="235" fill="#FDFDFD">100</text>
+        <rect x="108" y="216" width="44" height="28" fill="#C82A2A" opacity="0.85" stroke="#C82A2A" stroke-width="1.5"/><text x="130" y="235" fill="#FDFDFD">90</text>
+        <rect x="156" y="216" width="44" height="28" fill="#2E4057" opacity="0.6"/><text x="178" y="235" fill="#FDFDFD">72</text>
+        <rect x="204" y="216" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="226" y="235" fill="#FDFDFD">85</text>
+        <rect x="252" y="216" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="274" y="235" fill="#FDFDFD">55</text>
+        <rect x="300" y="216" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="322" y="235" fill="#FDFDFD">40</text>
+        <rect x="348" y="216" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="370" y="235" fill="#FDFDFD">30</text>
+        <rect x="396" y="216" width="44" height="28" fill="#728C69" opacity="0.5"/><text x="418" y="235" fill="#FDFDFD">60</text>
+        <text x="130" y="254" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">done: 90 &lt; 100 ✓</text>
+      </g>
+
+      <!-- Divider -->
+      <line x1="540" y1="44" x2="540" y2="340" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- SIFT-DOWN (right) -->
+      <text x="870" y="52" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">Extract Max → Sift Down</text>
+      <text x="556" y="74" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">STEP 1: move last element to root, remove last</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <rect x="556" y="80" width="44" height="28" fill="#C82A2A" opacity="0.8" stroke="#C82A2A" stroke-width="1.5"/><text x="578" y="99" fill="#FDFDFD">30</text>
+        <rect x="604" y="80" width="44" height="28" fill="#2E4057" opacity="0.6"/><text x="626" y="99" fill="#FDFDFD">85</text>
+        <rect x="652" y="80" width="44" height="28" fill="#2E4057" opacity="0.6"/><text x="674" y="99" fill="#FDFDFD">72</text>
+        <rect x="700" y="80" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="722" y="99" fill="#FDFDFD">60</text>
+        <rect x="748" y="80" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="770" y="99" fill="#FDFDFD">55</text>
+        <rect x="796" y="80" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="818" y="99" fill="#FDFDFD">40</text>
+        <text x="578" y="118" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">↑placed here</text>
+      </g>
+      <text x="930" y="82" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2E4057">returned: 100</text>
+      <text x="556" y="140" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" letter-spacing="0.1em">STEP 2: 30 &lt; children 85,72 → swap with max child 85</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <rect x="556" y="148" width="44" height="28" fill="#2E4057" opacity="0.7"/><text x="578" y="167" fill="#FDFDFD">85</text>
+        <rect x="604" y="148" width="44" height="28" fill="#C82A2A" opacity="0.8" stroke="#C82A2A" stroke-width="1.5"/><text x="626" y="167" fill="#FDFDFD">30</text>
+        <rect x="652" y="148" width="44" height="28" fill="#2E4057" opacity="0.6"/><text x="674" y="167" fill="#FDFDFD">72</text>
+        <rect x="700" y="148" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="722" y="167" fill="#FDFDFD">60</text>
+        <rect x="748" y="148" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="770" y="167" fill="#FDFDFD">55</text>
+        <rect x="796" y="148" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="818" y="167" fill="#FDFDFD">40</text>
+        <text x="626" y="186" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">↓sifting</text>
+      </g>
+      <text x="556" y="208" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" letter-spacing="0.1em">STEP 3: 30 &lt; children 60,55 → swap with 60</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <rect x="556" y="216" width="44" height="28" fill="#2E4057" opacity="0.7"/><text x="578" y="235" fill="#FDFDFD">85</text>
+        <rect x="604" y="216" width="44" height="28" fill="#2E4057" opacity="0.6"/><text x="626" y="235" fill="#FDFDFD">60</text>
+        <rect x="652" y="216" width="44" height="28" fill="#2E4057" opacity="0.6"/><text x="674" y="235" fill="#FDFDFD">72</text>
+        <rect x="700" y="216" width="44" height="28" fill="#C82A2A" opacity="0.8" stroke="#C82A2A" stroke-width="1.5"/><text x="722" y="235" fill="#FDFDFD">30</text>
+        <rect x="748" y="216" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="770" y="235" fill="#FDFDFD">55</text>
+        <rect x="796" y="216" width="44" height="28" fill="#728C69" opacity="0.7"/><text x="818" y="235" fill="#FDFDFD">40</text>
+        <text x="722" y="254" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">leaf → done ✓</text>
+      </g>
+
+      <!-- Complexity box -->
+      <rect x="556" y="280" width="600" height="48" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="12" text-anchor="middle">
+        <text x="720" y="300" fill="#728C69">Insert: O(log n)</text>
+        <text x="720" y="318" fill="#888880">sift-up ≤ height swaps</text>
+        <text x="990" y="300" fill="#C82A2A">Extract-max: O(log n)</text>
+        <text x="990" y="318" fill="#888880">sift-down ≤ height swaps</text>
+      </g>
+
+      <!-- Footer -->
+      <rect x="0" y="358" width="1200" height="22" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="373" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 6.5-B</text>
+      <text x="120" y="373" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Insert appends at end then sifts up by swapping with parent until the heap property holds. Extract-max removes the root, places the last element there, then sifts down by swapping with the larger child.</text>
+      <text x="1140" y="373" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 6.5</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Heap insert (sift-up) and extract-max (sift-down). Insert appends the new element at the next array position, then bubbles it up by repeatedly swapping with its parent while it is larger — at most ⌊log₂ n⌋ swaps. Extract-max removes the root (the maximum), moves the last element to the root position to maintain the complete tree shape, then sifts it down by swapping with the larger of its two children — until the heap property is restored. Both operations cost O(log n) — the key insight that makes heaps useful for priority queues where push and pop-max must both be fast.</div>
+</div>
+
+<!-- FIG 6.5-C  Priority Queue Applications -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Application Diagram</span>
+    <span class="fig-id">FIG 6.5-C</span>
+    <span class="fig-title">Priority Queue Applications — Dijkstra, Task Scheduling, Heapsort</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">THREE CANONICAL PRIORITY QUEUE APPLICATIONS</text>
+
+      <!-- App 1: Dijkstra -->
+      <rect x="40" y="44" width="340" height="240" fill="#FDFDFD" stroke="#2E4057" stroke-width="1"/>
+      <rect x="40" y="44" width="340" height="26" fill="#2E4057" opacity="0.1"/>
+      <text x="210" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">Dijkstra's Shortest Path</text>
+      <!-- Mini graph -->
+      <circle cx="110" cy="130" r="18" fill="#2E4057" opacity="0.8"/>
+      <text x="110" y="136" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">A</text>
+      <circle cx="200" cy="100" r="18" fill="#2E4057" opacity="0.5"/>
+      <text x="200" y="106" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">B</text>
+      <circle cx="200" cy="170" r="18" fill="#2E4057" opacity="0.5"/>
+      <text x="200" y="176" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">C</text>
+      <circle cx="310" cy="130" r="18" fill="#728C69" opacity="0.8"/>
+      <text x="310" y="136" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">D</text>
+      <line x1="126" y1="122" x2="184" y2="106" stroke="#2C2C2C" stroke-width="1.5"/>
+      <text x="155" y="109" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">2</text>
+      <line x1="126" y1="138" x2="184" y2="162" stroke="#2C2C2C" stroke-width="1.5"/>
+      <text x="155" y="158" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">5</text>
+      <line x1="218" y1="106" x2="294" y2="124" stroke="#2C2C2C" stroke-width="1.5"/>
+      <text x="258" y="109" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">4</text>
+      <line x1="218" y1="162" x2="294" y2="142" stroke="#2C2C2C" stroke-width="1.5"/>
+      <text x="258" y="160" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">1</text>
+      <!-- Min-heap priority queue state -->
+      <text x="60" y="218" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">MIN-HEAP STATE (dist, node)</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9">
+        <text x="60" y="234" fill="#2E4057">(0,A) (2,B) (5,C) ...</text>
+        <text x="60" y="250" fill="#888880">→ always extract nearest node</text>
+        <text x="60" y="266" fill="#728C69">O((V+E) log V) with binary heap</text>
+      </g>
+
+      <!-- App 2: Task Scheduler -->
+      <rect x="420" y="44" width="340" height="240" fill="#FDFDFD" stroke="#8B6914" stroke-width="1"/>
+      <rect x="420" y="44" width="340" height="26" fill="#8B6914" opacity="0.08"/>
+      <text x="590" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#8B6914">OS Task Scheduling</text>
+      <!-- Priority queue of tasks -->
+      <g font-family="'JetBrains Mono',monospace" font-size="11">
+        <rect x="440" y="80" width="300" height="28" fill="#C82A2A" opacity="0.2" stroke="#C82A2A" stroke-width="1"/>
+        <text x="550" y="99" text-anchor="middle" fill="#C82A2A">priority=10: kernel interrupt</text>
+        <rect x="440" y="112" width="300" height="28" fill="#8B6914" opacity="0.15" stroke="#8B6914" stroke-width="1"/>
+        <text x="550" y="131" text-anchor="middle" fill="#8B6914">priority=7: UI redraw</text>
+        <rect x="440" y="144" width="300" height="28" fill="#2E4057" opacity="0.12" stroke="#2E4057" stroke-width="1"/>
+        <text x="550" y="163" text-anchor="middle" fill="#2E4057">priority=5: file I/O</text>
+        <rect x="440" y="176" width="300" height="28" fill="#888880" opacity="0.12" stroke="#888880" stroke-width="1"/>
+        <text x="550" y="195" text-anchor="middle" fill="#888880">priority=2: background sync</text>
+      </g>
+      <text x="440" y="228" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">CPU ALWAYS PICKS HIGHEST PRIORITY</text>
+      <text x="440" y="246" font-family="'JetBrains Mono',monospace" font-size="9" fill="#8B6914">extract-max: O(log n) per schedule</text>
+      <text x="440" y="264" font-family="'JetBrains Mono',monospace" font-size="9" fill="#8B6914">insert(new task): O(log n)</text>
+
+      <!-- App 3: Heapsort -->
+      <rect x="800" y="44" width="360" height="240" fill="#FDFDFD" stroke="#728C69" stroke-width="1"/>
+      <rect x="800" y="44" width="360" height="26" fill="#728C69" opacity="0.1"/>
+      <text x="980" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">Heapsort — O(n log n) In-Place</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="820" y="92">① Build max-heap: O(n)</text>
+        <text x="840" y="110" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">heapify bottom-up</text>
+        <line x1="820" y1="118" x2="1144" y2="118" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="820" y="136">② Extract-max n times: O(n log n)</text>
+        <text x="840" y="154" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">swap root with last element</text>
+        <text x="840" y="170" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">shrink heap, sift-down</text>
+        <line x1="820" y1="178" x2="1144" y2="178" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="820" y="198">Result: sorted array in-place</text>
+        <line x1="820" y1="208" x2="1144" y2="208" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="820" y="228" fill="#728C69" font-weight="500">Time: O(n log n) — always</text>
+        <text x="820" y="246" fill="#728C69" font-weight="500">Space: O(1) — in-place</text>
+        <text x="820" y="264" fill="#888880">Unstable sort — not used where</text>
+        <text x="820" y="278" fill="#888880">quicksort is preferred (cache)</text>
+      </g>
+
+      <!-- Footer -->
+      <rect x="0" y="302" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="315" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 6.5-C · Heaps power Dijkstra's shortest path (min-heap by distance), OS priority schedulers, and heapsort. All rely on O(log n) insert and O(log n) extract-max/min.</text>
+      <text x="1140" y="315" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · 6.5</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Three canonical priority queue applications, all powered by the heap. Dijkstra's shortest path algorithm uses a min-heap keyed by tentative distance — always extracting the nearest unvisited node ensures correctness. OS task schedulers maintain a priority queue of runnable tasks — the CPU always executes the highest-priority task, with O(log n) insert when new tasks arrive and O(log n) extract when the current task yields. Heapsort builds a max-heap in O(n), then repeatedly extracts the maximum to the end of the array — producing a sorted result in O(n log n) worst-case with O(1) extra space, unlike merge sort's O(n) auxiliary array.</div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 10.2 — How Browsers Render Pages</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 10 — Web &amp; Application Development</div>
+  <div class="page-title">Module 10.2 — How Browsers Render Pages</div>
+  <div class="page-sub">3 figures · Browser Rendering Pipeline · DOM Tree Construction · Critical Rendering Path</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 10.2-A  Rendering Pipeline -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 10.2-A</span>
+    <span class="fig-title">Browser Rendering Pipeline — HTML to Pixels in 6 Steps</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <defs><linearGradient id="brBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="360" fill="url(#brBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">BROWSER RENDERING PIPELINE — HTML → DOM → CSSOM → RENDER TREE → LAYOUT → PAINT → COMPOSITE</text>
+
+      <!-- Stage boxes -->
+      <g>
+        <!-- HTML Parse -->
+        <rect x="30" y="60" width="140" height="70" fill="#2E4057" opacity="0.85" rx="1"/>
+        <text x="100" y="90" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">HTML</text>
+        <text x="100" y="108" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Parse</text>
+        <text x="100" y="122" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">→ DOM</text>
+        <path d="M170 95 L196 95" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+        <path d="M192 91 L200 95 L192 99" fill="#2C2C2C"/>
+
+        <!-- CSS Parse -->
+        <rect x="200" y="60" width="140" height="70" fill="#2E4057" opacity="0.7" rx="1"/>
+        <text x="270" y="90" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">CSS</text>
+        <text x="270" y="108" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Parse</text>
+        <text x="270" y="122" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">→ CSSOM</text>
+        <path d="M340 95 L366 95" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+        <path d="M362 91 L370 95 L362 99" fill="#2C2C2C"/>
+
+        <!-- Render Tree -->
+        <rect x="370" y="60" width="140" height="70" fill="#728C69" opacity="0.8" rx="1"/>
+        <text x="440" y="90" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Render</text>
+        <text x="440" y="108" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Tree</text>
+        <text x="440" y="122" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">DOM + CSSOM</text>
+        <path d="M510 95 L536 95" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+        <path d="M532 91 L540 95 L532 99" fill="#2C2C2C"/>
+
+        <!-- Layout -->
+        <rect x="540" y="60" width="140" height="70" fill="#8B6914" opacity="0.8" rx="1"/>
+        <text x="610" y="90" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Layout</text>
+        <text x="610" y="108" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">(Reflow)</text>
+        <text x="610" y="122" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">compute geometry</text>
+        <path d="M680 95 L706 95" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+        <path d="M702 91 L710 95 L702 99" fill="#2C2C2C"/>
+
+        <!-- Paint -->
+        <rect x="710" y="60" width="140" height="70" fill="#C82A2A" opacity="0.7" rx="1"/>
+        <text x="780" y="90" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Paint</text>
+        <text x="780" y="108" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">(Repaint)</text>
+        <text x="780" y="122" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">fill pixels</text>
+        <path d="M850 95 L876 95" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+        <path d="M872 91 L880 95 L872 99" fill="#2C2C2C"/>
+
+        <!-- Composite -->
+        <rect x="880" y="60" width="160" height="70" fill="#2E4057" opacity="0.6" rx="1"/>
+        <text x="960" y="90" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Composite</text>
+        <text x="960" y="108" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">merge layers</text>
+        <text x="960" y="122" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">→ screen</text>
+        <path d="M1040 95 L1080 95" stroke="#728C69" stroke-width="2" fill="none"/>
+        <rect x="1080" y="72" width="80" height="46" fill="#728C69" opacity="0.5" rx="1"/>
+        <text x="1120" y="98" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Screen</text>
+        <text x="1120" y="112" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#DDDDD5">pixels!</text>
+      </g>
+
+      <!-- What triggers reflow vs repaint -->
+      <rect x="30" y="158" width="1130" height="60" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="50" y="178" fill="#8B6914" font-weight="500">Triggers Reflow (expensive):</text>
+        <text x="50" y="196" fill="#888880">changing width/height, margin, padding, font-size, adding/removing elements</text>
+        <text x="500" y="178" fill="#C82A2A" font-weight="500">Triggers Repaint (cheaper):</text>
+        <text x="500" y="196" fill="#888880">changing color, background, visibility, outline (no geometry change)</text>
+      </g>
+
+      <!-- Update cycles -->
+      <rect x="30" y="238" width="1130" height="90" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <rect x="30" y="238" width="4" height="90" fill="#2E4057"/>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="48" y="260" font-weight="500" fill="#2E4057">16.6ms Budget (60fps)</text>
+        <text x="48" y="278">All 6 stages must complete in 16.6ms to render at 60 frames per second.</text>
+        <text x="48" y="296" fill="#728C69">CSS transforms and opacity skip Layout and Paint — GPU-accelerated → no jank.</text>
+        <text x="48" y="314" fill="#888880" font-size="9">will-change: transform  hints to browser to promote element to its own GPU layer. Use sparingly.</text>
+      </g>
+
+      <rect x="0" y="342" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="355" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 10.2-A · 6-stage pipeline. Parse HTML → DOM. Parse CSS → CSSOM. Merge → Render Tree. Compute geometry → Layout. Fill pixels → Paint. Merge layers → Composite. Each JS mutation may retrigger stages.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The browser rendering pipeline from HTML bytes to pixels on screen. HTML parsing builds the DOM tree; CSS parsing builds the CSSOM. They are merged into the Render Tree (only visible nodes with computed styles). Layout calculates the exact position and size of every element (reflow). Paint fills pixels into layers (repaint). Composite blends GPU layers onto screen. To maintain 60fps, all stages must complete within 16.6ms per frame. The critical performance insight: CSS transform and opacity changes skip Layout and Paint entirely — they only trigger Compositing, which runs on the GPU. Animating these properties is "free" compared to animating width or top, which force full reflows.</div>
+</div>
+
+<!-- FIG 10.2-B  DOM Tree -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type B — Concept Diagram</span>
+    <span class="fig-id">FIG 10.2-B</span>
+    <span class="fig-title">DOM Tree — HTML Parsed into a JavaScript-Accessible Object Tree</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">HTML SOURCE → DOM TREE — EVERY TAG BECOMES A NODE OBJECT</text>
+
+      <!-- HTML source left -->
+      <rect x="40" y="44" width="460" height="236" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <text x="56" y="64" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">HTML SOURCE:</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#BBBBB5">
+        <text x="56" y="88" fill="#C82A2A">&lt;html&gt;</text>
+        <text x="56" y="108" fill="#888880">  &lt;head&gt;</text>
+        <text x="56" y="126" fill="#888880">    &lt;title&gt;My Page&lt;/title&gt;</text>
+        <text x="56" y="144" fill="#888880">  &lt;/head&gt;</text>
+        <text x="56" y="162" fill="#728C69">  &lt;body&gt;</text>
+        <text x="56" y="180" fill="#728C69">    &lt;h1 id="title"&gt;Hello&lt;/h1&gt;</text>
+        <text x="56" y="198" fill="#728C69">    &lt;p class="txt"&gt;World&lt;/p&gt;</text>
+        <text x="56" y="216" fill="#8B6914">    &lt;ul&gt;</text>
+        <text x="56" y="234" fill="#8B6914">      &lt;li&gt;Item 1&lt;/li&gt;</text>
+        <text x="56" y="252" fill="#8B6914">      &lt;li&gt;Item 2&lt;/li&gt;</text>
+        <text x="56" y="270" fill="#8B6914">    &lt;/ul&gt;</text>
+      </g>
+
+      <!-- Arrow -->
+      <path d="M500 160 L540 160" stroke="#728C69" stroke-width="2" fill="none"/>
+      <path d="M536 156 L544 160 L536 164" fill="#728C69"/>
+      <text x="520" y="148" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">parse</text>
+
+      <!-- DOM Tree right -->
+      <g>
+        <!-- document -->
+        <rect x="555" y="52" width="120" height="26" fill="#2E4057" opacity="0.8" rx="1"/>
+        <text x="615" y="69" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">document</text>
+        <line x1="615" y1="78" x2="615" y2="98" stroke="#D8D6CE" stroke-width="1"/>
+        <!-- html -->
+        <rect x="555" y="98" width="120" height="26" fill="#C82A2A" opacity="0.75" rx="1"/>
+        <text x="615" y="115" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">&lt;html&gt;</text>
+        <!-- branches to head and body -->
+        <line x1="615" y1="124" x2="540" y2="152" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="615" y1="124" x2="700" y2="152" stroke="#D8D6CE" stroke-width="1"/>
+        <!-- head -->
+        <rect x="480" y="152" width="120" height="26" fill="#888880" opacity="0.6" rx="1"/>
+        <text x="540" y="169" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">&lt;head&gt;</text>
+        <line x1="540" y1="178" x2="540" y2="200" stroke="#D8D6CE" stroke-width="1"/>
+        <rect x="480" y="200" width="120" height="26" fill="#888880" opacity="0.4" rx="1"/>
+        <text x="540" y="217" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">&lt;title&gt;</text>
+        <!-- body -->
+        <rect x="640" y="152" width="120" height="26" fill="#728C69" opacity="0.8" rx="1"/>
+        <text x="700" y="169" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">&lt;body&gt;</text>
+        <!-- branches from body -->
+        <line x1="660" y1="178" x2="620" y2="206" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="700" y1="178" x2="700" y2="206" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="740" y1="178" x2="800" y2="206" stroke="#D8D6CE" stroke-width="1"/>
+        <!-- h1 -->
+        <rect x="560" y="206" width="100" height="26" fill="#728C69" opacity="0.6" rx="1"/>
+        <text x="610" y="223" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">&lt;h1&gt;</text>
+        <!-- p -->
+        <rect x="650" y="206" width="100" height="26" fill="#728C69" opacity="0.6" rx="1"/>
+        <text x="700" y="223" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">&lt;p&gt;</text>
+        <!-- ul -->
+        <rect x="760" y="206" width="100" height="26" fill="#8B6914" opacity="0.7" rx="1"/>
+        <text x="810" y="223" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">&lt;ul&gt;</text>
+        <!-- li children -->
+        <line x1="790" y1="232" x2="780" y2="260" stroke="#D8D6CE" stroke-width="1"/>
+        <line x1="830" y1="232" x2="840" y2="260" stroke="#D8D6CE" stroke-width="1"/>
+        <rect x="740" y="260" width="80" height="26" fill="#8B6914" opacity="0.5" rx="1"/>
+        <text x="780" y="277" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">&lt;li&gt;</text>
+        <rect x="800" y="260" width="80" height="26" fill="#8B6914" opacity="0.5" rx="1"/>
+        <text x="840" y="277" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">&lt;li&gt;</text>
+      </g>
+
+      <!-- JS access panel -->
+      <rect x="940" y="52" width="220" height="248" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="940" y="52" width="220" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="1050" y="68" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">JS ACCESS</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">
+        <text x="956" y="96">// select nodes</text>
+        <text x="956" y="114" fill="#728C69">document.getElementById</text>
+        <text x="956" y="130" fill="#728C69">  ('title')</text>
+        <text x="956" y="148" fill="#728C69">document.querySelector</text>
+        <text x="956" y="164" fill="#728C69">  ('.txt')</text>
+        <text x="956" y="184">// modify</text>
+        <text x="956" y="200" fill="#8B6914">node.textContent = '!'</text>
+        <text x="956" y="218" fill="#8B6914">node.style.color = 'red'</text>
+        <text x="956" y="238">// create</text>
+        <text x="956" y="254" fill="#C82A2A">document.createElement</text>
+        <text x="956" y="270" fill="#C82A2A">  ('div')</text>
+        <text x="956" y="286" fill="#C82A2A">parent.appendChild(node)</text>
+      </g>
+
+      <rect x="0" y="304" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="316" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 10.2-B · DOM tree: every HTML element becomes a node object. JavaScript can query, modify, create, and delete nodes at runtime. DOM mutations trigger the rendering pipeline.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The Document Object Model (DOM) is the browser's object representation of the parsed HTML. Every element becomes a node with properties (id, className, textContent) and methods (querySelector, appendChild). JavaScript navigates and mutates the DOM at runtime — changing a node's text content, adding/removing classes, or inserting new elements. Every mutation that affects layout or appearance triggers the rendering pipeline: a geometry change triggers reflow, a style change triggers repaint. Batching DOM mutations (document fragment, virtual DOM in React) reduces pipeline re-triggers. The DOM is also what makes accessibility work — screen readers traverse the DOM tree to understand page structure.</div>
+</div>
+
+<!-- FIG 10.2-C  Critical Rendering Path -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 10.2-C</span>
+    <span class="fig-title">Critical Rendering Path — What Blocks First Paint</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:220px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">CRITICAL RENDERING PATH — WHAT MUST COMPLETE BEFORE FIRST PIXEL APPEARS</text>
+
+      <!-- Timeline -->
+      <text x="60" y="56" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">RESOURCE LOADING TIMELINE:</text>
+      <!-- HTML fetch -->
+      <text x="60" y="78" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">HTML</text>
+      <rect x="110" y="66" width="300" height="22" fill="#2E4057" opacity="0.75" rx="1"/>
+      <text x="260" y="81" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">fetch + parse HTML → DOM</text>
+      <!-- CSS blocks rendering -->
+      <text x="60" y="108" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">CSS ⚠</text>
+      <rect x="110" y="96" width="200" height="22" fill="#C82A2A" opacity="0.65" rx="1"/>
+      <text x="210" y="111" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">fetch + parse CSS → CSSOM</text>
+      <text x="318" y="108" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">← render-blocking</text>
+      <!-- JS blocks parsing -->
+      <text x="60" y="138" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">JS ⚠</text>
+      <rect x="280" y="126" width="180" height="22" fill="#8B6914" opacity="0.65" rx="1"/>
+      <text x="370" y="141" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">fetch + execute JS</text>
+      <text x="468" y="138" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">← parser-blocking</text>
+      <!-- First paint marker -->
+      <line x1="480" y1="52" x2="480" y2="180" stroke="#728C69" stroke-width="2" stroke-dasharray="5,3"/>
+      <text x="484" y="48" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">First Paint</text>
+      <!-- async JS -->
+      <text x="60" y="172" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">JS async</text>
+      <rect x="380" y="160" width="180" height="22" fill="#728C69" opacity="0.6" rx="1"/>
+      <text x="470" y="175" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">fetch + execute (non-blocking)</text>
+
+      <!-- Optimisation table -->
+      <rect x="680" y="52" width="480" height="196" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="680" y="52" width="480" height="24" fill="#2E4057" opacity="0.07"/>
+      <text x="920" y="68" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">OPTIMISATION TECHNIQUES</text>
+      <g font-family="'Inter',sans-serif" font-size="10" fill="#3A3A3A">
+        <text x="696" y="96" fill="#C82A2A" font-weight="500">CSS blocking fix:</text><text x="806" y="96"> &lt;link&gt; in &lt;head&gt;. Use media queries. Inline critical CSS.</text>
+        <text x="696" y="116" fill="#8B6914" font-weight="500">JS blocking fix:</text><text x="800" y="116"> &lt;script defer&gt; — loads async, executes after HTML parsed.</text>
+        <text x="696" y="136" fill="#888880">                  </text><text x="696" y="136"> &lt;script async&gt; — loads and executes independently.</text>
+        <line x1="696" y1="146" x2="1144" y2="146" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="696" y="166" fill="#728C69" font-weight="500">Preload critical assets:</text>
+        <text x="696" y="184">&lt;link rel="preload" href="hero.jpg" as="image"&gt;</text>
+        <text x="696" y="202" fill="#888880" font-size="9">Browser fetches resource before parser discovers it → faster FCP.</text>
+        <line x1="696" y1="212" x2="1144" y2="212" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="696" y="232" fill="#888880" font-size="9">Lighthouse audits: FCP, LCP, TBT, CLS — Core Web Vitals metrics.</text>
+        <text x="696" y="246" fill="#888880" font-size="9">Goal: First Contentful Paint under 1.8s on 4G mobile.</text>
+      </g>
+
+      <rect x="0" y="264" width="1200" height="16" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="276" font-family="'Inter',sans-serif" font-size="9" fill="#6E6E6E">Fig 10.2-C · CSS blocks rendering — no paint until CSSOM complete. Synchronous JS blocks HTML parsing. defer/async attributes and preload hints reduce time-to-first-paint.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The critical rendering path — the sequence of steps the browser must complete before showing any pixels. CSS stylesheets are render-blocking: the browser cannot paint until it has built the CSSOM (a script might query computed styles). Synchronous &lt;script&gt; tags are parser-blocking: the HTML parser stops, the script is fetched and executed, then parsing resumes. To optimise: place CSS &lt;link&gt; in &lt;head&gt; (not blocking by position, but must complete before paint), use &lt;script defer&gt; for non-critical scripts (parsed and loaded in background, executed in order after HTML is fully parsed), and use &lt;link rel="preload"&gt; to hint the browser to fetch critical assets early. The goal is First Contentful Paint (FCP) under 1.8 seconds on a 4G mobile connection.</div>
+</div>
+
+</div>
+</body>
+</html>

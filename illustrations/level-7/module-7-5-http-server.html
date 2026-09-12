@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 7.5 — Building an HTTP Server</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 7 — Systems Programming</div>
+  <div class="page-title">Module 7.5 — Building an HTTP Server</div>
+  <div class="page-sub">3 figures · HTTP Request/Response Anatomy · Server Architecture Models · Request Processing Pipeline</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 7.5-A  HTTP Anatomy -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 7.5-A</span>
+    <span class="fig-title">HTTP/1.1 Request and Response — Anatomy of Every Web Transaction</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <defs><linearGradient id="httpBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="380" fill="url(#httpBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">HTTP/1.1 REQUEST (LEFT) AND RESPONSE (RIGHT) — EVERY FIELD LABELLED</text>
+
+      <!-- REQUEST -->
+      <text x="270" y="52" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">HTTP Request</text>
+      <rect x="40" y="64" width="460" height="280" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <!-- Request line -->
+      <rect x="40" y="64" width="460" height="36" fill="#2E4057" opacity="0.9"/>
+      <text x="270" y="86" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">GET /index.html HTTP/1.1</text>
+      <!-- Labels -->
+      <text x="56" y="115" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">Host: example.com</text>
+      <text x="56" y="135" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">User-Agent: Mozilla/5.0</text>
+      <text x="56" y="155" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">Accept: text/html</text>
+      <text x="56" y="175" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">Accept-Encoding: gzip</text>
+      <text x="56" y="195" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">Connection: keep-alive</text>
+      <text x="56" y="220" font-family="'JetBrains Mono',monospace" font-size="11" fill="#888880">[blank line — end of headers]</text>
+      <text x="56" y="248" font-family="'JetBrains Mono',monospace" font-size="11" fill="#888880">[body empty for GET]</text>
+      <!-- Annotation arrows -->
+      <rect x="42" y="100" width="460" height="100" fill="#728C69" opacity="0.06"/>
+      <text x="42" y="96" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">headers</text>
+      <!-- Method / path / version labels -->
+      <text x="56" y="58" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">method</text>
+      <text x="130" y="58" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">path</text>
+      <text x="320" y="58" font-family="'Inter',sans-serif" font-size="8" fill="#BBBBB5">version</text>
+      <!-- POST example -->
+      <rect x="40" y="264" width="460" height="68" fill="#8B6914" opacity="0.12"/>
+      <text x="56" y="282" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">POST body example:</text>
+      <text x="56" y="300" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8B6914">Content-Type: application/json</text>
+      <text x="56" y="318" font-family="'JetBrains Mono',monospace" font-size="11" fill="#8B6914">{"username":"alice"}</text>
+
+      <!-- Divider -->
+      <line x1="560" y1="44" x2="560" y2="360" stroke="#D8D6CE" stroke-width="1"/>
+
+      <!-- RESPONSE -->
+      <text x="880" y="52" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">HTTP Response</text>
+      <rect x="580" y="64" width="580" height="280" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <!-- Status line -->
+      <rect x="580" y="64" width="580" height="36" fill="#728C69" opacity="0.9"/>
+      <text x="870" y="86" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">HTTP/1.1 200 OK</text>
+      <!-- Response headers -->
+      <text x="596" y="115" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">Content-Type: text/html; charset=utf-8</text>
+      <text x="596" y="135" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">Content-Length: 1234</text>
+      <text x="596" y="155" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">Date: Sat, 12 Sep 2026 10:00:00 GMT</text>
+      <text x="596" y="175" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">Cache-Control: max-age=3600</text>
+      <text x="596" y="195" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">Connection: keep-alive</text>
+      <text x="596" y="220" font-family="'JetBrains Mono',monospace" font-size="11" fill="#888880">[blank line]</text>
+      <!-- Body -->
+      <rect x="582" y="232" width="576" height="100" fill="#2E4057" opacity="0.25"/>
+      <text x="596" y="252" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">body (HTML / JSON / binary):</text>
+      <text x="596" y="272" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">&lt;!DOCTYPE html&gt;</text>
+      <text x="596" y="290" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">&lt;html&gt;&lt;head&gt;...&lt;/head&gt;</text>
+      <text x="596" y="308" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2E4057">&lt;body&gt;...&lt;/body&gt;&lt;/html&gt;</text>
+      <!-- Status code table -->
+      <text x="596" y="356" font-family="'Inter',sans-serif" font-size="9" fill="#888880">200 OK · 201 Created · 301 Moved · 400 Bad Request · 401 Unauth · 404 Not Found · 500 Server Error</text>
+
+      <rect x="0" y="362" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="375" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 7.5-A · HTTP/1.1 is plain text over TCP. Request: method + path + version, headers, blank line, optional body. Response: version + status, headers, blank line, body.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">HTTP/1.1 request and response anatomy. Both are plain text transmitted over a TCP connection. A request opens with a request line (method, path, HTTP version), followed by headers (key: value pairs), a mandatory blank line, then an optional body (present in POST/PUT). The response opens with a status line (version, numeric code, reason phrase), then headers, blank line, body. The blank line (CRLF CRLF) is the delimiter between headers and body — a server must read until it finds this sequence before parsing headers. HTTP is intentionally human-readable, which makes debugging with nc or telnet trivial.</div>
+</div>
+
+<!-- FIG 7.5-B  Server Architecture Models -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Comparison</span>
+    <span class="fig-id">FIG 7.5-B</span>
+    <span class="fig-title">HTTP Server Models — Single-Threaded, Multi-Threaded, Event-Driven</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">THREE HTTP SERVER CONCURRENCY MODELS — TRADE-OFFS</text>
+
+      <!-- Model 1: Single-threaded -->
+      <rect x="30" y="44" width="340" height="240" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5" rx="1"/>
+      <rect x="30" y="44" width="340" height="26" fill="#C82A2A" opacity="0.1"/>
+      <text x="200" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">① Single-Threaded</text>
+      <!-- Timeline -->
+      <text x="46" y="92" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">CPU TIMELINE:</text>
+      <rect x="46" y="100" width="80" height="22" fill="#2E4057" opacity="0.7"/><text x="86" y="115" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">req1</text>
+      <rect x="126" y="100" width="120" height="22" fill="#888880" opacity="0.3"/><text x="186" y="115" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">wait I/O (idle!)</text>
+      <rect x="246" y="100" width="80" height="22" fill="#2E4057" opacity="0.7"/><text x="286" y="115" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDFDFD">req2</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="46" y="154">One request at a time.</text>
+        <text x="46" y="172">Blocks on I/O — CPU idle.</text>
+        <text x="46" y="190" fill="#C82A2A">Req 2 waits for Req 1 to finish.</text>
+        <text x="46" y="212" fill="#888880">Throughput: ~1 req/sec</text>
+        <text x="46" y="232" fill="#728C69">✓ Simple code, no locking</text>
+        <text x="46" y="250" fill="#C82A2A">✗ Cannot handle concurrency</text>
+        <text x="46" y="268" fill="#888880" font-size="9">Use: toy servers, learning</text>
+      </g>
+
+      <!-- Model 2: Multi-threaded -->
+      <rect x="430" y="44" width="340" height="240" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5" rx="1"/>
+      <rect x="430" y="44" width="340" height="26" fill="#2E4057" opacity="0.1"/>
+      <text x="600" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">② Thread-per-Request</text>
+      <!-- Timeline: two threads -->
+      <text x="446" y="86" font-family="'Inter',sans-serif" font-size="8" fill="#888880">T1:</text>
+      <rect x="466" y="78" width="80" height="16" fill="#2E4057" opacity="0.7"/><text x="506" y="90" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#FDFDFD">req1</text>
+      <rect x="546" y="78" width="120" height="16" fill="#888880" opacity="0.2"/><text x="606" y="90" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#888880">I/O wait</text>
+      <rect x="666" y="78" width="80" height="16" fill="#2E4057" opacity="0.7"/>
+      <text x="446" y="110" font-family="'Inter',sans-serif" font-size="8" fill="#888880">T2:</text>
+      <rect x="466" y="102" width="80" height="16" fill="#728C69" opacity="0.7"/><text x="506" y="114" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#FDFDFD">req2</text>
+      <rect x="546" y="102" width="120" height="16" fill="#888880" opacity="0.2"/>
+      <rect x="666" y="102" width="80" height="16" fill="#728C69" opacity="0.7"/>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="446" y="154">One thread per connection.</text>
+        <text x="446" y="172">Threads run concurrently.</text>
+        <text x="446" y="190" fill="#2E4057">I/O overlap across threads.</text>
+        <text x="446" y="212" fill="#888880">Throughput: 100s of req/s</text>
+        <text x="446" y="232" fill="#728C69">✓ Simple I/O model</text>
+        <text x="446" y="250" fill="#C82A2A">✗ 1 thread = ~1MB stack RAM</text>
+        <text x="446" y="268" fill="#888880" font-size="9">Use: Apache prefork, Java servlet</text>
+      </g>
+
+      <!-- Model 3: Async/Event -->
+      <rect x="830" y="44" width="340" height="240" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5" rx="1"/>
+      <rect x="830" y="44" width="340" height="26" fill="#728C69" opacity="0.1"/>
+      <text x="1000" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">③ Async / Event Loop</text>
+      <!-- Single thread, no idle time -->
+      <text x="846" y="86" font-family="'Inter',sans-serif" font-size="8" fill="#888880">CPU:</text>
+      <rect x="866" y="78" width="40" height="16" fill="#2E4057" opacity="0.7"/><text x="886" y="90" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#FDFDFD">r1</text>
+      <rect x="906" y="78" width="40" height="16" fill="#728C69" opacity="0.7"/><text x="926" y="90" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#FDFDFD">r2</text>
+      <rect x="946" y="78" width="40" height="16" fill="#8B6914" opacity="0.7"/><text x="966" y="90" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#FDFDFD">r3</text>
+      <rect x="986" y="78" width="40" height="16" fill="#2E4057" opacity="0.7"/><text x="1006" y="90" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#FDFDFD">r1</text>
+      <rect x="1026" y="78" width="40" height="16" fill="#728C69" opacity="0.7"/>
+      <rect x="1066" y="78" width="40" height="16" fill="#8B6914" opacity="0.7"/>
+      <rect x="1106" y="78" width="60" height="16" fill="#2E4057" opacity="0.7"/>
+      <text x="1000" y="110" text-anchor="middle" font-family="'Inter',sans-serif" font-size="7" fill="#888880">no idle time — CPU always doing work</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="846" y="142">epoll/kqueue multiplexes fds.</text>
+        <text x="846" y="160">One thread, many connections.</text>
+        <text x="846" y="178" fill="#728C69">Zero idle CPU time.</text>
+        <text x="846" y="200" fill="#728C69">Throughput: 10,000s req/s</text>
+        <text x="846" y="220" fill="#728C69">✓ Low memory, high concurrency</text>
+        <text x="846" y="238" fill="#C82A2A">✗ Callbacks / complex code</text>
+        <text x="846" y="256" fill="#888880" font-size="9">Use: Nginx, Node.js, Redis</text>
+        <text x="846" y="272" fill="#888880" font-size="9">C10K problem solution</text>
+      </g>
+
+      <rect x="0" y="302" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="315" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 7.5-B · Single-threaded serialises requests. Multi-threaded runs concurrent I/O but uses RAM per thread. Async event loop multiplexes thousands of connections on one thread via epoll — the C10K solution.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Three HTTP server concurrency models. Single-threaded is simple but blocks on I/O — second request waits for first. Thread-per-request handles concurrent I/O but costs ~1MB of stack RAM per thread: at 10,000 concurrent connections that is 10GB RAM just for stacks. The event-driven model (Nginx, Node.js) uses a single thread with epoll/kqueue to monitor thousands of file descriptors simultaneously — the thread only runs when a descriptor is ready, eliminating idle time. This solved the "C10K problem" (10,000 simultaneous connections on a single server) in the early 2000s. Modern servers combine: a thread pool matching CPU cores, each running an event loop.</div>
+</div>
+
+<!-- FIG 7.5-C  Request Processing Pipeline -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Process Diagram</span>
+    <span class="fig-id">FIG 7.5-C</span>
+    <span class="fig-title">HTTP Request Processing Pipeline — accept to response</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:220px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">SERVER PIPELINE: ACCEPT → PARSE → ROUTE → HANDLER → RESPOND</text>
+
+      <!-- Pipeline stages -->
+      <g>
+        <!-- accept -->
+        <rect x="30" y="60" width="140" height="60" fill="#2E4057" opacity="0.8" rx="1"/>
+        <text x="100" y="88" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">accept()</text>
+        <text x="100" y="106" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">new conn fd</text>
+        <path d="M170 90 L200 90" stroke="#2C2C2C" stroke-width="2" fill="none"/>
+        <path d="M196 86 L204 90 L196 94" fill="#2C2C2C"/>
+
+        <!-- read -->
+        <rect x="204" y="60" width="140" height="60" fill="#2E4057" opacity="0.6" rx="1"/>
+        <text x="274" y="88" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">read(fd)</text>
+        <text x="274" y="106" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">raw bytes</text>
+        <path d="M344 90 L374 90" stroke="#2C2C2C" stroke-width="2" fill="none"/>
+        <path d="M370 86 L378 90 L370 94" fill="#2C2C2C"/>
+
+        <!-- parse -->
+        <rect x="378" y="60" width="140" height="60" fill="#728C69" opacity="0.75" rx="1"/>
+        <text x="448" y="88" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">parse()</text>
+        <text x="448" y="106" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">method/path</text>
+        <path d="M518 90 L548 90" stroke="#2C2C2C" stroke-width="2" fill="none"/>
+        <path d="M544 86 L552 90 L544 94" fill="#2C2C2C"/>
+
+        <!-- route -->
+        <rect x="552" y="60" width="140" height="60" fill="#8B6914" opacity="0.75" rx="1"/>
+        <text x="622" y="88" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">route()</text>
+        <text x="622" y="106" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">find handler</text>
+        <path d="M692 90 L722 90" stroke="#2C2C2C" stroke-width="2" fill="none"/>
+        <path d="M718 86 L726 90 L718 94" fill="#2C2C2C"/>
+
+        <!-- handler -->
+        <rect x="726" y="60" width="140" height="60" fill="#C82A2A" opacity="0.75" rx="1"/>
+        <text x="796" y="88" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">handler()</text>
+        <text x="796" y="106" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">read file/DB</text>
+        <path d="M866 90 L896 90" stroke="#2C2C2C" stroke-width="2" fill="none"/>
+        <path d="M892 86 L900 90 L892 94" fill="#2C2C2C"/>
+
+        <!-- respond -->
+        <rect x="900" y="60" width="140" height="60" fill="#2E4057" opacity="0.8" rx="1"/>
+        <text x="970" y="88" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">write(fd)</text>
+        <text x="970" y="106" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">send response</text>
+      </g>
+
+      <!-- Beneath each stage: what happens -->
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880" text-anchor="middle">
+        <text x="100" y="140">blocking until</text>
+        <text x="100" y="152">client connects</text>
+        <text x="274" y="140">read() bytes</text>
+        <text x="274" y="152">until \r\n\r\n</text>
+        <text x="448" y="140">tokenise</text>
+        <text x="448" y="152">headers</text>
+        <text x="622" y="140">GET /api →</text>
+        <text x="622" y="152">api_handler</text>
+        <text x="796" y="140">open file,</text>
+        <text x="796" y="152">query DB</text>
+        <text x="970" y="140">status line +</text>
+        <text x="970" y="152">headers + body</text>
+      </g>
+
+      <!-- Error paths -->
+      <rect x="30" y="180" width="1120" height="60" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="50" y="202" fill="#C82A2A" font-weight="500">Parse error →</text><text x="160" y="202"> respond 400 Bad Request immediately (skip route/handler)</text>
+        <text x="50" y="222" fill="#C82A2A" font-weight="500">No route match →</text><text x="186" y="222"> respond 404 Not Found</text>
+        <text x="400" y="222" fill="#C82A2A" font-weight="500">Handler exception →</text><text x="566" y="222"> respond 500 Internal Server Error</text>
+      </g>
+
+      <rect x="0" y="260" width="1200" height="20" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="274" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 7.5-C · HTTP server pipeline. Each stage transforms the request. Errors at any stage produce an appropriate HTTP error response and skip remaining stages.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">HTTP server request processing pipeline. accept() blocks until a new TCP connection arrives, returning a connected socket file descriptor. read() collects bytes until the CRLF-CRLF header terminator. parse() extracts method, path, HTTP version, and all headers. route() looks up the path in a routing table to find the appropriate handler function. handler() performs the application logic — reading a file, querying a database, calling another service. write() serialises the response (status line, headers, blank line, body) and sends it over the socket. Any stage can short-circuit with an error response: a malformed request returns 400, an unknown path returns 404, an unhandled exception returns 500.</div>
+</div>
+
+</div>
+</body>
+</html>

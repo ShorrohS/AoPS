@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 4.1 Illustrations — Machine Code and Assembly Language</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 4 — Software Foundations</div>
+  <div class="page-title">Module 4.1 — Machine Code and Assembly Language</div>
+  <div class="page-sub">2 figures · Compilation Pipeline · Assembly-to-Machine Code Translation</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 4.1-A  Compilation Pipeline -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 4.1-A</span>
+    <span class="fig-title">The Compilation Pipeline — Source Code to Running Program</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" style="height:350px">
+      <defs>
+        <linearGradient id="asmBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+        <marker id="pipe_arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#2C2C2C"/>
+        </marker>
+      </defs>
+      <rect width="1200" height="400" fill="url(#asmBg)"/>
+
+      <!-- Stage boxes -->
+      <!-- 1. Source code -->
+      <rect x="30" y="60" width="160" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="30" y="60" width="160" height="24" fill="#2E4057" opacity="0.1"/>
+      <text x="110" y="76" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" letter-spacing="0.1em">SOURCE CODE</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#2C2C2C">
+        <text x="42" y="102">int add(int a,</text>
+        <text x="42" y="116">        int b) {</text>
+        <text x="42" y="130">  return a + b;</text>
+        <text x="42" y="144">}</text>
+        <text x="42" y="164">int main() {</text>
+        <text x="42" y="178">  int x = 5;</text>
+        <text x="42" y="192">  int y = 3;</text>
+        <text x="42" y="206">  int r =</text>
+        <text x="42" y="220">    add(x, y);</text>
+        <text x="42" y="234">  return r;</text>
+        <text x="42" y="248">}</text>
+      </g>
+      <text x="110" y="284" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">human-readable C</text>
+      <text x="110" y="296" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">add.c</text>
+
+      <!-- Arrow 1 -->
+      <path d="M192 180 L228 180" stroke="#2C2C2C" stroke-width="2" fill="none" marker-end="url(#pipe_arr)"/>
+      <text x="210" y="170" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">gcc</text>
+      <text x="210" y="196" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">-S</text>
+
+      <!-- 2. Assembly -->
+      <rect x="230" y="60" width="160" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="230" y="60" width="160" height="24" fill="#C82A2A" opacity="0.08"/>
+      <text x="310" y="76" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" letter-spacing="0.1em">ASSEMBLY</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">
+        <text x="242" y="102">add:</text>
+        <text x="242" y="116">  push  rbp</text>
+        <text x="242" y="130">  mov   rbp, rsp</text>
+        <text x="242" y="144">  mov   [rbp-4], edi</text>
+        <text x="242" y="158">  mov   [rbp-8], esi</text>
+        <text x="242" y="172">  mov   eax, [rbp-4]</text>
+        <text x="242" y="186">  add   eax, [rbp-8]</text>
+        <text x="242" y="200">  pop   rbp</text>
+        <text x="242" y="214">  ret</text>
+      </g>
+      <text x="310" y="284" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">mnemonics + labels</text>
+      <text x="310" y="296" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">add.s</text>
+
+      <!-- Arrow 2 -->
+      <path d="M392 180 L428 180" stroke="#2C2C2C" stroke-width="2" fill="none" marker-end="url(#pipe_arr)"/>
+      <text x="410" y="170" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">as</text>
+      <text x="410" y="196" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">assembler</text>
+
+      <!-- 3. Object file -->
+      <rect x="430" y="60" width="160" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="430" y="60" width="160" height="24" fill="#8B6914" opacity="0.1"/>
+      <text x="510" y="76" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914" letter-spacing="0.1em">OBJECT FILE</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#8B6914">
+        <text x="442" y="102">55          ; push rbp</text>
+        <text x="442" y="116">48 89 E5    ; mov rbp,rsp</text>
+        <text x="442" y="130">89 7D FC    ; mov [rbp-4],edi</text>
+        <text x="442" y="144">89 75 F8    ; mov [rbp-8],esi</text>
+        <text x="442" y="158">8B 45 FC    ; mov eax,[rbp-4]</text>
+        <text x="442" y="172">03 45 F8    ; add eax,[rbp-8]</text>
+        <text x="442" y="186">5D          ; pop rbp</text>
+        <text x="442" y="200">C3          ; ret</text>
+        <text x="442" y="220" fill="#888880">+ ELF headers</text>
+        <text x="442" y="234" fill="#888880">+ symbol table</text>
+        <text x="442" y="248" fill="#888880">+ reloc table</text>
+      </g>
+      <text x="510" y="284" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">machine bytes</text>
+      <text x="510" y="296" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">add.o</text>
+
+      <!-- Arrow 3 -->
+      <path d="M592 180 L628 180" stroke="#2C2C2C" stroke-width="2" fill="none" marker-end="url(#pipe_arr)"/>
+      <text x="610" y="170" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">ld</text>
+      <text x="610" y="196" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">linker</text>
+
+      <!-- 4. Executable -->
+      <rect x="630" y="60" width="160" height="240" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="630" y="60" width="160" height="24" fill="#728C69" opacity="0.1"/>
+      <text x="710" y="76" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" letter-spacing="0.1em">EXECUTABLE</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">
+        <text x="642" y="102">ELF header</text>
+        <text x="642" y="116">.text section:</text>
+        <text x="642" y="130">  add() code</text>
+        <text x="642" y="144">  main() code</text>
+        <text x="642" y="158">  libc stubs</text>
+        <text x="642" y="172">.data section:</text>
+        <text x="642" y="186">  global vars</text>
+        <text x="642" y="200">.rodata section:</text>
+        <text x="642" y="214">  string literals</text>
+        <text x="642" y="228">entry point:</text>
+        <text x="642" y="242">  _start</text>
+      </g>
+      <text x="710" y="284" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">ELF binary</text>
+      <text x="710" y="296" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">./add</text>
+
+      <!-- Arrow 4 -->
+      <path d="M792 180 L828 180" stroke="#2C2C2C" stroke-width="2" fill="none" marker-end="url(#pipe_arr)"/>
+      <text x="810" y="170" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">OS</text>
+      <text x="810" y="196" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">exec()</text>
+
+      <!-- 5. Running process -->
+      <rect x="830" y="60" width="160" height="240" rx="1" fill="#FDFDFD" stroke="#2E4057" stroke-width="2"/>
+      <rect x="830" y="60" width="160" height="24" fill="#2E4057" opacity="0.1"/>
+      <text x="910" y="76" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" letter-spacing="0.1em">PROCESS</text>
+      <!-- Process memory layout -->
+      <g font-size="9" text-anchor="middle" font-family="'Inter',sans-serif">
+        <rect x="842" y="88" width="136" height="22" fill="#2E4057" opacity="0.15"/>
+        <text x="910" y="103" fill="#2E4057">stack</text>
+        <rect x="842" y="112" width="136" height="22" fill="#8B6914" opacity="0.15"/>
+        <text x="910" y="127" fill="#8B6914">heap</text>
+        <rect x="842" y="136" width="136" height="22" fill="#728C69" opacity="0.15"/>
+        <text x="910" y="151" fill="#728C69">.bss (uninit)</text>
+        <rect x="842" y="160" width="136" height="22" fill="#728C69" opacity="0.2"/>
+        <text x="910" y="175" fill="#728C69">.data (init)</text>
+        <rect x="842" y="184" width="136" height="22" fill="#C82A2A" opacity="0.15"/>
+        <text x="910" y="199" fill="#C82A2A">.rodata</text>
+        <rect x="842" y="208" width="136" height="22" fill="#C82A2A" opacity="0.2"/>
+        <text x="910" y="223" fill="#C82A2A">.text (code)</text>
+        <rect x="842" y="232" width="136" height="22" fill="#888880" opacity="0.15"/>
+        <text x="910" y="247" fill="#888880">kernel space</text>
+      </g>
+      <text x="910" y="284" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">virtual memory</text>
+      <text x="910" y="296" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">running in RAM</text>
+
+      <!-- Preprocessor step (above pipeline) -->
+      <rect x="30" y="328" width="360" height="24" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="210" y="344" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Preprocessing (cpp): #include, #define, macros → .i file (before compilation)</text>
+
+      <rect x="0" y="368" width="1200" height="32" fill="rgba(44,64,87,0.06)"/>
+      <text x="600" y="389" text-anchor="middle" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Fig 4.1-A · Full compilation pipeline: C source → assembly mnemonics → machine code object file → linked ELF executable → running process with virtual memory layout.</text>
+      <text x="1140" y="389" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 4.1</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The complete compilation pipeline for a C program. The compiler (gcc -S) translates C source into x86-64 assembly mnemonics. The assembler (as) converts each mnemonic into its byte encoding — PUSH RBP becomes 0x55, MOV RBP,RSP becomes 0x48 0x89 0xE5. The linker (ld) combines object files with library stubs, resolves symbol references, and produces an ELF executable with sections for code (.text), initialised data (.data), read-only data (.rodata), and others. The OS exec() call loads the executable into virtual memory and creates the process. The stack and heap grow dynamically at runtime.</div>
+</div>
+
+<!-- FIG 4.1-B  Assembly instruction anatomy -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Concept Diagram</span>
+    <span class="fig-id">FIG 4.1-B</span>
+    <span class="fig-title">Assembly Instruction Anatomy — Opcode, Operands, Addressing Modes</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+
+      <!-- Five instruction examples with annotation -->
+      <!-- MOV reg, imm -->
+      <rect x="40" y="30" width="1120" height="44" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="30" width="1120" height="44" fill="#2E4057" opacity="0.03"/>
+      <text x="60" y="56" font-family="'JetBrains Mono',monospace" font-size="15" fill="#C82A2A">MOV</text>
+      <text x="120" y="56" font-family="'JetBrains Mono',monospace" font-size="15" fill="#2E4057">EAX</text>
+      <text x="172" y="56" font-family="'JetBrains Mono',monospace" font-size="15" fill="#888880">,</text>
+      <text x="186" y="56" font-family="'JetBrains Mono',monospace" font-size="15" fill="#728C69">42</text>
+      <!-- Labels -->
+      <text x="76" y="86" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">opcode</text>
+      <text x="140" y="86" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#2E4057">dest reg</text>
+      <text x="200" y="86" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">immediate</text>
+      <text x="400" y="50" font-family="'Inter',sans-serif" font-size="11" fill="#888880">register ← immediate value  |  bytes: B8 2A 00 00 00</text>
+
+      <!-- ADD reg, reg -->
+      <rect x="40" y="100" width="1120" height="44" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="60" y="126" font-family="'JetBrains Mono',monospace" font-size="15" fill="#C82A2A">ADD</text>
+      <text x="120" y="126" font-family="'JetBrains Mono',monospace" font-size="15" fill="#2E4057">EAX</text>
+      <text x="172" y="126" font-family="'JetBrains Mono',monospace" font-size="15" fill="#888880">,</text>
+      <text x="186" y="126" font-family="'JetBrains Mono',monospace" font-size="15" fill="#2E4057">EBX</text>
+      <text x="400" y="120" font-family="'Inter',sans-serif" font-size="11" fill="#888880">EAX ← EAX + EBX  |  bytes: 01 D8</text>
+      <text x="400" y="136" font-family="'Inter',sans-serif" font-size="10" fill="#888880">register-register: fastest addressing mode</text>
+
+      <!-- MOV reg, [mem] -->
+      <rect x="40" y="170" width="1120" height="44" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="60" y="196" font-family="'JetBrains Mono',monospace" font-size="15" fill="#C82A2A">MOV</text>
+      <text x="120" y="196" font-family="'JetBrains Mono',monospace" font-size="15" fill="#2E4057">EAX</text>
+      <text x="172" y="196" font-family="'JetBrains Mono',monospace" font-size="15" fill="#888880">,</text>
+      <text x="186" y="196" font-family="'JetBrains Mono',monospace" font-size="15" fill="#8B6914">[RBX + RCX*4 + 8]</text>
+      <text x="540" y="190" font-family="'Inter',sans-serif" font-size="11" fill="#888880">EAX ← memory[RBX + RCX*4 + 8]</text>
+      <text x="540" y="206" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914">base + index*scale + displacement  |  most complex CISC mode</text>
+
+      <!-- Addressing modes table (right) -->
+      <rect x="900" y="30" width="260" height="184" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="900" y="30" width="260" height="22" fill="#2E4057" opacity="0.07"/>
+      <text x="1030" y="45" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.08em">ADDRESSING MODES</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#3A3A3A">
+        <text x="912" y="66">Immediate  MOV EAX, 5</text>
+        <text x="912" y="82">Register   MOV EAX, EBX</text>
+        <text x="912" y="98">Direct     MOV EAX, [0x100]</text>
+        <text x="912" y="114">Indirect   MOV EAX, [RBX]</text>
+        <text x="912" y="130">Indexed    MOV EAX, [RBX+4]</text>
+        <text x="912" y="146">Scaled     MOV EAX, [RBX+RCX*4]</text>
+        <text x="912" y="162">Based Idx  MOV EAX, [RBX+RCX*4+8]</text>
+        <text x="912" y="178" fill="#888880">PC-relative  (for branches)</text>
+      </g>
+
+      <rect x="0" y="228" width="1200" height="28" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="247" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 4.1-B · Assembly instruction anatomy: opcode (what), operands (who), addressing mode (how to find the data). Addressing modes range from fast (register, 0 memory accesses) to slow (based-indexed, 1 memory access with arithmetic).</text>
+      <text x="1140" y="247" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 4.1</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Assembly instruction structure. Every instruction has an opcode (operation code) and zero or more operands. MOV EAX, 42 loads the value 42 into register EAX using immediate addressing — the value is embedded in the instruction bytes (0xB8 0x2A 0x00 0x00 0x00). ADD EAX, EBX uses register-register addressing — fastest possible, no memory access needed. MOV EAX, [RBX + RCX*4 + 8] uses the most complex x86-64 addressing mode: base register + index register × scale factor + displacement, all in one instruction. Assembly is the lowest readable representation before machine code bytes.</div>
+</div>
+
+<!-- FIG 4.1-C  Compilation Pipeline: C Source to Executable -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 4.1-C</span>
+    <span class="fig-title">Compilation Pipeline — From C Source to Running Machine Code</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:270px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="34" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">C SOURCE → EXECUTABLE: THE FOUR-STAGE COMPILATION PIPELINE</text>
+      <!-- Stage boxes -->
+      <!-- 1: C Source -->
+      <rect x="30" y="54" width="180" height="200" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="30" y="54" width="180" height="24" fill="#2E4057" opacity="0.08"/>
+      <text x="120" y="70" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">C SOURCE</text>
+      <text x="120" y="88" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">hello.c</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">
+        <text x="44" y="116">#include &lt;stdio.h&gt;</text>
+        <text x="44" y="132">int main() {</text>
+        <text x="44" y="148">  printf(</text>
+        <text x="44" y="164">    "Hello\n"</text>
+        <text x="44" y="180">  );</text>
+        <text x="44" y="196">  return 0;</text>
+        <text x="44" y="212">}</text>
+      </g>
+      <!-- Arrow 1 + tool label -->
+      <path d="M210 154 L248 154" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M244 150 L252 154 L244 158" fill="#C82A2A"/>
+      <rect x="212" y="126" width="70" height="20" fill="#EEECE6" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="247" y="139" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">cpp</text>
+      <text x="247" y="176" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">preprocessor</text>
+      <!-- 2: Preprocessed -->
+      <rect x="252" y="54" width="180" height="200" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="252" y="54" width="180" height="24" fill="#728C69" opacity="0.1"/>
+      <text x="342" y="70" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69" letter-spacing="0.1em">PREPROCESSED</text>
+      <text x="342" y="88" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">hello.i</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#6E6E6E">
+        <text x="265" y="110">/* stdio.h expanded */</text>
+        <text x="265" y="126">extern int printf(</text>
+        <text x="265" y="142">  const char*,...);</text>
+        <text x="265" y="158">/* ... 800 lines */</text>
+        <text x="265" y="178">int main() {</text>
+        <text x="265" y="194">  printf("Hello\n");</text>
+        <text x="265" y="210">  return 0;</text>
+        <text x="265" y="226">}</text>
+      </g>
+      <!-- Arrow 2 -->
+      <path d="M432 154 L470 154" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M466 150 L474 154 L466 158" fill="#C82A2A"/>
+      <rect x="434" y="126" width="70" height="20" fill="#EEECE6" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="469" y="139" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">cc1</text>
+      <text x="469" y="176" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">compiler</text>
+      <!-- 3: Assembly -->
+      <rect x="474" y="54" width="180" height="200" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="474" y="54" width="180" height="24" fill="#8B6914" opacity="0.1"/>
+      <text x="564" y="70" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#8B6914" letter-spacing="0.1em">ASSEMBLY</text>
+      <text x="564" y="88" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">hello.s</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#8B6914">
+        <text x="488" y="116">.globl main</text>
+        <text x="488" y="132">main:</text>
+        <text x="488" y="148">  push rbp</text>
+        <text x="488" y="164">  mov rbp, rsp</text>
+        <text x="488" y="180">  lea rdi,[rip</text>
+        <text x="488" y="196">    +.LC0]</text>
+        <text x="488" y="212">  call printf</text>
+        <text x="488" y="228">  xor eax, eax</text>
+        <text x="488" y="244">  ret</text>
+      </g>
+      <!-- Arrow 3 -->
+      <path d="M654 154 L692 154" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M688 150 L696 154 L688 158" fill="#C82A2A"/>
+      <rect x="656" y="126" width="70" height="20" fill="#EEECE6" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="691" y="139" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">as</text>
+      <text x="691" y="176" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">assembler</text>
+      <!-- 4: Object file -->
+      <rect x="696" y="54" width="180" height="200" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="696" y="54" width="180" height="24" fill="#C82A2A" opacity="0.07"/>
+      <text x="786" y="70" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">OBJECT FILE</text>
+      <text x="786" y="88" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">hello.o (ELF)</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10">
+        <text x="710" y="116" fill="#888880">55          ; push rbp</text>
+        <text x="710" y="132" fill="#888880">48 89 E5    ; mov rbp</text>
+        <text x="710" y="148" fill="#888880">48 8D 3D .. ; lea</text>
+        <text x="710" y="164" fill="#C82A2A">E8 ?? ?? ?? ; call</text>
+        <text x="710" y="180" fill="#888880">  (symbol ref)</text>
+        <text x="710" y="196" fill="#888880">31 C0       ; xor</text>
+        <text x="710" y="212" fill="#888880">C3          ; ret</text>
+      </g>
+      <!-- Arrow 4 -->
+      <path d="M876 154 L914 154" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M910 150 L918 154 L910 158" fill="#C82A2A"/>
+      <rect x="878" y="126" width="70" height="20" fill="#EEECE6" stroke="#D8D6CE" stroke-width="0.5"/>
+      <text x="913" y="139" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">ld</text>
+      <text x="913" y="176" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">linker</text>
+      <!-- 5: Executable -->
+      <rect x="918" y="54" width="220" height="200" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="918" y="54" width="220" height="24" fill="#728C69" opacity="0.1"/>
+      <text x="1028" y="70" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69" letter-spacing="0.1em">EXECUTABLE</text>
+      <text x="1028" y="88" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">a.out / hello.exe</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10">
+        <text x="932" y="114" fill="#888880">[ELF header]</text>
+        <text x="932" y="130" fill="#888880">[.text section]</text>
+        <text x="932" y="146" fill="#728C69">  55 48 89 E5</text>
+        <text x="932" y="162" fill="#728C69">  48 8D 3D xx</text>
+        <text x="932" y="178" fill="#728C69">  E8 yy yy yy  ← resolved!</text>
+        <text x="932" y="194" fill="#728C69">  31 C0 C3</text>
+        <text x="932" y="210" fill="#888880">[.data section]</text>
+        <text x="932" y="226" fill="#888880">  "Hello\n\0"</text>
+        <text x="932" y="242" fill="#888880">[libc.so linked]</text>
+      </g>
+      <!-- Footer -->
+      <rect x="0" y="294" width="1200" height="26" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="311" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Fig 4.1-C</text>
+      <text x="120" y="311" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Four-stage pipeline: preprocessor expands macros → compiler produces assembly → assembler encodes binary → linker resolves symbol references and produces a self-contained executable.</text>
+      <text x="1140" y="311" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 4.1</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The four-stage C compilation pipeline. The preprocessor (cpp) expands #include directives and macros, producing an intermediate .i file. The compiler (cc1) translates to human-readable assembly (.s). The assembler (as) encodes assembly mnemonics as binary machine code, producing a relocatable object file (.o) with unresolved symbol references (marked ?? for the printf call address). The linker (ld) resolves all symbol references by combining object files with library code, filling in the correct addresses and producing the final self-contained executable.</div>
+</div>
+
+</div>
+</body>
+</html>

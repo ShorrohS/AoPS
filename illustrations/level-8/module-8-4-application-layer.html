@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 8.4 — Application Layer: HTTP and DNS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;color:#1C1C1C;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:#1C2D42;text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:#2E4057;color:#2E4057;background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:#8B6914;color:#8B6914;background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:#C82A2A;color:#C82A2A;background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 8 — Networks &amp; Protocols</div>
+  <div class="page-title">Module 8.4 — Application Layer: HTTP and DNS</div>
+  <div class="page-sub">3 figures · DNS Resolution Chain · HTTP Version Evolution · URL Anatomy</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 8.4-A  DNS Resolution -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 8.4-A</span>
+    <span class="fig-title">DNS Resolution — How "example.com" Becomes an IP Address</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" style="height:340px">
+      <defs><linearGradient id="dnsBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/></linearGradient></defs>
+      <rect width="1200" height="400" fill="url(#dnsBg)"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">DNS RESOLUTION: "example.com" → 93.184.216.34 — 4-SERVER LOOKUP CHAIN</text>
+
+      <!-- Resolver (client) -->
+      <rect x="30" y="60" width="160" height="80" fill="#2E4057" opacity="0.85" rx="1"/>
+      <text x="110" y="94" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Your Device</text>
+      <text x="110" y="112" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">stub resolver</text>
+      <text x="110" y="128" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#BBBBB5">192.168.1.2</text>
+
+      <!-- Recursive resolver -->
+      <rect x="270" y="60" width="160" height="80" fill="#2E4057" opacity="0.65" rx="1"/>
+      <text x="350" y="90" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Recursive</text>
+      <text x="350" y="106" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Resolver</text>
+      <text x="350" y="124" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">ISP / 8.8.8.8</text>
+
+      <!-- Root nameserver -->
+      <rect x="510" y="60" width="160" height="80" fill="#C82A2A" opacity="0.7" rx="1"/>
+      <text x="590" y="94" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Root NS</text>
+      <text x="590" y="112" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">13 root servers</text>
+      <text x="590" y="128" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#DDDDD5">a.root-servers.net</text>
+
+      <!-- TLD nameserver -->
+      <rect x="750" y="60" width="160" height="80" fill="#8B6914" opacity="0.75" rx="1"/>
+      <text x="830" y="90" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">TLD NS</text>
+      <text x="830" y="106" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">manages .com zone</text>
+      <text x="830" y="124" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#DDDDD5">a.gtld-servers.net</text>
+
+      <!-- Authoritative nameserver -->
+      <rect x="990" y="60" width="170" height="80" fill="#728C69" opacity="0.8" rx="1"/>
+      <text x="1075" y="87" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">Authoritative</text>
+      <text x="1075" y="103" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#FDFDFD">NS</text>
+      <text x="1075" y="120" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">knows example.com</text>
+      <text x="1075" y="134" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#DDDDD5">ns1.example.com</text>
+
+      <!-- Step arrows -->
+      <!-- 1: device → resolver -->
+      <path d="M190 90 L268 90" stroke="#2C2C2C" stroke-width="1.5" fill="none"/>
+      <path d="M264 86 L272 90 L264 94" fill="#2C2C2C"/>
+      <text x="229" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">① query</text>
+      <!-- 2: resolver → root -->
+      <path d="M430 90 L508 90" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+      <path d="M504 86 L512 90 L504 94" fill="#C82A2A"/>
+      <text x="469" y="82" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">② "example.com?"</text>
+      <!-- Root → resolver: "ask .com TLD" -->
+      <path d="M510 108 L432 108" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="4,2"/>
+      <path d="M436 104 L428 108 L436 112" fill="#C82A2A"/>
+      <text x="469" y="124" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">③ "try .com TLD NS"</text>
+      <!-- 4: resolver → TLD -->
+      <path d="M430 132 L748 90" stroke="#8B6914" stroke-width="1.5" fill="none"/>
+      <path d="M744 87 L752 91 L744 95" fill="#8B6914"/>
+      <text x="600" y="118" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">④ "example.com?"</text>
+      <!-- TLD → resolver: "authoritative NS" -->
+      <path d="M750 108 L432 148" stroke="#8B6914" stroke-width="1.5" fill="none" stroke-dasharray="4,2"/>
+      <text x="600" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">⑤ "ns1.example.com"</text>
+      <!-- 6: resolver → auth -->
+      <path d="M430 160 L988 100" stroke="#728C69" stroke-width="1.5" fill="none"/>
+      <path d="M984 97 L992 101 L984 105" fill="#728C69"/>
+      <text x="720" y="148" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#728C69">⑥ "example.com A?"</text>
+      <!-- Auth → resolver: IP -->
+      <path d="M990 130 L432 200" stroke="#728C69" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+      <path d="M436 196 L428 200 L436 204" fill="#728C69"/>
+      <text x="780" y="188" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">⑦ A record: 93.184.216.34 (TTL=3600)</text>
+      <!-- 8: resolver → device -->
+      <path d="M270 200 L192 200" stroke="#2C2C2C" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+      <path d="M196 196 L188 200 L196 204" fill="#2C2C2C"/>
+      <text x="230" y="192" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2C2C2C">⑧ 93.184.216.34</text>
+
+      <!-- Cache note -->
+      <rect x="30" y="240" width="1140" height="80" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="0.5"/>
+      <rect x="30" y="240" width="4" height="80" fill="#728C69"/>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="48" y="262" font-weight="500" fill="#728C69">Caching:</text><text x="110" y="262"> Recursive resolver caches every response for its TTL. Repeat queries return instantly from cache.</text>
+        <text x="48" y="282">DNS uses UDP port 53 (small queries fit in one packet). Falls back to TCP for large responses (&gt;512 bytes).</text>
+        <text x="48" y="302" fill="#888880" font-size="9">The root servers know nothing about hostnames — only which nameservers are responsible for each TLD (.com, .org, .net).</text>
+        <text x="48" y="316" fill="#888880" font-size="9">DNSSEC adds digital signatures to prevent cache poisoning. DoH (DNS over HTTPS) encrypts queries.</text>
+      </g>
+
+      <rect x="0" y="378" width="1200" height="22" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="393" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 8.4-A</text>
+      <text x="120" y="393" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">DNS recursive lookup: stub resolver → recursive resolver → root NS → .com TLD NS → authoritative NS → IP answer. Result cached at each level for TTL seconds.</text>
+      <text x="1140" y="393" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 8.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">DNS resolution chain for "example.com". The stub resolver in your OS contacts the recursive resolver (typically your ISP's or a public resolver like 8.8.8.8). If the answer is not cached, the recursive resolver queries the root nameservers, which direct it to the .com TLD nameservers. The TLD nameservers provide the address of example.com's authoritative nameserver (ns1.example.com). The authoritative nameserver holds the A record — the actual IP address (93.184.216.34) with a TTL indicating how long it may be cached. The recursive resolver returns the IP to your device. The entire chain typically completes in 50–200ms on first lookup; subsequent lookups return from cache in under 1ms.</div>
+</div>
+
+<!-- FIG 8.4-B  HTTP Version Comparison -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Comparison</span>
+    <span class="fig-id">FIG 8.4-B</span>
+    <span class="fig-title">HTTP/1.1 vs HTTP/2 vs HTTP/3 — Connection Model Evolution</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:260px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">HTTP VERSION COMPARISON — PARALLELISM AND LATENCY EVOLUTION</text>
+
+      <!-- HTTP/1.1 -->
+      <rect x="30" y="44" width="340" height="240" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5" rx="1"/>
+      <rect x="30" y="44" width="340" height="26" fill="#C82A2A" opacity="0.1"/>
+      <text x="200" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#C82A2A">HTTP/1.1 (1997)</text>
+      <!-- One request at a time per connection -->
+      <text x="50" y="88" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">TCP connection timeline:</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">
+        <rect x="50" y="96" width="80" height="20" fill="#2E4057" opacity="0.7"/><text x="90" y="110" fill="#FDFDFD">req1</text>
+        <rect x="130" y="96" width="80" height="20" fill="#728C69" opacity="0.7"/><text x="170" y="110" fill="#FDFDFD">resp1</text>
+        <rect x="210" y="96" width="80" height="20" fill="#2E4057" opacity="0.7"/><text x="250" y="110" fill="#FDFDFD">req2</text>
+        <rect x="290" y="96" width="70" height="20" fill="#728C69" opacity="0.7"/><text x="325" y="110" fill="#FDFDFD">resp2</text>
+      </g>
+      <text x="200" y="136" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">sequential: req2 waits for resp1</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="50" y="164">✓ Persistent connections (keep-alive)</text>
+        <text x="50" y="184" fill="#C82A2A">✗ Head-of-line blocking</text>
+        <text x="50" y="204" fill="#C82A2A">✗ 6 parallel connections max (hack)</text>
+        <text x="50" y="224" fill="#C82A2A">✗ Plain text headers (no compression)</text>
+        <text x="50" y="248" fill="#888880" font-size="9">Still ~70% of internet traffic in 2024</text>
+        <text x="50" y="264" fill="#888880" font-size="9">due to long tail of servers</text>
+      </g>
+
+      <!-- HTTP/2 -->
+      <rect x="430" y="44" width="340" height="240" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5" rx="1"/>
+      <rect x="430" y="44" width="340" height="26" fill="#2E4057" opacity="0.1"/>
+      <text x="600" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#2E4057">HTTP/2 (2015)</text>
+      <!-- Multiplexed streams on one TCP -->
+      <text x="450" y="88" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">Single TCP, multiplexed streams:</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">
+        <rect x="450" y="96" width="60" height="14" fill="#2E4057" opacity="0.7"/><text x="480" y="107" fill="#FDFDFD">req1</text>
+        <rect x="450" y="112" width="60" height="14" fill="#8B6914" opacity="0.7"/><text x="480" y="123" fill="#FDFDFD">req2</text>
+        <rect x="450" y="128" width="60" height="14" fill="#C82A2A" opacity="0.7"/><text x="480" y="139" fill="#FDFDFD">req3</text>
+        <rect x="510" y="96" width="120" height="14" fill="#728C69" opacity="0.6"/><text x="570" y="107" fill="#FDFDFD">resp1 frames</text>
+        <rect x="510" y="112" width="120" height="14" fill="#728C69" opacity="0.5"/><text x="570" y="123" fill="#FDFDFD">resp2 frames</text>
+        <rect x="510" y="128" width="120" height="14" fill="#728C69" opacity="0.4"/><text x="570" y="139" fill="#FDFDFD">resp3 frames</text>
+      </g>
+      <text x="600" y="162" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057">interleaved: no waiting</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="450" y="186" fill="#2E4057">✓ Multiplexing (many streams)</text>
+        <text x="450" y="206" fill="#2E4057">✓ HPACK header compression</text>
+        <text x="450" y="226" fill="#2E4057">✓ Server push</text>
+        <text x="450" y="246" fill="#C82A2A">✗ TCP head-of-line blocking remains</text>
+        <text x="450" y="264" fill="#888880" font-size="9">A lost TCP segment blocks all streams</text>
+      </g>
+
+      <!-- HTTP/3 -->
+      <rect x="830" y="44" width="340" height="240" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5" rx="1"/>
+      <rect x="830" y="44" width="340" height="26" fill="#728C69" opacity="0.1"/>
+      <text x="1000" y="61" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="13" fill="#728C69">HTTP/3 / QUIC (2022)</text>
+      <!-- QUIC over UDP -->
+      <text x="850" y="88" font-family="'Inter',sans-serif" font-size="9" fill="#888880" letter-spacing="0.1em">QUIC streams over UDP:</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="8" text-anchor="middle">
+        <rect x="850" y="96" width="60" height="14" fill="#728C69" opacity="0.7"/><text x="880" y="107" fill="#FDFDFD">stream1</text>
+        <rect x="850" y="112" width="60" height="14" fill="#8B6914" opacity="0.7"/><text x="880" y="123" fill="#FDFDFD">stream2</text>
+        <rect x="850" y="128" width="60" height="14" fill="#C82A2A" opacity="0.7"/><text x="880" y="139" fill="#FDFDFD">stream3</text>
+        <rect x="910" y="96" width="120" height="44" fill="#728C69" opacity="0.15"/>
+        <text x="970" y="122" fill="#728C69">independent — lost packet</text>
+        <text x="970" y="135" fill="#728C69">only blocks 1 stream</text>
+      </g>
+      <text x="1000" y="162" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">no head-of-line blocking at all</text>
+      <g font-family="'Inter',sans-serif" font-size="11" fill="#3A3A3A">
+        <text x="850" y="186" fill="#728C69">✓ 0-RTT reconnection</text>
+        <text x="850" y="206" fill="#728C69">✓ No TCP head-of-line blocking</text>
+        <text x="850" y="226" fill="#728C69">✓ Built-in TLS 1.3</text>
+        <text x="850" y="246" fill="#C82A2A">✗ Firewall/NAT traversal issues</text>
+        <text x="850" y="264" fill="#888880" font-size="9">~25% of internet in 2024 (Google, Cloudflare)</text>
+      </g>
+
+      <rect x="0" y="302" width="1200" height="18" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="315" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 8.4-B · HTTP/1.1 sequential. HTTP/2 multiplexed on one TCP (blocked by single lost packet). HTTP/3 over QUIC/UDP: independent streams, no head-of-line blocking, 0-RTT reconnect.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">HTTP version evolution driven by latency and throughput problems. HTTP/1.1 serialises requests on a persistent connection — the browser hacks around this by opening up to 6 connections per host. HTTP/2 introduces multiplexing: multiple request/response streams share one TCP connection via framing, eliminating the need for multiple connections. However, a single lost TCP segment blocks all streams (TCP head-of-line blocking). HTTP/3 over QUIC runs over UDP with independent streams at the transport layer — a lost UDP packet only blocks the stream that owns it. QUIC also incorporates TLS 1.3 into the handshake, achieving 1-RTT initial connection and 0-RTT reconnection for known servers.</div>
+</div>
+
+<!-- FIG 8.4-C  URL Anatomy -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type B — Reference Diagram</span>
+    <span class="fig-id">FIG 8.4-C</span>
+    <span class="fig-title">URL Anatomy — Every Component of a Web Address</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 240" xmlns="http://www.w3.org/2000/svg" style="height:180px">
+      <rect width="1200" height="240" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.07"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">URL ANATOMY: https://user:pass@api.example.com:443/v1/users?id=42&amp;fmt=json#section</text>
+
+      <!-- URL bar -->
+      <rect x="40" y="48" width="1120" height="44" fill="#2C2C2C" opacity="0.88" rx="1"/>
+      <!-- Colour-coded segments -->
+      <g font-family="'JetBrains Mono',monospace" font-size="13">
+        <text x="56" y="75" fill="#C82A2A">https</text>
+        <text x="114" y="75" fill="#888880">://</text>
+        <text x="144" y="75" fill="#8B6914">user:pass</text>
+        <text x="254" y="75" fill="#888880">@</text>
+        <text x="272" y="75" fill="#728C69">api.example.com</text>
+        <text x="548" y="75" fill="#2E4057">:443</text>
+        <text x="618" y="75" fill="#728C69">/v1/users</text>
+        <text x="768" y="75" fill="#8B6914">?id=42&amp;fmt=json</text>
+        <text x="1034" y="75" fill="#C82A2A">#section</text>
+      </g>
+
+      <!-- Annotations below -->
+      <!-- Scheme -->
+      <path d="M78" y1="92"/><path d="M78 92 L78 128" stroke="#C82A2A" stroke-width="1" fill="none"/>
+      <rect x="40" y="128" width="100" height="46" fill="#FDFDFD" stroke="#C82A2A" stroke-width="0.5" rx="1"/>
+      <text x="90" y="144" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" font-weight="500">scheme</text>
+      <text x="90" y="158" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">protocol</text>
+      <text x="90" y="170" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">https/http/ftp</text>
+      <!-- Authority -->
+      <path d="M200 92 L200 128" stroke="#8B6914" stroke-width="1" fill="none"/>
+      <rect x="148" y="128" width="120" height="46" fill="#FDFDFD" stroke="#8B6914" stroke-width="0.5" rx="1"/>
+      <text x="208" y="144" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914" font-weight="500">userinfo</text>
+      <text x="208" y="158" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">optional</text>
+      <text x="208" y="170" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">HTTP Basic Auth</text>
+      <!-- Host -->
+      <path d="M410 92 L410 128" stroke="#728C69" stroke-width="1" fill="none"/>
+      <rect x="340" y="128" width="160" height="46" fill="#FDFDFD" stroke="#728C69" stroke-width="0.5" rx="1"/>
+      <text x="420" y="144" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" font-weight="500">host</text>
+      <text x="420" y="158" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">domain or IP</text>
+      <text x="420" y="170" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">→ DNS resolved</text>
+      <!-- Port -->
+      <path d="M630 92 L630 128" stroke="#2E4057" stroke-width="1" fill="none"/>
+      <rect x="572" y="128" width="100" height="46" fill="#FDFDFD" stroke="#2E4057" stroke-width="0.5" rx="1"/>
+      <text x="622" y="144" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#2E4057" font-weight="500">port</text>
+      <text x="622" y="158" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">optional</text>
+      <text x="622" y="170" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">default:443</text>
+      <!-- Path -->
+      <path d="M692 92 L692 128" stroke="#728C69" stroke-width="1" fill="none"/>
+      <rect x="680" y="128" width="100" height="46" fill="#FDFDFD" stroke="#728C69" stroke-width="0.5" rx="1"/>
+      <text x="730" y="144" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" font-weight="500">path</text>
+      <text x="730" y="158" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">resource</text>
+      <text x="730" y="170" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#888880">hierarchical</text>
+      <!-- Query -->
+      <path d="M910 92 L910 128" stroke="#8B6914" stroke-width="1" fill="none"/>
+      <rect x="818" y="128" width="160" height="46" fill="#FDFDFD" stroke="#8B6914" stroke-width="0.5" rx="1"/>
+      <text x="898" y="144" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914" font-weight="500">query string</text>
+      <text x="898" y="158" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">?key=value&amp;...</text>
+      <text x="898" y="170" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">sent to server</text>
+      <!-- Fragment -->
+      <path d="M1058 92 L1058 128" stroke="#C82A2A" stroke-width="1" fill="none"/>
+      <rect x="988" y="128" width="160" height="46" fill="#FDFDFD" stroke="#C82A2A" stroke-width="0.5" rx="1"/>
+      <text x="1068" y="144" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" font-weight="500">fragment</text>
+      <text x="1068" y="158" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">#anchor</text>
+      <text x="1068" y="170" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">client-only</text>
+
+      <rect x="0" y="220" width="1200" height="20" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="234" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 8.4-C · URL components. Fragment (#) never sent to server — browser-only. Query string sent as part of HTTP request line. Port defaults: 80 for http, 443 for https.</text>
+    </svg>
+  </div>
+  <div class="fig-caption">URL (Uniform Resource Locator) anatomy. The scheme identifies the protocol. Userinfo (rarely used in HTTP — credentials belong in headers, not URLs). Host is resolved via DNS. Port defaults to 443 for HTTPS and 80 for HTTP if omitted. Path identifies the resource on the server. Query string passes parameters to the server (sent in the HTTP request line). The fragment identifier (#section) is processed entirely by the browser — it is never transmitted to the server, making it useful for client-side navigation in single-page applications. URLs must percent-encode characters outside the allowed ASCII subset: space becomes %20, @ becomes %40.</div>
+</div>
+
+</div>
+</body>
+</html>

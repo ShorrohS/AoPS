@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 5.4 Illustrations — Recursion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--bg-warm:#EEECE6;--text-sumi:#1C1C1C;--text-body:#3A3A3A;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-ink:#2C2C2C;--zen-stone:#6E6E6E;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);color:var(--text-sumi);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;color:var(--text-sumi);letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--zen-indigo);color:var(--zen-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-type.sim{border-color:var(--accent-red);color:var(--accent-red);background:rgba(200,42,42,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;color:var(--text-sumi);}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 5 — Programming</div>
+  <div class="page-title">Module 5.4 — Recursion</div>
+  <div class="page-sub">3 figures · Recursion Call Tree · Stack Frame Unwinding · Fibonacci Memoisation</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 5.4-A  Recursion Call Tree — factorial(5) -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 5.4-A</span>
+    <span class="fig-title">Recursive Call Tree — factorial(5) Unrolled</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 480" xmlns="http://www.w3.org/2000/svg" style="height:420px">
+      <defs>
+        <linearGradient id="recBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="480" fill="url(#recBg)"/>
+      <rect x="0" y="0" width="1200" height="34" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">RECURSIVE CALL TREE: factorial(5) = 5 × 4 × 3 × 2 × 1 = 120</text>
+      <!-- Code snippet -->
+      <rect x="880" y="50" width="300" height="130" fill="#2C2C2C" opacity="0.88"/>
+      <text x="896" y="70" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">def factorial(n):</text>
+      <text x="896" y="88" font-family="'JetBrains Mono',monospace" font-size="11" fill="#BBBBB5">  if n == 0:</text>
+      <text x="896" y="106" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">    return 1  # base case</text>
+      <text x="896" y="124" font-family="'JetBrains Mono',monospace" font-size="11" fill="#BBBBB5">  return n *</text>
+      <text x="896" y="142" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">    factorial(n-1)</text>
+      <text x="896" y="162" font-family="'Inter',sans-serif" font-size="9" fill="#888880">  ↑ recursive case</text>
+      <!-- Tree nodes: descent phase -->
+      <!-- Level 0: factorial(5) -->
+      <rect x="520" y="54" width="200" height="40" rx="1" fill="#2E4057" opacity="0.85"/>
+      <text x="620" y="74" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">factorial(5)</text>
+      <text x="620" y="88" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">→ 5 × factorial(4)</text>
+      <!-- Arrow down -->
+      <line x1="560" y1="94" x2="490" y2="138" stroke="#2E4057" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <!-- Level 1: factorial(4) -->
+      <rect x="390" y="138" width="200" height="40" rx="1" fill="#2E4057" opacity="0.7"/>
+      <text x="490" y="158" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">factorial(4)</text>
+      <text x="490" y="172" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#BBBBB5">→ 4 × factorial(3)</text>
+      <line x1="430" y1="178" x2="360" y2="222" stroke="#2E4057" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <!-- Level 2: factorial(3) -->
+      <rect x="260" y="222" width="200" height="40" rx="1" fill="#728C69" opacity="0.7"/>
+      <text x="360" y="242" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">factorial(3)</text>
+      <text x="360" y="256" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">→ 3 × factorial(2)</text>
+      <line x1="300" y1="262" x2="230" y2="306" stroke="#728C69" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <!-- Level 3: factorial(2) -->
+      <rect x="130" y="306" width="200" height="40" rx="1" fill="#8B6914" opacity="0.7"/>
+      <text x="230" y="326" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">factorial(2)</text>
+      <text x="230" y="340" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">→ 2 × factorial(1)</text>
+      <line x1="170" y1="346" x2="120" y2="390" stroke="#8B6914" stroke-width="1.5" stroke-dasharray="4,2"/>
+      <!-- Level 4: factorial(1) -->
+      <rect x="40" y="390" width="160" height="40" rx="1" fill="#C82A2A" opacity="0.7"/>
+      <text x="120" y="410" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">factorial(1)</text>
+      <text x="120" y="424" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#DDDDD5">→ 1 × factorial(0)</text>
+      <!-- Level 5: base case -->
+      <line x1="100" y1="430" x2="220" y2="430" stroke="#C82A2A" stroke-width="1" stroke-dasharray="2,2"/>
+      <rect x="220" y="415" width="160" height="34" rx="1" fill="#C82A2A" opacity="0.9"/>
+      <text x="300" y="432" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">factorial(0) = 1</text>
+      <text x="300" y="444" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#FDDDDD">BASE CASE — returns 1</text>
+      <!-- Return phase (right side annotations) -->
+      <text x="420" y="440" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A">← returns 1</text>
+      <text x="420" y="380" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914">← 1×1 = 1 → returns 1</text>
+      <text x="420" y="296" font-family="'Inter',sans-serif" font-size="10" fill="#8B6914">← 2×1 = 2 → returns 2</text>
+      <text x="500" y="212" font-family="'Inter',sans-serif" font-size="10" fill="#728C69">← 3×2 = 6 → returns 6</text>
+      <text x="640" y="128" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">← 4×6 = 24 → returns 24</text>
+      <text x="740" y="68" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">← 5×24 = 120</text>
+      <!-- Final result -->
+      <rect x="800" y="200" width="260" height="60" fill="#728C69" opacity="0.15" stroke="#728C69" stroke-width="1.5"/>
+      <text x="930" y="228" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#728C69">factorial(5) = 120</text>
+      <text x="930" y="250" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">6 total function calls</text>
+      <!-- Footer -->
+      <rect x="0" y="458" width="1200" height="22" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="473" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Fig 5.4-A</text>
+      <text x="120" y="473" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Recursive call tree for factorial(5). Each call generates a new stack frame. The base case (n=0) terminates the descent. Return values bubble back up the call chain: 1→1→2→6→24→120.</text>
+      <text x="1140" y="473" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · Module 5.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Recursive call tree for factorial(5). The function descends through 6 levels of calls, each generating a new stack frame. The base case (factorial(0) = 1) terminates the descent. The return phase propagates back up: 1 × 1 = 1 → 2 × 1 = 2 → 3 × 2 = 6 → 4 × 6 = 24 → 5 × 24 = 120. Every recursive algorithm has this two-phase structure: a descent phase that reduces the problem, and an ascent phase that combines sub-results. The depth of recursion determines stack space consumption — factorial(5) uses 6 frames, factorial(10000) would use 10001.</div>
+</div>
+
+<!-- FIG 5.4-B  Fibonacci Without and With Memoisation -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type E — Comparison</span>
+    <span class="fig-id">FIG 5.4-B</span>
+    <span class="fig-title">Fibonacci: Naive Recursion vs Memoisation — Eliminating Redundant Work</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" style="height:360px">
+      <rect width="1200" height="420" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">fib(5): NAIVE O(2ⁿ) CALLS vs MEMOISED O(n) CALLS</text>
+      <!-- LEFT: Naive tree (fib 5) -->
+      <text x="270" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">NAIVE — 15 function calls, many repeated</text>
+      <!-- fib(5) -->
+      <rect x="220" y="58" width="100" height="28" rx="1" fill="#2E4057" opacity="0.8"/>
+      <text x="270" y="76" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">fib(5)</text>
+      <!-- fib(4) and fib(3) -->
+      <line x1="250" y1="86" x2="170" y2="110" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="290" y1="86" x2="370" y2="110" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="120" y="110" width="100" height="28" rx="1" fill="#2E4057" opacity="0.6"/>
+      <text x="170" y="128" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">fib(4)</text>
+      <rect x="320" y="110" width="100" height="28" rx="1" fill="#C82A2A" opacity="0.5"/>
+      <text x="370" y="128" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">fib(3)①</text>
+      <!-- fib(3) fib(2) from fib(4) -->
+      <line x1="150" y1="138" x2="100" y2="162" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="190" y1="138" x2="240" y2="162" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="50" y="162" width="100" height="28" rx="1" fill="#C82A2A" opacity="0.4"/>
+      <text x="100" y="180" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">fib(3)②</text>
+      <rect x="190" y="162" width="100" height="28" rx="1" fill="#C82A2A" opacity="0.3"/>
+      <text x="240" y="180" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">fib(2)①</text>
+      <!-- Deeper levels abbreviated -->
+      <line x1="80" y1="190" x2="60" y2="214" stroke="#D8D6CE" stroke-width="1"/>
+      <line x1="120" y1="190" x2="140" y2="214" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="20" y="214" width="80" height="24" rx="1" fill="#C82A2A" opacity="0.3"/>
+      <text x="60" y="230" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">fib(2)②</text>
+      <rect x="100" y="214" width="80" height="24" rx="1" fill="#888880" opacity="0.4"/>
+      <text x="140" y="230" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#FDFDFD">fib(1)</text>
+      <!-- Duplicate annotation -->
+      <rect x="30" y="258" width="460" height="50" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1"/>
+      <rect x="30" y="258" width="4" height="50" fill="#C82A2A"/>
+      <text x="46" y="276" font-family="'Inter',sans-serif" font-size="10" fill="#C82A2A" font-weight="500">Redundant computation</text>
+      <text x="46" y="294" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">fib(3) computed twice, fib(2) three times.</text>
+      <text x="46" y="310" font-family="'JetBrains Mono',monospace" font-size="9" fill="#C82A2A">O(2ⁿ) — fib(50) ≈ 10¹⁰ calls</text>
+      <!-- DIVIDER -->
+      <line x1="560" y1="40" x2="560" y2="380" stroke="#D8D6CE" stroke-width="1"/>
+      <!-- RIGHT: Memoised version -->
+      <text x="870" y="50" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#728C69" letter-spacing="0.1em">MEMOISED — 5 unique calls, cache used</text>
+      <!-- Linear chain -->
+      <rect x="820" y="58" width="100" height="28" rx="1" fill="#2E4057" opacity="0.8"/>
+      <text x="870" y="76" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">fib(5)</text>
+      <line x1="870" y1="86" x2="870" y2="110" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="820" y="110" width="100" height="28" rx="1" fill="#2E4057" opacity="0.6"/>
+      <text x="870" y="128" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">fib(4)</text>
+      <line x1="870" y1="138" x2="870" y2="162" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="820" y="162" width="100" height="28" rx="1" fill="#728C69" opacity="0.7"/>
+      <text x="870" y="180" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">fib(3)</text>
+      <line x1="870" y1="190" x2="870" y2="214" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="820" y="214" width="100" height="28" rx="1" fill="#728C69" opacity="0.5"/>
+      <text x="870" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">fib(2)</text>
+      <line x1="870" y1="242" x2="870" y2="266" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="820" y="266" width="100" height="28" rx="1" fill="#728C69" opacity="0.3"/>
+      <text x="870" y="284" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">fib(1)=1</text>
+      <!-- Cache panel -->
+      <rect x="970" y="110" width="200" height="190" fill="#FDFDFD" stroke="#728C69" stroke-width="1"/>
+      <rect x="970" y="110" width="200" height="22" fill="#728C69" opacity="0.1"/>
+      <text x="1070" y="126" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69" letter-spacing="0.1em">MEMO CACHE</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="11">
+        <text x="986" y="152" fill="#888880">fib(1) →</text><text x="1090" y="152" fill="#728C69">1</text>
+        <text x="986" y="172" fill="#888880">fib(2) →</text><text x="1090" y="172" fill="#728C69">1</text>
+        <text x="986" y="192" fill="#888880">fib(3) →</text><text x="1090" y="192" fill="#728C69">2</text>
+        <text x="986" y="212" fill="#888880">fib(4) →</text><text x="1090" y="212" fill="#728C69">3</text>
+        <text x="986" y="232" fill="#888880">fib(5) →</text><text x="1090" y="232" fill="#728C69">5</text>
+      </g>
+      <text x="1070" y="272" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">each computed once</text>
+      <text x="1070" y="288" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">looked up on reuse</text>
+      <!-- Cache arrows -->
+      <path d="M920 180 L968 180" stroke="#728C69" stroke-width="1" stroke-dasharray="3,2" fill="none"/>
+      <path d="M920 228 L968 212" stroke="#728C69" stroke-width="1" stroke-dasharray="3,2" fill="none"/>
+      <!-- Benefit box -->
+      <rect x="590" y="258" width="400" height="50" fill="#FDFDFD" stroke="#728C69" stroke-width="1"/>
+      <rect x="590" y="258" width="4" height="50" fill="#728C69"/>
+      <text x="606" y="277" font-family="'Inter',sans-serif" font-size="10" fill="#728C69" font-weight="500">Memoisation: store results, never recompute</text>
+      <text x="606" y="295" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">O(n) — fib(50) = 50 unique calls</text>
+      <!-- Footer -->
+      <rect x="0" y="392" width="1200" height="28" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="410" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Fig 5.4-B</text>
+      <text x="120" y="410" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Naive Fibonacci recomputes fib(3) twice and fib(2) three times. Memoisation caches each result and looks it up on reuse, reducing O(2ⁿ) to O(n). This is the foundation of dynamic programming.</text>
+      <text x="1140" y="410" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 5.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Naive recursive Fibonacci (left) recomputes overlapping subproblems: fib(3) is called twice, fib(2) three times, for a total of 15 calls to compute fib(5). For fib(50) the naive approach makes approximately 2⁵⁰ ≈ 10¹⁵ calls — infeasible. Memoisation (right) stores each result in a dictionary on first computation and returns the cached value on subsequent lookups. fib(5) with memoisation makes exactly 5 unique calls — O(n). This insight — that recursive problems with overlapping subproblems can be solved in polynomial time by storing sub-results — is the core idea of dynamic programming.</div>
+</div>
+
+<!-- FIG 5.4-C  Tail Recursion vs Regular Recursion -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type sim">Type D — Simulation Figure</span>
+    <span class="fig-id">FIG 5.4-C</span>
+    <span class="fig-title">Tail Recursion — When the Compiler Can Eliminate Stack Frames</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" style="height:270px">
+      <rect width="1200" height="320" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">REGULAR RECURSION vs TAIL RECURSION — STACK BEHAVIOUR</text>
+      <!-- Code comparison -->
+      <rect x="40" y="44" width="500" height="180" fill="#2C2C2C" opacity="0.88"/>
+      <text x="56" y="64" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A" letter-spacing="0.1em">REGULAR RECURSION — builds stack</text>
+      <text x="56" y="84" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">def fact(n):</text>
+      <text x="56" y="100" font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">  if n == 0: return 1</text>
+      <text x="56" y="116" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">  return n * fact(n-1)</text>
+      <text x="56" y="136" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">↑ multiplication AFTER recursive call</text>
+      <text x="56" y="152" font-family="'Inter',sans-serif" font-size="9" fill="#888880">→ caller must stay on stack to multiply</text>
+      <line x1="56" y1="162" x2="520" y2="162" stroke="#3A3A3A" stroke-width="0.5"/>
+      <text x="56" y="178" font-family="'Inter',sans-serif" font-size="9" fill="#728C69" letter-spacing="0.1em">TAIL RECURSION — single frame (with TCO)</text>
+      <text x="56" y="196" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">def fact_tail(n, acc=1):</text>
+      <text x="56" y="212" font-family="'JetBrains Mono',monospace" font-size="10" fill="#BBBBB5">  if n == 0: return acc</text>
+      <text x="56" y="228" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">  return fact_tail(n-1, acc*n)</text>
+      <text x="56" y="248" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">↑ recursive call IS the last operation</text>
+      <!-- Stack comparison diagrams -->
+      <text x="660" y="54" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">Regular: O(n) stack frames</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">
+        <rect x="600" y="62" width="100" height="20" fill="#2E4057" opacity="0.8"/>
+        <text x="650" y="76" fill="#FDFDFD">fact(5)</text>
+        <rect x="600" y="82" width="100" height="20" fill="#2E4057" opacity="0.65"/>
+        <text x="650" y="96" fill="#FDFDFD">fact(4)</text>
+        <rect x="600" y="102" width="100" height="20" fill="#728C69" opacity="0.65"/>
+        <text x="650" y="116" fill="#FDFDFD">fact(3)</text>
+        <rect x="600" y="122" width="100" height="20" fill="#728C69" opacity="0.5"/>
+        <text x="650" y="136" fill="#FDFDFD">fact(2)</text>
+        <rect x="600" y="142" width="100" height="20" fill="#8B6914" opacity="0.6"/>
+        <text x="650" y="156" fill="#FDFDFD">fact(1)</text>
+        <rect x="600" y="162" width="100" height="20" fill="#C82A2A" opacity="0.7"/>
+        <text x="650" y="176" fill="#FDFDFD">fact(0)</text>
+      </g>
+      <path d="M650" y1="60" />
+      <path d="M612 188 L700 188" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+      <text x="650" y="204" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#C82A2A">6 frames on stack</text>
+      <text x="650" y="220" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">risk: stack overflow</text>
+      <!-- TCO single frame -->
+      <text x="940" y="54" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69" letter-spacing="0.1em">Tail call (TCO): O(1) stack</text>
+      <rect x="880" y="62" width="120" height="100" fill="#728C69" opacity="0.15" stroke="#728C69" stroke-width="1.5"/>
+      <text x="940" y="90" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">fact_tail</text>
+      <text x="940" y="108" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#728C69">(reused)</text>
+      <text x="940" y="126" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">1 frame</text>
+      <text x="940" y="144" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">reused 5×</text>
+      <text x="940" y="204" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#728C69">compiler converts to loop</text>
+      <text x="940" y="220" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">no stack overflow possible</text>
+      <!-- Summary box -->
+      <rect x="580" y="248" width="580" height="40" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="870" y="268" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Tail Call Optimisation (TCO) supported: Scheme, Kotlin, Swift, Rust. Not Python, Java (by default).</text>
+      <text x="870" y="284" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">TCO converts recursive calls into iteration — O(1) stack space regardless of recursion depth.</text>
+      <!-- Footer -->
+      <rect x="0" y="298" width="1200" height="22" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="313" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 5.4-C · Tail recursion places the recursive call as the final operation. Compilers can reuse the current stack frame (TCO), converting deep recursion into a space-efficient loop.</text>
+      <text x="1140" y="313" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · 5.4</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Tail recursion places the recursive call as the absolute last operation, with no work remaining for the caller after the recursive call returns. A compiler can recognise this and reuse the same stack frame instead of pushing a new one — Tail Call Optimisation (TCO). Regular factorial must keep its frame alive to perform the final multiplication; tail-recursive factorial with an accumulator parameter has no such obligation. Languages with mandatory TCO (Scheme, Haskell) can recurse indefinitely without stack overflow. Python deliberately does not implement TCO to preserve readable tracebacks.</div>
+</div>
+
+</div>
+</body>
+</html>

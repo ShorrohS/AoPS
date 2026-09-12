@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 2.5 Illustrations — Sequential Circuits: Memory from Gates</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 2 — Digital Foundations</div>
+  <div class="page-title">Module 2.5 — Sequential Circuits: Memory from Gates</div>
+  <div class="page-sub">3 figures · SR Latch → D Flip-Flop → 4-bit Register</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 2.5-A  SR Latch + D Flip-Flop -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 2.5-A</span>
+    <span class="fig-title">From SR Latch to D Flip-Flop — How Memory Emerges from Feedback</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 460" xmlns="http://www.w3.org/2000/svg" style="height:400px">
+      <defs>
+        <linearGradient id="seqBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="460" fill="url(#seqBg)"/>
+
+      <!-- LEFT: SR Latch -->
+      <rect x="40" y="30" width="440" height="400" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="30" width="440" height="28" fill="#2E4057" opacity="0.08"/>
+      <text x="260" y="49" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2C2C2C">SR Latch (NOR-NOR)</text>
+
+      <!-- NOR gate 1 (top) -->
+      <g transform="translate(160,130)">
+        <line x1="0" y1="-20" x2="14" y2="-20" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="0" y1="20" x2="14" y2="20" stroke="#2C2C2C" stroke-width="2"/>
+        <path d="M14 -28 Q24 -18 14 0 Q24 18 14 28 L14 -28" fill="#EEECE6" stroke="#2C2C2C" stroke-width="1.5"/>
+        <path d="M14 -28 Q38 -28 62 0 Q38 28 14 28" fill="#EEECE6" stroke="#2C2C2C" stroke-width="1.5"/>
+        <circle cx="66" cy="0" r="4" fill="#FDFDFD" stroke="#2C2C2C" stroke-width="1.5"/>
+        <line x1="70" y1="0" x2="90" y2="0" stroke="#2C2C2C" stroke-width="2"/>
+        <text x="94" y="5" font-family="'JetBrains Mono',monospace" font-size="12" fill="#728C69">Q</text>
+      </g>
+
+      <!-- NOR gate 2 (bottom) -->
+      <g transform="translate(160,290)">
+        <line x1="0" y1="-20" x2="14" y2="-20" stroke="#2C2C2C" stroke-width="2"/>
+        <line x1="0" y1="20" x2="14" y2="20" stroke="#2C2C2C" stroke-width="2"/>
+        <path d="M14 -28 Q24 -18 14 0 Q24 18 14 28 L14 -28" fill="#EEECE6" stroke="#2C2C2C" stroke-width="1.5"/>
+        <path d="M14 -28 Q38 -28 62 0 Q38 28 14 28" fill="#EEECE6" stroke="#2C2C2C" stroke-width="1.5"/>
+        <circle cx="66" cy="0" r="4" fill="#FDFDFD" stroke="#2C2C2C" stroke-width="1.5"/>
+        <line x1="70" y1="0" x2="90" y2="0" stroke="#2C2C2C" stroke-width="2"/>
+        <text x="94" y="5" font-family="'JetBrains Mono',monospace" font-size="12" fill="#C82A2A">Q̄</text>
+      </g>
+
+      <!-- Feedback: Q feeds into NOR2, Q̄ feeds into NOR1 -->
+      <path d="M260 130 Q310 130 310 250 Q310 300 250 310" stroke="#728C69" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+      <path d="M260 290 Q300 290 300 150 Q300 110 250 110" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+      <!-- Feedback arrows indicator -->
+      <text x="320" y="220" font-family="'Inter',sans-serif" font-size="9" fill="#888880">feedback</text>
+      <text x="320" y="233" font-family="'Inter',sans-serif" font-size="9" fill="#888880">loops</text>
+
+      <!-- Inputs S and R -->
+      <text x="80" y="114" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2C2C2C">S</text>
+      <text x="80" y="274" font-family="'JetBrains Mono',monospace" font-size="13" fill="#2C2C2C">R</text>
+      <line x1="92" y1="112" x2="160" y2="112" stroke="#2C2C2C" stroke-width="2"/>
+      <line x1="92" y1="272" x2="160" y2="272" stroke="#2C2C2C" stroke-width="2"/>
+
+      <!-- SR truth table -->
+      <rect x="60" y="350" width="400" height="60" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="1"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle">
+        <text x="110" y="368" fill="#888880">S R</text>
+        <text x="230" y="368" fill="#888880">Q</text>
+        <text x="380" y="368" fill="#888880">Action</text>
+        <line x1="64" y1="372" x2="456" y2="372" stroke="#D8D6CE" stroke-width="0.5"/>
+        <text x="110" y="390" fill="#2C2C2C">0 0</text><text x="230" y="390" fill="#2C2C2C">Q</text><text x="380" y="390" fill="#888880">HOLD (memory)</text>
+        <text x="110" y="398" fill="#728C69">1 0</text><text x="230" y="398" fill="#728C69">1</text>
+        <text x="110" y="406" fill="#C82A2A">0 1</text><text x="230" y="406" fill="#888880">0</text>
+        <text x="110" y="414" fill="#C82A2A" font-size="9">1 1 → invalid</text>
+      </g>
+
+      <!-- The memory insight -->
+      <rect x="60" y="330" width="400" height="18" fill="#2E4057" opacity="0.06"/>
+      <text x="260" y="343" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">S=R=0 holds its current state → MEMORY</text>
+
+      <!-- RIGHT: D Flip-Flop -->
+      <rect x="640" y="30" width="520" height="400" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="640" y="30" width="520" height="28" fill="#2E4057" opacity="0.08"/>
+      <text x="900" y="49" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2C2C2C">D Flip-Flop (edge-triggered)</text>
+
+      <!-- D flip-flop symbol -->
+      <rect x="760" y="140" width="120" height="120" rx="2" fill="#EEECE6" stroke="#2E4057" stroke-width="2"/>
+      <!-- CLK triangle -->
+      <path d="M760 228 L776 240 L760 252" fill="none" stroke="#8B6914" stroke-width="2"/>
+      <!-- Labels inside -->
+      <text x="780" y="195" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057">D</text>
+      <text x="780" y="215" font-family="'Inter',sans-serif" font-size="10" fill="#888880">FF</text>
+      <!-- Input lines -->
+      <line x1="700" y1="180" x2="760" y2="180" stroke="#2E4057" stroke-width="2"/>
+      <text x="680" y="184" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2E4057">D</text>
+      <line x1="700" y1="240" x2="760" y2="240" stroke="#8B6914" stroke-width="2"/>
+      <text x="666" y="244" font-family="'JetBrains Mono',monospace" font-size="12" fill="#8B6914">CLK</text>
+      <!-- Output lines -->
+      <line x1="880" y1="180" x2="940" y2="180" stroke="#728C69" stroke-width="2"/>
+      <text x="944" y="184" font-family="'JetBrains Mono',monospace" font-size="12" fill="#728C69">Q</text>
+      <line x1="880" y1="220" x2="940" y2="220" stroke="#C82A2A" stroke-width="2"/>
+      <text x="944" y="224" font-family="'JetBrains Mono',monospace" font-size="12" fill="#C82A2A">Q̄</text>
+
+      <!-- Timing diagram -->
+      <text x="660" y="310" font-family="'Inter',sans-serif" font-size="10" fill="#888880">CLK</text>
+      <!-- CLK signal -->
+      <path d="M700 318 L730 318 L730 300 L770 300 L770 318 L810 318 L810 300 L850 300 L850 318 L890 318 L890 300 L930 300 L930 318 L970 318 L970 300 L1010 300 L1010 318 L1050 318" stroke="#8B6914" stroke-width="2" fill="none"/>
+      <text x="660" y="360" font-family="'Inter',sans-serif" font-size="10" fill="#888880">D</text>
+      <path d="M700 366 L750 366 L750 354 L830 354 L830 366 L900 366 L900 354 L980 354 L980 366 L1050 366" stroke="#2E4057" stroke-width="2" fill="none"/>
+      <text x="660" y="404" font-family="'Inter',sans-serif" font-size="10" fill="#888880">Q</text>
+      <path d="M700 408 L770 408 L770 396 L850 396 L850 408 L930 408 L930 396 L1010 396 L1010 408 L1050 408" stroke="#728C69" stroke-width="2" fill="none" stroke-dasharray="5,0"/>
+      <!-- Edge capture arrows -->
+      <line x1="770" y1="290" x2="770" y2="410" stroke="#C82A2A" stroke-width="0.8" stroke-dasharray="2,2"/>
+      <line x1="850" y1="290" x2="850" y2="410" stroke="#C82A2A" stroke-width="0.8" stroke-dasharray="2,2"/>
+      <line x1="930" y1="290" x2="930" y2="410" stroke="#C82A2A" stroke-width="0.8" stroke-dasharray="2,2"/>
+      <text x="800" y="290" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">rising edges</text>
+      <text x="800" y="281" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">D captured →</text>
+
+      <rect x="0" y="438" width="1200" height="22" fill="rgba(44,64,87,0.04)"/>
+      <text x="600" y="454" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Fig 2.5-A · SR latch (left): feedback loops create memory — S=R=0 holds state. D flip-flop (right): D input captured only on rising clock edge — synchronous, predictable, the building block of all registers.</text>
+      <text x="1140" y="454" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 2.5</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Left: SR (Set-Reset) latch built from two cross-coupled NOR gates. The feedback loops create bistable behaviour — when S=R=0, the latch holds its current Q value unchanged. This is the emergence of memory from pure combinational gates. The invalid state (S=R=1) forces both outputs to 0, violating the Q̄ = NOT Q invariant. Right: the D flip-flop solves the invalid state problem by eliminating the R input and using a clock signal. D data is captured only on the rising edge of CLK, making the storage synchronous and predictable. The timing diagram shows Q updating at each rising clock edge to match D's value at that moment.</div>
+</div>
+
+<!-- FIG 2.5-B  4-bit Register -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Concept Diagram</span>
+    <span class="fig-id">FIG 2.5-B</span>
+    <span class="fig-title">4-Bit Register — Four D Flip-Flops Sharing a Clock</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 280" xmlns="http://www.w3.org/2000/svg" style="height:240px">
+      <rect width="1200" height="280" fill="#F4EFE6"/>
+
+      <!-- Header -->
+      <rect x="0" y="0" width="1200" height="36" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="23" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="14" fill="#2C2C2C">4 D flip-flops + shared CLK = 4-bit register (stores one 4-bit value)</text>
+
+      <!-- 4 FF cells -->
+      <!-- FF 3 (MSB) -->
+      <rect x="100" y="60" width="100" height="100" rx="1" fill="#EEECE6" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="150" y="105" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057" font-weight="500">D FF</text>
+      <text x="150" y="118" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">bit 3</text>
+      <path d="M100 142 L112 150 L100 158" fill="none" stroke="#8B6914" stroke-width="1.5"/>
+      <line x1="60" y1="82" x2="100" y2="82" stroke="#2E4057" stroke-width="2"/>
+      <text x="46" y="86" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2E4057">D₃</text>
+      <line x1="200" y1="82" x2="240" y2="82" stroke="#728C69" stroke-width="2"/>
+      <text x="244" y="86" font-family="'JetBrains Mono',monospace" font-size="12" fill="#728C69">Q₃</text>
+
+      <!-- FF 2 -->
+      <rect x="340" y="60" width="100" height="100" rx="1" fill="#EEECE6" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="390" y="105" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057" font-weight="500">D FF</text>
+      <text x="390" y="118" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">bit 2</text>
+      <path d="M340 142 L352 150 L340 158" fill="none" stroke="#8B6914" stroke-width="1.5"/>
+      <line x1="300" y1="82" x2="340" y2="82" stroke="#2E4057" stroke-width="2"/>
+      <text x="286" y="86" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2E4057">D₂</text>
+      <line x1="440" y1="82" x2="480" y2="82" stroke="#728C69" stroke-width="2"/>
+      <text x="484" y="86" font-family="'JetBrains Mono',monospace" font-size="12" fill="#728C69">Q₂</text>
+
+      <!-- FF 1 -->
+      <rect x="580" y="60" width="100" height="100" rx="1" fill="#EEECE6" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="630" y="105" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057" font-weight="500">D FF</text>
+      <text x="630" y="118" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">bit 1</text>
+      <path d="M580 142 L592 150 L580 158" fill="none" stroke="#8B6914" stroke-width="1.5"/>
+      <line x1="540" y1="82" x2="580" y2="82" stroke="#2E4057" stroke-width="2"/>
+      <text x="526" y="86" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2E4057">D₁</text>
+      <line x1="680" y1="82" x2="720" y2="82" stroke="#728C69" stroke-width="2"/>
+      <text x="724" y="86" font-family="'JetBrains Mono',monospace" font-size="12" fill="#728C69">Q₁</text>
+
+      <!-- FF 0 (LSB) -->
+      <rect x="820" y="60" width="100" height="100" rx="1" fill="#EEECE6" stroke="#2E4057" stroke-width="1.5"/>
+      <text x="870" y="105" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#2E4057" font-weight="500">D FF</text>
+      <text x="870" y="118" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">bit 0</text>
+      <path d="M820 142 L832 150 L820 158" fill="none" stroke="#8B6914" stroke-width="1.5"/>
+      <line x1="780" y1="82" x2="820" y2="82" stroke="#2E4057" stroke-width="2"/>
+      <text x="766" y="86" font-family="'JetBrains Mono',monospace" font-size="12" fill="#2E4057">D₀</text>
+      <line x1="920" y1="82" x2="960" y2="82" stroke="#728C69" stroke-width="2"/>
+      <text x="964" y="86" font-family="'JetBrains Mono',monospace" font-size="12" fill="#728C69">Q₀</text>
+
+      <!-- Shared CLK bus -->
+      <line x1="40" y1="200" x2="1040" y2="200" stroke="#8B6914" stroke-width="2.5"/>
+      <text x="30" y="204" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="12" fill="#8B6914">CLK</text>
+      <!-- CLK connections to each FF -->
+      <line x1="150" y1="160" x2="150" y2="200" stroke="#8B6914" stroke-width="2"/>
+      <line x1="390" y1="160" x2="390" y2="200" stroke="#8B6914" stroke-width="2"/>
+      <line x1="630" y1="160" x2="630" y2="200" stroke="#8B6914" stroke-width="2"/>
+      <line x1="870" y1="160" x2="870" y2="200" stroke="#8B6914" stroke-width="2"/>
+
+      <!-- Result panel -->
+      <rect x="1040" y="44" width="120" height="180" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="1100" y="62" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">STORED</text>
+      <text x="1100" y="108" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="24" fill="#2E4057">1011</text>
+      <text x="1100" y="140" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880">= 11</text>
+      <text x="1100" y="156" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">decimal</text>
+      <text x="1100" y="208" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#888880">captured on</text>
+      <text x="1100" y="220" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#8B6914">CLK ↑ edge</text>
+
+      <!-- Caption -->
+      <rect x="0" y="232" width="1200" height="48" fill="rgba(44,64,87,0.04)"/>
+      <text x="60" y="252" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">4 D flip-flops share one clock line → all 4 bits captured simultaneously on every rising CLK edge.</text>
+      <text x="60" y="271" font-family="'Inter',sans-serif" font-size="10" fill="#888880">8 flip-flops = 8-bit register. 64 flip-flops = 64-bit register (one CPU register). Modern x86: 16 × 64-bit = 1024 flip-flops for integer registers alone.</text>
+      <text x="1140" y="271" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · 2.5</text>
+    </svg>
+  </div>
+  <div class="fig-caption">A 4-bit register: four D flip-flops connected to a shared clock line. On every rising edge of CLK, all four D inputs are simultaneously sampled and stored in their respective flip-flops. The Q outputs maintain their values until the next rising edge. This synchronous, parallel capture is the foundation of CPU registers. A modern 64-bit processor register is simply 64 D flip-flops sharing a clock — conceptually identical to this diagram, scaled by 16×.</div>
+</div>
+
+<!-- FIG 2.5-C  Register File — D Flip-Flops as Grouped Storage -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Architecture Diagram</span>
+    <span class="fig-id">FIG 2.5-C</span>
+    <span class="fig-title">4-Bit Register — Four D Flip-Flops Sharing a Clock</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 380" xmlns="http://www.w3.org/2000/svg" style="height:320px">
+      <rect width="1200" height="380" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="34" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="22" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">4-BIT REGISTER — CLOCKED STORAGE FROM FOUR D FLIP-FLOPS</text>
+      <!-- 4 DFF boxes -->
+      <g id="dff-group">
+        <!-- DFF 3 (MSB) -->
+        <rect x="120" y="60" width="130" height="160" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5"/>
+        <text x="185" y="88" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2E4057">D-FF</text>
+        <text x="185" y="106" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">bit 3</text>
+        <!-- Clock triangle -->
+        <path d="M120 178 L135 186 L120 194" fill="#C82A2A" opacity="0.7"/>
+        <!-- D input -->
+        <line x1="60" y1="130" x2="120" y2="130" stroke="#2C2C2C" stroke-width="1.5"/>
+        <text x="50" y="134" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">D3</text>
+        <text x="128" y="134" font-family="'Inter',sans-serif" font-size="9" fill="#888880">D</text>
+        <!-- Q output -->
+        <line x1="250" y1="130" x2="310" y2="130" stroke="#728C69" stroke-width="1.5"/>
+        <text x="244" y="134" text-anchor="end" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Q</text>
+        <text x="318" y="134" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">Q3</text>
+        <!-- DFF 2 -->
+        <rect x="360" y="60" width="130" height="160" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5"/>
+        <text x="425" y="88" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2E4057">D-FF</text>
+        <text x="425" y="106" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">bit 2</text>
+        <path d="M360 178 L375 186 L360 194" fill="#C82A2A" opacity="0.7"/>
+        <line x1="300" y1="130" x2="360" y2="130" stroke="#2C2C2C" stroke-width="1.5"/>
+        <text x="290" y="134" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">D2</text>
+        <text x="368" y="134" font-family="'Inter',sans-serif" font-size="9" fill="#888880">D</text>
+        <line x1="490" y1="130" x2="550" y2="130" stroke="#728C69" stroke-width="1.5"/>
+        <text x="484" y="134" text-anchor="end" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Q</text>
+        <text x="558" y="134" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">Q2</text>
+        <!-- DFF 1 -->
+        <rect x="600" y="60" width="130" height="160" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5"/>
+        <text x="665" y="88" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2E4057">D-FF</text>
+        <text x="665" y="106" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">bit 1</text>
+        <path d="M600 178 L615 186 L600 194" fill="#C82A2A" opacity="0.7"/>
+        <line x1="540" y1="130" x2="600" y2="130" stroke="#2C2C2C" stroke-width="1.5"/>
+        <text x="530" y="134" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">D1</text>
+        <text x="608" y="134" font-family="'Inter',sans-serif" font-size="9" fill="#888880">D</text>
+        <line x1="730" y1="130" x2="790" y2="130" stroke="#728C69" stroke-width="1.5"/>
+        <text x="724" y="134" text-anchor="end" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Q</text>
+        <text x="798" y="134" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">Q1</text>
+        <!-- DFF 0 (LSB) -->
+        <rect x="840" y="60" width="130" height="160" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5"/>
+        <text x="905" y="88" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2E4057">D-FF</text>
+        <text x="905" y="106" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">bit 0</text>
+        <path d="M840 178 L855 186 L840 194" fill="#C82A2A" opacity="0.7"/>
+        <line x1="780" y1="130" x2="840" y2="130" stroke="#2C2C2C" stroke-width="1.5"/>
+        <text x="770" y="134" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">D0</text>
+        <text x="848" y="134" font-family="'Inter',sans-serif" font-size="9" fill="#888880">D</text>
+        <line x1="970" y1="130" x2="1030" y2="130" stroke="#728C69" stroke-width="1.5"/>
+        <text x="964" y="134" text-anchor="end" font-family="'Inter',sans-serif" font-size="9" fill="#888880">Q</text>
+        <text x="1038" y="134" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">Q0</text>
+      </g>
+      <!-- Shared clock line (horizontal bus) -->
+      <line x1="60" y1="187" x2="1100" y2="187" stroke="#C82A2A" stroke-width="2"/>
+      <text x="50" y="191" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="11" fill="#C82A2A">CLK</text>
+      <!-- CLK connects to each DFF clock input -->
+      <line x1="135" y1="187" x2="135" y2="186" stroke="#C82A2A" stroke-width="1.5"/>
+      <line x1="375" y1="187" x2="375" y2="186" stroke="#C82A2A" stroke-width="1.5"/>
+      <line x1="615" y1="187" x2="615" y2="186" stroke="#C82A2A" stroke-width="1.5"/>
+      <line x1="855" y1="187" x2="855" y2="186" stroke="#C82A2A" stroke-width="1.5"/>
+      <!-- Clock waveform -->
+      <rect x="1060" y="55" width="120" height="100" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="1120" y="72" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">CLK</text>
+      <path d="M1070 130 L1070 85 L1090 85 L1090 130 L1110 130 L1110 85 L1130 85 L1130 130 L1150 130 L1150 85" stroke="#C82A2A" stroke-width="1.5" fill="none"/>
+      <text x="1095" y="148" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">rising edge: latch D→Q</text>
+      <!-- State example -->
+      <rect x="60" y="250" width="960" height="70" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="60" y="250" width="960" height="22" fill="#2E4057" opacity="0.06"/>
+      <text x="540" y="265" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">EXAMPLE: STORE VALUE 0b1011 = 11 DECIMAL</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="12">
+        <text x="180" y="300" text-anchor="middle" fill="#2C2C2C">D3=1 →</text><text x="180" y="315" text-anchor="middle" fill="#728C69">Q3=1</text>
+        <text x="420" y="300" text-anchor="middle" fill="#2C2C2C">D2=0 →</text><text x="420" y="315" text-anchor="middle" fill="#888880">Q2=0</text>
+        <text x="660" y="300" text-anchor="middle" fill="#2C2C2C">D1=1 →</text><text x="660" y="315" text-anchor="middle" fill="#728C69">Q1=1</text>
+        <text x="900" y="300" text-anchor="middle" fill="#2C2C2C">D0=1 →</text><text x="900" y="315" text-anchor="middle" fill="#728C69">Q0=1</text>
+      </g>
+      <!-- Footer -->
+      <rect x="0" y="354" width="1200" height="26" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="371" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Fig 2.5-C</text>
+      <text x="120" y="371" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">4-bit register: four D flip-flops sharing a single clock line. On each rising clock edge, all four D inputs are simultaneously captured and held at Q outputs. This is the fundamental storage unit in CPU register files.</text>
+      <text x="1140" y="371" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 2.5</text>
+    </svg>
+  </div>
+  <div class="fig-caption">A 4-bit register formed by four D flip-flops sharing a single clock signal. On every rising clock edge, all four D inputs are simultaneously captured and held at the Q outputs until the next rising edge. This is the fundamental storage mechanism in every processor: the CPU's general-purpose registers (e.g., x86's RAX, RBX) are 64-bit versions of exactly this structure — 64 D flip-flops, one clock, 64 bits of state held between clock cycles.</div>
+</div>
+
+</div>
+</body>
+</html>

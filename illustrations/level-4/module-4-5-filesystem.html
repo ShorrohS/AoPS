@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 4.5 Illustrations — File Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg-paper:#F4F3EF;--bg-washi:#FDFDFD;--text-muted:#888880;--text-ghost:#BBBBB5;--accent-red:#C82A2A;--accent-indigo:#1C2D42;--accent-gold:#8B6914;--border-light:#D8D6CE;--border-paper:#E8E6DF;--zen-sand:#F4EFE6;--zen-bamboo:#728C69;--zen-indigo:#2E4057;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg-paper);font-family:'Inter',sans-serif;font-weight:300;}
+  .page-header{padding:40px 60px 32px;border-bottom:1px solid var(--border-light);background:var(--bg-washi);}
+  .breadcrumb{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-muted);margin-bottom:10px;}
+  .breadcrumb a{color:var(--accent-indigo);text-decoration:none;}
+  .page-title{font-family:'Noto Serif JP',serif;font-size:28px;font-weight:300;letter-spacing:-0.01em;margin-bottom:6px;}
+  .page-sub{font-size:13px;color:var(--text-muted);}
+  .figures-wrap{padding:52px 60px 80px;max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:80px;}
+  .figure-label{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .fig-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.16em;padding:4px 8px;border:1px solid;}
+  .fig-type.hero{border-color:var(--accent-indigo);color:var(--accent-indigo);background:rgba(44,64,87,0.04);}
+  .fig-type.diag{border-color:var(--accent-gold);color:var(--accent-gold);background:rgba(139,105,20,0.04);}
+  .fig-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-ghost);}
+  .fig-title{font-size:15px;font-weight:500;}
+  .fig-caption{font-size:12px;color:var(--text-muted);margin-top:10px;line-height:1.6;max-width:800px;border-left:2px solid var(--border-paper);padding-left:14px;}
+  .fig-frame{background:var(--zen-sand);border:1px solid var(--border-paper);overflow:hidden;}
+  .fig-frame svg{display:block;width:100%;}
+</style>
+</head>
+<body>
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Illustrations</a> → Level 4 — Software Foundations</div>
+  <div class="page-title">Module 4.5 — File Systems</div>
+  <div class="page-sub">2 figures · Inode Structure + Directory Tree · ext4 On-Disk Layout</div>
+</div>
+<div class="figures-wrap">
+
+<!-- FIG 4.5-A  Inode and Directory Tree -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type hero">Type A — Chapter Hero</span>
+    <span class="fig-id">FIG 4.5-A</span>
+    <span class="fig-title">Inodes and Directory Trees — How Files Are Named and Located</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 440" xmlns="http://www.w3.org/2000/svg" style="height:390px">
+      <defs>
+        <linearGradient id="fsBg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EAE6DC"/><stop offset="100%" stop-color="#E2DDD4"/>
+        </linearGradient>
+        <marker id="fs_arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#2E4057"/>
+        </marker>
+        <marker id="fs_red" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#C82A2A"/>
+        </marker>
+      </defs>
+      <rect width="1200" height="440" fill="url(#fsBg)"/>
+
+      <!-- Directory tree (left) -->
+      <text x="300" y="26" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" fill="#888880" letter-spacing="0.1em">DIRECTORY TREE (names)</text>
+
+      <!-- / (root) -->
+      <rect x="250" y="40" width="100" height="36" rx="1" fill="#2E4057" opacity="0.8"/>
+      <text x="300" y="62" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#FDFDFD">/</text>
+      <text x="300" y="72" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="rgba(255,255,255,0.6)">inode 2</text>
+
+      <!-- home dir -->
+      <line x1="300" y1="76" x2="160" y2="120" stroke="#2E4057" stroke-width="1.5"/>
+      <rect x="110" y="120" width="100" height="36" rx="1" fill="#2E4057" opacity="0.5"/>
+      <text x="160" y="142" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">home/</text>
+      <text x="160" y="152" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="rgba(255,255,255,0.6)">inode 12</text>
+
+      <!-- usr dir -->
+      <line x1="300" y1="76" x2="440" y2="120" stroke="#2E4057" stroke-width="1.5"/>
+      <rect x="390" y="120" width="100" height="36" rx="1" fill="#2E4057" opacity="0.5"/>
+      <text x="440" y="142" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#FDFDFD">usr/</text>
+      <text x="440" y="152" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="rgba(255,255,255,0.6)">inode 45</text>
+
+      <!-- user dir under home -->
+      <line x1="160" y1="156" x2="100" y2="200" stroke="#2E4057" stroke-width="1.5"/>
+      <rect x="50" y="200" width="100" height="36" rx="1" fill="#728C69" opacity="0.7"/>
+      <text x="100" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#FDFDFD">alice/</text>
+      <text x="100" y="232" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="rgba(255,255,255,0.6)">inode 88</text>
+
+      <!-- hello.txt under alice -->
+      <line x1="100" y1="236" x2="60" y2="280" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="10" y="280" width="100" height="36" rx="1" fill="#8B6914" opacity="0.7"/>
+      <text x="60" y="302" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">hello.txt</text>
+      <text x="60" y="312" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="rgba(255,255,255,0.6)">inode 203</text>
+
+      <!-- notes.md under alice -->
+      <line x1="100" y1="236" x2="130" y2="280" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="100" y="280" width="100" height="36" rx="1" fill="#8B6914" opacity="0.6"/>
+      <text x="150" y="302" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#FDFDFD">notes.md</text>
+      <text x="150" y="312" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="rgba(255,255,255,0.6)">inode 204</text>
+
+      <!-- Inode detail panel (centre) -->
+      <rect x="600" y="30" width="240" height="320" rx="1" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+      <rect x="600" y="30" width="240" height="26" fill="#C82A2A" opacity="0.08"/>
+      <text x="720" y="47" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">INODE 203 (hello.txt)</text>
+
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">
+        <text x="618" y="76">type:    regular file</text>
+        <text x="618" y="93">mode:    0644 (rw-r--r--)</text>
+        <text x="618" y="110">uid:     1000 (alice)</text>
+        <text x="618" y="127">gid:     1000</text>
+        <text x="618" y="144">size:    13 bytes</text>
+        <text x="618" y="161">atime:   2024-01-15</text>
+        <text x="618" y="178">mtime:   2024-01-14</text>
+        <text x="618" y="195">ctime:   2024-01-14</text>
+        <text x="618" y="212">nlink:   1</text>
+        <line x1="608" y1="222" x2="832" y2="222" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="618" y="240">block[0]: 7821</text>
+        <text x="618" y="257">block[1]: 0 (unused)</text>
+        <text x="618" y="274">block[2]: 0</text>
+        <text x="618" y="291">…(12 direct blocks)</text>
+        <text x="618" y="308">indirect: 0</text>
+        <text x="618" y="325">dbl_ind:  0</text>
+        <text x="618" y="340">tri_ind:  0</text>
+      </g>
+
+      <!-- Disk blocks (right) -->
+      <rect x="880" y="30" width="280" height="260" rx="1" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="880" y="30" width="280" height="26" fill="#728C69" opacity="0.08"/>
+      <text x="1020" y="47" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69" letter-spacing="0.08em">DISK BLOCK #7821 (4KB)</text>
+
+      <rect x="892" y="60" width="256" height="200" rx="1" fill="#EEECE6" stroke="#D8D6CE" stroke-width="0.5"/>
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#2C2C2C">
+        <text x="900" y="80">48 65 6C 6C 6F 2C 20</text>
+        <text x="900" y="98">57 6F 72 6C 64 21 0A</text>
+        <text x="900" y="116" fill="#888880">00 00 00 00 00 00 00</text>
+        <text x="900" y="134" fill="#888880">00 00 00 00 00 00 00</text>
+        <text x="900" y="152" fill="#888880">… (rest of 4KB block)</text>
+      </g>
+      <rect x="892" y="216" width="256" height="36" fill="#728C69" opacity="0.08"/>
+      <text x="1020" y="236" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">"Hello, World!\n"</text>
+      <text x="1020" y="251" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">13 bytes of file content</text>
+
+      <!-- Arrow: inode block[0] → disk block -->
+      <path d="M840 240 L878 130" stroke="#C82A2A" stroke-width="1.5" fill="none" stroke-dasharray="4,2" marker-end="url(#fs_red)"/>
+      <text x="858" y="188" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">points to</text>
+
+      <!-- Arrow: directory entry → inode -->
+      <path d="M110 295 Q350 360 596 210" stroke="#8B6914" stroke-width="1.5" fill="none" stroke-dasharray="4,2" marker-end="url(#fs_arr)"/>
+      <text x="340" y="360" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">dir entry maps "hello.txt" → inode 203</text>
+
+      <!-- Key insight -->
+      <rect x="60" y="380" width="1080" height="34" rx="1" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <text x="60" y="390" width="0" height="0"/>
+      <text x="600" y="401" text-anchor="middle" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">File name exists only in the directory. The inode stores everything else. Directories are just files mapping names → inode numbers.</text>
+
+      <rect x="0" y="416" width="1200" height="24" fill="rgba(44,64,87,0.04)"/>
+      <text x="1140" y="434" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="9" fill="#888880">AoPS · Module 4.5</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Filesystem structure on Linux ext4. The directory tree (left) stores name-to-inode mappings only — the file name "hello.txt" exists only in the directory alice/. The inode (centre, inode 203) stores all file metadata: permissions, owner, timestamps, size, and an array of disk block pointers. The first direct block pointer (block[0] = 7821) points to the 4KB disk block that contains the actual file data "Hello, World!\n" (13 bytes). The critical insight: the file name and the file data are completely separate. This enables hard links (multiple names pointing to the same inode) and explains why renaming a file within the same filesystem is instant (just changes the directory entry, the inode is untouched).</div>
+</div>
+
+<!-- FIG 4.5-B  Inode Structure — How Files Are Stored -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type B — Concept Diagram</span>
+    <span class="fig-id">FIG 4.5-B</span>
+    <span class="fig-title">Inode Structure — Separating File Metadata from File Data</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 360" xmlns="http://www.w3.org/2000/svg" style="height:300px">
+      <rect width="1200" height="360" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">INODE ARCHITECTURE — METADATA SEPARATED FROM DATA BLOCKS</text>
+      <!-- Directory entry -->
+      <rect x="40" y="50" width="200" height="120" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="50" width="200" height="22" fill="#2E4057" opacity="0.08"/>
+      <text x="140" y="66" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">DIRECTORY ENTRY</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#2C2C2C">
+        <text x="55" y="92">"hello.txt"</text>
+        <text x="55" y="108">inode #</text><text x="120" y="108" fill="#C82A2A">4821</text>
+        <line x1="50" y1="115" x2="230" y2="115" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="55" y="132">"readme.md"</text>
+        <text x="55" y="148">inode # 4900</text>
+      </g>
+      <!-- Arrow: dir → inode -->
+      <path d="M240 92 L310 92" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M306 88 L314 92 L306 96" fill="#C82A2A"/>
+      <text x="275" y="84" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">lookup</text>
+      <!-- Inode 4821 -->
+      <rect x="314" y="44" width="260" height="240" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+      <rect x="314" y="44" width="260" height="22" fill="#C82A2A" opacity="0.08"/>
+      <text x="444" y="60" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">INODE #4821</text>
+      <g font-family="'JetBrains Mono',monospace" font-size="10">
+        <text x="328" y="82" fill="#888880">type:</text><text x="380" y="82" fill="#2C2C2C">regular file</text>
+        <text x="328" y="98" fill="#888880">perms:</text><text x="380" y="98" fill="#2C2C2C">rw-r--r--</text>
+        <text x="328" y="114" fill="#888880">uid:</text><text x="380" y="114" fill="#2C2C2C">1000</text>
+        <text x="328" y="130" fill="#888880">size:</text><text x="380" y="130" fill="#2C2C2C">4,096 bytes</text>
+        <text x="328" y="146" fill="#888880">atime:</text><text x="380" y="146" fill="#2C2C2C">2024-09-12</text>
+        <text x="328" y="162" fill="#888880">mtime:</text><text x="380" y="162" fill="#2C2C2C">2024-09-10</text>
+        <text x="328" y="178" fill="#888880">links:</text><text x="380" y="178" fill="#2C2C2C">1</text>
+        <line x1="322" y1="186" x2="566" y2="186" stroke="#E8E6DF" stroke-width="0.5"/>
+        <text x="328" y="204" fill="#888880">direct[0]:</text><text x="408" y="204" fill="#728C69">→ block 8200</text>
+        <text x="328" y="220" fill="#888880">direct[1]:</text><text x="408" y="220" fill="#728C69">→ block 8201</text>
+        <text x="328" y="236" fill="#888880">direct[2]:</text><text x="408" y="236" fill="#728C69">→ block 8202</text>
+        <text x="328" y="252" fill="#888880">indirect:</text><text x="408" y="252" fill="#8B6914">→ block 9100</text>
+        <text x="328" y="268" fill="#888880">d-indirect:</text><text x="408" y="268" fill="#888880">null</text>
+      </g>
+      <!-- Arrows: inode → data blocks -->
+      <path d="M574 204 L640 204" stroke="#728C69" stroke-width="1.5" fill="none"/>
+      <path d="M636 200 L644 204 L636 208" fill="#728C69"/>
+      <path d="M574 220 L640 230" stroke="#728C69" stroke-width="1.5" fill="none"/>
+      <path d="M636 226 L644 230 L636 234" fill="#728C69"/>
+      <path d="M574 236 L640 256" stroke="#728C69" stroke-width="1.5" fill="none"/>
+      <path d="M636 253 L644 257 L636 261" fill="#728C69"/>
+      <!-- Data blocks -->
+      <g fill="#FDFDFD" stroke="#728C69" stroke-width="1">
+        <rect x="644" y="182" width="140" height="34"/>
+        <rect x="644" y="216" width="140" height="34"/>
+        <rect x="644" y="250" width="140" height="34"/>
+      </g>
+      <g font-family="'JetBrains Mono',monospace" font-size="9" text-anchor="middle">
+        <text x="714" y="196" fill="#888880">data block 8200</text>
+        <text x="714" y="208" fill="#728C69">Hello World...\n</text>
+        <text x="714" y="230" fill="#888880">data block 8201</text>
+        <text x="714" y="242" fill="#728C69">...more content...</text>
+        <text x="714" y="264" fill="#888880">data block 8202</text>
+        <text x="714" y="276" fill="#728C69">...end of file.</text>
+      </g>
+      <!-- Indirect block -->
+      <path d="M574 252 L810 290" stroke="#8B6914" stroke-width="1.5" stroke-dasharray="4,2" fill="none"/>
+      <rect x="810" y="275" width="200" height="40" fill="#FDFDFD" stroke="#8B6914" stroke-width="1" stroke-dasharray="4,2"/>
+      <text x="910" y="292" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#8B6914">indirect block 9100</text>
+      <text x="910" y="307" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" fill="#888880">→ pointers to more data blocks</text>
+      <!-- Key insight panel -->
+      <rect x="40" y="200" width="260" height="110" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="200" width="4" height="110" fill="#2E4057"/>
+      <text x="56" y="220" font-family="'Noto Serif JP',serif" font-size="11" fill="#2C2C2C">Key insight</text>
+      <text x="56" y="240" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">The filename is NOT in the inode.</text>
+      <text x="56" y="258" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">It lives only in the directory.</text>
+      <text x="56" y="278" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">Hard links: two names,</text>
+      <text x="56" y="296" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">same inode. File persists</text>
+      <text x="56" y="314" font-family="'Inter',sans-serif" font-size="10" fill="#6E6E6E">until link count hits 0.</text>
+      <!-- Footer -->
+      <rect x="0" y="334" width="1200" height="26" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="351" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Fig 4.5-B</text>
+      <text x="120" y="351" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Inode #4821 stores metadata and block pointers for hello.txt. The filename lives only in the directory entry. Direct pointers serve small files; indirect blocks extend to large ones.</text>
+      <text x="1140" y="351" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 4.5</text>
+    </svg>
+  </div>
+  <div class="fig-caption">The inode architecture used by ext4, XFS, and most Unix file systems. A directory entry maps a filename to an inode number. The inode stores all metadata (permissions, timestamps, size, owner) and a set of block pointers: 12 direct pointers for small files, and an indirect pointer (pointing to a block full of more pointers) for larger ones. Critically, the filename is not stored in the inode — it lives only in the directory. This enables hard links: multiple directory entries pointing to the same inode. The file persists on disk until its link count reaches zero, at which point the OS frees its data blocks.</div>
+</div>
+
+<!-- FIG 4.5-C  Directory Tree and Path Resolution -->
+<div class="figure-block">
+  <div class="figure-label">
+    <span class="fig-type diag">Type C — Process Diagram</span>
+    <span class="fig-id">FIG 4.5-C</span>
+    <span class="fig-title">Path Resolution — Walking /home/user/hello.txt from the Root</span>
+  </div>
+  <div class="fig-frame">
+    <svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg" style="height:250px">
+      <rect width="1200" height="300" fill="#F4EFE6"/>
+      <rect x="0" y="0" width="1200" height="32" fill="#2E4057" opacity="0.06"/>
+      <text x="600" y="21" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="500" fill="#2E4057" letter-spacing="0.14em">PATH RESOLUTION: open("/home/user/hello.txt") — 4 DISK READS</text>
+      <!-- Step 1: / -->
+      <rect x="40" y="48" width="180" height="80" fill="#FDFDFD" stroke="#2E4057" stroke-width="1.5"/>
+      <rect x="40" y="48" width="180" height="22" fill="#2E4057" opacity="0.12"/>
+      <text x="130" y="64" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#2E4057" letter-spacing="0.1em">① ROOT INODE (#2)</text>
+      <text x="54" y="86" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">"home" → #100</text>
+      <text x="54" y="102" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">"etc"  → #200</text>
+      <text x="54" y="118" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">"bin"  → #300</text>
+      <!-- Arrow -->
+      <path d="M220 88 L268 88" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M264 84 L272 88 L264 92" fill="#C82A2A"/>
+      <text x="244" y="80" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">read "home"</text>
+      <!-- Step 2: /home -->
+      <rect x="272" y="48" width="180" height="80" fill="#FDFDFD" stroke="#728C69" stroke-width="1.5"/>
+      <rect x="272" y="48" width="180" height="22" fill="#728C69" opacity="0.1"/>
+      <text x="362" y="64" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69" letter-spacing="0.1em">② INODE #100 (/home)</text>
+      <text x="286" y="86" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">"user"  → #450</text>
+      <text x="286" y="102" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">"alice" → #460</text>
+      <text x="286" y="118" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">"bob"   → #470</text>
+      <!-- Arrow -->
+      <path d="M452 88 L500 88" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M496 84 L504 88 L496 92" fill="#C82A2A"/>
+      <text x="476" y="80" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">read "user"</text>
+      <!-- Step 3: /home/user -->
+      <rect x="504" y="48" width="200" height="80" fill="#FDFDFD" stroke="#8B6914" stroke-width="1.5"/>
+      <rect x="504" y="48" width="200" height="22" fill="#8B6914" opacity="0.08"/>
+      <text x="604" y="64" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#8B6914" letter-spacing="0.1em">③ INODE #450 (/home/user)</text>
+      <text x="518" y="86" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">"hello.txt" → #4821</text>
+      <text x="518" y="102" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">".bashrc"   → #4822</text>
+      <text x="518" y="118" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">".config"   → #4830</text>
+      <!-- Arrow -->
+      <path d="M704 88 L752 88" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M748 84 L756 88 L748 92" fill="#C82A2A"/>
+      <text x="728" y="80" text-anchor="middle" font-family="'Inter',sans-serif" font-size="8" fill="#C82A2A">read "hello.txt"</text>
+      <!-- Step 4: inode + data -->
+      <rect x="756" y="48" width="200" height="80" fill="#FDFDFD" stroke="#C82A2A" stroke-width="1.5"/>
+      <rect x="756" y="48" width="200" height="22" fill="#C82A2A" opacity="0.08"/>
+      <text x="856" y="64" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#C82A2A" letter-spacing="0.1em">④ INODE #4821 (file)</text>
+      <text x="770" y="86" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">size: 4096 bytes</text>
+      <text x="770" y="102" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">block[0]: → 8200</text>
+      <text x="770" y="118" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">perms: rw-r--r--</text>
+      <!-- Arrow to data -->
+      <path d="M956 88 L1004 88" stroke="#C82A2A" stroke-width="2" fill="none"/>
+      <path d="M1000 84 L1008 88 L1000 92" fill="#C82A2A"/>
+      <!-- Data block -->
+      <rect x="1008" y="48" width="160" height="80" fill="#728C69" opacity="0.2" stroke="#728C69" stroke-width="1.5"/>
+      <text x="1088" y="68" text-anchor="middle" font-family="'Inter',sans-serif" font-size="9" font-weight="500" fill="#728C69" letter-spacing="0.1em">DATA BLOCK 8200</text>
+      <text x="1088" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#728C69">"Hello World"</text>
+      <text x="1088" y="118" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#728C69">[file content]</text>
+      <!-- Read count annotation -->
+      <rect x="40" y="158" width="1130" height="80" fill="#FDFDFD" stroke="#D8D6CE" stroke-width="1"/>
+      <rect x="40" y="158" width="4" height="80" fill="#C82A2A"/>
+      <text x="56" y="178" font-family="'Noto Serif JP',serif" font-size="12" fill="#2C2C2C">Cost of path resolution</text>
+      <text x="56" y="200" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Opening /home/user/hello.txt requires at minimum 4 inode reads (root, /home, /home/user, the file itself) before a single byte of content is read. Each disk access costs ~0.1ms on SSD, ~4ms on HDD. The kernel's dcache (directory cache) caches recently-used directory entries to avoid repeated disk reads on hot paths.</text>
+      <text x="56" y="222" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">open(path) → 4 reads worst case → fd returned → read(fd) → 1+ data block reads</text>
+      <!-- Footer -->
+      <rect x="0" y="272" width="1200" height="28" fill="rgba(44,64,87,0.05)"/>
+      <text x="60" y="290" font-family="'Noto Serif JP',serif" font-size="13" fill="#2C2C2C">Fig 4.5-C</text>
+      <text x="120" y="290" font-family="'Inter',sans-serif" font-size="11" fill="#6E6E6E">Path resolution for /home/user/hello.txt: 3 directory inodes read to traverse the path, then the file inode, then data blocks. Dcache eliminates repeated reads in practice.</text>
+      <text x="1140" y="290" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="#888880">AoPS · Module 4.5</text>
+    </svg>
+  </div>
+  <div class="fig-caption">Path resolution in a Unix file system. Opening /home/user/hello.txt requires the kernel to walk each path component: read the root inode (#2) to find "home"→#100, read inode #100 to find "user"→#450, read inode #450 to find "hello.txt"→#4821, read inode #4821 to get block pointers, then finally read the data block. This is a minimum of 4 inode accesses before any file content is transferred. The kernel's directory cache (dcache) keeps recently resolved path components in memory, reducing this cost to near zero for hot paths — but cold path performance explains why deep directory hierarchies can be slower on filesystem-heavy workloads.</div>
+</div>
+
+</div>
+</body>
+</html>
