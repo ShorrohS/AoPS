@@ -457,13 +457,20 @@ Each level folder contains:
 
 ---
 
-## Current Status
+## Current Status & Master Steering
 
-- [x] Steering file created
-- [x] Level 0 — Before Computers (complete — 5 modules, 15 files)
-- [ ] Level 1 — Physical Computing (next)
-- [ ] Levels 2–12 — Pending
+> **Note for AI Agents & Collaborators:**  
+> The centralized master guide governing all active tracks, design systems, module directories, and agent SOPs is maintained in **[MASTER_GUIDE.md](file:///c:/Users/ssro2/OneDrive/Desktop/Projects/eBooks/AoPS/MASTER_GUIDE.md)** at the root of this repository.
+
+- [x] Steering files created
+- [x] Level 0 — Before Computers (complete — 5 modules)
+- [x] Level 1 — Physical Computing (complete — 6 modules)
+- [x] Levels 2–12 — Digital Foundations through Advanced AI (complete — 59 modules)
+- [x] All 70 Modules: 70 Lessons, 70 Simulations, 70 Challenges, 78 Illustration Pages
+- [x] Automated Review Edition PDF generation engine (`generate_pdf.py`)
+- [ ] Active: Japanese Zen Minimalist design system polish across all simulations
+- [ ] Active: Young Explorers 13-Book Picture Book Series adaptation
 
 ---
 
-*This document governs all content created under the AoPS course. Every lesson, simulation, and challenge must conform to the standards above.*
+*This document governs all content created under the AoPS course. Every lesson, simulation, and challenge must conform to the standards above and in MASTER_GUIDE.md.*

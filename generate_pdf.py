@@ -24,7 +24,7 @@ from reportlab.platypus import (
 )
 
 # ── Paths ──────────────────────────────────────────────────────────────────
-BASE        = Path(r"c:\Users\NDH01061\Desktop\Kiro - Project\AoPS")
+BASE        = Path(__file__).resolve().parent
 COURSE_DIR  = BASE / "course"
 ILLUS_DIR   = BASE / "illustrations"
 OUT_PDF     = BASE / "AoPS_Review_Edition_v1.pdf"
