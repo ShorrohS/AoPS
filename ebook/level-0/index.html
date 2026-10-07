@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AoPS — Volume 0: Before Computers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:         #1C1C1C;
+  --paper:       #F5F4EF;
+  --warm:        #EEECE4;
+  --bone:        #E8E5DC;
+  --ghost:       #D4D0C4;
+  --indigo:      #1C2D42;
+  --lacquer:     #C82A2A;
+  --gold:        #8B6914;
+  --sage:        #3D5B3F;
+  --slate:       #4A5568;
+  --font-display:'Noto Serif JP', Georgia, serif;
+  --font-body:   'EB Garamond', Georgia, serif;
+  --font-sans:   'Inter', system-ui, sans-serif;
+  --font-mono:   'JetBrains Mono', monospace;
+  --space-sm:    8px;
+  --space-md:    16px;
+  --space-lg:    32px;
+  --space-xl:    64px;
+  --space-2xl:   96px;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { background:#C8C6C0; }
+body {
+  background:#C8C6C0;
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:17px;
+  line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+
+.book-page {
+  max-width:720px;
+  margin:0 auto;
+  background:var(--paper);
+  min-height:100vh;
+  box-shadow:0 0 0 1px rgba(0,0,0,0.06), 0 16px 56px rgba(0,0,0,0.22);
+}
+
+/* Volume header */
+.vol-header {
+  background:var(--indigo);
+  padding:60px 64px 52px;
+  position:relative;
+  overflow:hidden;
+}
+.vol-header::after {
+  content:'';
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:4px;
+  background:var(--lacquer);
+}
+.vol-label {
+  font-family:var(--font-sans);
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:0.26em;
+  text-transform:uppercase;
+  color:rgba(200,42,42,0.9);
+  margin-bottom:20px;
+  position:relative;
+}
+.vol-title {
+  font-family:var(--font-display);
+  font-size:38px;
+  font-weight:300;
+  color:rgba(245,244,239,0.96);
+  letter-spacing:-0.02em;
+  line-height:1.1;
+  margin-bottom:14px;
+  position:relative;
+}
+.vol-subtitle {
+  font-family:var(--font-sans);
+  font-size:12px;
+  font-weight:400;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:rgba(245,244,239,0.35);
+  position:relative;
+}
+
+/* Volume description band */
+.vol-desc {
+  border-bottom:1px solid var(--ghost);
+  padding:36px 64px;
+  background:var(--warm);
+}
+.vol-desc p {
+  font-family:var(--font-body);
+  font-size:17px;
+  color:var(--ink);
+  line-height:1.78;
+  max-width:600px;
+}
+.vol-desc p + p { text-indent:1.4em; }
+
+/* Chapter list */
+.chapter-list {
+  padding:48px 64px 80px;
+}
+.chapter-list-head {
+  font-family:var(--font-sans);
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--slate);
+  margin-bottom:32px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--bone);
+}
+
+.chapter-entry {
+  display:flex;
+  gap:24px;
+  align-items:flex-start;
+  padding:24px 0;
+  border-bottom:1px solid var(--bone);
+  text-decoration:none;
+  color:inherit;
+  transition:background 0.1s;
+}
+.chapter-entry:hover .chapter-title-main { color:var(--indigo); }
+.chapter-entry:first-of-type { padding-top:0; }
+
+.chapter-num {
+  font-family:var(--font-mono);
+  font-size:11px;
+  font-weight:400;
+  color:var(--ghost);
+  letter-spacing:0.08em;
+  flex-shrink:0;
+  padding-top:3px;
+  min-width:54px;
+}
+.chapter-meta {}
+.chapter-module-label {
+  font-family:var(--font-sans);
+  font-size:10px;
+  font-weight:500;
+  text-transform:uppercase;
+  letter-spacing:0.14em;
+  color:var(--slate);
+  margin-bottom:5px;
+}
+.chapter-title-main {
+  font-family:var(--font-display);
+  font-size:19px;
+  font-weight:300;
+  color:var(--ink);
+  line-height:1.25;
+  letter-spacing:-0.01em;
+  margin-bottom:6px;
+  transition:color 0.1s;
+}
+.chapter-synopsis {
+  font-family:var(--font-sans);
+  font-size:13px;
+  font-weight:300;
+  color:var(--slate);
+  line-height:1.65;
+  max-width:480px;
+}
+.chapter-tags {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+.ch-tag {
+  font-family:var(--font-mono);
+  font-size:9.5px;
+  font-weight:400;
+  letter-spacing:0.08em;
+  color:var(--slate);
+  border:1px solid var(--bone);
+  padding:2px 8px;
+  border-radius:1px;
+}
+
+/* Prerequisites / next -->
+.vol-bridge {
+  background:var(--warm);
+  border-top:1px solid var(--ghost);
+  padding:32px 64px;
+}
+.bridge-label {
+  font-family:var(--font-sans);
+  font-size:10px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:0.16em;
+  color:var(--slate);
+  margin-bottom:12px;
+}
+.bridge-text {
+  font-family:var(--font-body);
+  font-size:16px;
+  color:var(--ink);
+  line-height:1.75;
+  max-width:580px;
+}
+.bridge-text a {
+  color:var(--indigo);
+  text-decoration:none;
+  border-bottom:1px solid var(--ghost);
+}
+
+/* Page footer */
+.page-footer {
+  height:48px;
+  border-top:0.5px solid var(--ghost);
+  padding:0 64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:var(--paper);
+}
+.page-footer-series {
+  font-family:var(--font-sans);
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--ghost);
+}
+.page-num {
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--ghost);
+}
+</style>
+</head>
+<body>
+<div class="book-page">
+
+  <!-- Volume header -->
+  <header class="vol-header">
+    <p class="vol-label">Art of Problem Solving &nbsp;&middot;&nbsp; Computer Science Series</p>
+    <h1 class="vol-title">Volume 0<br>Before Computers</h1>
+    <p class="vol-subtitle">The origins of computation &mdash; Level 0 of 12</p>
+  </header>
+
+  <!-- Volume description -->
+  <div class="vol-desc">
+    <p>This volume traces the journey from counting beans to punched holes &mdash; from the moment humans first realised arithmetic could break down at scale, to the moment they built a machine that could process fifty million records in six weeks instead of eight years.</p>
+    <p>Five chapters. No mathematics beyond arithmetic. No electronics. Just the slow, brilliant accumulation of mechanical ideas that made the electronic computer possible &mdash; and inevitable.</p>
+  </div>
+
+  <!-- Chapter list -->
+  <main class="chapter-list">
+    <p class="chapter-list-head">Contents &mdash; Five Chapters</p>
+
+    <a class="chapter-entry" href="chapter-1/chapter-1.html">
+      <span class="chapter-num">0.1</span>
+      <div class="chapter-meta">
+        <p class="chapter-module-label">Chapter One</p>
+        <p class="chapter-title-main">Why Did Humans Need to Compute?</p>
+        <p class="chapter-synopsis">Three crises &mdash; the 1880 census, navigation tables, artillery trajectories &mdash; that shared one root cause: repetitive arithmetic at a scale that broke human capacity. The problem that forced computing into existence.</p>
+        <div class="chapter-tags">
+          <span class="ch-tag">The Scale Problem</span>
+          <span class="ch-tag">Census of 1880</span>
+          <span class="ch-tag">What is Computation?</span>
+          <span class="ch-tag">Simulation</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="chapter-entry" href="chapter-2/chapter-2.html">
+      <span class="chapter-num">0.2</span>
+      <div class="chapter-meta">
+        <p class="chapter-module-label">Chapter Two</p>
+        <p class="chapter-title-main">Early Mechanical Computation</p>
+        <p class="chapter-synopsis">From the abacus to the Stepped Reckoner &mdash; four centuries of embedding arithmetic rules in physical mechanisms. The mechanical carry, and why it still lives in every processor ever made.</p>
+        <div class="chapter-tags">
+          <span class="ch-tag">Napier&rsquo;s Bones</span>
+          <span class="ch-tag">Pascal&rsquo;s Pascaline</span>
+          <span class="ch-tag">Mechanical Carry</span>
+          <span class="ch-tag">Leibniz</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="chapter-entry" href="chapter-3/chapter-3.html">
+      <span class="chapter-num">0.3</span>
+      <div class="chapter-meta">
+        <p class="chapter-module-label">Chapter Three</p>
+        <p class="chapter-title-main">The Loom That Taught Computers</p>
+        <p class="chapter-synopsis">The Jacquard loom of 1804 solved a problem in silk weaving and accidentally invented software: holes in cards as stored, sequential, reorderable instructions executed by a machine without human intervention.</p>
+        <div class="chapter-tags">
+          <span class="ch-tag">Jacquard Loom</span>
+          <span class="ch-tag">Punch Cards</span>
+          <span class="ch-tag">Stored Instructions</span>
+          <span class="ch-tag">Birth of Software</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="chapter-entry" href="chapter-4/chapter-4.html">
+      <span class="chapter-num">0.4</span>
+      <div class="chapter-meta">
+        <p class="chapter-module-label">Chapter Four</p>
+        <p class="chapter-title-main">Babbage and Ada: The First Programmers</p>
+        <p class="chapter-synopsis">Charles Babbage designed the first general-purpose computer in 1837. Ada Lovelace wrote the first algorithm in 1843. Neither could build it. But the architecture they described &mdash; Store, Mill, conditional branch, loop &mdash; is the one every computer still uses.</p>
+        <div class="chapter-tags">
+          <span class="ch-tag">Difference Engine</span>
+          <span class="ch-tag">Analytical Engine</span>
+          <span class="ch-tag">Ada Lovelace</span>
+          <span class="ch-tag">Von Neumann Architecture</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="chapter-entry" href="chapter-5/chapter-5.html">
+      <span class="chapter-num">0.5</span>
+      <div class="chapter-meta">
+        <p class="chapter-module-label">Chapter Five</p>
+        <p class="chapter-title-main">Hollerith and the Punch Card Era</p>
+        <p class="chapter-synopsis">Herman Hollerith tabulated the 1890 US Census in six weeks instead of eight years &mdash; by encoding 62 million people as holes in cards and reading those holes electrically. The company he founded became IBM.</p>
+        <div class="chapter-tags">
+          <span class="ch-tag">Hollerith Tabulator</span>
+          <span class="ch-tag">1890 Census</span>
+          <span class="ch-tag">Data Encoding</span>
+          <span class="ch-tag">Birth of IBM</span>
+          <span class="ch-tag">Level 0 Capstone</span>
+        </div>
+      </div>
+    </a>
+
+  </main>
+
+  <!-- Bridge to Level 1 -->
+  <div class="vol-bridge">
+    <p class="bridge-label">What comes next</p>
+    <p class="bridge-text">Level 1: Physical Computing begins where this volume ends. Gear gave way to the electron. A relay, a vacuum tube, and a transistor are three different answers to the same question: how do you build an electrical switch that is faster, smaller, and cheaper than the one before it? Each generation achieved roughly 1,000&times; improvement in speed <em>and</em> 1,000&times; reduction in size. You will follow that exponential trajectory from the 1837 telegraph relay to the 2024 five-nanometre transistor &mdash; step by step, with a simulation at every stage.</p>
+  </div>
+
+  <footer class="page-footer" role="contentinfo">
+    <span class="page-footer-series">AoPS &mdash; Volume 0</span>
+    <span class="page-num">i</span>
+  </footer>
+
+</div>
+</body>
+</html>
