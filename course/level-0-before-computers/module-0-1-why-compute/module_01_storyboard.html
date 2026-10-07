@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 0.1 Storyboard — Why Did Humans Need to Compute?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-canvas: #f8fafc;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --card-bg: #ffffff;
+    --card-border: #e2e8f0;
+    --card-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+    --card-shadow-lg: 0 20px 35px -10px rgba(15, 23, 42, 0.1), 0 10px 15px -5px rgba(15, 23, 42, 0.05);
+    
+    --accent-blue: #0284c7;
+    --accent-blue-light: #e0f2fe;
+    --accent-red: #e11d48;
+    --accent-red-light: #ffe4e6;
+    --accent-amber: #d97706;
+    --accent-amber-light: #fef3c7;
+    --accent-emerald: #059669;
+    --accent-emerald-light: #d1fae5;
+    
+    --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: #0b0f19;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* Fixed 16:9 Viewport Stage */
+  #viewport-wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: #090d16;
+  }
+
+  #canvas-stage {
+    width: 1920px;
+    height: 1080px;
+    background: var(--bg-canvas);
+    position: absolute;
+    transform-origin: center center;
+    overflow: hidden;
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    padding: 60px 80px;
+  }
+
+  /* Global Stage Header (Always Anchored) */
+  #stage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 30px;
+    z-index: 50;
+    transition: all 0.6s var(--ease-spring);
+  }
+
+  .brand-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    padding: 8px 18px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-blue);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+  }
+
+  .brand-pill .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    box-shadow: 0 0 10px var(--accent-blue);
+  }
+
+  .step-breadcrumb {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.8);
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--card-border);
+  }
+
+  .step-breadcrumb strong {
+    color: var(--text-primary);
+  }
+
+  /* Main Canvas Dynamic Area */
+  #stage-content {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Step Scenes */
+  .scene {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(24px) scale(0.98);
+    transition: opacity 0.4s var(--ease-spring), transform 0.5s var(--ease-spring), visibility 0.4s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .scene.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+    z-index: 10;
+  }
+
+  /* Common UI Elements */
+  .section-headline {
+    font-size: 46px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+
+  .section-subheadline {
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    max-width: 900px;
+    margin-bottom: 40px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    box-shadow: var(--card-shadow);
+    padding: 32px;
+    position: relative;
+  }
+
+  /* Newspaper Cutout Styling */
+  .newspaper-cutout {
+    position: relative;
+    display: inline-block;
+    filter: drop-shadow(0 14px 24px rgba(15, 23, 42, 0.15));
+    transition: transform 0.4s var(--ease-spring);
+  }
+
+  .newspaper-cutout img {
+    display: block;
+    border-radius: 2px;
+    background: #ffffff;
+  }
+
+  .newspaper-cutout.tilt-left {
+    transform: rotate(-2deg);
+  }
+
+  .newspaper-cutout.tilt-right {
+    transform: rotate(2deg);
+  }
+
+  .newspaper-cutout:hover {
+    transform: rotate(0deg) scale(1.02);
+  }
+
+  .cutout-tag {
+    position: absolute;
+    bottom: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0f172a;
+    color: #ffffff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+
+  /* ------------------------------------------
+     SCENE 0: TITLE STAGE
+     ------------------------------------------ */
+  #scene-0 {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .hero-title-box {
+    max-width: 1100px;
+    padding: 60px 70px;
+    background: radial-gradient(circle at top right, rgba(2, 132, 199, 0.04), transparent 60%), #ffffff;
+    border-radius: 24px;
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow-lg);
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent-blue);
+    margin-bottom: 20px;
+  }
+
+  .hero-main-title {
+    font-size: 72px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+    line-height: 1.05;
+    margin-bottom: 24px;
+  }
+
+  .hero-main-title span {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-description {
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    max-width: 820px;
+    margin: 0 auto 36px auto;
+  }
+
+  .hero-badges-row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .hero-badge {
+    background: var(--bg-canvas);
+    border: 1px solid var(--card-border);
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ------------------------------------------
+     SCENE 1: THE CENSUS CRISIS
+     ------------------------------------------ */
+  .grid-census {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 40px;
+    height: calc(100% - 100px);
+    align-items: center;
+  }
+
+  .stat-card-row {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .stat-card {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s var(--ease-spring);
+  }
+
+  .stat-card:hover {
+    transform: translateX(8px);
+  }
+
+  .stat-card.red { border-left: 6px solid var(--accent-red); }
+  .stat-card.amber { border-left: 6px solid var(--accent-amber); }
+  .stat-card.blue { border-left: 6px solid var(--accent-blue); }
+
+  .stat-number {
+    font-size: 52px;
+    font-weight: 900;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    min-width: 250px;
+  }
+
+  .stat-card.red .stat-number { color: var(--accent-red); }
+  .stat-card.amber .stat-number { color: var(--accent-amber); }
+  .stat-card.blue .stat-number { color: var(--accent-blue); }
+
+  .stat-info .stat-label {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .stat-info .stat-desc {
+    font-size: 16px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+
+  .census-takeaway {
+    margin-top: 10px;
+    padding: 16px 24px;
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    border-radius: 12px;
+    color: #9f1239;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* ------------------------------------------
+     SCENE 2: NAVIGATION & MILITARY LIMITS
+     ------------------------------------------ */
+  .grid-two-cases {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    height: calc(100% - 100px);
+  }
+
+  .case-card {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .case-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+  }
+
+  .case-badge.red { background: var(--accent-red-light); color: var(--accent-red); }
+  .case-badge.amber { background: var(--accent-amber-light); color: var(--accent-amber); }
+
+  .case-title {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+  }
+
+  .case-visual-container {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+  }
+
+  .case-metric-banner {
+    background: var(--bg-canvas);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+  }
+
+  .case-metric-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  /* ------------------------------------------
+     SCENE 3: THE PATTERN TABLE
+     ------------------------------------------ */
+  .pattern-table-wrapper {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    box-shadow: var(--card-shadow-lg);
+    overflow: hidden;
+    margin-top: 10px;
+  }
+
+  .pattern-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  .pattern-table th {
+    background: #f1f5f9;
+    padding: 22px 36px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .pattern-table td {
+    padding: 28px 36px;
+    font-size: 19px;
+    border-bottom: 1px solid var(--card-border);
+    color: var(--text-primary);
+  }
+
+  .pattern-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .pattern-table tr:hover td {
+    background: #f8fafc;
+  }
+
+  .scale-pill {
+    display: inline-block;
+    background: var(--accent-blue-light);
+    color: var(--accent-blue);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+  }
+
+  .consequence-pill {
+    display: inline-block;
+    background: var(--accent-red-light);
+    color: var(--accent-red);
+    font-size: 15px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 8px;
+  }
+
+  .pattern-conclusion {
+    margin-top: 24px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 14px;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .pattern-conclusion-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e40af;
+  }
+
+  /* ------------------------------------------
+     SCENE 4: DEFINING COMPUTATION
+     ------------------------------------------ */
+  .grid-definition {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+  }
+
+  .def-card {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 40px 32px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .def-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+  }
+
+  .def-card.c1::before { background: var(--accent-blue); }
+  .def-card.c2::before { background: var(--accent-amber); }
+  .def-card.c3::before { background: var(--accent-emerald); }
+
+  .def-icon-box {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    margin-bottom: 24px;
+  }
+
+  .def-card.c1 .def-icon-box { background: var(--accent-blue-light); color: var(--accent-blue); }
+  .def-card.c2 .def-icon-box { background: var(--accent-amber-light); color: var(--accent-amber); }
+  .def-card.c3 .def-icon-box { background: var(--accent-emerald-light); color: var(--accent-emerald); }
+
+  .def-title {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+
+  .def-role {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 18px;
+  }
+
+  .def-desc {
+    font-size: 17px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .universal-banner {
+    background: #0f172a;
+    color: #ffffff;
+    border-radius: 16px;
+    padding: 24px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ub-text {
+    font-size: 18px;
+    font-weight: 500;
+    color: #e2e8f0;
+  }
+
+  .ub-text strong {
+    color: #38bdf8;
+  }
+
+  /* ------------------------------------------
+     SCENE 5: HUMAN VS CIRCUIT
+     ------------------------------------------ */
+  .grid-comparison {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 10px;
+  }
+
+  .comp-card {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 36px 30px;
+    box-shadow: var(--card-shadow);
+  }
+
+  .comp-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .comp-dimension {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+
+  .comp-split-row {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .comp-side {
+    padding: 16px 20px;
+    border-radius: 12px;
+  }
+
+  .comp-side.human {
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+  }
+
+  .comp-side.machine {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+  }
+
+  .side-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  .comp-side.human .side-label { color: var(--accent-red); }
+  .comp-side.machine .side-label { color: var(--accent-emerald); }
+
+  .side-val {
+    font-size: 20px;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .comp-side.human .side-val { color: #9f1239; }
+  .comp-side.machine .side-val { color: #166534; }
+
+  /* ------------------------------------------
+     SCENE 6: CHALLENGE & QUANTITATIVE SUMMARY
+     ------------------------------------------ */
+  .challenge-container {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 40px;
+    align-items: center;
+    height: calc(100% - 100px);
+  }
+
+  .challenge-prompt-box {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 44px;
+    box-shadow: var(--card-shadow-lg);
+  }
+
+  .challenge-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent-amber-light);
+    color: var(--accent-amber);
+    padding: 6px 16px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 20px;
+  }
+
+  .challenge-question {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--text-primary);
+    margin-bottom: 24px;
+  }
+
+  .challenge-math-pills {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .math-pill {
+    background: var(--bg-canvas);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .math-pill-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .math-pill-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent-blue);
+  }
+
+  .challenge-reveal-card {
+    background: #0f172a;
+    border-radius: 24px;
+    padding: 48px;
+    color: #ffffff;
+    box-shadow: var(--card-shadow-lg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .challenge-speedup-num {
+    font-size: 88px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    color: #38bdf8;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .challenge-reveal-headline {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 16px;
+  }
+
+  .challenge-reveal-body {
+    font-size: 17px;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
+  /* ------------------------------------------
+     FLOATING STORYBOARD CONTROLLER
+     ------------------------------------------ */
+  #teleprompter-bar {
+    position: fixed;
+    bottom: 24px;
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 40px;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    z-index: 1000;
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.4);
+    color: #f8fafc;
+  }
+
+  .stepper-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .stepper-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .step-dots {
+    display: flex;
+    gap: 8px;
+  }
+
+  .step-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #334155;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-spring);
+  }
+
+  .step-dot.active {
+    background: #38bdf8;
+    width: 28px;
+    border-radius: 10px;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+  }
+
+  .key-tip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #64748b;
+    border-left: 1px solid #334155;
+    padding-left: 16px;
+  }
+
+  .key-badge {
+    background: #1e293b;
+    border: 1px solid #475569;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #cbd5e1;
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+
+<div id="viewport-wrapper">
+  <div id="canvas-stage">
+
+    <!-- Global Stage Header -->
+    <div id="stage-header">
+      <div class="brand-pill">
+        <span class="dot"></span>
+        <span>AoPS Course • Level 0: Before Computers</span>
+      </div>
+      <div class="step-breadcrumb" id="breadcrumb-text">
+        Step <strong>0</strong> of 6 — Title Stage
+      </div>
+    </div>
+
+    <!-- Dynamic Stage Content Scenes -->
+    <div id="stage-content">
+
+      <!-- ========================================
+           SCENE 0: TITLE STAGE
+           ======================================== -->
+      <div class="scene active" id="scene-0">
+        <div class="hero-title-box">
+          <div class="hero-eyebrow">Module 0.1 Interactive Storyboard</div>
+          <h1 class="hero-main-title">Why Did Humans<br><span>Need to Compute?</span></h1>
+          <p class="hero-description">
+            The crisis of demographic scale, the fatal cost of arithmetic errors, and the dawn of symbolic manipulation.
+          </p>
+          <div class="hero-badges-row">
+            <div class="hero-badge">📜 1880 Census Crisis</div>
+            <div class="hero-badge">⚓ Warship Vasa (1628)</div>
+            <div class="hero-badge">💥 Artillery Ballistics</div>
+            <div class="hero-badge">⚡ Definition of Computation</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================
+           SCENE 1: THE CENSUS CRISIS
+           ======================================== -->
+      <div class="scene" id="scene-1">
+        <h2 class="section-headline">The 1880 Census Crisis</h2>
+        <p class="section-subheadline">
+          When population exploded, paper, pencils, and human clerks hit an insurmountable biological bottleneck.
+        </p>
+
+        <div class="grid-census">
+          <div class="stat-card-row">
+            <div class="stat-card red">
+              <div class="stat-number">50M</div>
+              <div class="stat-info">
+                <div class="stat-label">United States Population</div>
+                <div class="stat-desc">50 million individual citizen records requiring age, occupation, and family tallies.</div>
+              </div>
+            </div>
+
+            <div class="stat-card amber">
+              <div class="stat-number">8 Years</div>
+              <div class="stat-info">
+                <div class="stat-label">Time to Hand-Tally</div>
+                <div class="stat-desc">Taken in 1880, final totals published in 1888. The next census was only 2 years away!</div>
+              </div>
+            </div>
+
+            <div class="stat-card blue">
+              <div class="stat-number">1890?</div>
+              <div class="stat-info">
+                <div class="stat-label">Imminent Constitutional Failure</div>
+                <div class="stat-desc">The 1890 count would overlap 1900, paralyzing congressional redistricting and federal funding.</div>
+              </div>
+            </div>
+
+            <div class="census-takeaway">
+              <span>⚠️</span>
+              <span>This wasn't a failure of effort. It was a failure of <strong>scale</strong>.</span>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div class="newspaper-cutout tilt-right">
+              <img src="assets/cutout_census_clerks.png" style="max-height: 480px;" alt="Census Clerks">
+              <div class="cutout-tag">1880 Hand-Tally Clerks</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================
+           SCENE 2: NAVIGATION & MILITARY LIMITS
+           ======================================== -->
+      <div class="scene" id="scene-2">
+        <h2 class="section-headline">The Fatal Cost of Arithmetic Errors</h2>
+        <p class="section-subheadline">
+          In navigation and warfare, hand calculations and typesetting mistakes caused catastrophic disasters.
+        </p>
+
+        <div class="grid-two-cases">
+          <!-- Case 1: Vasa -->
+          <div class="case-card">
+            <div>
+              <div class="case-badge red">Navigation & Engineering</div>
+              <h3 class="case-title">The Swedish Warship Vasa (1628)</h3>
+              <p style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">
+                Navigators relied on hand-calculated printed logarithm tables. Calculation and measurement errors contributed to the mighty warship *Vasa* sinking on its maiden voyage.
+              </p>
+            </div>
+
+            <div class="case-visual-container">
+              <div class="newspaper-cutout tilt-left">
+                <img src="assets/cutout_vasa_ship.png" style="max-height: 250px;" alt="Warship Vasa">
+                <div class="cutout-tag">Warship Vasa (1628)</div>
+              </div>
+            </div>
+
+            <div class="case-metric-banner">
+              <span style="font-size: 13px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Consequence</span>
+              <span class="case-metric-val" style="color: var(--accent-red);">Catastrophic Shipwreck</span>
+            </div>
+          </div>
+
+          <!-- Case 2: Ballistics -->
+          <div class="case-card">
+            <div>
+              <div class="case-badge amber">Artillery & Ballistics</div>
+              <h3 class="case-title">Aberdeen Proving Ground (WW1 & WW2)</h3>
+              <p style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">
+                Gun crews needed firing tables calculated for angle, wind, and shell weight. Teams of human "computers" spent <em>days per single trajectory</em>—becoming a strategic liability that spurred ENIAC (1945).
+              </p>
+            </div>
+
+            <div class="case-visual-container">
+              <div class="newspaper-cutout tilt-right">
+                <img src="assets/cutout_aberdeen_computers.png" style="max-height: 250px;" alt="Human Computers">
+                <div class="cutout-tag">Human "Computers" at Work</div>
+              </div>
+            </div>
+
+            <div class="case-metric-banner">
+              <span style="font-size: 13px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Consequence</span>
+              <span class="case-metric-val" style="color: var(--accent-amber);">Strategic Military Liability</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================
+           SCENE 3: THE PATTERN TABLE
+           ======================================== -->
+      <div class="scene" id="scene-3">
+        <h2 class="section-headline">The Recurring Pattern</h2>
+        <p class="section-subheadline">
+          In every domain, the bottleneck was identical: human brains executing repetitive arithmetic at scale.
+        </p>
+
+        <div class="pattern-table-wrapper">
+          <table class="pattern-table">
+            <thead>
+              <tr>
+                <th>Historical Problem</th>
+                <th>Volume / Scale</th>
+                <th>Consequence of Human Slowness</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Census Counting</strong></td>
+                <td><span class="scale-pill">50 Million People</span></td>
+                <td><span class="consequence-pill">Government Dysfunction</span></td>
+              </tr>
+              <tr>
+                <td><strong>Navigation Tables</strong></td>
+                <td><span class="scale-pill">Millions of Arithmetic Ops</span></td>
+                <td><span class="consequence-pill">Ships Lost, Fatal Disasters</span></td>
+              </tr>
+              <tr>
+                <td><strong>Artillery Trajectories</strong></td>
+                <td><span class="scale-pill">Thousands of Ballistic Calc</span></td>
+                <td><span class="consequence-pill">Military Disadvantage</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pattern-conclusion">
+          <div class="pattern-conclusion-text">
+            💡 The Direction: The only way to survive scale was to <strong>offload repetitive arithmetic to a machine</strong>.
+          </div>
+          <div class="brand-pill" style="box-shadow: none;">
+            Core Takeaway
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================
+           SCENE 4: DEFINING COMPUTATION
+           ======================================== -->
+      <div class="scene" id="scene-4">
+        <h2 class="section-headline">The Architecture: What is Computation?</h2>
+        <p class="section-subheadline">
+          Computation at its core is surprisingly simple: <em>The manipulation of symbols according to rules.</em>
+        </p>
+
+        <div class="grid-definition">
+          <!-- 1: Symbol -->
+          <div class="def-card c1">
+            <div class="def-icon-box">01</div>
+            <h3 class="def-title">Symbol</h3>
+            <div class="def-role">Representation of Information</div>
+            <p class="def-desc">
+              Any physical medium encoding state: a handwritten digit, a bead on an abacus, a punched hole in a card, or voltage in a circuit.
+            </p>
+          </div>
+
+          <!-- 2: Rule -->
+          <div class="def-card c2">
+            <div class="def-icon-box">f(x)</div>
+            <h3 class="def-title">Rule</h3>
+            <div class="def-role">Defined Operation</div>
+            <p class="def-desc">
+              A precise mathematical or logical transformation: "add these two values", "shift register left", or "branch if zero".
+            </p>
+          </div>
+
+          <!-- 3: Manipulation -->
+          <div class="def-card c3">
+            <div class="def-icon-box">➜</div>
+            <h3 class="def-title">Manipulation</h3>
+            <div class="def-role">Applying Rule to Symbol</div>
+            <p class="def-desc">
+              Systematically executing the rule on input symbols to reliably produce a new, deterministic output symbol.
+            </p>
+          </div>
+        </div>
+
+        <div class="universal-banner">
+          <div class="ub-text">
+            A human clerk, a brass gear train, and a silicon transistor all perform the <strong>exact same logical operation</strong>.
+          </div>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #38bdf8;">UNIVERSAL PRINCIPLE</span>
+        </div>
+      </div>
+
+      <!-- ========================================
+           SCENE 5: HUMAN VS CIRCUIT
+           ======================================== -->
+      <div class="scene" id="scene-5">
+        <h2 class="section-headline">The Divergence: Human vs. Machine</h2>
+        <p class="section-subheadline">
+          Why machines became irreplaceable across three core computational dimensions.
+        </p>
+
+        <div class="grid-comparison">
+          <!-- Speed -->
+          <div class="comp-card">
+            <div class="comp-card-header">
+              <span class="comp-dimension">⚡ Speed</span>
+              <span style="font-size: 12px; font-weight: 700; color: var(--accent-blue);">RATE</span>
+            </div>
+            <div class="comp-split-row">
+              <div class="comp-side human">
+                <div class="side-label">Human "Computer"</div>
+                <div class="side-val">Seconds / Minutes</div>
+                <div style="font-size: 13px; color: #9f1239; margin-top: 4px;">~500 calculations / day</div>
+              </div>
+              <div class="comp-side machine">
+                <div class="side-label">Machine Circuit</div>
+                <div class="side-val">Milliseconds ➔ Nano</div>
+                <div style="font-size: 13px; color: #166534; margin-top: 4px;">Millions of ops / sec</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reliability -->
+          <div class="comp-card">
+            <div class="comp-card-header">
+              <span class="comp-dimension">🎯 Reliability</span>
+              <span style="font-size: 12px; font-weight: 700; color: var(--accent-red);">ERROR RATE</span>
+            </div>
+            <div class="comp-split-row">
+              <div class="comp-side human">
+                <div class="side-label">Human "Computer"</div>
+                <div class="side-val">Compounding Errors</div>
+                <div style="font-size: 13px; color: #9f1239; margin-top: 4px;">Fatigue slips inevitable</div>
+              </div>
+              <div class="comp-side machine">
+                <div class="side-label">Machine Circuit</div>
+                <div class="side-val">100% Deterministic</div>
+                <div style="font-size: 13px; color: #166534; margin-top: 4px;">Zero drift or bias</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tirelessness -->
+          <div class="comp-card">
+            <div class="comp-card-header">
+              <span class="comp-dimension">🔋 Tirelessness</span>
+              <span style="font-size: 12px; font-weight: 700; color: var(--accent-emerald);">ENDURANCE</span>
+            </div>
+            <div class="comp-split-row">
+              <div class="comp-side human">
+                <div class="side-label">Human "Computer"</div>
+                <div class="side-val">8-Hour Shift Burnout</div>
+                <div style="font-size: 13px; color: #9f1239; margin-top: 4px;">Attention wanes quickly</div>
+              </div>
+              <div class="comp-side machine">
+                <div class="side-label">Machine Circuit</div>
+                <div class="side-val">24 / 7 Non-Stop</div>
+                <div style="font-size: 13px; color: #166534; margin-top: 4px;">Continuous operation</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================
+           SCENE 6: CHALLENGE & QUANTITATIVE SUMMARY
+           ======================================== -->
+      <div class="scene" id="scene-6">
+        <h2 class="section-headline">The Economics of Automation</h2>
+        <p class="section-subheadline">
+          Challenge 0.1: Calculating the tangible speedup factor of mechanical computation.
+        </p>
+
+        <div class="challenge-container">
+          <div class="challenge-prompt-box">
+            <div class="challenge-badge">Challenge 0.1 Analysis</div>
+            <h3 class="challenge-question">
+              How Many Human-Computer-Hours Were Saved by Automation?
+            </h3>
+
+            <div class="challenge-math-pills">
+              <div class="math-pill">
+                <span class="math-pill-label">Human Method (500 Clerks):</span>
+                <span class="math-pill-val">100,000 Person-Days (200 Days)</span>
+              </div>
+              <div class="math-pill">
+                <span class="math-pill-label">Hollerith Fleet (100 Tabulators):</span>
+                <span class="math-pill-val">~16 Calendar Days (65 cards/min)</span>
+              </div>
+              <div class="math-pill">
+                <span class="math-pill-label">Historical Official Duration:</span>
+                <span class="math-pill-val">6 Weeks Total (vs. 8 Years)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="challenge-reveal-card">
+            <div class="challenge-speedup-num">~12.5×</div>
+            <h4 class="challenge-reveal-headline">Speedup Factor on Pure Calendar Time</h4>
+            <p class="challenge-reveal-body">
+              Beyond pure speed, automation delivered <strong>timely data</strong>. Census results published in 6 weeks could guide active legislation—whereas results taking 8 years were already stale demographics.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Floating Navigation / Teleprompter Controller -->
+<div id="teleprompter-bar">
+  <button class="stepper-btn" onclick="prevStep()">◀ Prev</button>
+  <div class="step-dots" id="step-dots-container"></div>
+  <button class="stepper-btn" onclick="nextStep()" style="color: #38bdf8; font-weight: 700;">Next ▶</button>
+  <div class="key-tip">
+    Press <span class="key-badge">Space</span> or <span class="key-badge">→</span>
+  </div>
+</div>
+
+<script>
+  let currentStep = 0;
+  const maxStep = 6;
+
+  const stepTitles = [
+    "Title Stage",
+    "The Census Crisis (1880)",
+    "Navigation & Military Limits",
+    "The Recurring Pattern Table",
+    "The Definition of Computation",
+    "Human vs. Machine Metrics",
+    "Challenge 0.1 Economics"
+  ];
+
+  function initStepDots() {
+    const container = document.getElementById('step-dots-container');
+    container.innerHTML = '';
+    for (let i = 0; i <= maxStep; i++) {
+      const dot = document.createElement('div');
+      dot.className = `step-dot ${i === currentStep ? 'active' : ''}`;
+      dot.title = `Step ${i}: ${stepTitles[i]}`;
+      dot.onclick = () => setStep(i);
+      container.appendChild(dot);
+    }
+  }
+
+  function setStep(step) {
+    if (step < 0 || step > maxStep) return;
+    currentStep = step;
+
+    // Update scenes
+    for (let i = 0; i <= maxStep; i++) {
+      const scene = document.getElementById(`scene-${i}`);
+      if (scene) {
+        if (i === currentStep) {
+          scene.classList.add('active');
+        } else {
+          scene.classList.remove('active');
+        }
+      }
+    }
+
+    // Update breadcrumb
+    document.getElementById('breadcrumb-text').innerHTML = `Step <strong>${currentStep}</strong> of ${maxStep} — ${stepTitles[currentStep]}`;
+
+    // Update dots
+    document.querySelectorAll('.step-dot').forEach((dot, idx) => {
+      if (idx === currentStep) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
+  }
+
+  function nextStep() {
+    if (currentStep < maxStep) {
+      setStep(currentStep + 1);
+    }
+  }
+
+  function prevStep() {
+    if (currentStep > 0) {
+      setStep(currentStep - 1);
+    }
+  }
+
+  // 16:9 Viewport Scaling Engine
+  function resizeStage() {
+    const wrapper = document.getElementById('viewport-wrapper');
+    const stage = document.getElementById('canvas-stage');
+    const ww = wrapper.clientWidth;
+    const wh = wrapper.clientHeight;
+    const stageW = 1920;
+    const stageH = 1080;
+    
+    const scale = Math.min(ww / stageW, wh / stageH);
+    stage.style.transform = `scale(${scale})`;
+  }
+
+  window.addEventListener('resize', resizeStage);
+  window.addEventListener('DOMContentLoaded', () => {
+    initStepDots();
+    resizeStage();
+    setStep(0);
+  });
+
+  // Keyboard navigation for recording
+  window.addEventListener('keydown', (e) => {
+    if (e.key === ' ' || e.key === 'ArrowRight' || e.key === 'PageDown') {
+      e.preventDefault();
+      nextStep();
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault();
+      prevStep();
+    } else if (e.key.toLowerCase() === 'f') {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => console.log(err));
+      } else {
+        document.exitFullscreen().catch(err => console.log(err));
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
