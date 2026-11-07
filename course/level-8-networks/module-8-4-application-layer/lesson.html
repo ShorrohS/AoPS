@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 8.4 — UDP &amp; Real-Time Protocols | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 8.4
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        UDP &amp; Real-Time Protocols
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 8 • Networks &amp; Protocols</div>
+      <h1 class="article-title">Module 8.4 — UDP &amp; Real-Time Protocols</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-8-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 8.4 — Application Layer: DNS and HTTP</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>TCP gives you a reliable byte stream between two ports.<br />
+But no one navigates to <code>172.217.14.238:443</code>.<br />
+People navigate to <code>google.com</code>.</p>
+<p>And once you have a connection, how do you ask for a specific resource?<br />
+How does a single IP address serve thousands of different websites?</p>
+<p>These are application-layer problems:<br />
+<strong>DNS</strong> translates names to addresses,<br />
+<strong>HTTP</strong> defines how to request and serve resources.</p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>DNS: The Phone Book of the Internet</h3>
+<p>In the early ARPANET, there were fewer than 1,000 machines. A single file — <code>HOSTS.TXT</code> — maintained at Stanford Research Institute listed every machine and its address. Administrators emailed updates; the file was downloaded regularly. As the ARPANET grew, this system became untenable.</p>
+<p><strong>Paul Mockapetris</strong> designed the Domain Name System (DNS) in 1983 (RFC 882/883). The key innovation: a distributed, hierarchical, delegated database. No single server holds all names. Instead, authority for each zone is delegated to nameservers — Google is responsible for <code>google.com</code>, Amazon for <code>amazon.com</code>, and so on. The root servers (13 groups, lettered A–M) sit at the top and delegate to top-level domain (TLD) servers (<code>.com</code>, <code>.org</code>, <code>.uk</code>), which delegate to domain nameservers.</p>
+<p>DNS became operational in 1985. Today it handles trillions of queries per day — every web request, every email, every API call begins with a DNS lookup.</p>
+<h3>HTTP: The Protocol That Built the Web</h3>
+<p>Tim Berners-Lee designed HTTP at CERN in 1989 (Module 7.5). HTTP/1.1 (RFC 2616, 1997) is still the most widely deployed version. HTTP/2 (2015) improved performance with multiplexing. HTTP/3 (2022) runs over QUIC instead of TCP.</p>
+<p>The web as we know it — every website, web app, REST API, and web service — is built on HTTP.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>DNS Hierarchy</h3>
+<pre><code>                    . (root)
+                   /   |   \
+                .com  .org  .uk
+               /    \
+           google  amazon
+           /    \
+         www    mail
+</code></pre>
+<p><strong>Types of DNS servers:</strong></p>
+<ul>
+<li><strong>Root nameservers</strong>: 13 groups (a–m.root-servers.net), replicated globally via anycast. Know the TLD servers.</li>
+<li><strong>TLD nameservers</strong>: operated by registries (Verisign for <code>.com</code>). Know authoritative nameservers for each domain.</li>
+<li><strong>Authoritative nameservers</strong>: operated by domain owners (or their DNS provider). Hold actual DNS records.</li>
+<li><strong>Recursive resolvers</strong>: operated by ISPs or public DNS (8.8.8.8, 1.1.1.1). Cache results and perform the full lookup on behalf of clients.</li>
+</ul>
+<h3>DNS Resolution Process</h3>
+<p>When you type <code>www.google.com</code> in a browser:</p>
+<ol>
+<li><strong>Local cache check</strong>: browser checks its own DNS cache. Found? Done (sub-millisecond).</li>
+<li><strong>OS resolver cache</strong>: OS checks its cache and <code>/etc/hosts</code>. Found? Done.</li>
+<li><strong>Recursive resolver</strong> (e.g., <code>8.8.8.8</code>): OS sends query to configured DNS server.</li>
+<li><strong>Root query</strong>: resolver asks a root server for <code>.com</code> TLD server address.</li>
+<li><strong>TLD query</strong>: resolver asks <code>.com</code> TLD server for <code>google.com</code> nameserver address.</li>
+<li><strong>Authoritative query</strong>: resolver asks Google's nameserver for <code>www.google.com</code>.</li>
+<li><strong>Answer</strong>: authoritative server returns <code>A</code> record: <code>172.217.14.238</code>.</li>
+<li><strong>Cache</strong>: resolver caches the result for TTL (e.g., 300 seconds).</li>
+<li><strong>Return</strong>: resolver returns the IP to the client.</li>
+</ol>
+<p>A cold lookup (nothing cached) typically takes 50–200ms. Subsequent lookups hit the cache: &lt; 1ms.</p>
+<h3>DNS Record Types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Purpose</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>A</code></td>
+<td>IPv4 address</td>
+<td><code>www.example.com → 93.184.216.34</code></td>
+</tr>
+<tr>
+<td><code>AAAA</code></td>
+<td>IPv6 address</td>
+<td><code>www → 2606:2800:220:1:248:1893:25c8:1946</code></td>
+</tr>
+<tr>
+<td><code>CNAME</code></td>
+<td>Alias (canonical name)</td>
+<td><code>blog.example.com → example.com</code></td>
+</tr>
+<tr>
+<td><code>MX</code></td>
+<td>Mail server, with priority</td>
+<td><code>example.com → mail.example.com (priority 10)</code></td>
+</tr>
+<tr>
+<td><code>NS</code></td>
+<td>Authoritative nameserver</td>
+<td><code>example.com → ns1.example.com</code></td>
+</tr>
+<tr>
+<td><code>TXT</code></td>
+<td>Arbitrary text</td>
+<td>SPF, DKIM, domain verification</td>
+</tr>
+<tr>
+<td><code>SOA</code></td>
+<td>Start of Authority</td>
+<td>Zone metadata, serial number</td>
+</tr>
+<tr>
+<td><code>PTR</code></td>
+<td>Reverse lookup (IP → name)</td>
+<td><code>34.216.184.93.in-addr.arpa → www.example.com</code></td>
+</tr>
+</tbody>
+</table>
+<h3>HTTP/1.1 Request-Response</h3>
+<p>A complete HTTP/1.1 exchange (from Module 7.5, extended):</p>
+<p><strong>Request:</strong></p>
+<pre><code>GET /search?q=dns HTTP/1.1
+Host: www.google.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)
+Accept: text/html,application/xhtml+xml
+Accept-Language: en-US,en;q=0.9
+Accept-Encoding: gzip, deflate, br
+Connection: keep-alive
+Cookie: SID=abc123; HSID=xyz789
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code>HTTP/1.1 200 OK
+Content-Type: text/html; charset=UTF-8
+Content-Encoding: gzip
+Content-Length: 12453
+Cache-Control: private, max-age=0
+Set-Cookie: NID=204=...; expires=...; path=/; domain=.google.com; HttpOnly
+Transfer-Encoding: chunked
+</code></pre>
+<h3>HTTP Status Codes</h3>
+<table>
+<thead>
+<tr>
+<th>Range</th>
+<th>Meaning</th>
+<th>Key codes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1xx</td>
+<td>Informational</td>
+<td>100 Continue, 101 Switching Protocols</td>
+</tr>
+<tr>
+<td>2xx</td>
+<td>Success</td>
+<td>200 OK, 201 Created, 204 No Content</td>
+</tr>
+<tr>
+<td>3xx</td>
+<td>Redirection</td>
+<td>301 Moved Permanently, 302 Found, 304 Not Modified</td>
+</tr>
+<tr>
+<td>4xx</td>
+<td>Client error</td>
+<td>400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 429 Too Many Requests</td>
+</tr>
+<tr>
+<td>5xx</td>
+<td>Server error</td>
+<td>500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable</td>
+</tr>
+</tbody>
+</table>
+<h3>HTTP Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Purpose</th>
+<th>Body?</th>
+<th>Safe?</th>
+<th>Idempotent?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td>Retrieve resource</td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>Create / submit</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td>Replace resource</td>
+<td>Yes</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td>Partial update</td>
+<td>Yes</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>Delete resource</td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td>GET without body</td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>OPTIONS</td>
+<td>List allowed methods</td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Safe</strong>: does not modify state. <strong>Idempotent</strong>: calling multiple times has the same effect as calling once.</p>
+<h3>HTTP Caching</h3>
+<pre><code>Cache-Control: max-age=3600          # cache for 1 hour
+Cache-Control: no-cache              # must revalidate before using cache
+Cache-Control: no-store              # never cache (passwords, bank data)
+ETag: &quot;abc123&quot;                       # content fingerprint
+If-None-Match: &quot;abc123&quot;              # conditional GET: only send if changed
+Last-Modified: Wed, 10 Sep 2026 ...
+If-Modified-Since: Wed, 10 Sep 2026  # conditional GET: only send if newer
+</code></pre>
+<p>A <code>304 Not Modified</code> response tells the browser: &quot;use your cached copy — nothing changed.&quot; This saves bandwidth and dramatically speeds up page loads.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — DNS Resolver Walk</strong></p>
+<ul>
+<li>Type a domain name (e.g., <code>www.github.com</code>)</li>
+<li>Watch the resolution chain: root → TLD → authoritative → answer</li>
+<li>See the TTL countdown for cached entries</li>
+</ul>
+<p><strong>Tool 2 — HTTP Request Builder</strong></p>
+<ul>
+<li>Select method (GET, POST, PUT, DELETE)</li>
+<li>Set headers, path, and body</li>
+<li>See the raw HTTP request and response</li>
+<li>Try different status codes: 200, 404, 301, 304</li>
+</ul>
+<p><strong>Tool 3 — Cache Behaviour</strong></p>
+<ul>
+<li>Request the same resource twice</li>
+<li>First request: full response, cache headers set</li>
+<li>Second request: <code>If-None-Match</code> sent, 304 returned — no body transmitted</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>DNSSEC</strong>: DNS was designed with no authentication — any resolver could return fake records (DNS cache poisoning). DNSSEC adds cryptographic signatures to DNS records. A root key signs TLD keys, TLD keys sign domain keys — a chain of trust. However, DNSSEC deployment has been slow and partial; DNS-over-HTTPS (DoH) and DNS-over-TLS (DoT) are the more widely deployed modern solutions, encrypting DNS traffic to prevent eavesdropping and tampering.</p>
+<p><strong>HTTP/2</strong>: solves HTTP/1.1's head-of-line blocking problem. In HTTP/1.1, responses on a keep-alive connection are serialised — a slow response blocks all subsequent responses. HTTP/2 multiplexes multiple streams over one TCP connection. Each request/response is a stream; streams are independent. Also adds: header compression (HPACK), server push (unsolicited resources), and binary framing (more efficient than text).</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Trace a full DNS resolution for <code>api.github.com</code> listing every server queried, decode a raw HTTP response (given as text), identify caching headers and calculate when a resource expires, and explain what happens when a CNAME chain creates a loop.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-8-3-transport-layer/lesson.html" class="btn-icon">← Prev: M 8.3</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-8-5-tls-ssl/lesson.html" class="btn-icon btn-primary">Next: M 8.5 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

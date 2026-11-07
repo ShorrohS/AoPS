@@ -4,6 +4,9 @@
 
 > "We don't teach computing. We rebuild it from scratch, one problem at a time."
 
+🌐 **Live Web Edition (Mobile-Ready):** [https://shorrohs.github.io/AoPS/](https://shorrohs.github.io/AoPS/)  
+📖 **Online Index & Lessons:** Access all 70 lessons, interactive browser labs, and challenges directly on any device or smartphone.
+
 ---
 
 > **📖 Autonomous Agent & Contributor Guide:**  

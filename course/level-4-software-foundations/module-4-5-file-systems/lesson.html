@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 4.5 — File Systems &amp; Inodes | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 4.5
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        File Systems &amp; Inodes
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 4 • Software Foundations</div>
+      <h1 class="article-title">Module 4.5 — File Systems &amp; Inodes</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-4-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 4.5 — File Systems</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>You can read and write bytes at memory addresses.<br />
+But when the power goes off, RAM forgets everything.</p>
+<p>How do you give data a name that persists across power cycles?<br />
+How do you organise billions of bytes on a disk into something human-navigable?<br />
+How does the OS know where one file ends and another begins?</p>
+<p>The answer is the <strong>file system</strong> — the layer that imposes order on the chaos of raw storage.</p>
+</blockquote>
+<p>A file system solves three problems simultaneously: naming (how to find data by name), organisation (how to structure data into directories), and persistence (how to survive power loss without corruption).</p>
+<hr />
+<h2>The Story</h2>
+<h3>Files Before File Systems</h3>
+<p>Early computers had no persistent storage. Programs and data were loaded from punch cards each run. The concept of a &quot;file&quot; — data with a name that persists — did not exist.</p>
+<p>Magnetic tape (1950s) introduced persistence but no random access. Data was stored sequentially; to find record 1000, you had to scan past records 1–999. The concept of a &quot;directory&quot; had no meaning.</p>
+<p><strong>Magnetic disk</strong> (IBM RAMAC, 1956) introduced random access: the read/write head could seek to any location in milliseconds. Now you could have many files — but you needed a way to find them. The first file system concepts emerged: a table mapping names to disk locations.</p>
+<p>Unix (1969) introduced the inode-based file system. This design — with refinements — is still used in ext4 (Linux) and HFS+ (macOS) today.</p>
+<hr />
+<h3>Disks and Blocks</h3>
+<p>A magnetic hard disk is divided into fixed-size <strong>blocks</strong> (also called sectors or clusters). Typical block size: 4096 bytes (4 KB).</p>
+<p>A file system works entirely in terms of blocks, not bytes:</p>
+<ul>
+<li>A 1-byte file occupies one full block (4 KB wasted internally — called <strong>internal fragmentation</strong>)</li>
+<li>A 5000-byte file occupies two blocks (8 KB on disk, 3 KB wasted)</li>
+</ul>
+<p>The block is the smallest unit of allocation. The file system maintains a data structure tracking which blocks are free and which are in use.</p>
+<hr />
+<h3>Inodes — The Heart of Unix File Systems</h3>
+<p>An <strong>inode</strong> (index node) is a data structure that stores all metadata about a file except its name:</p>
+<pre><code>inode {
+  mode:      permissions (rwxrwxrwx) + file type
+  uid, gid:  owner user and group IDs
+  size:      file size in bytes
+  atime:     last access time
+  mtime:     last modification time
+  ctime:     last metadata change time
+  nlinks:    number of hard links to this inode
+  blocks[]:  array of block addresses where data lives
+             [direct blocks: 12 entries]
+             [single indirect block pointer]
+             [double indirect block pointer]
+             [triple indirect block pointer]
+}
+</code></pre>
+<p><strong>Direct blocks</strong>: the first 12 entries point directly to data blocks. Supports files up to 12 × 4 KB = 48 KB with no indirection.</p>
+<p><strong>Single indirect</strong>: one block used as an array of block pointers. 4 KB / 4 bytes = 1024 pointers → 1024 × 4 KB = 4 MB additional data.</p>
+<p><strong>Double indirect</strong>: pointer → block of pointers → data. 1024 × 1024 × 4 KB = 4 GB.</p>
+<p><strong>Triple indirect</strong>: 1024³ × 4 KB = 4 TB.</p>
+<p>This structure allows small files to be accessed very efficiently (direct blocks) while still supporting large files.</p>
+<hr />
+<h3>Directories — Files About Files</h3>
+<p>A directory is simply a file whose data is a table of <code>(name → inode_number)</code> pairs:</p>
+<pre><code>Directory /home/user:
+.    → inode 2  (this directory)
+..   → inode 1  (parent directory)
+hello.c → inode 417
+notes.txt → inode 821
+src  → inode 1024  (subdirectory inode)
+</code></pre>
+<p>When you access <code>/home/user/hello.c</code>:</p>
+<ol>
+<li>Start at root inode (inode 2 on most systems)</li>
+<li>Read root's directory data → find &quot;home&quot; → get its inode number</li>
+<li>Read &quot;home&quot;'s directory data → find &quot;user&quot; → get inode number</li>
+<li>Read &quot;user&quot;'s directory data → find &quot;hello.c&quot; → get inode 417</li>
+<li>Read inode 417 → get list of data blocks</li>
+<li>Read data blocks → file contents</li>
+</ol>
+<p>This is why deep directory nesting (100 levels) is slow: each level requires at least one disk read.</p>
+<hr />
+<h3>Hard Links and Soft Links</h3>
+<p><strong>Hard link</strong>: a second directory entry pointing to the <em>same inode</em>. The inode's <code>nlinks</code> counter increments. The file has two names. Deleting one name decrements <code>nlinks</code>; data is only freed when <code>nlinks</code> reaches 0.</p>
+<pre><code class="language-bash">ln file.txt link.txt    # hard link: same inode, two names
+</code></pre>
+<p><strong>Symbolic link (symlink)</strong>: a file whose data is a path string. Following a symlink reads its data (the path) and redirects the lookup. Symlinks can point to directories, span file systems, and point to things that don't exist.</p>
+<pre><code class="language-bash">ln -s /path/to/target link.txt   # symlink
+</code></pre>
+<p>Hard links: same inode, same file, multiple names. Symlinks: separate inode, data = path string, like a shortcut.</p>
+<hr />
+<h3>The Free Space Bitmap</h3>
+<p>The file system tracks which blocks are free using a <strong>bitmap</strong>: one bit per block. Bit = 0 means free; bit = 1 means in use. Allocating a block: find a 0 bit, flip it to 1. Freeing a block: find the bit, flip it to 0.</p>
+<p>For a 1 TB disk with 4 KB blocks: 1 TB / 4 KB = 2²⁸ blocks → bitmap = 2²⁸ bits = 32 MB. A very compact structure that fits easily in memory.</p>
+<hr />
+<h3>Journaling — Surviving Power Loss</h3>
+<p>Suppose the system loses power halfway through creating a file:</p>
+<ul>
+<li>The directory was updated (points to a new inode)</li>
+<li>But the inode was never written</li>
+<li>Or the data blocks were written but the inode size was not updated</li>
+</ul>
+<p>Without protection, the file system is now <strong>inconsistent</strong> — internal data structures contradict each other. <code>fsck</code> (file system check) was the traditional solution: scan the entire disk on every boot after an unclean shutdown. For a 1 TB disk this takes minutes.</p>
+<p><strong>Journaling</strong> (ext3, ext4, NTFS, HFS+): before making changes, write a <strong>journal entry</strong> describing what changes are about to be made. After all changes are safely written, mark the journal entry as committed.</p>
+<p>On recovery after a crash: replay the journal. Any committed entries not yet applied are re-applied. The file system is always in a consistent state — recovery takes seconds instead of minutes.</p>
+<p>Three modes:</p>
+<ul>
+<li><strong>Journal</strong> (safest): journal both metadata and data. Slowest.</li>
+<li><strong>Ordered</strong> (default ext4): journal metadata only; data flushed before metadata. Good balance.</li>
+<li><strong>Writeback</strong> (fastest): journal metadata only; no ordering guarantee for data.</li>
+</ul>
+<hr />
+<h3>File System Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>FAT32</th>
+<th>ext4 (Linux)</th>
+<th>NTFS (Windows)</th>
+<th>APFS (Apple)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Max file size</td>
+<td>4 GB</td>
+<td>16 TB</td>
+<td>16 TB</td>
+<td>~8 EB</td>
+</tr>
+<tr>
+<td>Max volume size</td>
+<td>2 TB</td>
+<td>1 EB</td>
+<td>256 TB</td>
+<td>~8 EB</td>
+</tr>
+<tr>
+<td>Journaling</td>
+<td>No</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Permissions</td>
+<td>No</td>
+<td>Yes (Unix)</td>
+<td>Yes (ACLs)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Case sensitivity</td>
+<td>No</td>
+<td>Optional</td>
+<td>No</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>Snapshots</td>
+<td>No</td>
+<td>No (btrfs does)</td>
+<td>Limited</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Special feature</td>
+<td>Universal compatibility</td>
+<td>Mature, stable</td>
+<td>Windows integration</td>
+<td>Snapshots, encryption</td>
+</tr>
+</tbody>
+</table>
+<p>FAT32 remains valuable for its universal compatibility — every device (cameras, USB drives, consoles) understands it. Everything else is better for primary storage.</p>
+<hr />
+<h2>The Concept: A File System is a Structured Lie</h2>
+<p>Raw storage is just blocks numbered 0 to N. The file system imposes a hierarchical namespace, persistent naming, and metadata on top of these anonymous blocks. The &quot;file&quot; you edit in a text editor does not physically exist as a contiguous sequence of bytes on the disk — it is an abstraction maintained by the inode and block pointer structures.</p>
+<p>Understanding this is essential for: diagnosing disk corruption, recovering deleted files, building databases (which often bypass the file system entirely for performance), and understanding why &quot;formatting&quot; a disk doesn't actually erase data.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Inode Explorer</strong></p>
+<ul>
+<li>A virtual 16-block disk with an inode table</li>
+<li>Create files, watch inodes be allocated and filled</li>
+<li>Follow the chain: name → directory entry → inode number → block list → data</li>
+</ul>
+<p><strong>Tool 2 — Directory Tree Walker</strong></p>
+<ul>
+<li>A visual directory tree</li>
+<li>Click any file to trace the path lookup: root → intermediate dirs → target inode</li>
+<li>Watch each disk read occur at each directory level</li>
+</ul>
+<p><strong>Tool 3 — Journal Visualiser</strong></p>
+<ul>
+<li>Create a file in journaled mode</li>
+<li>See journal entries written before the actual disk update</li>
+<li>Simulate a crash mid-write — see recovery replay the journal</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Log-structured file systems (LFS)</strong>: instead of updating files in place, LFS writes everything sequentially to the end of the log. Updates are always appends — no seeks, no fragmentation. Garbage collection reclaims space from old versions. Modern SSDs with their inherent sequential-write performance advantage make LFS attractive again.</p>
+<p><strong>B-trees in file systems</strong>: large directories with thousands of files cannot use a flat array — binary search would be needed. Modern file systems (NTFS, HFS+, btrfs, XFS) store directory contents in B-trees for O(log n) lookup. The B-tree appears at every layer of systems programming: databases (Module 9.2) also use it for the same reason.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Trace a file lookup through the inode/directory structure, calculate disk space usage, reason about journaling, and compare file system design choices.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-4-4-memory-management/lesson.html" class="btn-icon">← Prev: M 4.4</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../../level-5-programming/module-5-1-c-language/lesson.html" class="btn-icon btn-primary">Next: M 5.1 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

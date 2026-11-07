@@ -4,3 +4,8 @@ __pycache__/
 .env
 .DS_Store
 Thumbs.db
+
+# Media & Working Assets
+youtubeready/
+*.mp4
+*.venv/

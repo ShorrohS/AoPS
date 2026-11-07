@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 11.1 — Search &amp; Symbolic Intelligence | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 11.1
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Search &amp; Symbolic Intelligence
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 11 • AI &amp; Machine Learning</div>
+      <h1 class="article-title">Module 11.1 — Search &amp; Symbolic Intelligence</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-11-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 11.1 — What is Intelligence? Search and Constraint Satisfaction</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>A chess program examines millions of board positions per second.<br />
+A GPS finds the optimal driving route through 10,000 intersections.<br />
+A Sudoku solver fills in 81 cells satisfying 27 constraints.</p>
+<p>Are these programs &quot;intelligent&quot;?<br />
+What does intelligence mean for a computer?</p>
+<p>Before neural networks and large language models,<br />
+AI was built almost entirely from <strong>search</strong> and <strong>constraint satisfaction</strong> —<br />
+systematic exploration of a problem space to find solutions.<br />
+These techniques still power many practical AI systems.</p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>The Birth of AI as a Field</h3>
+<p><strong>John McCarthy</strong> coined the term &quot;Artificial Intelligence&quot; in 1956 when he organised the Dartmouth Conference — the founding event of AI as a research discipline. The optimism was extraordinary: McCarthy and others believed that within a generation, machines would match human intelligence.</p>
+<p>The early approach: intelligence = search. Given a problem with a well-defined state space, intelligent behaviour means searching that space efficiently. Chess, theorem proving, and game playing all reduced to search.</p>
+<p><strong>Allen Newell and Herbert Simon</strong> built the General Problem Solver (1957) — a program that could solve many types of problems by means-ends analysis (measure the gap between current state and goal, take actions to reduce it). Simon predicted in 1958 that within 10 years, computers would be chess champions.</p>
+<p>It took 40 years. <strong>Deep Blue</strong> (IBM, 1997) defeated world chess champion Garry Kasparov — using search (alpha-beta pruning) plus an evaluation function trained by chess grandmasters. It searched ~200 million positions per second.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>State Space Search</h3>
+<p>A <strong>state space</strong> defines:</p>
+<ul>
+<li><strong>States</strong>: all possible configurations of the problem</li>
+<li><strong>Initial state</strong>: starting configuration</li>
+<li><strong>Goal test</strong>: how to recognise a solution</li>
+<li><strong>Actions</strong>: what transitions between states are possible</li>
+<li><strong>Path cost</strong>: cost of reaching a state along a path</li>
+</ul>
+<p><strong>Example — Romania driving problem</strong>: find the shortest route from Arad to Bucharest. States = cities, initial state = Arad, goal = Bucharest, actions = road connections, path cost = road distance.</p>
+<p>This is exactly Dijkstra's algorithm (Module 6.6). Search IS graph traversal.</p>
+<h3>Uninformed Search</h3>
+<p><strong>BFS</strong>: guaranteed optimal (fewest steps), exponential memory O(b^d) where b = branching factor, d = depth.</p>
+<p><strong>DFS</strong>: O(m) memory (m = max depth), not optimal, can get lost in infinite branches.</p>
+<p><strong>Iterative Deepening DFS (IDDFS)</strong>: run DFS with increasing depth limits (1, 2, 3, ...). Gets DFS memory advantage + BFS optimality. Repeats work but only by a constant factor. The practical uninformed search algorithm of choice.</p>
+<p><strong>Uniform Cost Search (Dijkstra)</strong>: expands lowest-cost node first. Optimal when all costs &gt; 0. Used in GPS routing.</p>
+<h3>Informed Search — Heuristics</h3>
+<p>A <strong>heuristic function</strong> <code>h(n)</code> estimates the cost from node n to the goal. Good heuristics reduce search dramatically.</p>
+<p><strong>Greedy Best-First Search</strong>: always expand node with smallest <code>h(n)</code>. Fast but not optimal.</p>
+<p><strong>A* Search</strong>: expand node with smallest <code>f(n) = g(n) + h(n)</code> where g(n) = actual cost from start, h(n) = estimated cost to goal.</p>
+<ul>
+<li>If h is <strong>admissible</strong> (never overestimates): A* is optimal</li>
+<li>If h is <strong>consistent</strong> (h(n) ≤ cost(n,n') + h(n')): A* is also efficient</li>
+</ul>
+<p>For the Romania example: h(n) = straight-line distance to Bucharest. This never overestimates (roads are longer than straight lines) → admissible.</p>
+<pre><code class="language-python">import heapq
+
+def astar(graph, start, goal, heuristic):
+    pq = [(heuristic(start, goal), 0, start, [start])]
+    visited = set()
+    while pq:
+        f, g, node, path = heapq.heappop(pq)
+        if node == goal:
+            return path, g
+        if node in visited:
+            continue
+        visited.add(node)
+        for neighbour, cost in graph[node]:
+            if neighbour not in visited:
+                new_g = g + cost
+                new_f = new_g + heuristic(neighbour, goal)
+                heapq.heappush(pq, (new_f, new_g, neighbour, path + [neighbour]))
+    return None, float('inf')
+</code></pre>
+<h3>Adversarial Search — Games</h3>
+<p>In two-player zero-sum games (chess, checkers, Go, tic-tac-toe), one player tries to maximise score, the other tries to minimise it. <strong>Minimax</strong> search:</p>
+<pre><code class="language-python">def minimax(state, depth, maximising):
+    if depth == 0 or is_terminal(state):
+        return evaluate(state)
+
+    if maximising:
+        best = -float('inf')
+        for child in get_children(state):
+            best = max(best, minimax(child, depth-1, False))
+        return best
+    else:
+        best = float('inf')
+        for child in get_children(state):
+            best = min(best, minimax(child, depth-1, True))
+        return best
+</code></pre>
+<p><strong>Alpha-Beta Pruning</strong>: prune branches that cannot affect the final decision. With good move ordering, reduces the effective branching factor from b to √b — searching twice as deep in the same time.</p>
+<pre><code class="language-python">def alphabeta(state, depth, alpha, beta, maximising):
+    if depth == 0 or is_terminal(state):
+        return evaluate(state)
+
+    if maximising:
+        for child in get_children(state):
+            value = alphabeta(child, depth-1, alpha, beta, False)
+            alpha = max(alpha, value)
+            if alpha &gt;= beta:
+                break  # β cutoff — minimiser won't allow this
+        return alpha
+    else:
+        for child in get_children(state):
+            value = alphabeta(child, depth-1, alpha, beta, True)
+            beta = min(beta, value)
+            if beta &lt;= alpha:
+                break  # α cutoff — maximiser won't allow this
+        return beta
+</code></pre>
+<h3>Constraint Satisfaction Problems (CSPs)</h3>
+<p>A CSP is defined by:</p>
+<ul>
+<li><strong>Variables</strong>: X₁, X₂, ..., Xₙ</li>
+<li><strong>Domains</strong>: D₁, D₂, ..., Dₙ (possible values for each variable)</li>
+<li><strong>Constraints</strong>: relations between variables that valid solutions must satisfy</li>
+</ul>
+<p><strong>Examples</strong>: Sudoku (81 variables, domain {1–9}, 27 all-different constraints), N-Queens, map colouring, scheduling.</p>
+<p><strong>Backtracking search for CSPs</strong>:</p>
+<pre><code class="language-python">def backtrack(assignment, csp):
+    if is_complete(assignment): return assignment
+    var = select_unassigned_variable(assignment, csp)
+    for value in order_domain_values(var, assignment, csp):
+        if is_consistent(var, value, assignment, csp):
+            assignment[var] = value
+            result = backtrack(assignment, csp)
+            if result is not None: return result
+            del assignment[var]
+    return None   # failure
+</code></pre>
+<p><strong>Key heuristics</strong> for efficient backtracking:</p>
+<ul>
+<li><strong>MRV</strong> (Minimum Remaining Values): pick the variable with the fewest legal values — most constrained first</li>
+<li><strong>Degree heuristic</strong>: tie-break by most constraints with other unassigned variables</li>
+<li><strong>LCV</strong> (Least Constraining Value): try the value that eliminates fewest values from neighbours</li>
+<li><strong>Forward checking</strong>: after each assignment, eliminate inconsistent values from unassigned variables</li>
+<li><strong>Arc Consistency (AC-3)</strong>: propagate constraints more aggressively, potentially detecting failure earlier</li>
+</ul>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — A* Pathfinding</strong></p>
+<ul>
+<li>A grid map with obstacles</li>
+<li>Run BFS, Dijkstra, and A* simultaneously</li>
+<li>Compare nodes explored: A* explores far fewer with a good heuristic</li>
+<li>Adjust heuristic weight (inadmissible) and see paths become suboptimal</li>
+</ul>
+<p><strong>Tool 2 — Minimax / Alpha-Beta</strong></p>
+<ul>
+<li>A tic-tac-toe board</li>
+<li>Watch minimax explore the game tree</li>
+<li>Enable alpha-beta pruning — see which branches are cut</li>
+<li>Count nodes evaluated with and without pruning</li>
+</ul>
+<p><strong>Tool 3 — CSP Solver: N-Queens</strong></p>
+<ul>
+<li>N-Queens on an 8×8 board (place 8 queens so no two attack)</li>
+<li>Watch backtracking + MRV + forward checking solve it</li>
+<li>See how quickly failures are detected vs blind backtracking</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Monte Carlo Tree Search (MCTS)</strong>: used by AlphaGo (2016) and its successors. Instead of minimax with alpha-beta, MCTS selects moves by running thousands of random simulations from the current position and choosing the most promising move by average outcome. Combined with a neural network to guide the search (AlphaGo Zero), it beat the world Go champion — a game considered too complex for traditional tree search.</p>
+<p><strong>Local search and optimisation</strong>: instead of systematic search, start with a random complete assignment and make local improvements. Hill climbing, simulated annealing, genetic algorithms. No completeness guarantee (may get stuck in local optima) but can handle continuous and high-dimensional spaces where systematic search is impossible.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Implement A* to find the shortest path in a weighted grid with obstacles, trace alpha-beta pruning on a given game tree (mark which branches are cut), implement a backtracking CSP solver for 4-queens with MRV heuristic, and explain why the straight-line distance heuristic is admissible for road routing problems.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../../level-10-web/module-10-4-fullstack-project/lesson.html" class="btn-icon">← Prev: M 10.4</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-11-2-linear-algebra-ml/lesson.html" class="btn-icon btn-primary">Next: M 11.2 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

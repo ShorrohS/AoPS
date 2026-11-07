@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 7.1 — Processes &amp; Multithreading | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 7.1
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Processes &amp; Multithreading
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 7 • Systems Programming</div>
+      <h1 class="article-title">Module 7.1 — Processes &amp; Multithreading</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-7-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 7.1 — Multithreading and Concurrency</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>A web server must handle 10,000 simultaneous connections.<br />
+A video game must update physics, render frames, and play audio simultaneously.<br />
+A data pipeline must download, process, and store data in parallel.</p>
+<p>A single-threaded program does one thing at a time.<br />
+The world does not.</p>
+<p><strong>Concurrency</strong> is about dealing with multiple things happening at the same time.<br />
+<strong>Parallelism</strong> is about doing multiple things at the same time.<br />
+They are related but distinct — and confusing them leads to bugs that are nearly impossible to reproduce.</p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>From Sequential to Concurrent</h3>
+<p>The earliest computers were strictly sequential: one program ran, finished, then the next ran. Time-sharing (Module 4.3) created the <em>illusion</em> of concurrency by rapidly context-switching between processes.</p>
+<p><strong>Threads</strong> (1960s–70s) took this further: lightweight &quot;processes&quot; sharing the same address space. Switching between threads in the same process is cheaper than between processes (no address space switch). Threads share heap memory, file descriptors, and global variables — enabling communication at the cost of coordination complexity.</p>
+<p><strong>Dijkstra</strong> formalised many of the synchronisation problems in the 1960s: the mutual exclusion problem (1965), semaphores (1965), the dining philosophers problem (1965). These problems, posed 60 years ago, are still the foundational examples taught in every operating systems course.</p>
+<p>Intel's <strong>Hyper-Threading</strong> (2002) put two logical CPU cores on one physical core, enabling true thread-level parallelism within a single chip. Modern CPUs have 8–32 physical cores, each with hardware multithreading. Writing correct parallel code became a survival skill for systems programmers.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>Processes vs Threads</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Process</th>
+<th>Thread</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Address space</td>
+<td>Own (isolated)</td>
+<td>Shared with other threads</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td>Own heap, stack, data</td>
+<td>Own stack; shared heap, data</td>
+</tr>
+<tr>
+<td>Communication</td>
+<td>IPC (pipes, sockets, shared mem)</td>
+<td>Direct memory access</td>
+</tr>
+<tr>
+<td>Context switch cost</td>
+<td>High (TLB flush, page table switch)</td>
+<td>Low (same address space)</td>
+</tr>
+<tr>
+<td>Failure isolation</td>
+<td>Crash doesn't affect others</td>
+<td>Crash kills all threads in process</td>
+</tr>
+<tr>
+<td>Creation cost</td>
+<td>High (<code>fork</code> + <code>exec</code>)</td>
+<td>Low (1–10 µs)</td>
+</tr>
+</tbody>
+</table>
+<p>In Python:</p>
+<pre><code class="language-python">import threading
+
+def worker(n):
+    print(f&quot;Thread {n} running&quot;)
+    # compute something
+    print(f&quot;Thread {n} done&quot;)
+
+threads = [threading.Thread(target=worker, args=(i,)) for i in range(4)]
+for t in threads: t.start()
+for t in threads: t.join()   # wait for all threads to finish
+</code></pre>
+<h3>The Race Condition</h3>
+<p>The fundamental problem of concurrent programs:</p>
+<pre><code class="language-python">counter = 0   # shared variable
+
+def increment():
+    global counter
+    for _ in range(100_000):
+        counter += 1   # NOT atomic!
+
+t1 = threading.Thread(target=increment)
+t2 = threading.Thread(target=increment)
+t1.start(); t2.start()
+t1.join(); t2.join()
+print(counter)   # Expected: 200,000. Actual: some random smaller number!
+</code></pre>
+<p><code>counter += 1</code> compiles to three machine instructions:</p>
+<ol>
+<li>LOAD counter into register</li>
+<li>ADD 1 to register</li>
+<li>STORE register back to counter</li>
+</ol>
+<p>If two threads interleave between any of these steps, one thread's increment is lost. This is a <strong>race condition</strong> — the outcome depends on timing, making it non-deterministic and nearly impossible to reproduce consistently.</p>
+<h3>Critical Sections and Mutual Exclusion</h3>
+<p>A <strong>critical section</strong> is any code that accesses a shared resource and must not be executed by two threads simultaneously.</p>
+<p><strong>Mutex (Mutual Exclusion Lock)</strong>: only one thread can hold the lock at a time. Others block until the holder releases it.</p>
+<pre><code class="language-python">import threading
+
+counter = 0
+lock = threading.Lock()
+
+def safe_increment():
+    global counter
+    for _ in range(100_000):
+        with lock:           # acquire on entry, release on exit
+            counter += 1    # critical section — only one thread at a time
+
+t1 = threading.Thread(target=safe_increment)
+t2 = threading.Thread(target=safe_increment)
+t1.start(); t2.start()
+t1.join(); t2.join()
+print(counter)   # Always 200,000
+</code></pre>
+<p>The <code>with lock:</code> context manager ensures the lock is always released, even if an exception occurs.</p>
+<h3>Thread Safety Patterns</h3>
+<p><strong>Immutable objects</strong>: if shared data never changes, no synchronisation is needed. Pure functions and immutable data structures are inherently thread-safe.</p>
+<p><strong>Thread-local storage</strong>: data stored per-thread, not shared. Each thread has its own copy.</p>
+<pre><code class="language-python">import threading
+local_data = threading.local()
+
+def worker():
+    local_data.x = threading.current_thread().name   # each thread writes its own
+    print(local_data.x)   # each thread reads its own, no conflict
+</code></pre>
+<p><strong>Producer-Consumer pattern</strong>: producers add work to a queue; consumers take from it.</p>
+<pre><code class="language-python">from queue import Queue
+
+q = Queue(maxsize=10)
+
+def producer():
+    for i in range(20):
+        q.put(i)           # blocks if queue full
+    q.put(None)            # sentinel: no more work
+
+def consumer():
+    while True:
+        item = q.get()     # blocks if queue empty
+        if item is None: break
+        process(item)
+
+threading.Thread(target=producer).start()
+threading.Thread(target=consumer).start()
+</code></pre>
+<p>Python's <code>queue.Queue</code> is thread-safe — all operations are internally synchronised.</p>
+<h3>The GIL and True Parallelism in Python</h3>
+<p>Python's <strong>Global Interpreter Lock (GIL)</strong> prevents multiple threads from executing Python bytecode simultaneously. This means:</p>
+<ul>
+<li>Python threads are concurrent (interleaved) but not truly parallel for CPU-bound code</li>
+<li>For CPU-bound parallelism, use <code>multiprocessing</code> (separate processes, no GIL)</li>
+<li>For I/O-bound tasks (network, disk), threads work fine — the GIL is released during I/O</li>
+</ul>
+<pre><code class="language-python"># For CPU-bound parallel work:
+from multiprocessing import Pool
+
+def compute(x):
+    return x * x
+
+with Pool(processes=4) as pool:
+    results = pool.map(compute, range(1_000_000))
+</code></pre>
+<h3>Async/Await — Cooperative Concurrency</h3>
+<p>For I/O-bound tasks with thousands of concurrent operations, threads waste memory (each thread has a ~8 MB stack). <strong>Asyncio</strong> uses a single thread with cooperative multitasking:</p>
+<pre><code class="language-python">import asyncio
+
+async def fetch(url):
+    # When awaiting I/O, control returns to the event loop
+    await asyncio.sleep(1)   # simulate network request
+    return f&quot;data from {url}&quot;
+
+async def main():
+    # Launch 1000 concurrent &quot;requests&quot; with one thread
+    tasks = [fetch(f&quot;http://example.com/{i}&quot;) for i in range(1000)]
+    results = await asyncio.gather(*tasks)
+
+asyncio.run(main())
+</code></pre>
+<p>One thread handles thousands of concurrent I/O operations by switching between them when each is waiting. Memory: ~1 KB per coroutine vs ~8 MB per thread.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Race Condition Demonstrator</strong></p>
+<ul>
+<li>Two threads incrementing a shared counter simultaneously (no lock)</li>
+<li>Watch the lost updates happen — final value is less than expected</li>
+<li>Enable the lock — result is always correct</li>
+<li>See the interleaving that causes lost updates</li>
+</ul>
+<p><strong>Tool 2 — Thread State Visualiser</strong></p>
+<ul>
+<li>Multiple threads with blocked/running/waiting states</li>
+<li>Watch a context switch: one thread yields, another resumes</li>
+<li>See the mutex queue: threads waiting to acquire a lock</li>
+</ul>
+<p><strong>Tool 3 — Producer-Consumer</strong></p>
+<ul>
+<li>A bounded buffer of 5 slots</li>
+<li>Producer and consumer threads run at different speeds</li>
+<li>Watch the buffer fill (producer blocks when full) and drain (consumer blocks when empty)</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Memory model and visibility</strong>: on a multi-core CPU, each core has its own cache. One thread writing to <code>counter</code> may not be immediately visible to another thread reading it — the value might be in the writing thread's cache only. CPU memory models (x86's TSO, ARM's weakly-ordered model) define exactly what ordering guarantees exist. The C++ <code>std::atomic</code> and Java <code>volatile</code> keyword ensure proper memory visibility without full mutex overhead.</p>
+<p><strong>Lock-free data structures</strong>: using CPU atomic compare-and-swap (CAS) instructions to update shared data without acquiring a lock. Lock-free queues, stacks, and hash tables can outperform lock-based ones under high contention. But they are extremely difficult to write correctly — even experts make mistakes. See Module 6.2 (Going Deeper) for Michael-Scott lock-free queue.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Identify the race condition in a given code snippet, add a mutex to fix it, implement a thread-safe bounded counter using a Lock, design a producer-consumer system with 2 producers and 3 consumers, and explain why Python's GIL does not protect against race conditions.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../../level-6-dsa/module-6-8-dynamic-programming/lesson.html" class="btn-icon">← Prev: M 6.8</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-7-2-sync-primitives/lesson.html" class="btn-icon btn-primary">Next: M 7.2 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

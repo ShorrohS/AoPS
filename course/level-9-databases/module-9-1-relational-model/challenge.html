@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 9.1 — The Relational Model &amp; SQL | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 9.1
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 9.1 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for The Relational Model &amp; SQL.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 9.1 — The Relational Model and SQL</p>
+<p><strong>Type:</strong> SQL writing + analysis + reasoning<br />
+<strong>Estimated time:</strong> 50–60 minutes<br />
+<strong>Tools needed:</strong> pen and paper (or a SQL sandbox)</p>
+<hr />
+<h2>Setup — Schema</h2>
+<pre><code class="language-sql">CREATE TABLE customers (
+    id         INTEGER PRIMARY KEY,
+    name       VARCHAR(100) NOT NULL,
+    city       VARCHAR(100),
+    email      VARCHAR(255) UNIQUE
+);
+
+CREATE TABLE products (
+    id         INTEGER PRIMARY KEY,
+    name       VARCHAR(100) NOT NULL,
+    price      DECIMAL(10,2),
+    category   VARCHAR(50),
+    stock      INTEGER DEFAULT 0
+);
+
+CREATE TABLE orders (
+    id          INTEGER PRIMARY KEY,
+    customer_id INTEGER REFERENCES customers(id),
+    product_id  INTEGER REFERENCES products(id),
+    quantity    INTEGER NOT NULL,
+    status      VARCHAR(20) DEFAULT 'pending',
+    created_at  TIMESTAMP DEFAULT NOW()
+);
+</code></pre>
+<hr />
+<h2>Part A — Basic Queries</h2>
+<p>Write SQL for each requirement:</p>
+<ol>
+<li>
+<p>Find all customers in 'New York' or 'London', ordered by name.</p>
+</li>
+<li>
+<p>Find the top 5 most expensive products that are currently in stock (stock &gt; 0).</p>
+</li>
+<li>
+<p>Count the total number of orders for each status ('pending', 'shipped', 'delivered', 'cancelled'). Include statuses with zero orders.</p>
+</li>
+<li>
+<p>Find all customers who have placed more than 3 orders. Return customer name and order count, ordered by order count descending.</p>
+</li>
+<li>
+<p>Find all products that have <strong>never</strong> been ordered.</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — JOINs</h2>
+<ol start="6">
+<li>
+<p>List all orders with customer name, product name, quantity, and total price (quantity × price). Show only completed orders.</p>
+</li>
+<li>
+<p>Find customers who have ordered at least two different product categories. Return customer name and the count of distinct categories.</p>
+</li>
+<li>
+<p>Self-join: find pairs of customers who are in the same city. Return <code>(customer1_name, customer2_name, city)</code>. Avoid duplicates (don't show both (A,B) and (B,A)).</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — Aggregation and Window Functions</h2>
+<ol start="9">
+<li>
+<p>Calculate the total revenue per city (sum of quantity × price for all delivered orders), ordered by revenue descending.</p>
+</li>
+<li>
+<p>For each product, show: product name, total units sold, total revenue, and rank by revenue (1 = highest). Use a window function for the rank.</p>
+</li>
+<li>
+<p>Running total: for each customer in <code>customer_id = 1</code>, show each order with a running total of their spending. Use a window function (<code>SUM(...) OVER</code>).</p>
+</li>
+</ol>
+<hr />
+<h2>Part D — Query Plan Analysis</h2>
+<ol start="12">
+<li>
+<p>Without any indexes, what query execution plan (in plain words) does the database use for:</p>
+<pre><code class="language-sql">SELECT * FROM orders WHERE customer_id = 12345;
+</code></pre>
+<p>How many rows does the database examine?</p>
+</li>
+<li>
+<p>After adding <code>CREATE INDEX idx_customer_id ON orders(customer_id)</code>:</p>
+<ul>
+<li>What plan does the database now use?</li>
+<li>How many rows does it examine for the same query?</li>
+</ul>
+</li>
+<li>
+<p>The following query is slow on a table with 5 million orders:</p>
+<pre><code class="language-sql">SELECT DATE(created_at), COUNT(*)
+FROM orders
+WHERE status = 'delivered'
+GROUP BY DATE(created_at)
+ORDER BY DATE(created_at);
+</code></pre>
+<p>Propose an index that would speed this up. Explain why a composite index on <code>(status, created_at)</code> would help.</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Normalisation</h2>
+<p>The following table is denormalised:</p>
+<pre><code>order_id | customer_name | customer_city | product_name | category | unit_price | quantity
+---------|---------------|----------------|--------------|----------|------------|--------
+1        | Alice         | New York       | Laptop       | Electronics | 999.99 | 1
+2        | Alice         | New York       | Mouse        | Electronics | 29.99  | 2
+3        | Bob           | London         | Laptop       | Electronics | 999.99 | 1
+</code></pre>
+<ol start="15">
+<li>
+<p>Identify all functional dependencies in this table.</p>
+</li>
+<li>
+<p>Normalise to 3NF. Show all resulting tables with their schemas and primary/foreign keys.</p>
+</li>
+<li>
+<p>After normalisation, what JOIN query reconstructs the original view above?</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A basic queries</td>
+<td>25</td>
+</tr>
+<tr>
+<td>B JOINs</td>
+<td>20</td>
+</tr>
+<tr>
+<td>C aggregation</td>
+<td>22</td>
+</tr>
+<tr>
+<td>D query plans</td>
+<td>18</td>
+</tr>
+<tr>
+<td>E normalisation</td>
+<td>15</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A answers</summary>
+<pre><code class="language-sql">-- 1
+SELECT * FROM customers WHERE city IN ('New York','London') ORDER BY name;
+
+-- 2
+SELECT * FROM products WHERE stock &gt; 0 ORDER BY price DESC LIMIT 5;
+
+-- 3
+SELECT status, COUNT(*) as cnt FROM orders GROUP BY status;
+-- For all statuses including zero: LEFT JOIN with a status list or use CASE
+
+-- 4
+SELECT c.name, COUNT(o.id) as order_count
+FROM customers c JOIN orders o ON c.id = o.customer_id
+GROUP BY c.id, c.name HAVING COUNT(o.id) &gt; 3
+ORDER BY order_count DESC;
+
+-- 5
+SELECT p.* FROM products p
+LEFT JOIN orders o ON p.id = o.product_id
+WHERE o.id IS NULL;
+</code></pre>
+</details>
+<details>
+<summary>Part B.6</summary>
+<pre><code class="language-sql">SELECT c.name, p.name, o.quantity,
+       o.quantity * p.price AS total_price
+FROM orders o
+JOIN customers c ON o.customer_id = c.id
+JOIN products  p ON o.product_id  = p.id
+WHERE o.status = 'delivered';
+</code></pre>
+</details>
+<details>
+<summary>Part C.10 — window function</summary>
+<pre><code class="language-sql">SELECT p.name,
+       SUM(o.quantity) AS units_sold,
+       SUM(o.quantity * p.price) AS revenue,
+       RANK() OVER (ORDER BY SUM(o.quantity * p.price) DESC) AS rank
+FROM products p
+LEFT JOIN orders o ON p.id = o.product_id AND o.status = 'delivered'
+GROUP BY p.id, p.name;
+</code></pre>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

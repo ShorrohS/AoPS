@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 5.5 — Memory Allocation &amp; Heap | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 5.5
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Memory Allocation &amp; Heap
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 5 • Programming &amp; Runtimes</div>
+      <h1 class="article-title">Module 5.5 — Memory Allocation &amp; Heap</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-5-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 5.5 — Sorting: Putting Things in Order</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>A database table has 50 million rows.<br />
+A search engine needs to rank 10 billion web pages.<br />
+A hospital system needs to sort 100,000 patient records by urgency in real time.</p>
+<p>Sorting is one of the most fundamental operations in computing.<br />
+It is estimated that 25% of all CPU time in the world is spent sorting.<br />
+And the difference between a bad sort algorithm and a good one<br />
+is the difference between a program that works and one that never finishes.</p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>The Sorting Problem Drove Algorithm Theory</h3>
+<p>In the 1950s and 60s, IBM's core business was data processing — payroll, census tabulation, inventory management. Sorting punched cards and magnetic tape records was the bottleneck. IBM researchers spent enormous effort on sort algorithms because a 2× speedup in sort performance would save millions of dollars in computing time.</p>
+<p><strong>John von Neumann</strong> wrote Mergesort in 1945 — the first O(n log n) sort algorithm. <strong>Tony Hoare</strong> invented Quicksort in 1959 while working on machine translation at Moscow State University. The sorting problem was so important that it drove major theoretical advances: the proof that no comparison-based sort can be faster than O(n log n) in the worst case (the information-theoretic lower bound), and the discovery of Radix sort which breaks this barrier by not using comparisons.</p>
+<p>The standard sort algorithm in production today (Timsort, used in Python, Java, and Android) was invented in 2002 by Tim Peters specifically for Python. It exploits real-world patterns in data — partially sorted runs — to achieve near-linear performance on common inputs.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>The Sorting Problem</h3>
+<p><strong>Input</strong>: an array of n elements with a total order (we can compare any two elements).<br />
+<strong>Output</strong>: the same elements in non-decreasing order.<br />
+<strong>Constraint</strong>: we count comparisons and swaps; we want to minimise them.</p>
+<h3>Bubble Sort — O(n²) — The Slow Baseline</h3>
+<pre><code class="language-python">def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if arr[j] &gt; arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+</code></pre>
+<p>Each pass &quot;bubbles&quot; the largest unsorted element to its final position. n passes × n comparisons each = O(n²).</p>
+<p>In practice: never use bubble sort. It is taught because it is simple to understand and implement, but its performance is catastrophically bad for n &gt; 1,000.</p>
+<h3>Merge Sort — O(n log n) — Guaranteed</h3>
+<pre><code class="language-python">def merge_sort(arr):
+    if len(arr) &lt;= 1:
+        return arr
+    mid = len(arr) // 2
+    left  = merge_sort(arr[:mid])    # sort left half
+    right = merge_sort(arr[mid:])    # sort right half
+    return merge(left, right)        # merge two sorted halves
+
+def merge(left, right):
+    result = []
+    i = j = 0
+    while i &lt; len(left) and j &lt; len(right):
+        if left[i] &lt;= right[j]:
+            result.append(left[i]); i += 1
+        else:
+            result.append(right[j]); j += 1
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result
+</code></pre>
+<p><strong>Why O(n log n)?</strong><br />
+Divide: log₂(n) levels of recursion. Each level merges total n elements. Total: n × log n comparisons.</p>
+<p><strong>Stable</strong>: elements with equal keys maintain their original relative order.<br />
+<strong>Not in-place</strong>: requires O(n) extra space for the merge step.<br />
+<strong>Predictable</strong>: always O(n log n), never worse. Preferred when worst-case matters (e.g., real-time systems).</p>
+<h3>Quick Sort — O(n log n) average, O(n²) worst</h3>
+<pre><code class="language-python">def quick_sort(arr, low=0, high=None):
+    if high is None: high = len(arr) - 1
+    if low &lt; high:
+        p = partition(arr, low, high)
+        quick_sort(arr, low, p - 1)
+        quick_sort(arr, p + 1, high)
+
+def partition(arr, low, high):
+    pivot = arr[high]    # choose last element as pivot
+    i = low - 1
+    for j in range(low, high):
+        if arr[j] &lt;= pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+    arr[i+1], arr[high] = arr[high], arr[i+1]
+    return i + 1
+</code></pre>
+<p><strong>Pivot selection</strong> is everything. With a good pivot (median-of-three, random), the array splits roughly in half each time: O(n log n). With the worst pivot (always the smallest or largest element, e.g., sorted input with naive pivot choice): one partition gets n-1 elements → O(n²).</p>
+<p><strong>In-place</strong>: O(log n) stack space for recursion, O(1) extra space otherwise.<br />
+<strong>Cache-friendly</strong>: accesses memory sequentially — excellent real-world performance.<br />
+<strong>Not stable</strong>: equal elements may be reordered.</p>
+<p>In practice, Quicksort with randomised or median-of-three pivot is faster than Mergesort on random data by a constant factor, despite the same O(n log n) asymptotics.</p>
+<h3>Heap Sort — O(n log n), in-place</h3>
+<p>Builds a max-heap from the array (O(n)), then repeatedly extracts the maximum (O(log n) each × n times).</p>
+<ul>
+<li>Always O(n log n), in-place, not stable</li>
+<li>Cache-unfriendly (heap accesses jump around memory)</li>
+<li>Used when guaranteed in-place O(n log n) is required</li>
+</ul>
+<h3>Radix Sort — O(nk) — Beats the Lower Bound</h3>
+<p>The O(n log n) lower bound applies only to <strong>comparison-based</strong> sorts. Radix sort does not compare elements — it distributes them into buckets by individual digits.</p>
+<pre><code class="language-python">def radix_sort(arr, base=10):
+    max_val = max(arr)
+    exp = 1
+    while max_val // exp &gt; 0:
+        counting_sort_by_digit(arr, base, exp)
+        exp *= base
+</code></pre>
+<p>For 32-bit integers with base 256: 4 passes, each O(n) → O(4n) = <strong>O(n)</strong>. In practice, the constant factor is large, and Radix sort is only faster than comparison sorts for very large n with bounded key size (e.g., sorting IP addresses, DNA sequences).</p>
+<h3>Timsort — The Real-World Champion</h3>
+<p>Python's built-in <code>sorted()</code> and <code>list.sort()</code> use <strong>Timsort</strong> (Tim Peters, 2002):</p>
+<ol>
+<li>Find natural <strong>runs</strong> of already-sorted data in the input (forward or backward)</li>
+<li>Ensure each run is at least <code>minrun</code> elements (typically 32–64) using insertion sort</li>
+<li><strong>Merge</strong> runs pairwise using a merge sort variant with &quot;galloping&quot; mode for runs with long sequential matches</li>
+</ol>
+<p><strong>Best case</strong>: O(n) on already-sorted data (just finds one run).<br />
+<strong>Average/worst case</strong>: O(n log n).<br />
+<strong>Stable and adaptive</strong>: exploits existing order in the data.<br />
+<strong>Used in</strong>: Python, Java (Arrays.sort for objects), Android, V8 (JavaScript engine).</p>
+<h3>The Lower Bound Proof</h3>
+<p><strong>Theorem</strong>: any comparison-based sort requires Ω(n log n) comparisons in the worst case.</p>
+<p><strong>Proof sketch</strong>: think of all possible orderings of n elements — there are n! of them. Each comparison eliminates at most half the remaining possibilities (binary decision tree with n! leaves). The tree has height at least log₂(n!) ≈ n log n (Stirling's approximation). Therefore, at least n log n comparisons are needed in the worst case. □</p>
+<p>No comparison sort can do better. Mergesort and Heapsort achieve this bound.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Sort Race</strong></p>
+<ul>
+<li>Array of 50 random integers</li>
+<li>Run Bubble Sort, Merge Sort, Quick Sort simultaneously</li>
+<li>Watch each algorithm sort in real time, colour-coding comparisons and swaps</li>
+<li>Compare final step counts</li>
+</ul>
+<p><strong>Tool 2 — Merge Sort Tree</strong></p>
+<ul>
+<li>See the divide phase: array split recursively into halves</li>
+<li>See the conquer phase: merges happening level by level</li>
+<li>Count comparisons at each level</li>
+</ul>
+<p><strong>Tool 3 — Quicksort Partition</strong></p>
+<ul>
+<li>Choose pivot strategy: last element, first element, random, median-of-three</li>
+<li>Run on sorted, reverse-sorted, and random input</li>
+<li>Observe how pivot choice affects the partition balance and total steps</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>External sorting</strong>: what if the data doesn't fit in RAM? Sorting 1 TB on a machine with 16 GB RAM requires a disk-based sort. The standard approach: (1) split into 16 GB chunks, sort each in memory, write to disk; (2) merge all chunks using a k-way merge with a priority queue. This is how databases sort large result sets. The I/O cost dominates, not the CPU cost.</p>
+<p><strong>Sorting networks</strong>: fixed circuits (no data-dependent branching) that sort n elements in parallel. Used in hardware (GPUs sort using sorting networks) and for small n where branch misprediction is costly. Batcher's odd-even merge sort produces a sorting network with O(n log² n) comparators.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Trace Merge Sort on an 8-element array step by step, identify the worst-case input for naive Quicksort, implement counting sort for small integers, and prove the information-theoretic lower bound for n=3 by drawing the full decision tree.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-5-4-recursion/lesson.html" class="btn-icon">← Prev: M 5.4</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-5-6-searching/lesson.html" class="btn-icon btn-primary">Next: M 5.6 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 11.1 — Search &amp; Symbolic Intelligence | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 11.1
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 11.1 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Search &amp; Symbolic Intelligence.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 11.1 — What is Intelligence? Search and Constraint Satisfaction</p>
+<p><strong>Type:</strong> Implementation + trace + reasoning<br />
+<strong>Estimated time:</strong> 50–60 minutes<br />
+<strong>Tools needed:</strong> Python + pen and paper</p>
+<hr />
+<h2>Part A — A* Implementation</h2>
+<p>Implement A* search on a 6×6 grid with obstacles. Start = (0,0), Goal = (5,5). Obstacles at: (1,1), (1,2), (2,2), (3,3), (3,4).</p>
+<ol>
+<li>
+<p>Implement <code>astar(grid, start, goal, heuristic)</code> where:</p>
+<ul>
+<li>Moves: up/down/left/right (cost 1 each), diagonal (cost √2)</li>
+<li>Heuristic: Manhattan distance for cardinal, Euclidean for diagonal</li>
+<li>Returns the path as a list of (row, col) tuples</li>
+</ul>
+</li>
+<li>
+<p>Compare to BFS on the same grid: how many nodes does BFS explore vs A*? Show the exploration counts.</p>
+</li>
+<li>
+<p>Make the heuristic 3× larger (inadmissible): <code>h(n) = 3 × manhattan(n, goal)</code>. Does A* still find the shortest path? What path does it find? (A* is no longer guaranteed optimal with an inadmissible heuristic.)</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Minimax with Alpha-Beta</h2>
+<p>Given this game tree (max at root, min at level 1, values at leaves):</p>
+<pre><code>             MAX
+           /      \
+         MIN       MIN
+        /   \     /   \
+       4     7   2     9
+</code></pre>
+<ol start="4">
+<li>
+<p>Apply minimax: what does the root choose? Show the bottom-up value propagation.</p>
+</li>
+<li>
+<p>Apply <strong>alpha-beta pruning</strong> with the same tree traversed left-to-right. Which nodes/subtrees are pruned? Show the α and β values as they update.</p>
+</li>
+<li>
+<p>For a full tic-tac-toe game tree: the branching factor is 9 (first move), 8 (second), etc. Without alpha-beta, how many leaf nodes exist? With alpha-beta (assuming optimal move ordering), approximately how many are evaluated?</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — 4-Queens CSP</h2>
+<p>Place 4 queens on a 4×4 board so no two attack each other (no shared row, column, or diagonal).</p>
+<ol start="7">
+<li>
+<p>Define the CSP formally: variables, domains, constraints.</p>
+</li>
+<li>
+<p>Apply <strong>backtracking with forward checking</strong>:</p>
+<ul>
+<li>Variable ordering: left to right (column 0, 1, 2, 3)</li>
+<li>For each value assignment, eliminate inconsistent values from remaining domains</li>
+<li>Show the search tree and mark every backtrack</li>
+</ul>
+</li>
+<li>
+<p>How many assignments are tried? Compare to naive backtracking without forward checking.</p>
+</li>
+<li>
+<p>Apply <strong>MRV (Minimum Remaining Values)</strong>: after placing a queen in column 0, which column (1, 2, or 3) has the fewest remaining valid values? Choose it next.</p>
+</li>
+</ol>
+<hr />
+<h2>Part D — Heuristic Admissibility</h2>
+<ol start="11">
+<li>
+<p>For the 8-puzzle (sliding tile puzzle): is the <strong>misplaced tiles</strong> heuristic admissible? Prove it by showing it never overestimates the actual cost.</p>
+</li>
+<li>
+<p>Is the <strong>Manhattan distance</strong> heuristic admissible for the 8-puzzle? Why is Manhattan distance a &quot;better&quot; (more informed) heuristic than misplaced tiles, even though both are admissible?</p>
+</li>
+<li>
+<p>Construct an example 8-puzzle state where Manhattan distance h = 6 but misplaced tiles h = 3. Show both calculations.</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Local Search</h2>
+<ol start="14">
+<li>
+<p><strong>Hill climbing</strong> for finding the maximum of <code>f(x) = -x² + 4x - 1</code> on integers x ∈ [0, 5]. Starting at x=0, trace hill climbing: at each step, move to the neighbour with highest value.</p>
+</li>
+<li>
+<p>Hill climbing gets stuck at <strong>local maxima</strong>. Construct a function with multiple local maxima and one global maximum. Show where hill climbing gets stuck depending on the starting point.</p>
+</li>
+<li>
+<p><strong>Simulated annealing</strong> accepts worse solutions with probability <code>e^(-Δ/T)</code>. If the current value is 5 and the neighbour's value is 4 (Δ=1), what is the acceptance probability at T=2? At T=0.5?</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A A* implementation</td>
+<td>24</td>
+</tr>
+<tr>
+<td>B minimax / alpha-beta</td>
+<td>22</td>
+</tr>
+<tr>
+<td>C 4-Queens CSP</td>
+<td>22</td>
+</tr>
+<tr>
+<td>D heuristic admissibility</td>
+<td>18</td>
+</tr>
+<tr>
+<td>E local search</td>
+<td>14</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A.1 — A* implementation</summary>
+<pre><code class="language-python">import heapq, math
+
+def astar(grid, start, goal, heuristic):
+    rows, cols = len(grid), len(grid[0])
+    moves = [(0,1,1),(1,0,1),(0,-1,1),(-1,0,1),
+             (1,1,math.sqrt(2)),(1,-1,math.sqrt(2)),
+             (-1,1,math.sqrt(2)),(-1,-1,math.sqrt(2))]
+
+    g = {start: 0}
+    pq = [(heuristic(start, goal), 0, start, [start])]
+
+    while pq:
+        f, cost, node, path = heapq.heappop(pq)
+        if node == goal: return path, cost
+        if cost &gt; g.get(node, float('inf')): continue
+
+        for dr, dc, move_cost in moves:
+            nr, nc = node[0]+dr, node[1]+dc
+            if 0&lt;=nr&lt;rows and 0&lt;=nc&lt;cols and not grid[nr][nc]:
+                new_g = cost + move_cost
+                if new_g &lt; g.get((nr,nc), float('inf')):
+                    g[(nr,nc)] = new_g
+                    f_new = new_g + heuristic((nr,nc), goal)
+                    heapq.heappush(pq, (f_new, new_g, (nr,nc), path+[(nr,nc)]))
+    return None, float('inf')
+</code></pre>
+</details>
+<details>
+<summary>Part B.4–5 — minimax and alpha-beta</summary>
+<p>Minimax:</p>
+<ul>
+<li>MIN left: min(4,7) = 4</li>
+<li>MIN right: min(2,9) = 2</li>
+<li>MAX root: max(4,2) = <strong>4</strong> (choose left branch)</li>
+</ul>
+<p>Alpha-beta (left-to-right):</p>
+<ul>
+<li>Start: α=-∞, β=+∞</li>
+<li>Evaluate left MIN: α=-∞, β=+∞
+<ul>
+<li>See 4: β=4. α=-∞, β=4</li>
+<li>See 7: β=min(4,7)=4 (no change). Left MIN value=4. α=max(-∞,4)=4</li>
+</ul>
+</li>
+<li>Evaluate right MIN: α=4, β=+∞
+<ul>
+<li>See 2: β=min(+∞,2)=2. Now α=4 &gt; β=2 → <strong>prune right subtree (9 never evaluated)</strong></li>
+</ul>
+</li>
+<li>Root picks 4.</li>
+</ul>
+<p>Node 9 is pruned. One node saved.</p>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

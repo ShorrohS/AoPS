@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 12.2 — Vector Embeddings &amp; Semantic Search | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 12.2
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Vector Embeddings &amp; Semantic Search
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 12 • Advanced AI &amp; Frontiers</div>
+      <h1 class="article-title">Module 12.2 — Vector Embeddings &amp; Semantic Search</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-12-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 12.2 — Embeddings and Vector Databases</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>Computers understand numbers. Text, images, audio, code — all must be converted to numbers before a computer can process them.</p>
+<p>But a simple conversion (character codes, pixel values) misses semantic structure.<br />
+&quot;cat&quot; and &quot;feline&quot; are the same concept — but their character codes share nothing.<br />
+&quot;cat&quot; and &quot;can&quot; differ by one character — but they are completely different concepts.</p>
+<p><strong>Embeddings</strong> solve this: map objects (words, sentences, images, code) to vectors<br />
+such that semantically similar objects are geometrically close.<br />
+<strong>Vector databases</strong> provide efficient similarity search over millions of these vectors.</p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>Word2Vec — Meaning from Context</h3>
+<p><strong>Word2Vec</strong> (Mikolov et al., Google, 2013) demonstrated that word meaning could be captured by training a shallow neural network to predict words from their context in a large text corpus (&quot;you shall know a word by the company it keeps&quot; — J.R. Firth, 1957).</p>
+<p>The emergent property was remarkable: the resulting vectors supported arithmetic: <code>king - man + woman ≈ queen</code>. Geographic capitals, verb tenses, comparative adjectives — the structure of meaning was encoded in geometric relationships between vectors.</p>
+<p><strong>GloVe</strong> (Stanford, 2014) and <strong>FastText</strong> (Facebook, 2016) improved on Word2Vec. But word-level embeddings had a fundamental limitation: &quot;bank&quot; had one vector regardless of whether it meant a financial institution or a river bank.</p>
+<p><strong>BERT</strong> (Google, 2018) introduced contextual embeddings — each token's embedding depends on all surrounding tokens. &quot;Bank&quot; has a different vector in &quot;river bank&quot; and &quot;bank transfer.&quot; These contextual embeddings, derived from transformers (Module 12.1), are now the foundation of all embedding models.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>What Is an Embedding?</h3>
+<p>An embedding is a function that maps an object to a dense vector in ℝᵈ where d is typically 128–4096 dimensions.</p>
+<p>The critical property: <strong>semantic similarity ≈ geometric proximity</strong>. Objects with similar meaning have vectors that are close (high cosine similarity).</p>
+<pre><code class="language-python">from sentence_transformers import SentenceTransformer
+import numpy as np
+
+model = SentenceTransformer('all-MiniLM-L6-v2')  # 384 dimensions
+
+# Text embeddings
+e1 = model.encode(&quot;The quick brown fox&quot;)
+e2 = model.encode(&quot;A fast auburn canine&quot;)    # similar meaning
+e3 = model.encode(&quot;The stock market fell&quot;)   # different topic
+
+def cosine_sim(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+print(cosine_sim(e1, e2))   # ≈ 0.78 (similar)
+print(cosine_sim(e1, e3))   # ≈ 0.12 (different)
+</code></pre>
+<h3>Types of Embeddings</h3>
+<p><strong>Word embeddings</strong>: map individual words to vectors. Word2Vec, GloVe, FastText. Useful for token-level tasks.</p>
+<p><strong>Sentence/document embeddings</strong>: map entire sentences or paragraphs to a single vector. Sentence-BERT, OpenAI Ada, Cohere Embed. Used for semantic search, classification, clustering.</p>
+<p><strong>Multimodal embeddings</strong>: map different modalities (text and images) to the same vector space. <strong>CLIP</strong> (OpenAI, 2021) — trained on 400M image-text pairs, can compare images and text directly. Enables: image search with text queries, text-to-image generation guidance.</p>
+<p><strong>Code embeddings</strong>: map code snippets to vectors capturing functional semantics. OpenAI code-embedding, CodeBERT. Enables: code search (&quot;find all functions that sort a list&quot;), similar code detection, documentation search.</p>
+<h3>Vector Similarity Search</h3>
+<p>Given a query vector <code>q</code> and a database of <code>n</code> vectors <code>{v₁, ..., vₙ}</code>, find the k most similar vectors.</p>
+<p><strong>Brute force</strong>: compute cosine similarity with all <code>n</code> vectors. O(n×d) per query. Exact but slow for large n.</p>
+<p><strong>Approximate Nearest Neighbour (ANN)</strong>: trade small accuracy loss for massive speed-up. Used in all production vector databases.</p>
+<p><strong>FAISS</strong> (Facebook AI Similarity Search):</p>
+<pre><code class="language-python">import faiss
+import numpy as np
+
+# Build an index
+d = 384            # embedding dimension
+n = 1_000_000      # number of vectors
+
+embeddings = np.random.randn(n, d).astype('float32')
+embeddings /= np.linalg.norm(embeddings, axis=1, keepdims=True)   # normalise
+
+# IVF (Inverted File) index: cluster vectors, search only relevant clusters
+nlist = 100        # number of clusters
+quantiser = faiss.IndexFlatIP(d)   # exact search within cluster
+index = faiss.IndexIVFFlat(quantiser, d, nlist, faiss.METRIC_INNER_PRODUCT)
+index.train(embeddings)            # cluster the data
+index.add(embeddings)              # add all vectors
+
+# Search
+query = np.random.randn(1, d).astype('float32')
+query /= np.linalg.norm(query)
+
+index.nprobe = 10                  # search 10 clusters (speed/accuracy tradeoff)
+distances, indices = index.search(query, k=5)
+# Returns indices of 5 nearest neighbours in ~milliseconds
+</code></pre>
+<p><strong>HNSW (Hierarchical Navigable Small World)</strong>: a graph-based ANN algorithm. Vectors are nodes; edges connect nearby vectors in a hierarchy of layers. Search navigates the graph greedily from the top layer. Very fast (~1ms for millions of vectors), good accuracy. Used by Weaviate, Qdrant.</p>
+<h3>Vector Databases</h3>
+<p>Production systems managing millions of embeddings use purpose-built <strong>vector databases</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Database</th>
+<th>Backend</th>
+<th>Hosted</th>
+<th>Open source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pinecone</td>
+<td>Proprietary</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Weaviate</td>
+<td>HNSW</td>
+<td>Self/hosted</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Qdrant</td>
+<td>HNSW</td>
+<td>Self/hosted</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Chroma</td>
+<td>HNSW</td>
+<td>Self</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>pgvector</td>
+<td>IVF/HNSW</td>
+<td>PostgreSQL</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>FAISS</td>
+<td>IVF/PQ</td>
+<td>Self</td>
+<td>Yes (library)</td>
+</tr>
+</tbody>
+</table>
+<p>They provide: vector storage + retrieval, metadata filtering, hybrid search (dense + sparse), real-time updates.</p>
+<pre><code class="language-python">from qdrant_client import QdrantClient
+from qdrant_client.models import Distance, VectorParams, PointStruct
+
+client = QdrantClient(&quot;:memory:&quot;)  # in-memory for demo
+
+client.create_collection(
+    collection_name=&quot;docs&quot;,
+    vectors_config=VectorParams(size=384, distance=Distance.COSINE)
+)
+
+# Insert vectors with metadata
+client.upsert(&quot;docs&quot;, [
+    PointStruct(id=1, vector=embeddings[0].tolist(), payload={&quot;text&quot;: &quot;...&quot;, &quot;source&quot;: &quot;doc1.pdf&quot;}),
+    PointStruct(id=2, vector=embeddings[1].tolist(), payload={&quot;text&quot;: &quot;...&quot;, &quot;source&quot;: &quot;doc2.pdf&quot;}),
+])
+
+# Search
+results = client.search(&quot;docs&quot;, query_vector=query[0].tolist(), limit=5)
+</code></pre>
+<h3>Embedding Fine-Tuning</h3>
+<p>Pre-trained embedding models may not capture domain-specific meaning. Fine-tuning on domain data improves retrieval quality:</p>
+<p><strong>Contrastive learning</strong>: train the model so similar pairs (query, relevant document) have high similarity and dissimilar pairs have low similarity:</p>
+<pre><code>Loss = -log(exp(sim(q, d+) / τ) / Σⱼ exp(sim(q, dⱼ) / τ))
+</code></pre>
+<p>where d+ is the positive (relevant) document, dⱼ are all documents in the batch, τ is temperature.</p>
+<p><strong>INSTRUCTOR</strong> and <strong>E5</strong> are instruction-tuned embedding models that can be customised via natural language: <code>INSTRUCTION: Represent the technical documentation for retrieval. INPUT: {document}</code>.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Embedding Space Explorer</strong></p>
+<ul>
+<li>Enter 6–8 sentences on different topics</li>
+<li>See their 2D PCA projection</li>
+<li>Watch semantic clusters emerge (technology, food, sports)</li>
+</ul>
+<p><strong>Tool 2 — Semantic Search Demo</strong></p>
+<ul>
+<li>20 pre-embedded documents</li>
+<li>Type a query and see top-3 retrieved by cosine similarity</li>
+<li>Compare to keyword search — see where semantic search wins and loses</li>
+</ul>
+<p><strong>Tool 3 — Embedding Arithmetic</strong></p>
+<ul>
+<li>Word embeddings with addition/subtraction</li>
+<li>&quot;king&quot; - &quot;man&quot; + &quot;woman&quot; → see nearest vectors</li>
+<li>&quot;Paris&quot; - &quot;France&quot; + &quot;Germany&quot; → see nearest vectors</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Matryoshka Representation Learning (MRL)</strong>: train embedding models so that the first d dimensions of a 1536-d embedding are themselves a good d-dimensional embedding. This allows using shorter embeddings (faster, cheaper) for coarse search and longer embeddings for re-ranking. OpenAI's text-embedding-3 models support Matryoshka embeddings.</p>
+<p><strong>Late interaction models (ColBERT)</strong>: instead of compressing a document to one vector, keep all token-level vectors. At query time, compute the maximum similarity between each query token and each document token (MaxSim). Much more accurate than single-vector retrieval, but requires more storage and more compute.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Implement cosine similarity from scratch (without any ML library), build a simple 10-document semantic search engine using sentence-transformers and FAISS, demonstrate the analogy <code>&quot;king - man + woman&quot;</code> using pre-computed word vectors, and explain the tradeoff between HNSW accuracy and speed (what happens as you increase ef_search in an HNSW index?).</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-12-1-llm-architecture/lesson.html" class="btn-icon">← Prev: M 12.1</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-12-3-rag/lesson.html" class="btn-icon btn-primary">Next: M 12.3 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

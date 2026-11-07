@@ -1,0 +1,2150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>AoPS — Art of Problem Solving | Master Course Hub</title>
+  <meta name="description" content="Rebuilding Computer Science from First Principles across 13 Levels, 70 Modules, and 70 Interactive Labs.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    /* Portal Layout */
+    .zen-container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 1.25rem 5rem;
+    }
+
+    /* Hero Banner */
+    .zen-hero {
+      padding: 3.5rem 0 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      margin-bottom: 2rem;
+    }
+
+    .zen-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      margin-bottom: 0.75rem;
+    }
+
+    .zen-stamp {
+      background: var(--lacquer);
+      color: #FFFFFF;
+      width: 26px;
+      height: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 2px;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+
+    .zen-hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      line-height: 1.15;
+      font-weight: 400;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .zen-hero-subtitle {
+      font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+      color: var(--muted);
+      max-width: 780px;
+      line-height: 1.6;
+      margin-bottom: 1.75rem;
+    }
+
+    .zen-stats-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      padding: 1.25rem 1.5rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      margin-bottom: 2rem;
+    }
+
+    .zen-stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .zen-stat-val {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    .zen-stat-lbl {
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+
+    /* Filter & Search Bar */
+    .zen-controls-wrap {
+      position: sticky;
+      top: 50px;
+      z-index: 90;
+      background: var(--paper);
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border-light);
+      margin-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .zen-search-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .zen-search-input {
+      flex: 1;
+      padding: 0.65rem 1rem;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .zen-search-input:focus {
+      border-color: var(--indigo);
+    }
+
+    .zen-chips-scroller {
+      display: flex;
+      gap: 0.4rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .zen-chips-scroller::-webkit-scrollbar {
+      display: none;
+    }
+
+    .zen-chip {
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      border-radius: 999px;
+      color: var(--ink);
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .zen-chip:hover, .zen-chip.active {
+      background: var(--indigo);
+      color: #FFFFFF;
+      border-color: var(--indigo);
+      text-decoration: none;
+    }
+
+    /* Level Section */
+    .zen-level-section {
+      margin-bottom: 3.5rem;
+      scroll-margin-top: 130px;
+    }
+
+    .zen-level-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border-hair);
+      margin-bottom: 1.5rem;
+    }
+
+    .zen-level-pill {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      margin-bottom: 0.25rem;
+    }
+
+    .zen-level-title {
+      font-family: var(--font-display);
+      font-size: 1.85rem;
+      color: var(--ink);
+      font-weight: 400;
+      line-height: 1.2;
+    }
+
+    .zen-level-desc {
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 650px;
+      margin-top: 0.35rem;
+    }
+
+    .zen-level-header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .zen-level-count {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Bento Cards Grid */
+    .zen-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .zen-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .zen-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-hair);
+      box-shadow: var(--shadow-md);
+    }
+
+    .zen-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .zen-badge-num {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      color: var(--ink);
+      padding: 0.15rem 0.5rem;
+      border-radius: var(--radius-xs);
+    }
+
+    .zen-badge-status {
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--sage);
+      font-weight: 600;
+    }
+
+    .zen-card-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 400;
+      line-height: 1.35;
+      margin-bottom: 0.65rem;
+      color: var(--ink);
+    }
+
+    .zen-card-title a {
+      color: inherit;
+    }
+
+    .zen-card-problem {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      color: var(--slate);
+      flex: 1;
+      margin-bottom: 1.25rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .zen-card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      border-top: 1px solid var(--border-light);
+      padding-top: 0.85rem;
+    }
+
+    /* Mobile Quick Nav */
+    @media (max-width: 600px) {
+      .zen-cards-grid {
+        grid-template-columns: 1fr;
+      }
+      .zen-hero {
+        padding: 2rem 0 1.5rem;
+      }
+      .zen-stats-bar {
+        gap: 1rem;
+        padding: 1rem;
+      }
+      .zen-level-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Global Top Bar -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <span class="zen-stamp">解</span>
+      <span style="font-family:var(--font-sans); font-size:0.9rem; font-weight:700; color:var(--ink); letter-spacing:0.04em;">
+        AoPS
+      </span>
+      <span style="font-family:var(--font-sans); font-size:0.8rem; color:var(--muted); display:inline-block;">
+        Art of Problem Solving
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="illustrations/index.html" class="btn-icon" title="Illustration Gallery">🎨 Gallery</a>
+      <a href="AoPS_Review_Edition_v1.pdf" class="btn-icon" target="_blank" title="Download Complete 800-Page PDF">📄 PDF</a>
+      <a href="https://github.com/ShorrohS/AoPS" class="btn-icon" target="_blank" rel="noopener">🐙 GitHub</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <div class="zen-container">
+    <!-- Hero Section -->
+    <section class="zen-hero">
+      <div class="zen-brand">
+        <span class="zen-stamp">解</span>
+        <span>First-Principles Computer Science Architecture</span>
+      </div>
+      <h1 class="zen-hero-title">
+        We don't teach computing.<br>
+        We rebuild it from scratch.
+      </h1>
+      <p class="zen-hero-subtitle">
+        From ancient counting and mechanical punch cards, through relays, transistors, operating systems, and network protocols, all the way to neural networks and autonomous AI agents.
+      </p>
+
+      <!-- Stats Bar -->
+      <div class="zen-stats-bar">
+        <div class="zen-stat-item">
+          <span class="zen-stat-val">13</span>
+          <span class="zen-stat-lbl">Levels</span>
+        </div>
+        <div class="zen-stat-item">
+          <span class="zen-stat-val">70</span>
+          <span class="zen-stat-lbl">Lessons</span>
+        </div>
+        <div class="zen-stat-item">
+          <span class="zen-stat-val">70</span>
+          <span class="zen-stat-lbl">Web Labs</span>
+        </div>
+        <div class="zen-stat-item">
+          <span class="zen-stat-val">70</span>
+          <span class="zen-stat-lbl">Challenges</span>
+        </div>
+        <div class="zen-stat-item">
+          <span class="zen-stat-val">240+</span>
+          <span class="zen-stat-lbl">Vector SVGs</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Search & Sticky Level Scroller -->
+    <div class="zen-controls-wrap">
+      <div class="zen-search-row">
+        <input type="search" id="module-search" class="zen-search-input" placeholder="🔍 Search 70 modules (e.g. b-tree, transistor, backprop, assembly, mutex, tcp)...">
+        <span id="search-counter" style="font-family:var(--font-mono); font-size:0.8rem; color:var(--muted); white-space:nowrap;">70 / 70</span>
+      </div>
+      <div class="zen-chips-scroller">
+        <a href="#all" class="zen-chip active" data-filter="all">All Levels</a>
+        <a href="#level-0-before-computers" class="zen-chip">L0</a>
+<a href="#level-1-physical-computing" class="zen-chip">L1</a>
+<a href="#level-2-digital-foundations" class="zen-chip">L2</a>
+<a href="#level-3-machine-architecture" class="zen-chip">L3</a>
+<a href="#level-4-software-foundations" class="zen-chip">L4</a>
+<a href="#level-5-programming" class="zen-chip">L5</a>
+<a href="#level-6-dsa" class="zen-chip">L6</a>
+<a href="#level-7-systems" class="zen-chip">L7</a>
+<a href="#level-8-networks" class="zen-chip">L8</a>
+<a href="#level-9-databases" class="zen-chip">L9</a>
+<a href="#level-10-web" class="zen-chip">L10</a>
+<a href="#level-11-ai-ml" class="zen-chip">L11</a>
+<a href="#level-12-advanced-ai" class="zen-chip">L12</a>
+      </div>
+    </div>
+
+    <!-- Levels and Modules Content -->
+    <main id="levels-container">
+      
+        <section id="level-0-before-computers" class="zen-level-section">
+          <div class="zen-level-header">
+            <div class="zen-level-header-left">
+              <span class="zen-level-pill">Level 0</span>
+              <h2 class="zen-level-title">Before Computers</h2>
+              <p class="zen-level-desc">How humans computed before electricity: counting, mechanical gears, punched cards, and algorithmic logic.</p>
+            </div>
+            <div class="zen-level-header-right">
+              <a href="ebook/level-0-ebook.html" class="btn-icon" title="Read Complete Volume eBook">📚 Volume 0 Book</a>
+              <span class="zen-level-count">5 Modules</span>
+            </div>
+          </div>
+          <div class="zen-cards-grid">
+            
+            <article class="zen-card" data-category="hardware" data-keywords="0.1 why did humans need to compute? before computers">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 0.1</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-0-before-computers/module-0-1-why-compute/lesson.html">Why Did Humans Need to Compute?</a>
+              </h3>
+              <p class="zen-card-problem">Imagine you are the United States government in 1880. You need to count 50 million people, record their ages, occupations, birthplaces, and family sizes — and you need to do it accurately enough to redraw congressional districts and allocate federal funding.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-0-before-computers/module-0-1-why-compute/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-0-before-computers/module-0-1-why-compute/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-0-before-computers/module-0-1-why-compute/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-0-before-computers/module-0-1-why-compute/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="hardware" data-keywords="0.2 early mechanical computation before computers">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 0.2</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-0-before-computers/module-0-2-mechanical/lesson.html">Early Mechanical Computation</a>
+              </h3>
+              <p class="zen-card-problem">You are a 17th-century merchant calculating compound interest on a loan. The calculation requires multiplying large numbers together — numbers with 6, 8, even 10 digits. There are no calculators. There are no computers. There is only you, a quill, and arithmetic rules you learned as a child.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-0-before-computers/module-0-2-mechanical/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-0-before-computers/module-0-2-mechanical/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-0-before-computers/module-0-2-mechanical/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-0-before-computers/module-0-2-mechanical/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="hardware" data-keywords="0.3 the loom that taught computers before computers">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 0.3</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-0-before-computers/module-0-3-loom/lesson.html">The Loom That Taught Computers</a>
+              </h3>
+              <p class="zen-card-problem">You own a silk weaving factory in Lyon, France, in 1800. Your most valuable product is fabric woven in complex patterns — flowers, birds, geometric designs that wealthy clients pay a fortune for.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-0-before-computers/module-0-3-loom/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-0-before-computers/module-0-3-loom/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-0-before-computers/module-0-3-loom/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-0-before-computers/module-0-3-loom/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="hardware" data-keywords="0.4 babbage &amp; ada: the first programmers before computers">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 0.4</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-0-before-computers/module-0-4-babbage-ada/lesson.html">Babbage &amp; Ada: The First Programmers</a>
+              </h3>
+              <p class="zen-card-problem">You are an astronomer in 1820. You need a table of logarithms accurate to 20 decimal places. The only way to produce it: hire a room full of human &quot;computers&quot; to calculate each value by hand and have another room check their work.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-0-before-computers/module-0-4-babbage-ada/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-0-before-computers/module-0-4-babbage-ada/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-0-before-computers/module-0-4-babbage-ada/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-0-before-computers/module-0-4-babbage-ada/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="hardware" data-keywords="0.5 hollerith &amp; the punch card era before computers">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 0.5</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-0-before-computers/module-0-5-hollerith/lesson.html">Hollerith &amp; The Punch Card Era</a>
+              </h3>
+              <p class="zen-card-problem">It is 1887. The US Census Bureau is staring at the results of the 1880 census — still being compiled, eight years later. The 1890 census is three years away and will count even more people. At the current rate, the results will still be coming in when the 1900 census begins.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-0-before-computers/module-0-5-hollerith/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-0-before-computers/module-0-5-hollerith/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-0-before-computers/module-0-5-hollerith/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-0-before-computers/module-0-5-hollerith/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+          </div>
+        </section>
+        
+
+        <section id="level-1-physical-computing" class="zen-level-section">
+          <div class="zen-level-header">
+            <div class="zen-level-header-left">
+              <span class="zen-level-pill">Level 1</span>
+              <h2 class="zen-level-title">Physical Computing</h2>
+              <p class="zen-level-desc">From physical electrons to logic gates: relays, thermionic valves, semiconductors, and silicon lithography.</p>
+            </div>
+            <div class="zen-level-header-right">
+              <a href="ebook/level-1-ebook.html" class="btn-icon" title="Read Complete Volume eBook">📚 Volume 1 Book</a>
+              <span class="zen-level-count">6 Modules</span>
+            </div>
+          </div>
+          <div class="zen-cards-grid">
+            
+            <article class="zen-card" data-category="hardware" data-keywords="1.1 what is electricity? physical computing">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 1.1</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-1-physical-computing/module-1-1-electricity/lesson.html">What is Electricity?</a>
+              </h3>
+              <p class="zen-card-problem">Gears work. The Pascaline proved it. The Difference Engine proved it. But gears have a hard limit: to go faster, you need to move mass faster. Moving mass requires force. Force creates friction, heat, and wear.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-1-physical-computing/module-1-1-electricity/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-1-physical-computing/module-1-1-electricity/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-1-physical-computing/module-1-1-electricity/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-1-physical-computing/module-1-1-electricity/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="hardware" data-keywords="1.2 switches: the atom of computing physical computing">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 1.2</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-1-physical-computing/module-1-2-switches/lesson.html">Switches: The Atom of Computing</a>
+              </h3>
+              <p class="zen-card-problem">We now know electricity flows through circuits and obeys Ohm&#x27;s Law. We know a switch opens or closes a circuit. Simple enough.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-1-physical-computing/module-1-2-switches/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-1-physical-computing/module-1-2-switches/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-1-physical-computing/module-1-2-switches/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-1-physical-computing/module-1-2-switches/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="hardware" data-keywords="1.3 relay logic: metal decisions physical computing">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 1.3</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-1-physical-computing/module-1-3-relay-logic/lesson.html">Relay Logic: Metal Decisions</a>
+              </h3>
+              <p class="zen-card-problem">We can light a bulb with a relay. We can even make a relay remember a state. But can we make a relay *compute*?</p>
+              <div class="zen-card-actions">
+                <a href="course/level-1-physical-computing/module-1-3-relay-logic/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-1-physical-computing/module-1-3-relay-logic/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-1-physical-computing/module-1-3-relay-logic/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-1-physical-computing/module-1-3-relay-logic/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="hardware" data-keywords="1.4 vacuum tubes: faster switching physical computing">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 1.4</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-1-physical-computing/module-1-4-vacuum-tubes/lesson.html">Vacuum Tubes: Faster Switching</a>
+              </h3>
+              <p class="zen-card-problem">Relay computers work. The logic is sound. The Z3 runs. The Mark I calculates.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-1-physical-computing/module-1-4-vacuum-tubes/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-1-physical-computing/module-1-4-vacuum-tubes/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-1-physical-computing/module-1-4-vacuum-tubes/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-1-physical-computing/module-1-4-vacuum-tubes/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="hardware" data-keywords="1.5 the transistor revolution physical computing">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 1.5</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-1-physical-computing/module-1-5-transistor/lesson.html">The Transistor Revolution</a>
+              </h3>
+              <p class="zen-card-problem">ENIAC works. It&#x27;s fast. But 17,468 tubes, 150kW of power, and a tube failure every few hours is not a scalable path.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-1-physical-computing/module-1-5-transistor/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-1-physical-computing/module-1-5-transistor/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-1-physical-computing/module-1-5-transistor/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-1-physical-computing/module-1-5-transistor/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="hardware" data-keywords="1.6 from transistors to chips: moore&#x27;s law physical computing">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 1.6</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-1-physical-computing/module-1-6-moores-law/lesson.html">From Transistors to Chips: Moore&#x27;s Law</a>
+              </h3>
+              <p class="zen-card-problem">The transistor was invented in 1947. It was a breakthrough. But each transistor was still a separate component — you bought them individually, wired them together by hand, soldered connections one at a time.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-1-physical-computing/module-1-6-moores-law/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-1-physical-computing/module-1-6-moores-law/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-1-physical-computing/module-1-6-moores-law/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-1-physical-computing/module-1-6-moores-law/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+          </div>
+        </section>
+        
+
+        <section id="level-2-digital-foundations" class="zen-level-section">
+          <div class="zen-level-header">
+            <div class="zen-level-header-left">
+              <span class="zen-level-pill">Level 2</span>
+              <h2 class="zen-level-title">Digital Foundations</h2>
+              <p class="zen-level-desc">How binary noise immunity enables digital logic: Boolean algebra, adders, flip-flops, registers, and the ALU.</p>
+            </div>
+            <div class="zen-level-header-right">
+              <a href="ebook/level-2-ebook.html" class="btn-icon" title="Read Complete Volume eBook">📚 Volume 2 Book</a>
+              <span class="zen-level-count">6 Modules</span>
+            </div>
+          </div>
+          <div class="zen-cards-grid">
+            
+            <article class="zen-card" data-category="hardware" data-keywords="2.1 why binary? the physics of two states digital foundations">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 2.1</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-2-digital-foundations/module-2-1-why-binary/lesson.html">Why Binary? The Physics of Two States</a>
+              </h3>
+              <p class="zen-card-problem">You have a circuit carrying voltage. You want to represent the number 7. The obvious approach: use 7 volts. Store a number as its voltage.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-2-digital-foundations/module-2-1-why-binary/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-2-digital-foundations/module-2-1-why-binary/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-2-digital-foundations/module-2-1-why-binary/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-2-digital-foundations/module-2-1-why-binary/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="hardware" data-keywords="2.2 number systems: bin, oct, hex &amp; two&#x27;s complement digital foundations">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 2.2</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-2-digital-foundations/module-2-2-number-systems/lesson.html">Number Systems: Bin, Oct, Hex &amp; Two&#x27;s Complement</a>
+              </h3>
+              <p class="zen-card-problem">You&#x27;ve accepted binary. Everything is 0s and 1s. Now you need to check what&#x27;s stored at memory address 0b0001110101001100.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-2-digital-foundations/module-2-2-number-systems/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-2-digital-foundations/module-2-2-number-systems/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-2-digital-foundations/module-2-2-number-systems/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-2-digital-foundations/module-2-2-number-systems/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="hardware" data-keywords="2.3 boolean algebra &amp; logic gates digital foundations">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 2.3</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-2-digital-foundations/module-2-3-logic-gates/lesson.html">Boolean Algebra &amp; Logic Gates</a>
+              </h3>
+              <p class="zen-card-problem">You have transistors. Each one is a switch: on or off, 1 or 0.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-2-digital-foundations/module-2-3-logic-gates/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-2-digital-foundations/module-2-3-logic-gates/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-2-digital-foundations/module-2-3-logic-gates/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-2-digital-foundations/module-2-3-logic-gates/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="hardware" data-keywords="2.4 combinational circuits digital foundations">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 2.4</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-2-digital-foundations/module-2-4-combinational-circuits/lesson.html">Combinational Circuits</a>
+              </h3>
+              <p class="zen-card-problem">You can compute AND, OR, NOT. You can build any logic function from gates.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-2-digital-foundations/module-2-4-combinational-circuits/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-2-digital-foundations/module-2-4-combinational-circuits/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-2-digital-foundations/module-2-4-combinational-circuits/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-2-digital-foundations/module-2-4-combinational-circuits/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="hardware" data-keywords="2.5 sequential circuits: memory from gates digital foundations">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 2.5</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-2-digital-foundations/module-2-5-sequential-circuits/lesson.html">Sequential Circuits: Memory from Gates</a>
+              </h3>
+              <p class="zen-card-problem">The 4-bit adder from Module 2.4 computes the sum of two numbers instantly — as fast as the signals propagate through the gates. Perfect.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-2-digital-foundations/module-2-5-sequential-circuits/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-2-digital-foundations/module-2-5-sequential-circuits/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-2-digital-foundations/module-2-5-sequential-circuits/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-2-digital-foundations/module-2-5-sequential-circuits/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="hardware" data-keywords="2.6 from gates to a simple alu digital foundations">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 2.6</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-2-digital-foundations/module-2-6-simple-alu/lesson.html">From Gates to a Simple ALU</a>
+              </h3>
+              <p class="zen-card-problem">First-principles exploration of computing mechanics, trade-offs, and systems in From Gates to a Simple ALU.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-2-digital-foundations/module-2-6-simple-alu/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-2-digital-foundations/module-2-6-simple-alu/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-2-digital-foundations/module-2-6-simple-alu/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-2-digital-foundations/module-2-6-simple-alu/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+          </div>
+        </section>
+        
+
+        <section id="level-3-machine-architecture" class="zen-level-section">
+          <div class="zen-level-header">
+            <div class="zen-level-header-left">
+              <span class="zen-level-pill">Level 3</span>
+              <h2 class="zen-level-title">Machine Architecture</h2>
+              <p class="zen-level-desc">The Von Neumann engine in motion: SRAM/DRAM caches, program counter, instruction decoding, and data buses.</p>
+            </div>
+            <div class="zen-level-header-right">
+              <a href="ebook/level-3-ebook.html" class="btn-icon" title="Read Complete Volume eBook">📚 Volume 3 Book</a>
+              <span class="zen-level-count">5 Modules</span>
+            </div>
+          </div>
+          <div class="zen-cards-grid">
+            
+            <article class="zen-card" data-category="architecture" data-keywords="3.1 memory: how machines remember machine architecture">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 3.1</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-3-machine-architecture/module-3-1-memory/lesson.html">Memory: How Machines Remember</a>
+              </h3>
+              <p class="zen-card-problem">You have an ALU that can add, subtract, and perform logic operations.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-3-machine-architecture/module-3-1-memory/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-3-machine-architecture/module-3-1-memory/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-3-machine-architecture/module-3-1-memory/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-3-machine-architecture/module-3-1-memory/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="architecture" data-keywords="3.2 the fetch-decode-execute cycle machine architecture">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 3.2</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-3-machine-architecture/module-3-2-fetch-decode-execute/lesson.html">The Fetch-Decode-Execute Cycle</a>
+              </h3>
+              <p class="zen-card-problem">First-principles exploration of computing mechanics, trade-offs, and systems in The Fetch-Decode-Execute Cycle.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-3-machine-architecture/module-3-2-fetch-decode-execute/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-3-machine-architecture/module-3-2-fetch-decode-execute/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-3-machine-architecture/module-3-2-fetch-decode-execute/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-3-machine-architecture/module-3-2-fetch-decode-execute/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="architecture" data-keywords="3.3 instruction set architecture machine architecture">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 3.3</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-3-machine-architecture/module-3-3-isa/lesson.html">Instruction Set Architecture</a>
+              </h3>
+              <p class="zen-card-problem">The ALU can add, subtract, AND, OR, XOR.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-3-machine-architecture/module-3-3-isa/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-3-machine-architecture/module-3-3-isa/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-3-machine-architecture/module-3-3-isa/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-3-machine-architecture/module-3-3-isa/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="architecture" data-keywords="3.4 input/output: connecting to the world machine architecture">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 3.4</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-3-machine-architecture/module-3-4-io/lesson.html">Input/Output: Connecting to the World</a>
+              </h3>
+              <p class="zen-card-problem">You have a CPU that fetches, decodes, and executes instructions.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-3-machine-architecture/module-3-4-io/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-3-machine-architecture/module-3-4-io/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-3-machine-architecture/module-3-4-io/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-3-machine-architecture/module-3-4-io/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="architecture" data-keywords="3.5 the bus: moving data around machine architecture">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 3.5</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-3-machine-architecture/module-3-5-bus/lesson.html">The Bus: Moving Data Around</a>
+              </h3>
+              <p class="zen-card-problem">The CPU computes. Memory stores. I/O devices communicate.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-3-machine-architecture/module-3-5-bus/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-3-machine-architecture/module-3-5-bus/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-3-machine-architecture/module-3-5-bus/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-3-machine-architecture/module-3-5-bus/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+          </div>
+        </section>
+        
+
+        <section id="level-4-software-foundations" class="zen-level-section">
+          <div class="zen-level-header">
+            <div class="zen-level-header-left">
+              <span class="zen-level-pill">Level 4</span>
+              <h2 class="zen-level-title">Software Foundations</h2>
+              <p class="zen-level-desc">From bare metal to an operating system: x86-64 assembly, stack frames, supervisor mode, paging, and inodes.</p>
+            </div>
+            <div class="zen-level-header-right">
+              <a href="ebook/level-4-ebook.html" class="btn-icon" title="Read Complete Volume eBook">📚 Volume 4 Book</a>
+              <span class="zen-level-count">5 Modules</span>
+            </div>
+          </div>
+          <div class="zen-cards-grid">
+            
+            <article class="zen-card" data-category="architecture" data-keywords="4.1 machine code &amp; assembly software foundations">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 4.1</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-4-software-foundations/module-4-1-machine-code/lesson.html">Machine Code &amp; Assembly</a>
+              </h3>
+              <p class="zen-card-problem">You can now build a CPU and execute instructions from memory.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-4-software-foundations/module-4-1-machine-code/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-4-software-foundations/module-4-1-machine-code/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-4-software-foundations/module-4-1-machine-code/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-4-software-foundations/module-4-1-machine-code/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="architecture" data-keywords="4.2 the stack &amp; calling conventions software foundations">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 4.2</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-4-software-foundations/module-4-2-stack-calling/lesson.html">The Stack &amp; Calling Conventions</a>
+              </h3>
+              <p class="zen-card-problem">You can write assembly instructions.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-4-software-foundations/module-4-2-stack-calling/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-4-software-foundations/module-4-2-stack-calling/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-4-software-foundations/module-4-2-stack-calling/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-4-software-foundations/module-4-2-stack-calling/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="architecture" data-keywords="4.3 operating system concepts software foundations">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 4.3</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-4-software-foundations/module-4-3-os-concepts/lesson.html">Operating System Concepts</a>
+              </h3>
+              <p class="zen-card-problem">You have a CPU that can execute programs.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-4-software-foundations/module-4-3-os-concepts/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-4-software-foundations/module-4-3-os-concepts/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-4-software-foundations/module-4-3-os-concepts/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-4-software-foundations/module-4-3-os-concepts/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="architecture" data-keywords="4.4 memory management &amp; paging software foundations">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 4.4</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-4-software-foundations/module-4-4-memory-management/lesson.html">Memory Management &amp; Paging</a>
+              </h3>
+              <p class="zen-card-problem">A 64-bit CPU can address 16 exabytes of memory.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-4-software-foundations/module-4-4-memory-management/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-4-software-foundations/module-4-4-memory-management/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-4-software-foundations/module-4-4-memory-management/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-4-software-foundations/module-4-4-memory-management/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="architecture" data-keywords="4.5 file systems &amp; inodes software foundations">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 4.5</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-4-software-foundations/module-4-5-file-systems/lesson.html">File Systems &amp; Inodes</a>
+              </h3>
+              <p class="zen-card-problem">You can read and write bytes at memory addresses.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-4-software-foundations/module-4-5-file-systems/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-4-software-foundations/module-4-5-file-systems/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-4-software-foundations/module-4-5-file-systems/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-4-software-foundations/module-4-5-file-systems/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+          </div>
+        </section>
+        
+
+        <section id="level-5-programming" class="zen-level-section">
+          <div class="zen-level-header">
+            <div class="zen-level-header-left">
+              <span class="zen-level-pill">Level 5</span>
+              <h2 class="zen-level-title">Programming &amp; Runtimes</h2>
+              <p class="zen-level-desc">Close to the metal vs interpreted languages: memory pointers, compilation pipelines, Python objects, and heap allocation.</p>
+            </div>
+            <div class="zen-level-header-right">
+              <a href="ebook/level-5-ebook.html" class="btn-icon" title="Read Complete Volume eBook">📚 Volume 5 Book</a>
+              <span class="zen-level-count">6 Modules</span>
+            </div>
+          </div>
+          <div class="zen-cards-grid">
+            
+            <article class="zen-card" data-category="software" data-keywords="5.1 c: close to the metal programming &amp; runtimes">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 5.1</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-5-programming/module-5-1-c-language/lesson.html">C: Close to the Metal</a>
+              </h3>
+              <p class="zen-card-problem">Assembly language gives you full control over the hardware.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-5-programming/module-5-1-c-language/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-5-programming/module-5-1-c-language/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-5-programming/module-5-1-c-language/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-5-programming/module-5-1-c-language/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="software" data-keywords="5.2 python: high-level abstraction programming &amp; runtimes">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 5.2</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-5-programming/module-5-2-python/lesson.html">Python: High-Level Abstraction</a>
+              </h3>
+              <p class="zen-card-problem">C gives you total control and total responsibility.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-5-programming/module-5-2-python/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-5-programming/module-5-2-python/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-5-programming/module-5-2-python/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-5-programming/module-5-2-python/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="software" data-keywords="5.3 compilation vs interpretation programming &amp; runtimes">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 5.3</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-5-programming/module-5-3-algorithms-intro/lesson.html">Compilation vs Interpretation</a>
+              </h3>
+              <p class="zen-card-problem">You have a program that works.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-5-programming/module-5-3-algorithms-intro/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-5-programming/module-5-3-algorithms-intro/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-5-programming/module-5-3-algorithms-intro/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-5-programming/module-5-3-algorithms-intro/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="software" data-keywords="5.4 functions, scope &amp; recursion programming &amp; runtimes">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 5.4</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-5-programming/module-5-4-recursion/lesson.html">Functions, Scope &amp; Recursion</a>
+              </h3>
+              <p class="zen-card-problem">Some problems are defined in terms of themselves.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-5-programming/module-5-4-recursion/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-5-programming/module-5-4-recursion/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-5-programming/module-5-4-recursion/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-5-programming/module-5-4-recursion/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="software" data-keywords="5.5 memory allocation &amp; heap programming &amp; runtimes">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 5.5</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-5-programming/module-5-5-sorting/lesson.html">Memory Allocation &amp; Heap</a>
+              </h3>
+              <p class="zen-card-problem">A database table has 50 million rows.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-5-programming/module-5-5-sorting/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-5-programming/module-5-5-sorting/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-5-programming/module-5-5-sorting/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-5-programming/module-5-5-sorting/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="software" data-keywords="5.6 debugging &amp; profiling programming &amp; runtimes">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 5.6</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-5-programming/module-5-6-searching/lesson.html">Debugging &amp; Profiling</a>
+              </h3>
+              <p class="zen-card-problem">A phone book has 5 million entries.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-5-programming/module-5-6-searching/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-5-programming/module-5-6-searching/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-5-programming/module-5-6-searching/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-5-programming/module-5-6-searching/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+          </div>
+        </section>
+        
+
+        <section id="level-6-dsa" class="zen-level-section">
+          <div class="zen-level-header">
+            <div class="zen-level-header-left">
+              <span class="zen-level-pill">Level 6</span>
+              <h2 class="zen-level-title">Data Structures &amp; Algorithms</h2>
+              <p class="zen-level-desc">Mastering computational efficiency: cache-conscious structures, graph traversal, balanced trees, and dynamic programming.</p>
+            </div>
+            <div class="zen-level-header-right">
+              <a href="ebook/level-6-ebook.html" class="btn-icon" title="Read Complete Volume eBook">📚 Volume 6 Book</a>
+              <span class="zen-level-count">8 Modules</span>
+            </div>
+          </div>
+          <div class="zen-cards-grid">
+            
+            <article class="zen-card" data-category="software" data-keywords="6.1 arrays &amp; contiguous memory data structures &amp; algorithms">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 6.1</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-6-dsa/module-6-1-arrays-linked-lists/lesson.html">Arrays &amp; Contiguous Memory</a>
+              </h3>
+              <p class="zen-card-problem">You need to store a collection of items.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-6-dsa/module-6-1-arrays-linked-lists/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-6-dsa/module-6-1-arrays-linked-lists/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-6-dsa/module-6-1-arrays-linked-lists/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-6-dsa/module-6-1-arrays-linked-lists/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="software" data-keywords="6.2 linked lists, stacks &amp; queues data structures &amp; algorithms">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 6.2</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-6-dsa/module-6-2-stacks-queues/lesson.html">Linked Lists, Stacks &amp; Queues</a>
+              </h3>
+              <p class="zen-card-problem">Two fundamental questions about collections:</p>
+              <div class="zen-card-actions">
+                <a href="course/level-6-dsa/module-6-2-stacks-queues/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-6-dsa/module-6-2-stacks-queues/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-6-dsa/module-6-2-stacks-queues/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-6-dsa/module-6-2-stacks-queues/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="software" data-keywords="6.3 hash tables &amp; collisions data structures &amp; algorithms">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 6.3</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-6-dsa/module-6-3-hash-tables/lesson.html">Hash Tables &amp; Collisions</a>
+              </h3>
+              <p class="zen-card-problem">You have 10 million user records.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-6-dsa/module-6-3-hash-tables/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-6-dsa/module-6-3-hash-tables/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-6-dsa/module-6-3-hash-tables/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-6-dsa/module-6-3-hash-tables/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="software" data-keywords="6.4 trees &amp; binary search data structures &amp; algorithms">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 6.4</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-6-dsa/module-6-4-trees/lesson.html">Trees &amp; Binary Search</a>
+              </h3>
+              <p class="zen-card-problem">A sorted array gives O(log n) search via binary search.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-6-dsa/module-6-4-trees/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-6-dsa/module-6-4-trees/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-6-dsa/module-6-4-trees/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-6-dsa/module-6-4-trees/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="software" data-keywords="6.5 priority queues &amp; heaps data structures &amp; algorithms">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 6.5</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-6-dsa/module-6-5-heaps/lesson.html">Priority Queues &amp; Heaps</a>
+              </h3>
+              <p class="zen-card-problem">You are managing a hospital emergency room.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-6-dsa/module-6-5-heaps/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-6-dsa/module-6-5-heaps/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-6-dsa/module-6-5-heaps/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-6-dsa/module-6-5-heaps/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="software" data-keywords="6.6 graphs &amp; pathfinding data structures &amp; algorithms">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 6.6</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-6-dsa/module-6-6-graphs/lesson.html">Graphs &amp; Pathfinding</a>
+              </h3>
+              <p class="zen-card-problem">A road network. A social network. The internet. A circuit board. A gene regulatory network.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-6-dsa/module-6-6-graphs/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-6-dsa/module-6-6-graphs/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-6-dsa/module-6-6-graphs/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-6-dsa/module-6-6-graphs/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="software" data-keywords="6.7 advanced sorting algorithms data structures &amp; algorithms">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 6.7</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-6-dsa/module-6-7-sorting-advanced/lesson.html">Advanced Sorting Algorithms</a>
+              </h3>
+              <p class="zen-card-problem">Module 5.5 introduced sorting and Big-O complexity.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-6-dsa/module-6-7-sorting-advanced/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-6-dsa/module-6-7-sorting-advanced/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-6-dsa/module-6-7-sorting-advanced/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-6-dsa/module-6-7-sorting-advanced/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="software" data-keywords="6.8 dynamic programming data structures &amp; algorithms">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 6.8</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-6-dsa/module-6-8-dynamic-programming/lesson.html">Dynamic Programming</a>
+              </h3>
+              <p class="zen-card-problem">Naive recursion for Fibonacci: each call to fib(n) spawns two more.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-6-dsa/module-6-8-dynamic-programming/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-6-dsa/module-6-8-dynamic-programming/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-6-dsa/module-6-8-dynamic-programming/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-6-dsa/module-6-8-dynamic-programming/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+          </div>
+        </section>
+        
+
+        <section id="level-7-systems" class="zen-level-section">
+          <div class="zen-level-header">
+            <div class="zen-level-header-left">
+              <span class="zen-level-pill">Level 7</span>
+              <h2 class="zen-level-title">Systems Programming</h2>
+              <p class="zen-level-desc">Concurrent and networked computing: POSIX threads, synchronization primitives, socket programming, and building a web server.</p>
+            </div>
+            <div class="zen-level-header-right">
+              <a href="ebook/level-7-ebook.html" class="btn-icon" title="Read Complete Volume eBook">📚 Volume 7 Book</a>
+              <span class="zen-level-count">5 Modules</span>
+            </div>
+          </div>
+          <div class="zen-cards-grid">
+            
+            <article class="zen-card" data-category="systems" data-keywords="7.1 processes &amp; multithreading systems programming">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 7.1</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-7-systems/module-7-1-multithreading/lesson.html">Processes &amp; Multithreading</a>
+              </h3>
+              <p class="zen-card-problem">A web server must handle 10,000 simultaneous connections.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-7-systems/module-7-1-multithreading/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-7-systems/module-7-1-multithreading/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-7-systems/module-7-1-multithreading/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-7-systems/module-7-1-multithreading/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="systems" data-keywords="7.2 concurrency, locks &amp; mutexes systems programming">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 7.2</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-7-systems/module-7-2-sync-primitives/lesson.html">Concurrency, Locks &amp; Mutexes</a>
+              </h3>
+              <p class="zen-card-problem">Module 7.1 introduced race conditions and the basic mutex.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-7-systems/module-7-2-sync-primitives/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-7-systems/module-7-2-sync-primitives/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-7-systems/module-7-2-sync-primitives/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-7-systems/module-7-2-sync-primitives/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="systems" data-keywords="7.3 sockets &amp; network ipc systems programming">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 7.3</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-7-systems/module-7-3-sockets/lesson.html">Sockets &amp; Network IPC</a>
+              </h3>
+              <p class="zen-card-problem">Two programs. Different machines. Possibly different continents.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-7-systems/module-7-3-sockets/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-7-systems/module-7-3-sockets/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-7-systems/module-7-3-sockets/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-7-systems/module-7-3-sockets/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="systems" data-keywords="7.4 building a tiny shell systems programming">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 7.4</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-7-systems/module-7-4-shell/lesson.html">Building a Tiny Shell</a>
+              </h3>
+              <p class="zen-card-problem">The shell is the user&#x27;s interface to the operating system.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-7-systems/module-7-4-shell/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-7-systems/module-7-4-shell/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-7-systems/module-7-4-shell/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-7-systems/module-7-4-shell/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="systems" data-keywords="7.5 building a tiny http server systems programming">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 7.5</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-7-systems/module-7-5-http-server/lesson.html">Building a Tiny HTTP Server</a>
+              </h3>
+              <p class="zen-card-problem">Every website you visit is served by an HTTP server.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-7-systems/module-7-5-http-server/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-7-systems/module-7-5-http-server/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-7-systems/module-7-5-http-server/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-7-systems/module-7-5-http-server/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+          </div>
+        </section>
+        
+
+        <section id="level-8-networks" class="zen-level-section">
+          <div class="zen-level-header">
+            <div class="zen-level-header-left">
+              <span class="zen-level-pill">Level 8</span>
+              <h2 class="zen-level-title">Networks &amp; Protocols</h2>
+              <p class="zen-level-desc">Connecting global computers: packet framing, subnet routing, reliable byte streams, DNS, and cryptographic handshakes.</p>
+            </div>
+            <div class="zen-level-header-right">
+              <a href="ebook/level-8-ebook.html" class="btn-icon" title="Read Complete Volume eBook">📚 Volume 8 Book</a>
+              <span class="zen-level-count">6 Modules</span>
+            </div>
+          </div>
+          <div class="zen-cards-grid">
+            
+            <article class="zen-card" data-category="systems" data-keywords="8.1 physical &amp; data link layers networks &amp; protocols">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 8.1</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-8-networks/module-8-1-physical-datalink/lesson.html">Physical &amp; Data Link Layers</a>
+              </h3>
+              <p class="zen-card-problem">Two computers. A wire between them.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-8-networks/module-8-1-physical-datalink/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-8-networks/module-8-1-physical-datalink/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-8-networks/module-8-1-physical-datalink/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-8-networks/module-8-1-physical-datalink/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="systems" data-keywords="8.2 ip addressing &amp; packet routing networks &amp; protocols">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 8.2</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-8-networks/module-8-2-network-layer/lesson.html">IP Addressing &amp; Packet Routing</a>
+              </h3>
+              <p class="zen-card-problem">Ethernet connects computers on the same local segment.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-8-networks/module-8-2-network-layer/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-8-networks/module-8-2-network-layer/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-8-networks/module-8-2-network-layer/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-8-networks/module-8-2-network-layer/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="systems" data-keywords="8.3 tcp &amp; reliable byte streams networks &amp; protocols">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 8.3</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-8-networks/module-8-3-transport-layer/lesson.html">TCP &amp; Reliable Byte Streams</a>
+              </h3>
+              <p class="zen-card-problem">IP (Module 8.2) delivers packets between machines.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-8-networks/module-8-3-transport-layer/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-8-networks/module-8-3-transport-layer/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-8-networks/module-8-3-transport-layer/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-8-networks/module-8-3-transport-layer/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="systems" data-keywords="8.4 udp &amp; real-time protocols networks &amp; protocols">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 8.4</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-8-networks/module-8-4-application-layer/lesson.html">UDP &amp; Real-Time Protocols</a>
+              </h3>
+              <p class="zen-card-problem">TCP gives you a reliable byte stream between two ports.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-8-networks/module-8-4-application-layer/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-8-networks/module-8-4-application-layer/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-8-networks/module-8-4-application-layer/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-8-networks/module-8-4-application-layer/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="systems" data-keywords="8.5 dns &amp; name resolution networks &amp; protocols">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 8.5</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-8-networks/module-8-5-tls-ssl/lesson.html">DNS &amp; Name Resolution</a>
+              </h3>
+              <p class="zen-card-problem">HTTP sends all data in plaintext.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-8-networks/module-8-5-tls-ssl/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-8-networks/module-8-5-tls-ssl/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-8-networks/module-8-5-tls-ssl/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-8-networks/module-8-5-tls-ssl/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="systems" data-keywords="8.6 tls/ssl &amp; cryptographic channels networks &amp; protocols">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 8.6</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-8-networks/module-8-6-packet-analyzer/lesson.html">TLS/SSL &amp; Cryptographic Channels</a>
+              </h3>
+              <p class="zen-card-problem">You&#x27;ve studied the network stack from physical to application layer.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-8-networks/module-8-6-packet-analyzer/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-8-networks/module-8-6-packet-analyzer/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-8-networks/module-8-6-packet-analyzer/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-8-networks/module-8-6-packet-analyzer/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+          </div>
+        </section>
+        
+
+        <section id="level-9-databases" class="zen-level-section">
+          <div class="zen-level-header">
+            <div class="zen-level-header-left">
+              <span class="zen-level-pill">Level 9</span>
+              <h2 class="zen-level-title">Databases &amp; Storage</h2>
+              <p class="zen-level-desc">Persistent data at scale: relational algebra, disk B-Trees, transaction concurrency, write-ahead logs, and query parsers.</p>
+            </div>
+            <div class="zen-level-header-right">
+              <a href="ebook/level-9-ebook.html" class="btn-icon" title="Read Complete Volume eBook">📚 Volume 9 Book</a>
+              <span class="zen-level-count">4 Modules</span>
+            </div>
+          </div>
+          <div class="zen-cards-grid">
+            
+            <article class="zen-card" data-category="data" data-keywords="9.1 the relational model &amp; sql databases &amp; storage">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 9.1</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-9-databases/module-9-1-relational-model/lesson.html">The Relational Model &amp; SQL</a>
+              </h3>
+              <p class="zen-card-problem">A company stores customer data in one file, orders in another, products in a third.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-9-databases/module-9-1-relational-model/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-9-databases/module-9-1-relational-model/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-9-databases/module-9-1-relational-model/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-9-databases/module-9-1-relational-model/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="data" data-keywords="9.2 b-trees &amp; storage engines databases &amp; storage">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 9.2</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-9-databases/module-9-2-btrees/lesson.html">B-Trees &amp; Storage Engines</a>
+              </h3>
+              <p class="zen-card-problem">A database table has 100 million rows.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-9-databases/module-9-2-btrees/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-9-databases/module-9-2-btrees/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-9-databases/module-9-2-btrees/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-9-databases/module-9-2-btrees/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="data" data-keywords="9.3 transactions, acid &amp; wal databases &amp; storage">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 9.3</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-9-databases/module-9-3-transactions/lesson.html">Transactions, ACID &amp; WAL</a>
+              </h3>
+              <p class="zen-card-problem">Two people simultaneously book the last seat on a flight.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-9-databases/module-9-3-transactions/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-9-databases/module-9-3-transactions/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-9-databases/module-9-3-transactions/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-9-databases/module-9-3-transactions/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="data" data-keywords="9.4 building a toy sql database databases &amp; storage">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 9.4</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-9-databases/module-9-4-toy-sql-engine/lesson.html">Building a Toy SQL Database</a>
+              </h3>
+              <p class="zen-card-problem">SQL is a declarative language: you describe *what* you want.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-9-databases/module-9-4-toy-sql-engine/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-9-databases/module-9-4-toy-sql-engine/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-9-databases/module-9-4-toy-sql-engine/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-9-databases/module-9-4-toy-sql-engine/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+          </div>
+        </section>
+        
+
+        <section id="level-10-web" class="zen-level-section">
+          <div class="zen-level-header">
+            <div class="zen-level-header-left">
+              <span class="zen-level-pill">Level 10</span>
+              <h2 class="zen-level-title">Web &amp; App Development</h2>
+              <p class="zen-level-desc">The modern application canvas: DOM layouts, render pipelines, asynchronous event loops, REST contracts, and fullstack architectures.</p>
+            </div>
+            <div class="zen-level-header-right">
+              <a href="ebook/level-10-ebook.html" class="btn-icon" title="Read Complete Volume eBook">📚 Volume 10 Book</a>
+              <span class="zen-level-count">4 Modules</span>
+            </div>
+          </div>
+          <div class="zen-cards-grid">
+            
+            <article class="zen-card" data-category="data" data-keywords="10.1 how browsers render pages web &amp; app development">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 10.1</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-10-web/module-10-1-html-css-js/lesson.html">How Browsers Render Pages</a>
+              </h3>
+              <p class="zen-card-problem">In 1991, Tim Berners-Lee needed a way to share documents between physicists at CERN.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-10-web/module-10-1-html-css-js/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-10-web/module-10-1-html-css-js/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-10-web/module-10-1-html-css-js/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-10-web/module-10-1-html-css-js/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="data" data-keywords="10.2 modern css layout &amp; flex/grid web &amp; app development">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 10.2</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-10-web/module-10-2-how-browsers-render/lesson.html">Modern CSS Layout &amp; Flex/Grid</a>
+              </h3>
+              <p class="zen-card-problem">First-principles exploration of computing mechanics, trade-offs, and systems in Modern CSS Layout &amp; Flex/Grid.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-10-web/module-10-2-how-browsers-render/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-10-web/module-10-2-how-browsers-render/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-10-web/module-10-2-how-browsers-render/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-10-web/module-10-2-how-browsers-render/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="data" data-keywords="10.3 javascript event loop &amp; rest apis web &amp; app development">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 10.3</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-10-web/module-10-3-rest-apis/lesson.html">JavaScript Event Loop &amp; REST APIs</a>
+              </h3>
+              <p class="zen-card-problem">A mobile app, a web frontend, a desktop app, and a third-party service</p>
+              <div class="zen-card-actions">
+                <a href="course/level-10-web/module-10-3-rest-apis/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-10-web/module-10-3-rest-apis/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-10-web/module-10-3-rest-apis/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-10-web/module-10-3-rest-apis/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="data" data-keywords="10.4 building a full-stack web app web &amp; app development">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 10.4</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-10-web/module-10-4-fullstack-project/lesson.html">Building a Full-Stack Web App</a>
+              </h3>
+              <p class="zen-card-problem">You have learned:</p>
+              <div class="zen-card-actions">
+                <a href="course/level-10-web/module-10-4-fullstack-project/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-10-web/module-10-4-fullstack-project/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-10-web/module-10-4-fullstack-project/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-10-web/module-10-4-fullstack-project/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+          </div>
+        </section>
+        
+
+        <section id="level-11-ai-ml" class="zen-level-section">
+          <div class="zen-level-header">
+            <div class="zen-level-header-left">
+              <span class="zen-level-pill">Level 11</span>
+              <h2 class="zen-level-title">AI &amp; Machine Learning</h2>
+              <p class="zen-level-desc">From symbolic rules to learning systems: multidimensional vectors, gradient optimization, loss landscapes, and backprop derivation.</p>
+            </div>
+            <div class="zen-level-header-right">
+              <a href="ebook/level-11-ebook.html" class="btn-icon" title="Read Complete Volume eBook">📚 Volume 11 Book</a>
+              <span class="zen-level-count">5 Modules</span>
+            </div>
+          </div>
+          <div class="zen-cards-grid">
+            
+            <article class="zen-card" data-category="aiml" data-keywords="11.1 search &amp; symbolic intelligence ai &amp; machine learning">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 11.1</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-11-ai-ml/module-11-1-search-intelligence/lesson.html">Search &amp; Symbolic Intelligence</a>
+              </h3>
+              <p class="zen-card-problem">A chess program examines millions of board positions per second.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-11-ai-ml/module-11-1-search-intelligence/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-11-ai-ml/module-11-1-search-intelligence/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-11-ai-ml/module-11-1-search-intelligence/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-11-ai-ml/module-11-1-search-intelligence/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="aiml" data-keywords="11.2 linear algebra for machine learning ai &amp; machine learning">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 11.2</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-11-ai-ml/module-11-2-linear-algebra-ml/lesson.html">Linear Algebra for Machine Learning</a>
+              </h3>
+              <p class="zen-card-problem">A dataset has 10,000 images, each 28×28 pixels.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-11-ai-ml/module-11-2-linear-algebra-ml/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-11-ai-ml/module-11-2-linear-algebra-ml/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-11-ai-ml/module-11-2-linear-algebra-ml/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-11-ai-ml/module-11-2-linear-algebra-ml/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="aiml" data-keywords="11.3 gradient descent &amp; optimizers ai &amp; machine learning">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 11.3</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-11-ai-ml/module-11-3-regression-classification/lesson.html">Gradient Descent &amp; Optimizers</a>
+              </h3>
+              <p class="zen-card-problem">You have data: 1,000 house prices with their square footage, number of bedrooms, and location.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-11-ai-ml/module-11-3-regression-classification/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-11-ai-ml/module-11-3-regression-classification/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-11-ai-ml/module-11-3-regression-classification/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-11-ai-ml/module-11-3-regression-classification/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="aiml" data-keywords="11.4 neural networks from scratch ai &amp; machine learning">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 11.4</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-11-ai-ml/module-11-4-neural-networks/lesson.html">Neural Networks from Scratch</a>
+              </h3>
+              <p class="zen-card-problem">Linear regression can fit a line.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-11-ai-ml/module-11-4-neural-networks/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-11-ai-ml/module-11-4-neural-networks/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-11-ai-ml/module-11-4-neural-networks/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-11-ai-ml/module-11-4-neural-networks/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="aiml" data-keywords="11.5 backpropagation derived ai &amp; machine learning">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 11.5</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-11-ai-ml/module-11-5-backpropagation/lesson.html">Backpropagation Derived</a>
+              </h3>
+              <p class="zen-card-problem">A neural network has millions of parameters.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-11-ai-ml/module-11-5-backpropagation/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-11-ai-ml/module-11-5-backpropagation/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-11-ai-ml/module-11-5-backpropagation/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-11-ai-ml/module-11-5-backpropagation/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+          </div>
+        </section>
+        
+
+        <section id="level-12-advanced-ai" class="zen-level-section">
+          <div class="zen-level-header">
+            <div class="zen-level-header-left">
+              <span class="zen-level-pill">Level 12</span>
+              <h2 class="zen-level-title">Advanced AI &amp; Frontiers</h2>
+              <p class="zen-level-desc">The modern intelligence frontier: self-attention mechanisms, semantic embeddings, retrieval augmentation, agentic tool use, and safety.</p>
+            </div>
+            <div class="zen-level-header-right">
+              <a href="ebook/level-12-ebook.html" class="btn-icon" title="Read Complete Volume eBook">📚 Volume 12 Book</a>
+              <span class="zen-level-count">5 Modules</span>
+            </div>
+          </div>
+          <div class="zen-cards-grid">
+            
+            <article class="zen-card" data-category="aiml" data-keywords="12.1 transformer &amp; llm architecture advanced ai &amp; frontiers">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 12.1</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-12-advanced-ai/module-12-1-llm-architecture/lesson.html">Transformer &amp; LLM Architecture</a>
+              </h3>
+              <p class="zen-card-problem">In 2017, a team at Google published &quot;Attention Is All You Need.&quot;</p>
+              <div class="zen-card-actions">
+                <a href="course/level-12-advanced-ai/module-12-1-llm-architecture/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-12-advanced-ai/module-12-1-llm-architecture/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-12-advanced-ai/module-12-1-llm-architecture/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-12-advanced-ai/module-12-1-llm-architecture/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="aiml" data-keywords="12.2 vector embeddings &amp; semantic search advanced ai &amp; frontiers">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 12.2</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-12-advanced-ai/module-12-2-embeddings/lesson.html">Vector Embeddings &amp; Semantic Search</a>
+              </h3>
+              <p class="zen-card-problem">Computers understand numbers. Text, images, audio, code — all must be converted to numbers before a computer can process them.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-12-advanced-ai/module-12-2-embeddings/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-12-advanced-ai/module-12-2-embeddings/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-12-advanced-ai/module-12-2-embeddings/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-12-advanced-ai/module-12-2-embeddings/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="aiml" data-keywords="12.3 retrieval-augmented generation (rag) advanced ai &amp; frontiers">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 12.3</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-12-advanced-ai/module-12-3-rag/lesson.html">Retrieval-Augmented Generation (RAG)</a>
+              </h3>
+              <p class="zen-card-problem">A large language model knows everything in its training data — up to its cutoff date.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-12-advanced-ai/module-12-3-rag/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-12-advanced-ai/module-12-3-rag/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-12-advanced-ai/module-12-3-rag/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-12-advanced-ai/module-12-3-rag/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="aiml" data-keywords="12.4 autonomous ai agents advanced ai &amp; frontiers">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 12.4</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-12-advanced-ai/module-12-4-ai-agents/lesson.html">Autonomous AI Agents</a>
+              </h3>
+              <p class="zen-card-problem">A large language model can answer a question.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-12-advanced-ai/module-12-4-ai-agents/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-12-advanced-ai/module-12-4-ai-agents/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-12-advanced-ai/module-12-4-ai-agents/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-12-advanced-ai/module-12-4-ai-agents/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+
+            <article class="zen-card" data-category="aiml" data-keywords="12.5 ai alignment, safety &amp; ethics advanced ai &amp; frontiers">
+              <div class="zen-card-top">
+                <span class="zen-badge-num">M 12.5</span>
+                <span class="zen-badge-status">Interactive</span>
+              </div>
+              <h3 class="zen-card-title">
+                <a href="course/level-12-advanced-ai/module-12-5-ethics-safety/lesson.html">AI Alignment, Safety &amp; Ethics</a>
+              </h3>
+              <p class="zen-card-problem">A hiring algorithm trained on historical data learns to discriminate.</p>
+              <div class="zen-card-actions">
+                <a href="course/level-12-advanced-ai/module-12-5-ethics-safety/lesson.html" class="btn-icon btn-primary" title="Read Standalone Lesson">📖 Lesson</a>
+                <a href="course/level-12-advanced-ai/module-12-5-ethics-safety/simulation.html" class="btn-icon btn-accent" title="Interactive Simulation Sandbox">⚡ Lab</a>
+                <a href="course/level-12-advanced-ai/module-12-5-ethics-safety/challenge.html" class="btn-icon" title="Challenge Rubric">🎯 Challenge</a>
+                <a href="course/level-12-advanced-ai/module-12-5-ethics-safety/lesson.md" class="btn-icon" title="Raw Markdown Source">📄 .md</a>
+              </div>
+            </article>
+            
+          </div>
+        </section>
+        
+    </main>
+
+    <!-- Footer -->
+    <footer style="margin-top:6rem; padding-top:2rem; border-top:1px solid var(--border-light); font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); text-align:center;">
+      <p style="margin-bottom:0.5rem; font-weight:600; color:var(--ink);">AoPS — The Art of Problem Solving in Computer Science</p>
+      <p>Published on GitHub Pages • Mobile Optimized • Zero Dependencies</p>
+    </footer>
+  </div>
+
+  <script>
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+    });
+
+    // Live search filter
+    const searchInput = document.getElementById('module-search');
+    const cards = document.querySelectorAll('.zen-card');
+    const counter = document.getElementById('search-counter');
+    const sections = document.querySelectorAll('.zen-level-section');
+
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const kw = card.getAttribute('data-keywords') || '';
+        const problem = card.querySelector('.zen-card-problem').textContent.toLowerCase();
+        const match = !q || kw.includes(q) || problem.includes(q);
+        card.style.display = match ? 'flex' : 'none';
+        if (match) visibleCount++;
+      });
+
+      // Hide empty sections during search
+      sections.forEach(sec => {
+        const visibleInSec = sec.querySelectorAll('.zen-card[style="display: flex;"]').length;
+        sec.style.display = (q && visibleInSec === 0) ? 'none' : 'block';
+      });
+
+      counter.textContent = visibleCount + ' / 70';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 8.6 — TLS/SSL &amp; Cryptographic Channels | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 8.6
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        TLS/SSL &amp; Cryptographic Channels
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 8 • Networks &amp; Protocols</div>
+      <h1 class="article-title">Module 8.6 — TLS/SSL &amp; Cryptographic Channels</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-8-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 8.6 — Building a Packet Analyzer</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>You've studied the network stack from physical to application layer.<br />
+Theory is one thing. Seeing real bytes on the wire is another.</p>
+<p>A packet analyzer — a program that captures and decodes network packets —<br />
+is the most powerful tool for understanding how networks actually work.<br />
+Wireshark, tcpdump, and tshark are the professionals' tools.<br />
+Building a minimal version teaches you every header and field you've studied,<br />
+as real hex bytes.</p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>Wireshark and Packet Capture</h3>
+<p><strong>tcpdump</strong> was written by Van Jacobson and others at Lawrence Berkeley National Laboratory in 1988. It is still the primary command-line tool for packet capture on Unix systems, running on every Linux and macOS system.</p>
+<p><strong>Ethereal</strong> (later renamed <strong>Wireshark</strong>, 2006) was written by Gerald Combs starting in 1997. It added a GUI, protocol dissectors for hundreds of protocols, and became the de facto standard tool for network analysis. Used by security researchers, network engineers, protocol developers, and system administrators worldwide.</p>
+<p>Both tools use <strong>libpcap</strong> (Linux: pcap, Windows: Npcap) to capture packets from network interfaces at the OS level. The OS kernel copies arriving packets into a ring buffer accessible to capture programs — without disrupting normal packet processing.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>Raw Sockets and libpcap</h3>
+<p>To capture all packets on a network interface (not just those addressed to this machine), you need a <strong>raw socket</strong> with promiscuous mode enabled:</p>
+<pre><code class="language-python">import socket, struct
+
+# Raw socket — requires root/admin privileges
+sock = socket.socket(socket.AF_PACKET,   # Linux: packet-level access
+                     socket.SOCK_RAW,
+                     socket.htons(0x0003))  # ETH_P_ALL: capture all protocols
+
+while True:
+    raw_data, addr = sock.recvfrom(65535)
+    parse_ethernet(raw_data)
+</code></pre>
+<h3>Parsing Ethernet Frames</h3>
+<pre><code class="language-python">def parse_ethernet(frame):
+    # Ethernet header: 6B dst, 6B src, 2B ethertype
+    dst_mac = format_mac(frame[0:6])
+    src_mac = format_mac(frame[6:12])
+    ethertype = struct.unpack('!H', frame[12:14])[0]   # big-endian unsigned short
+
+    print(f&quot;Ethernet: {src_mac} → {dst_mac}  EtherType: 0x{ethertype:04X}&quot;)
+
+    if ethertype == 0x0800:    # IPv4
+        parse_ipv4(frame[14:])
+    elif ethertype == 0x0806:  # ARP
+        parse_arp(frame[14:])
+    elif ethertype == 0x86DD:  # IPv6
+        parse_ipv6(frame[14:])
+
+def format_mac(b):
+    return ':'.join(f'{x:02X}' for x in b)
+</code></pre>
+<h3>Parsing IPv4</h3>
+<pre><code class="language-python">def parse_ipv4(packet):
+    version_ihl = packet[0]
+    ihl = (version_ihl &amp; 0x0F) * 4          # header length in bytes
+    ttl = packet[8]
+    protocol = packet[9]
+    src_ip = '.'.join(str(b) for b in packet[12:16])
+    dst_ip = '.'.join(str(b) for b in packet[16:20])
+
+    print(f&quot;  IPv4: {src_ip} → {dst_ip}  TTL={ttl}  Proto={protocol}&quot;)
+
+    payload = packet[ihl:]
+    if protocol == 6:    # TCP
+        parse_tcp(payload)
+    elif protocol == 17: # UDP
+        parse_udp(payload)
+    elif protocol == 1:  # ICMP
+        parse_icmp(payload)
+
+def ip_to_str(b):
+    return '.'.join(str(x) for x in b)
+</code></pre>
+<h3>Parsing TCP</h3>
+<pre><code class="language-python">def parse_tcp(segment):
+    src_port = struct.unpack('!H', segment[0:2])[0]
+    dst_port = struct.unpack('!H', segment[2:4])[0]
+    seq      = struct.unpack('!I', segment[4:8])[0]
+    ack      = struct.unpack('!I', segment[8:12])[0]
+    offset   = (segment[12] &gt;&gt; 4) * 4    # data offset (header length)
+    flags    = segment[13]
+
+    flag_str = ''.join([
+        'SYN ' if flags &amp; 0x02 else '',
+        'ACK ' if flags &amp; 0x10 else '',
+        'FIN ' if flags &amp; 0x01 else '',
+        'RST ' if flags &amp; 0x04 else '',
+        'PSH ' if flags &amp; 0x08 else '',
+    ])
+
+    print(f&quot;    TCP: {src_port} → {dst_port}  seq={seq}  ack={ack}  [{flag_str.strip()}]&quot;)
+    payload = segment[offset:]
+    if payload:
+        parse_application(src_port, dst_port, payload)
+
+def parse_udp(segment):
+    src_port = struct.unpack('!H', segment[0:2])[0]
+    dst_port = struct.unpack('!H', segment[2:4])[0]
+    length   = struct.unpack('!H', segment[4:6])[0]
+    print(f&quot;    UDP: {src_port} → {dst_port}  len={length}&quot;)
+    if dst_port == 53 or src_port == 53:
+        parse_dns(segment[8:])
+</code></pre>
+<h3>Parsing HTTP (Application Layer)</h3>
+<pre><code class="language-python">def parse_application(src_port, dst_port, payload):
+    try:
+        text = payload.decode('utf-8', errors='replace')
+    except: return
+
+    if dst_port == 80 or src_port == 80:
+        lines = text.split('\r\n')
+        if lines[0].startswith(('GET ','POST ','HTTP/')):
+            print(f&quot;      HTTP: {lines[0]}&quot;)
+</code></pre>
+<h3>DNS Parsing</h3>
+<pre><code class="language-python">def parse_dns(data):
+    tx_id    = struct.unpack('!H', data[0:2])[0]
+    flags    = struct.unpack('!H', data[2:4])[0]
+    qr       = (flags &gt;&gt; 15) &amp; 1    # 0=query, 1=response
+    q_count  = struct.unpack('!H', data[4:6])[0]
+
+    # Parse the first question (simplified)
+    i = 12   # skip header
+    name_parts = []
+    while i &lt; len(data) and data[i] != 0:
+        length = data[i]; i += 1
+        name_parts.append(data[i:i+length].decode('ascii','replace'))
+        i += length
+    name = '.'.join(name_parts)
+
+    qtype = struct.unpack('!H', data[i+1:i+3])[0]
+    type_str = {1:'A', 28:'AAAA', 15:'MX', 2:'NS', 5:'CNAME'}.get(qtype, str(qtype))
+    print(f&quot;      DNS: {'Response' if qr else 'Query'} id={tx_id:#06x} &quot;
+          f&quot;{'reply' if qr else f'{name} {type_str}'}&quot;)
+</code></pre>
+<h3>Putting It Together</h3>
+<p>A complete, functional packet analyzer in ~100 lines of Python. Add:</p>
+<ul>
+<li><strong>Filtering</strong>: only show TCP on port 443, or only DNS, or only packets from a specific IP</li>
+<li><strong>Statistics</strong>: packet count per protocol, bytes per second, top talkers</li>
+<li><strong>Flow reconstruction</strong>: reassemble TCP streams to reconstruct HTTP transactions</li>
+<li><strong>File output</strong>: write to pcap format for later analysis with Wireshark</li>
+</ul>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Hex Packet Decoder</strong></p>
+<ul>
+<li>Paste a raw packet as hex bytes</li>
+<li>Watch each field parsed: Ethernet → IPv4 → TCP/UDP → payload</li>
+<li>Colour-code each layer (Layer 2 = gold, Layer 3 = blue, Layer 4 = red)</li>
+</ul>
+<p><strong>Tool 2 — Live Capture Replay</strong></p>
+<ul>
+<li>Pre-recorded packet captures (HTTP request, DNS query, TCP handshake)</li>
+<li>Step through each packet; see decoded fields</li>
+<li>Reconstruct the HTTP conversation from the packet sequence</li>
+</ul>
+<p><strong>Tool 3 — Build Your Filter</strong></p>
+<ul>
+<li>Enter a BPF-like filter expression (e.g., <code>tcp port 80</code>, <code>src host 192.168.1.1</code>)</li>
+<li>See which packets in the capture match the filter</li>
+<li>Understand how display filters and capture filters differ</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>BPF (Berkeley Packet Filter)</strong>: the filtering language used by tcpdump, Wireshark, and seccomp. BPF expressions are compiled to a tiny virtual machine that runs inside the kernel — packets are filtered before being copied to user space, dramatically reducing overhead. eBPF (extended BPF) is a modern evolution that allows arbitrary programs to run in the kernel for tracing, security monitoring, and network processing. eBPF is one of the most significant additions to the Linux kernel in the last decade.</p>
+<p><strong>Wireshark dissectors</strong>: Wireshark's protocol understanding comes from &quot;dissectors&quot; — plugins that parse specific protocols. There are 3,000+ dissectors. Writing a Wireshark dissector for a proprietary protocol (a common task in network engineering) requires understanding exactly the byte layout at every layer.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Decode a given 60-byte raw Ethernet/IPv4/TCP packet (as hex) by hand, identifying every field and its value. Then: write a Python filter that captures only DNS queries (UDP port 53), parse a DNS response packet and extract the answer IP addresses, and explain what &quot;promiscuous mode&quot; means and why you need root privileges to capture packets.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-8-5-tls-ssl/lesson.html" class="btn-icon">← Prev: M 8.5</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../../level-9-databases/module-9-1-relational-model/lesson.html" class="btn-icon btn-primary">Next: M 9.1 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

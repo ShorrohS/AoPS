@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 0.5 — Hollerith &amp; The Punch Card Era | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 0.5
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 0.5 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Hollerith &amp; The Punch Card Era.
+      </p>
+    </div>
+
+    <article class="prose">
+      <h1>Challenge 0.5 — The Hollerith Tabulator</h1>
+<p><strong>Type:</strong> Simulation use + encoding + data analysis + Level 0 capstone questions<br />
+<strong>Estimated time:</strong> 40–50 minutes<br />
+<strong>Tools needed:</strong> <code>simulation.html</code> + pen and paper</p>
+<hr />
+<h2>Part A — Encode and Punch</h2>
+<p>Using the <strong>Card Puncher</strong> in the simulation, encode the following 5 census respondents as punch cards. For each person, record which column positions are punched.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Name</th>
+<th>Age</th>
+<th>Occupation</th>
+<th>Birthplace</th>
+<th>Family Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>John Hayes</td>
+<td>34</td>
+<td>Farmer</td>
+<td>Ireland</td>
+<td>5</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Clara Schmidt</td>
+<td>28</td>
+<td>Teacher</td>
+<td>Germany</td>
+<td>2</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Marcus Freeman</td>
+<td>45</td>
+<td>Laborer</td>
+<td>Virginia</td>
+<td>7</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Mei Lin</td>
+<td>22</td>
+<td>Seamstress</td>
+<td>China</td>
+<td>3</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Robert Walsh</td>
+<td>61</td>
+<td>Merchant</td>
+<td>New York</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>After punching, write down the binary representation (hole=1, no hole=0) for the <strong>Age field</strong> of each card.</p>
+<hr />
+<h2>Part B — Tally with the Tabulator</h2>
+<p>Using the <strong>Tabulator</strong> tool, run all 5 cards through. Then answer:</p>
+<ol>
+<li>How many people are aged <strong>under 35</strong>?</li>
+<li>How many are <strong>foreign-born</strong> (not born in a US state)?</li>
+<li>What is the most common <strong>occupation</strong> in your deck?</li>
+<li>What is the <strong>average family size</strong> across all 5 records?</li>
+</ol>
+<hr />
+<h2>Part C — Sort and Analyze</h2>
+<p>Using the <strong>Card Sorter</strong>, sort the 5 cards by <strong>occupation</strong>.</p>
+<ol>
+<li>List which cards end up in each occupation bin.</li>
+<li>Now sort by <strong>age group</strong> (under 30 / 30–49 / 50+). List the bins.</li>
+<li>In the real 1890 census, the sorter could group 65 cards per minute. If you had 62,979,766 cards and 100 sorters, how many minutes would it take to do one full sort pass? Convert to hours. (Show your working.)</li>
+</ol>
+<hr />
+<h2>Part D — Decode the Mystery Deck</h2>
+<p>The simulation's Mystery Deck tab contains 8 pre-punched cards. Run them through the tabulator and sorter, then answer:</p>
+<ol>
+<li>How many people are in the mystery deck?</li>
+<li>What are the distinct occupations represented?</li>
+<li>What is the most common birthplace?</li>
+<li>Based on age distribution, is this deck likely from a rural farming community or an urban industrial area? Justify your answer in 2–3 sentences using the data you gathered.</li>
+</ol>
+<hr />
+<h2>Part E — Level 0 Capstone</h2>
+<p>Answer each question in <strong>3–5 sentences</strong>. This is your graduation from Level 0.</p>
+<p><strong>E1 — The Thread Through All Five Modules</strong></p>
+<p>Trace a single continuous idea from the Jacquard loom (Module 0.3) through to the Hollerith tabulator (Module 0.5). How does the concept of &quot;a hole as an instruction&quot; evolve into &quot;a hole as data&quot;? What stays the same? What changes?</p>
+<p><strong>E2 — The Abstraction Stack</strong></p>
+<p>By the end of Level 0, we have these layers:</p>
+<ul>
+<li>Human problem (census, navigation, artillery)</li>
+<li>Physical encoding (holes in cards, gear positions)</li>
+<li>Mechanical/electrical reading (pins, mercury cups, counters)</li>
+<li>Tallied output (numbers on counters)</li>
+</ul>
+<p>Name each of these layers using one word each. Then predict: what layer will we add in Level 1 (Physical Computing)?</p>
+<p><strong>E3 — What Computing Still Can't Do (Yet)</strong></p>
+<p>By 1890, Hollerith's machine could tally and sort. Name <strong>two things</strong> it could NOT do that a modern computer can, and explain why each limitation existed given the technology of the time.</p>
+<p><strong>E4 — The Bit's Ancestor</strong></p>
+<p>Modern computers store data as bits (0s and 1s). In your own words, trace the lineage: what physical thing was a &quot;1&quot; in a Hollerith card? What physical thing is a &quot;1&quot; in a modern DRAM chip? What stayed the same across 130 years?</p>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+<th>What we're looking for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A — 5 cards encoded, binary age fields</td>
+<td>20</td>
+<td>Correct positional encoding, binary correct</td>
+</tr>
+<tr>
+<td>B — 4 tally questions</td>
+<td>15</td>
+<td>Correct counts from simulation</td>
+</tr>
+<tr>
+<td>C1–C2 — Sort bins</td>
+<td>10</td>
+<td>Correct card groupings</td>
+</tr>
+<tr>
+<td>C3 — Sort time calculation</td>
+<td>10</td>
+<td>Correct math: 62,979,766 ÷ (65×100)</td>
+</tr>
+<tr>
+<td>D — Mystery deck analysis</td>
+<td>15</td>
+<td>Correct tallies + reasoned community guess</td>
+</tr>
+<tr>
+<td>E1–E4 — Capstone essays</td>
+<td>30</td>
+<td>Precise, historical accuracy, correct terminology</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Hints</h2>
+<details>
+<summary>Hint — Part C3 calculation</summary>
+Cards per minute (total) = 65 × 100 = 6,500 cards/min.
+Total minutes = 62,979,766 ÷ 6,500. Then divide by 60 for hours.
+</details>
+<details>
+<summary>Hint — Part E2 layer names</summary>
+Think: Problem → Representation → Mechanism → Result.
+The Level 1 addition: electricity replacing mechanical motion.
+</details>
+<details>
+<summary>Hint — Part E3</summary>
+Think about: can Hollerith's machine make decisions based on results? Can it do arithmetic beyond counting? Can it store a program?
+</details>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part C3 Solution</summary>
+<p>Cards per minute (all 100 sorters): 65 × 100 = 6,500 cards/min<br />
+Total minutes: 62,979,766 ÷ 6,500 ≈ <strong>9,689 minutes</strong><br />
+Total hours: 9,689 ÷ 60 ≈ <strong>161.5 hours ≈ 6.7 days</strong></p>
+<p>For a single sort pass on the entire census, 100 machines working non-stop would take about a week. With multiple passes needed for complex cross-tabulations, the 6-week figure for full tabulation makes perfect sense.</p>
+</details>
+<details>
+<summary>Part E — Sample Answers</summary>
+<p><strong>E1:</strong> Both the Jacquard loom and the Hollerith tabulator use holes in stiff cards as binary signals. In the loom, a hole means &quot;lift this thread&quot; — it is an <em>instruction</em> that controls machine behavior. In Hollerith's system, a hole means &quot;this attribute is true for this person&quot; — it is <em>data</em> that describes reality. What stays the same: hole = 1, no hole = 0; sequential card reading; position determines meaning. What changes: the machine's response shifts from mechanical actuation (thread lifting) to electrical switching (counter incrementing), and the <em>purpose</em> shifts from procedure control to data recording.</p>
+<p><strong>E2:</strong> Problem → Representation → Mechanism → Result. Level 1 adds: <em>Signal</em> — the electrical signal that replaces mechanical linkage between representation and mechanism. Instead of a pin physically touching mercury, a transistor switching on a voltage.</p>
+<p><strong>E3:</strong> (1) Hollerith's machine could not <em>branch</em> — it could not take a different action based on a computed result. Every card was processed identically; there was no conditional logic. This required a <em>stored program</em> and a conditional mechanism (Babbage's &quot;conditional lever&quot;), which didn't exist in Hollerith's electromechanical design. (2) It could not do arithmetic beyond counting and simple accumulation. Multiplication, division, and function evaluation required separate human steps. The Mill (processor) of Babbage's Analytical Engine was missing — Hollerith's machine was a tabulator, not a calculator.</p>
+<p><strong>E4:</strong> In a Hollerith card, a &quot;1&quot; was a physical hole — an absence of material that allowed a metal pin to pass through and contact liquid mercury, completing a circuit. In a modern DRAM chip, a &quot;1&quot; is a charged capacitor — a tiny reservoir of electrons holding a voltage above a threshold. What stays the same: the <em>binary logic</em> (present/absent, charged/uncharged, high/low). What changes: the physical medium (paper → silicon), the reading mechanism (pin + mercury → voltage sense amplifier), and the size (a card hole is ~1mm; a DRAM cell is ~10nm — 100,000 times smaller).</p>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

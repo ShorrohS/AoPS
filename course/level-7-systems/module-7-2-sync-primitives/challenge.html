@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 7.2 — Concurrency, Locks &amp; Mutexes | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 7.2
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 7.2 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Concurrency, Locks &amp; Mutexes.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 7.2 — Mutexes, Semaphores, and Deadlocks</p>
+<p><strong>Type:</strong> Analysis + implementation + trace<br />
+<strong>Estimated time:</strong> 45–55 minutes<br />
+<strong>Tools needed:</strong> Python + pen and paper</p>
+<hr />
+<h2>Part A — Deadlock Identification</h2>
+<pre><code class="language-python">import threading, time
+
+lock1 = threading.Lock()
+lock2 = threading.Lock()
+lock3 = threading.Lock()
+
+def thread_A():
+    with lock1:
+        time.sleep(0.01)
+        with lock2:           # waits for lock2
+            with lock3: pass
+
+def thread_B():
+    with lock2:
+        time.sleep(0.01)
+        with lock3:           # waits for lock3
+            with lock1: pass
+
+def thread_C():
+    with lock3:
+        time.sleep(0.01)
+        with lock1:           # waits for lock1
+            with lock2: pass
+</code></pre>
+<ol>
+<li>
+<p>Draw the <strong>wait-for graph</strong>: each thread is a node, draw an edge from T to L if T is waiting to acquire lock L, and from L to T if T holds lock L. Is there a cycle?</p>
+</li>
+<li>
+<p>Describe the precise interleaving that causes deadlock: which thread acquires which lock in what order?</p>
+</li>
+<li>
+<p>Fix the deadlock using <strong>global lock ordering</strong>: assign each lock a number (lock1=1, lock2=2, lock3=3) and always acquire locks in increasing order. Rewrite all three thread functions.</p>
+</li>
+<li>
+<p>After applying lock ordering, can the three threads still run concurrently? Or does the fix serialise them?</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Semaphore as Resource Pool</h2>
+<ol start="5">
+<li>
+<p>Implement a <strong>connection pool</strong> using a semaphore: max 3 simultaneous database connections allowed. Write <code>acquire_connection()</code> and <code>release_connection()</code> functions. Include a context manager.</p>
+</li>
+<li>
+<p>Launch 10 threads that each &quot;use&quot; a connection for 0.1 seconds. Verify using logging that at most 3 threads are in the critical section simultaneously.</p>
+</li>
+<li>
+<p>What happens if a thread acquires a connection but raises an exception before releasing? How do you ensure the semaphore is always released? (Hint: <code>try/finally</code> or context manager)</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — Condition Variable</h2>
+<ol start="8">
+<li>Implement a <strong>bounded buffer</strong> (producer-consumer with a fixed-size buffer of 5) using a <code>threading.Condition</code>:
+<ul>
+<li><code>put(item)</code>: wait if buffer full, add item, notify consumer</li>
+<li><code>get()</code>: wait if buffer empty, remove item, notify producer</li>
+</ul>
+</li>
+</ol>
+<pre><code class="language-python">import threading
+
+class BoundedBuffer:
+    def __init__(self, capacity):
+        self._buffer   = []
+        self._capacity = capacity
+        self._cond     = threading.Condition()
+
+    def put(self, item): ...
+    def get(self): ...
+</code></pre>
+<ol start="9">
+<li>
+<p>Why must the wait condition be checked in a <code>while</code> loop, not an <code>if</code>? What is a <strong>spurious wakeup</strong> and why does it occur?</p>
+</li>
+<li>
+<p>What is the difference between <code>notify()</code> and <code>notify_all()</code>? In the bounded buffer, which is more correct to use after <code>put()</code> and why?</p>
+</li>
+</ol>
+<hr />
+<h2>Part D — Dining Philosophers</h2>
+<ol start="11">
+<li>Implement the dining philosophers problem with <strong>5 philosophers</strong> and <strong>5 forks</strong> (each fork is a Lock). Without any fix, demonstrate that the following naive approach can deadlock:</li>
+</ol>
+<pre><code class="language-python">def philosopher(id, left_fork, right_fork):
+    while True:
+        left_fork.acquire()
+        right_fork.acquire()    # may deadlock here
+        eat()
+        right_fork.release()
+        left_fork.release()
+        think()
+</code></pre>
+<ol start="12">
+<li>
+<p>Apply the <strong>resource hierarchy fix</strong>: philosopher i always picks up <code>fork[min(i, (i+1)%5)]</code> first. Show how this breaks the cycle for all 5 philosophers.</p>
+</li>
+<li>
+<p>Trace the first 3 meal cycles for philosopher 0 with the fix applied. Which forks does each philosopher acquire in what order?</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Livelock</h2>
+<ol start="14">
+<li>
+<p>Construct a scenario where two threads enter a <strong>livelock</strong> (both active, neither making progress). Use: both try to acquire the other's resource, detect they can't, back off, and retry — in perfect synchrony so they always back off simultaneously.</p>
+</li>
+<li>
+<p>How does <strong>randomised backoff</strong> prevent livelock? What is the expected number of retries before one thread makes progress?</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A deadlock identification</td>
+<td>24</td>
+</tr>
+<tr>
+<td>B semaphore pool</td>
+<td>18</td>
+</tr>
+<tr>
+<td>C condition variable</td>
+<td>24</td>
+</tr>
+<tr>
+<td>D dining philosophers</td>
+<td>22</td>
+</tr>
+<tr>
+<td>E livelock</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part B.5 — connection pool</summary>
+<pre><code class="language-python">import threading, contextlib, time, logging
+
+logging.basicConfig(level=logging.INFO, format='%(threadName)s: %(message)s')
+sem = threading.Semaphore(3)
+
+@contextlib.contextmanager
+def acquire_connection():
+    sem.acquire()
+    try:
+        logging.info(&quot;Acquired connection&quot;)
+        yield
+    finally:
+        sem.release()
+        logging.info(&quot;Released connection&quot;)
+
+def use_db():
+    with acquire_connection():
+        time.sleep(0.1)
+
+threads = [threading.Thread(target=use_db) for _ in range(10)]
+for t in threads: t.start()
+for t in threads: t.join()
+</code></pre>
+</details>
+<details>
+<summary>Part C.8 — BoundedBuffer</summary>
+<pre><code class="language-python">class BoundedBuffer:
+    def __init__(self, capacity):
+        self._buffer   = []
+        self._capacity = capacity
+        self._cond     = threading.Condition()
+
+    def put(self, item):
+        with self._cond:
+            while len(self._buffer) &gt;= self._capacity:
+                self._cond.wait()         # releases lock, waits
+            self._buffer.append(item)
+            self._cond.notify_all()       # wake consumers
+
+    def get(self):
+        with self._cond:
+            while not self._buffer:
+                self._cond.wait()
+            item = self._buffer.pop(0)
+            self._cond.notify_all()       # wake producers
+            return item
+</code></pre>
+<p>While loop: spurious wakeups occur when the OS wakes a waiting thread for reasons unrelated to the notify. Without the while check, the thread would proceed even if the condition is still false. With while, it rechecks and waits again if needed.</p>
+</details>
+<details>
+<summary>Part D.12 — resource hierarchy fix</summary>
+<p>With 5 philosophers (0–4) and 5 forks (0–4), fork[i] = fork between philosophers i and (i+1)%5:</p>
+<ul>
+<li>Philosopher i picks up fork min(i, (i+1)%5) first, then max.</li>
+<li>Philosopher 4: min(4,0)=0, max=4. Picks fork 0 first.</li>
+<li>Others: min(i,i+1)=i. Pick fork i first, then i+1.</li>
+</ul>
+<p>Philosopher 4 now picks up fork 0 first (same as philosopher 0 wants). If philosopher 0 holds fork 0, philosopher 4 must wait — breaking the cycle. Not all can hold their &quot;first&quot; fork simultaneously.</p>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

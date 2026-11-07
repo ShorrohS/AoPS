@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 7.1 — Processes &amp; Multithreading | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 7.1
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 7.1 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Processes &amp; Multithreading.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 7.1 — Multithreading and Concurrency</p>
+<p><strong>Type:</strong> Code analysis + implementation + reasoning<br />
+<strong>Estimated time:</strong> 45–55 minutes<br />
+<strong>Tools needed:</strong> Python + pen and paper</p>
+<hr />
+<h2>Part A — Race Condition Identification</h2>
+<pre><code class="language-python">import threading
+
+balance = 1000
+
+def withdraw(amount):
+    global balance
+    current = balance          # (1)
+    if current &gt;= amount:      # (2)
+        balance = current - amount  # (3)
+
+t1 = threading.Thread(target=withdraw, args=(700,))
+t2 = threading.Thread(target=withdraw, args=(700,))
+t1.start(); t2.start()
+t1.join();  t2.join()
+print(balance)
+</code></pre>
+<ol>
+<li>
+<p>Identify the race condition. What is the problematic interleaving? Show the exact sequence of operations between t1 and t2 that results in <code>balance = 300</code> even though that should be impossible (both withdrawals of 700 from 1000 should not both succeed).</p>
+</li>
+<li>
+<p>Why does the race condition only appear sometimes? What determines whether it manifests?</p>
+</li>
+<li>
+<p>Fix the race condition using <code>threading.Lock()</code>. Write the corrected <code>withdraw</code> function.</p>
+</li>
+<li>
+<p>Explain why Python's GIL does <strong>not</strong> prevent this race condition, even though it prevents true parallel execution.</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Thread-Safe Counter</h2>
+<ol start="5">
+<li>Implement a <code>SafeCounter</code> class that can be safely incremented from multiple threads:</li>
+</ol>
+<pre><code class="language-python">class SafeCounter:
+    def __init__(self, initial=0): ...
+    def increment(self): ...       # thread-safe
+    def get(self): ...             # thread-safe read
+    def reset(self): ...           # thread-safe reset
+</code></pre>
+<ol start="6">
+<li>
+<p>Write a test: launch 100 threads, each calling <code>increment()</code> 1,000 times. Assert that the final count equals 100,000. Without a lock, what range of values might you observe?</p>
+</li>
+<li>
+<p>An alternative to locking is using <code>threading.local()</code> for per-thread counters that are summed at the end. Implement this variant. What are the trade-offs vs a shared lock?</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — Producer-Consumer</h2>
+<ol start="8">
+<li>Implement a producer-consumer system:
+<ul>
+<li>One producer thread generates integers 0–99 and puts them in a bounded queue (max size 5)</li>
+<li>Two consumer threads take items and compute their square</li>
+<li>All results are collected in a shared list</li>
+<li>Main thread waits for all items to be processed</li>
+</ul>
+</li>
+</ol>
+<pre><code class="language-python">from queue import Queue
+import threading
+
+results = []
+q = Queue(maxsize=5)
+
+def producer(): ...
+def consumer(): ...
+</code></pre>
+<ol start="9">
+<li>
+<p>What happens if the producer fills the queue and no consumer is running? What mechanism prevents this?</p>
+</li>
+<li>
+<p>How do you signal consumers to stop when production is complete? (Hint: sentinel values)</p>
+</li>
+</ol>
+<hr />
+<h2>Part D — Deadlock Analysis</h2>
+<pre><code class="language-python">import threading
+
+lock_a = threading.Lock()
+lock_b = threading.Lock()
+
+def task_1():
+    with lock_a:
+        print(&quot;T1 acquired A&quot;)
+        with lock_b:          # waits for B
+            print(&quot;T1 done&quot;)
+
+def task_2():
+    with lock_b:
+        print(&quot;T2 acquired B&quot;)
+        with lock_a:          # waits for A
+            print(&quot;T2 done&quot;)
+</code></pre>
+<ol start="11">
+<li>
+<p>When exactly does deadlock occur? Describe the precise interleaving.</p>
+</li>
+<li>
+<p>Fix using <strong>lock ordering</strong>: always acquire <code>lock_a</code> before <code>lock_b</code>, in both functions.</p>
+</li>
+<li>
+<p>Fix using <strong>trylock with backoff</strong>: use <code>lock.acquire(timeout=0.1)</code>. If acquiring the second lock fails, release the first and retry after a short sleep. Implement this.</p>
+</li>
+<li>
+<p>Which fix is better in a production system? Why?</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — asyncio vs Threads</h2>
+<ol start="15">
+<li>Rewrite the following thread-based I/O-bound task using <code>asyncio</code>:</li>
+</ol>
+<pre><code class="language-python"># Thread version
+import threading, time
+
+def fetch(url):
+    time.sleep(0.1)   # simulate network request
+    return f&quot;data from {url}&quot;
+
+threads = [threading.Thread(target=fetch, args=(f&quot;url{i}&quot;,)) for i in range(100)]
+for t in threads: t.start()
+for t in threads: t.join()
+</code></pre>
+<ol start="16">
+<li>
+<p>For 100 simulated requests of 0.1s each: how long does the thread version take? How long does the asyncio version take? Explain the difference.</p>
+</li>
+<li>
+<p>If the work inside <code>fetch</code> were CPU-bound instead of I/O-bound (e.g., computing a hash), would asyncio still help? Why or why not?</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A race condition</td>
+<td>24</td>
+</tr>
+<tr>
+<td>B SafeCounter</td>
+<td>18</td>
+</tr>
+<tr>
+<td>C producer-consumer</td>
+<td>22</td>
+</tr>
+<tr>
+<td>D deadlock</td>
+<td>22</td>
+</tr>
+<tr>
+<td>E asyncio</td>
+<td>14</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A — race condition interleaving</summary>
+<p>t1 reads current=1000 (line 1)<br />
+t2 reads current=1000 (line 1)<br />
+t1 checks 1000 &gt;= 700 (line 2) → True<br />
+t2 checks 1000 &gt;= 700 (line 2) → True<br />
+t1 sets balance = 1000 - 700 = 300 (line 3)<br />
+t2 sets balance = 1000 - 700 = 300 (line 3)<br />
+Final: balance=300, but two withdrawals of 700 each &quot;succeeded.&quot;</p>
+</details>
+<details>
+<summary>Part A.3 — fixed withdraw</summary>
+<pre><code class="language-python">lock = threading.Lock()
+
+def withdraw(amount):
+    global balance
+    with lock:
+        if balance &gt;= amount:
+            balance -= amount
+</code></pre>
+</details>
+<details>
+<summary>Part C.8 — producer-consumer</summary>
+<pre><code class="language-python">from queue import Queue
+import threading
+
+results = []
+results_lock = threading.Lock()
+q = Queue(maxsize=5)
+
+def producer():
+    for i in range(100):
+        q.put(i)       # blocks if queue full
+    q.put(None)        # sentinel per consumer
+    q.put(None)
+
+def consumer():
+    while True:
+        item = q.get()   # blocks if empty
+        if item is None: break
+        with results_lock:
+            results.append(item ** 2)
+        q.task_done()
+
+threads = [threading.Thread(target=consumer) for _ in range(2)]
+prod = threading.Thread(target=producer)
+for t in threads: t.start()
+prod.start()
+prod.join()
+for t in threads: t.join()
+assert len(results) == 100
+</code></pre>
+</details>
+<details>
+<summary>Part E.15 — asyncio version</summary>
+<pre><code class="language-python">import asyncio
+
+async def fetch(url):
+    await asyncio.sleep(0.1)    # non-blocking sleep
+    return f&quot;data from {url}&quot;
+
+async def main():
+    tasks = [fetch(f&quot;url{i}&quot;) for i in range(100)]
+    results = await asyncio.gather(*tasks)
+    return results
+
+asyncio.run(main())
+</code></pre>
+<p>Threads: ~0.1s (all 100 run concurrently via GIL release during time.sleep). Asyncio: ~0.1s (all coroutines suspended at await, event loop runs other coroutines). Both take ~0.1s for I/O-bound. For CPU-bound: both ~10s because neither truly parallelises CPU work — use multiprocessing for that.</p>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

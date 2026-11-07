@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 7.5 — Building a Tiny HTTP Server | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 7.5
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Building a Tiny HTTP Server
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 7 • Systems Programming</div>
+      <h1 class="article-title">Module 7.5 — Building a Tiny HTTP Server</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-7-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 7.5 — Building a Tiny HTTP Server</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>Every website you visit is served by an HTTP server.<br />
+nginx, Apache, Express, Django, Flask — they all do the same core job:<br />
+listen on a port, accept TCP connections, parse HTTP requests, return HTTP responses.</p>
+<p>When you understand how a tiny HTTP server works from the socket layer up,<br />
+every web framework becomes transparent.<br />
+You understand what Flask's <code>@app.route</code> is doing underneath.<br />
+You understand what &quot;middleware&quot; means mechanically.<br />
+You understand why HTTP/1.1 keep-alive matters for performance.</p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>HTTP Was Designed on a Napkin</h3>
+<p>Tim Berners-Lee invented HTTP at CERN in 1989. The original HTTP/0.9 was extraordinarily simple: one command (<code>GET /path</code>) over a TCP connection, response is the file content, connection closes. No headers, no status codes, no response format.</p>
+<p>HTTP/1.0 (1996) added headers, status codes (200, 404, etc.), and support for content types — enabling images, not just text. Each request required a new TCP connection.</p>
+<p>HTTP/1.1 (1997, still dominant) added keep-alive (reuse connections for multiple requests), chunked transfer encoding, host headers (enabling virtual hosting — multiple websites on one IP), and caching directives. It is the protocol powering the majority of the web today.</p>
+<p>HTTP/2 (2015) added multiplexing (multiple requests per connection, no head-of-line blocking), header compression, and server push. HTTP/3 (2022) runs over QUIC instead of TCP.</p>
+<p>A working understanding of HTTP/1.1 is sufficient to understand everything built on top of it.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>HTTP Request Format</h3>
+<p>An HTTP/1.1 request is plain text over a TCP connection:</p>
+<pre><code>GET /index.html HTTP/1.1\r\n
+Host: www.example.com\r\n
+User-Agent: Mozilla/5.0\r\n
+Accept: text/html\r\n
+\r\n
+</code></pre>
+<p>Structure:</p>
+<ul>
+<li><strong>Request line</strong>: <code>METHOD PATH HTTP/VERSION</code></li>
+<li><strong>Headers</strong>: <code>Name: Value</code> pairs, each ending <code>\r\n</code></li>
+<li><strong>Blank line</strong>: <code>\r\n</code> marks end of headers</li>
+<li><strong>Optional body</strong>: for POST/PUT requests (e.g., form data, JSON)</li>
+</ul>
+<h3>HTTP Response Format</h3>
+<pre><code>HTTP/1.1 200 OK\r\n
+Content-Type: text/html; charset=utf-8\r\n
+Content-Length: 138\r\n
+Connection: keep-alive\r\n
+\r\n
+&lt;html&gt;...&lt;/html&gt;
+</code></pre>
+<p>Structure:</p>
+<ul>
+<li><strong>Status line</strong>: <code>HTTP/VERSION STATUS_CODE REASON_PHRASE</code></li>
+<li><strong>Headers</strong>: content type, length, caching, cookies, etc.</li>
+<li><strong>Blank line</strong></li>
+<li><strong>Body</strong>: the actual content</li>
+</ul>
+<h3>Parsing an HTTP Request</h3>
+<pre><code class="language-python">def parse_request(raw: bytes) -&gt; dict:
+    text  = raw.decode('utf-8', errors='replace')
+    lines = text.split('\r\n')
+
+    # Request line
+    method, path, version = lines[0].split(' ', 2)
+
+    # Headers
+    headers = {}
+    i = 1
+    while i &lt; len(lines) and lines[i] != '':
+        key, _, value = lines[i].partition(': ')
+        headers[key.lower()] = value
+        i += 1
+
+    # Body (everything after the blank line)
+    body = '\r\n'.join(lines[i+1:]) if i+1 &lt; len(lines) else ''
+
+    return {
+        'method':  method,
+        'path':    path,
+        'version': version,
+        'headers': headers,
+        'body':    body,
+    }
+</code></pre>
+<h3>Building the Server — Step by Step</h3>
+<pre><code class="language-python">import socket, os, mimetypes
+from pathlib import Path
+
+STATIC_ROOT = Path('./static')
+
+STATUS = {200: 'OK', 404: 'Not Found', 405: 'Method Not Allowed',
+          500: 'Internal Server Error'}
+
+def build_response(status, headers, body=b''):
+    header_lines = f&quot;HTTP/1.1 {status} {STATUS[status]}\r\n&quot;
+    for k, v in headers.items():
+        header_lines += f&quot;{k}: {v}\r\n&quot;
+    return header_lines.encode() + b&quot;\r\n&quot; + body
+
+def handle_request(raw):
+    try:
+        req = parse_request(raw)
+    except Exception:
+        return build_response(400, {'Content-Length': 0})
+
+    if req['method'] not in ('GET', 'HEAD'):
+        return build_response(405, {'Allow': 'GET, HEAD', 'Content-Length': 0})
+
+    # Resolve path (security: prevent directory traversal)
+    rel_path = req['path'].lstrip('/')
+    if not rel_path: rel_path = 'index.html'
+    file_path = (STATIC_ROOT / rel_path).resolve()
+
+    # Security: ensure file is inside STATIC_ROOT
+    if not str(file_path).startswith(str(STATIC_ROOT.resolve())):
+        return build_response(403, {'Content-Length': 0})
+
+    if not file_path.exists():
+        return build_response(404, {'Content-Type': 'text/plain',
+                                    'Content-Length': str(len(b'Not Found'))}, b'Not Found')
+
+    body = b'' if req['method'] == 'HEAD' else file_path.read_bytes()
+    mime = mimetypes.guess_type(str(file_path))[0] or 'application/octet-stream'
+    return build_response(200, {
+        'Content-Type': mime,
+        'Content-Length': str(len(body)),
+        'Connection': 'close',
+    }, body)
+
+def run_server(host='', port=8080):
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server.bind((host, port))
+    server.listen(5)
+    print(f&quot;Serving on http://localhost:{port}&quot;)
+    while True:
+        conn, addr = server.accept()
+        raw = b''
+        while b'\r\n\r\n' not in raw:
+            chunk = conn.recv(4096)
+            if not chunk: break
+            raw += chunk
+        response = handle_request(raw)
+        conn.sendall(response)
+        conn.close()
+</code></pre>
+<h3>Adding a Router</h3>
+<p>A router maps URL patterns to handler functions — this is exactly what Flask's <code>@app.route</code> does:</p>
+<pre><code class="language-python">routes = {}
+
+def route(path):
+    def decorator(fn):
+        routes[path] = fn
+        return fn
+    return decorator
+
+@route('/hello')
+def hello(req):
+    body = b'&lt;h1&gt;Hello, World!&lt;/h1&gt;'
+    return build_response(200, {'Content-Type': 'text/html',
+                                'Content-Length': str(len(body))}, body)
+
+@route('/echo')
+def echo(req):
+    body = req['body'].encode()
+    return build_response(200, {'Content-Type': 'text/plain',
+                                'Content-Length': str(len(body))}, body)
+
+def handle_request(raw):
+    req = parse_request(raw)
+    handler = routes.get(req['path'])
+    if handler:
+        return handler(req)
+    # ... fall through to static file serving
+</code></pre>
+<h3>Middleware</h3>
+<p>A middleware is a function that wraps a handler — adding behaviour before and after:</p>
+<pre><code class="language-python">def logging_middleware(handler):
+    def wrapper(req):
+        print(f&quot;→ {req['method']} {req['path']}&quot;)
+        response = handler(req)
+        status = response[:15].decode()
+        print(f&quot;← {status}&quot;)
+        return response
+    return wrapper
+
+# Apply to all routes:
+for path, fn in routes.items():
+    routes[path] = logging_middleware(fn)
+</code></pre>
+<p>This is the exact pattern used by Express.js middleware, Django middleware, and Flask <code>before_request</code> hooks.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — HTTP Request Parser</strong></p>
+<ul>
+<li>Paste a raw HTTP request</li>
+<li>Watch it get parsed: method, path, version, each header, body</li>
+<li>See what happens with malformed requests</li>
+</ul>
+<p><strong>Tool 2 — Request-Response Trace</strong></p>
+<ul>
+<li>Send simulated requests to the virtual server</li>
+<li>Watch the server look up the route, call the handler, and build the response</li>
+<li>Try 200, 404, 405 responses</li>
+</ul>
+<p><strong>Tool 3 — Middleware Chain</strong></p>
+<ul>
+<li>Add middleware: logging, authentication check, rate limiting</li>
+<li>See each middleware called in order before the handler</li>
+<li>Observe how middleware can short-circuit and return early (e.g., 401 if not authenticated)</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Keep-alive connections</strong>: HTTP/1.1 by default keeps TCP connections open for multiple requests (<code>Connection: keep-alive</code>). Without this, every image, stylesheet, and script requires a new TCP handshake — dramatically slowing page loads. A production server must handle multiple requests per connection efficiently.</p>
+<p><strong>WebSockets</strong>: HTTP can be &quot;upgraded&quot; to a persistent, bidirectional connection using the WebSocket protocol. After the upgrade handshake (an HTTP request with <code>Upgrade: websocket</code>), the connection becomes a raw TCP stream with a simple framing protocol. Used for real-time chat, live dashboards, collaborative editing, and multiplayer games.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Extend the server with a <code>/time</code> route that returns the current time, add a <code>Content-Encoding: gzip</code> response for files &gt; 1KB, identify and fix the directory traversal vulnerability (what if path = <code>../../etc/passwd</code>?), and trace a full HTTP/1.1 request-response cycle for <code>GET /images/logo.png HTTP/1.1</code>.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-7-4-shell/lesson.html" class="btn-icon">← Prev: M 7.4</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../../level-8-networks/module-8-1-physical-datalink/lesson.html" class="btn-icon btn-primary">Next: M 8.1 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

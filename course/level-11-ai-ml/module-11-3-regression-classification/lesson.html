@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 11.3 — Gradient Descent &amp; Optimizers | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 11.3
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Gradient Descent &amp; Optimizers
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 11 • AI &amp; Machine Learning</div>
+      <h1 class="article-title">Module 11.3 — Gradient Descent &amp; Optimizers</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-11-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 11.3 — Regression and Classification</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>You have data: 1,000 house prices with their square footage, number of bedrooms, and location.<br />
+You want to predict the price of a new house.<br />
+This is <strong>regression</strong> — predicting a continuous value.</p>
+<p>You have 10,000 emails labelled &quot;spam&quot; or &quot;not spam.&quot;<br />
+You want to automatically label new emails.<br />
+This is <strong>classification</strong> — predicting a discrete category.</p>
+<p>These are the two most fundamental machine learning tasks.<br />
+Every supervised learning algorithm is solving one of them.</p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>Galton, Pearson, and the Origin of Regression</h3>
+<p>Francis Galton coined the term &quot;regression&quot; in 1886 studying the heights of children relative to their parents — tall parents tend to have children shorter than themselves, short parents tend to have children taller than themselves. Galton called this &quot;regression to the mean.&quot; Karl Pearson extended this work, developing the correlation coefficient and linear regression as statistical tools.</p>
+<p>The perceptron — the first classification algorithm learned from data — was invented by Frank Rosenblatt in 1958, inspired by McCulloch and Pitts' model of a neuron. The perceptron is still the conceptual foundation of neural networks today.</p>
+<p>Logistic regression (despite the name, a classification algorithm) was developed in the 1940s–50s for medical statistics. It remains one of the most widely used algorithms in industry — interpretable, fast, and effective for binary classification with clean features.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>Linear Regression</h3>
+<p><strong>Problem</strong>: given training data <code>{(x₁,y₁), ..., (xₙ,yₙ)}</code>, find parameters <code>w</code> (weights) and <code>b</code> (bias) such that <code>ŷ = w·x + b</code> minimises prediction error.</p>
+<p><strong>Model</strong>: <code>ŷ = w₁x₁ + w₂x₂ + ... + wₙxₙ + b = Xw + b</code></p>
+<p><strong>Loss function</strong> (Mean Squared Error):</p>
+<pre><code>MSE = (1/n) Σᵢ (yᵢ - ŷᵢ)²
+</code></pre>
+<p><strong>Gradient descent</strong>: iteratively move parameters in the direction that reduces loss.</p>
+<pre><code class="language-python">import numpy as np
+
+def linear_regression_gd(X, y, lr=0.01, epochs=1000):
+    n, d = X.shape
+    w = np.zeros(d)
+    b = 0.0
+
+    for epoch in range(epochs):
+        y_pred = X @ w + b                 # forward pass
+        error  = y_pred - y
+
+        # Gradients
+        dw = (2/n) * X.T @ error
+        db = (2/n) * np.sum(error)
+
+        # Update parameters
+        w -= lr * dw
+        b -= lr * db
+
+        if epoch % 100 == 0:
+            loss = np.mean(error**2)
+            print(f&quot;Epoch {epoch}: MSE = {loss:.4f}&quot;)
+
+    return w, b
+</code></pre>
+<p><strong>Closed-form solution</strong> (Normal Equation):</p>
+<pre><code class="language-python"># ŵ = (XᵀX)⁻¹ Xᵀy  — works for small datasets
+w = np.linalg.lstsq(X, y, rcond=None)[0]
+</code></pre>
+<p><strong>Regularisation</strong> prevents overfitting:</p>
+<ul>
+<li><strong>Ridge (L2)</strong>: loss += λ Σ wᵢ² — penalises large weights, keeps all features</li>
+<li><strong>Lasso (L1)</strong>: loss += λ Σ |wᵢ| — drives some weights to exactly zero (feature selection)</li>
+</ul>
+<h3>Classification: Logistic Regression</h3>
+<p>For binary classification (y ∈ {0,1}), we need to predict a probability. The <strong>sigmoid function</strong> squashes any value to [0, 1]:</p>
+<pre><code>σ(z) = 1 / (1 + e^(-z))
+</code></pre>
+<p><strong>Model</strong>: <code>P(y=1|x) = σ(w·x + b)</code></p>
+<p><strong>Decision</strong>: if <code>P(y=1|x) &gt; 0.5</code> → predict class 1; else predict class 0.</p>
+<p><strong>Loss function</strong> (Binary Cross-Entropy):</p>
+<pre><code>BCE = -(1/n) Σᵢ [yᵢ log(ŷᵢ) + (1-yᵢ) log(1-ŷᵢ)]
+</code></pre>
+<pre><code class="language-python">def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+def logistic_regression(X, y, lr=0.01, epochs=1000):
+    n, d = X.shape
+    w = np.zeros(d)
+    b = 0.0
+
+    for _ in range(epochs):
+        z      = X @ w + b
+        y_pred = sigmoid(z)
+        error  = y_pred - y
+
+        dw = (1/n) * X.T @ error
+        db = (1/n) * np.sum(error)
+
+        w -= lr * dw
+        b -= lr * db
+
+    return w, b
+
+def predict(X, w, b, threshold=0.5):
+    return (sigmoid(X @ w + b) &gt;= threshold).astype(int)
+</code></pre>
+<h3>Decision Trees</h3>
+<p>A decision tree makes predictions by asking a sequence of yes/no questions:</p>
+<pre><code>        Is age &gt; 30?
+        /          \
+      Yes           No
+       |             |
+Is income &gt; 50k?   Predict: No Purchase
+  /         \
+Yes          No
+ |            |
+Predict:   Predict:
+Purchase   No Purchase
+</code></pre>
+<p>Trees are built by choosing the feature and threshold that best separates the classes at each node. <strong>Gini impurity</strong> or <strong>information gain (entropy)</strong> measure &quot;best&quot;:</p>
+<pre><code>Gini(S) = 1 - Σₖ pₖ²
+Information Gain = H(parent) - Σ (|child|/|parent|) × H(child)
+</code></pre>
+<p><strong>Decision trees in Python:</strong></p>
+<pre><code class="language-python">from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_iris
+
+X, y = load_iris(return_X_y=True)
+model = DecisionTreeClassifier(max_depth=3)
+model.fit(X, y)
+print(model.predict([[5.1, 3.5, 1.4, 0.2]]))   # [0] — Iris setosa
+</code></pre>
+<p><strong>Pros</strong>: interpretable (you can explain each decision), handles mixed feature types, no scaling needed.<br />
+<strong>Cons</strong>: prone to overfitting (especially deep trees), unstable (small data changes → very different tree).</p>
+<p><strong>Random Forests</strong>: build many decision trees, each on a random subset of data and features; average their predictions. Dramatically reduces overfitting. One of the most effective and widely used ML algorithms.</p>
+<h3>Evaluation Metrics</h3>
+<p><strong>For regression:</strong></p>
+<ul>
+<li>MSE (Mean Squared Error) — penalises large errors heavily</li>
+<li>RMSE (Root MSE) — same units as y</li>
+<li>MAE (Mean Absolute Error) — more robust to outliers</li>
+<li>R² (coefficient of determination) — 1.0 = perfect, 0 = predicts mean, &lt; 0 = worse than mean</li>
+</ul>
+<p><strong>For classification:</strong></p>
+<pre><code>              Predicted
+              Pos   Neg
+Actual  Pos [ TP  | FN ]
+        Neg [ FP  | TN ]
+
+Accuracy  = (TP+TN) / (TP+TN+FP+FN)
+Precision = TP / (TP+FP)    — of predicted positives, how many are correct?
+Recall    = TP / (TP+FN)    — of actual positives, how many did we find?
+F1        = 2 × (P × R) / (P + R)
+</code></pre>
+<p>When classes are imbalanced (99% negative), accuracy is misleading — a model predicting &quot;always negative&quot; gets 99% accuracy but is useless. Precision, recall, and F1 are more informative.</p>
+<p><strong>ROC curve and AUC</strong>: plot True Positive Rate vs False Positive Rate at all decision thresholds. AUC (Area Under the Curve) = 1.0 is perfect; 0.5 is random. Used to compare classifiers independent of threshold choice.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Linear Regression Fitter</strong></p>
+<ul>
+<li>Scatter plot of house prices vs size</li>
+<li>Watch gradient descent update the regression line</li>
+<li>See the loss curve decrease over epochs</li>
+<li>Adjust learning rate — observe convergence speed</li>
+</ul>
+<p><strong>Tool 2 — Logistic Regression Decision Boundary</strong></p>
+<ul>
+<li>2D classification data (two features)</li>
+<li>Watch the decision boundary line move as training progresses</li>
+<li>See misclassified points</li>
+<li>Change threshold — watch precision/recall tradeoff</li>
+</ul>
+<p><strong>Tool 3 — Decision Tree Builder</strong></p>
+<ul>
+<li>A dataset with 2 features, 2 classes</li>
+<li>Build a tree step by step: pick the best split at each node</li>
+<li>See Gini impurity calculated for each candidate split</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Gradient descent variants</strong>: batch gradient descent uses all n examples per step. <strong>Stochastic gradient descent (SGD)</strong> uses 1 example — noisy but fast. <strong>Mini-batch gradient descent</strong> (most common in practice) uses k examples (typically 32–256) — reduces noise while maintaining speed. Neural networks are almost always trained with mini-batch SGD with momentum and adaptive learning rates (Adam, RMSprop).</p>
+<p><strong>Bias-variance tradeoff</strong>: model error = bias² + variance + irreducible noise. High bias = underfitting (model too simple, wrong structure). High variance = overfitting (model too complex, memorises training data). The tradeoff: more complex models have lower bias but higher variance. Cross-validation estimates the variance. Regularisation reduces variance at the cost of slightly higher bias.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Implement linear regression from scratch with gradient descent for a given dataset, calculate precision, recall, and F1 score for a given confusion matrix, build a decision tree by hand for a small dataset (4 examples, 2 features, 2 classes), and explain what happens to a logistic regression model when features are not normalised.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-11-2-linear-algebra-ml/lesson.html" class="btn-icon">← Prev: M 11.2</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-11-4-neural-networks/lesson.html" class="btn-icon btn-primary">Next: M 11.4 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

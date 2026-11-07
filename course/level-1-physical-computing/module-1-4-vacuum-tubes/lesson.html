@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 1.4 — Vacuum Tubes: Faster Switching | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 1.4
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Vacuum Tubes: Faster Switching
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 1 • Physical Computing</div>
+      <h1 class="article-title">Module 1.4 — Vacuum Tubes: Faster Switching</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-1-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <h1>Module 1.4 — Vacuum Tubes: Faster Switching</h1>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>Relay computers work. The logic is sound. The Z3 runs. The Mark I calculates.</p>
+<p>But a relay takes 5–50 milliseconds to switch — 100 to 1,000 operations per second at best. The US military needed firing tables for hundreds of artillery configurations, each requiring thousands of trajectory calculations. At relay speeds, one complete firing table took days.</p>
+<p>The question was brutally practical: <strong>can we switch faster without moving any metal?</strong></p>
+<p>The answer already existed in every radio receiver in the world — a glass tube with no moving parts that could switch a million times per second. The vacuum tube.</p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>The Edison Effect — 1883</h3>
+<p>Thomas Edison, experimenting with his lightbulb in 1883, noticed something odd: a small current flowed between the hot filament and a metal plate sealed inside the bulb even though they weren't touching. He had no explanation, patented it as a curiosity, and moved on. It became known as the &quot;Edison effect.&quot;</p>
+<p>The explanation: <strong>electrons were boiling off the hot filament</strong> and drifting through the vacuum to the metal plate. This is <strong>thermionic emission</strong> — heat gives surface electrons enough energy to escape the metal.</p>
+<h3>Fleming's Diode — 1904</h3>
+<p>British physicist John Ambrose Fleming connected the dots in 1904. If the plate is positive, emitted electrons (negative charge) are attracted to it — current flows. If the plate is negative, electrons are repelled — no current flows.</p>
+<p>This one-way current flow made Fleming's <strong>diode</strong> perfect for detecting radio waves (rectifying the alternating signal into a detectable direct current). But a diode is not an amplifier and not a switch — it has no control input.</p>
+<h3>De Forest's Triode — 1906</h3>
+<p>Lee de Forest added a third element in 1906: a wire mesh between cathode and plate called the <strong>grid</strong>. This created the <strong>triode</strong> — the device that changed everything.</p>
+<p><strong>How a triode works:</strong></p>
+<pre><code>CATHODE (heated) → emits electrons → [GRID controls flow] → PLATE collects current
+</code></pre>
+<ul>
+<li>Apply <strong>negative voltage to grid</strong>: repels electrons → almost no plate current → tube is <strong>OFF</strong></li>
+<li>Apply <strong>zero or positive voltage to grid</strong>: electrons flow freely → large plate current → tube is <strong>ON</strong></li>
+<li>The grid transition between these states takes <strong>microseconds</strong>, not milliseconds</li>
+</ul>
+<p>A small voltage change on the grid produces a large current change at the plate — this is <strong>amplification</strong>. The ratio of plate voltage swing to grid voltage swing is the <strong>amplification factor (µ)</strong>, typically 20–100.</p>
+<p>As a switch: the tube is either saturated (full current, ON=1) or cut off (no current, OFF=0). No moving parts. No mechanical wear. Switching time: ~1 microsecond.</p>
+<h3>ENIAC — 18,000 Tubes, 1945</h3>
+<p>The Electronic Numerical Integrator and Computer (ENIAC) was the first general-purpose electronic computer, completed in 1945 at the University of Pennsylvania.</p>
+<table>
+<thead>
+<tr>
+<th>Specification</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vacuum tubes</td>
+<td>17,468</td>
+</tr>
+<tr>
+<td>Resistors</td>
+<td>70,000</td>
+</tr>
+<tr>
+<td>Weight</td>
+<td>27,000 kg</td>
+</tr>
+<tr>
+<td>Power</td>
+<td>150 kW</td>
+</tr>
+<tr>
+<td>Floor space</td>
+<td>167 m²</td>
+</tr>
+<tr>
+<td>Speed</td>
+<td>~5,000 additions/second</td>
+</tr>
+<tr>
+<td>Cost (1945)</td>
+<td>~$400,000</td>
+</tr>
+</tbody>
+</table>
+<p>ENIAC was <strong>1,000× faster than the Mark I</strong>. Calculations that took the relay-based Mark I days took ENIAC minutes.</p>
+<p><strong>The reliability problem</strong>: With 17,468 tubes, one failed every few hours on average. A team of operators patrolled ENIAC continuously, replacing burned-out tubes. Running a long computation without failure required luck. This fragility was the tube's fundamental limitation — and the motivation for the transistor.</p>
+<hr />
+<h2>The Concept: Thermionic Emission and Electron Control</h2>
+<p><strong>Why do electrons leave the cathode?</strong></p>
+<p>In a metal, outermost electrons are only loosely bound. At room temperature, they don't have enough energy to escape. But heating the metal to ~1000°C gives electrons enough thermal energy to overcome the surface barrier — they literally boil off. This is <strong>thermionic emission</strong>.</p>
+<p><strong>Why does the grid control the current?</strong></p>
+<p>The grid is a mesh of fine wire sitting in the electron stream between cathode and plate. It creates an electric field:</p>
+<ul>
+<li>Negative grid → field points away from plate → electrons decelerate → most turn back → low current</li>
+<li>Positive grid → field points toward plate → electrons accelerate → all reach plate → high current</li>
+</ul>
+<p>The grid needs only millivolts to milliamps to exert this control — while the plate circuit can handle volts and amps. <strong>Small control energy, large output energy: this is amplification.</strong></p>
+<p><strong>Why vacuum?</strong></p>
+<p>Electrons scatter off air molecules. At atmospheric pressure, an electron travels only nanometres before colliding. A vacuum of 10⁻⁶ torr or better lets electrons travel centimetres without collision — essential for cathode-to-plate transit.</p>
+<hr />
+<h2>Tube vs Relay: The Scorecard</h2>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Relay</th>
+<th>Vacuum Tube</th>
+<th>Winner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Switching speed</td>
+<td>5–50 ms</td>
+<td>0.1–1 µs</td>
+<td>Tube (×10,000)</td>
+</tr>
+<tr>
+<td>Moving parts</td>
+<td>Yes</td>
+<td>None</td>
+<td>Tube</td>
+</tr>
+<tr>
+<td>Power per switch</td>
+<td>~0.1 W</td>
+<td>1–5 W</td>
+<td>Relay</td>
+</tr>
+<tr>
+<td>Size</td>
+<td>~5 cm</td>
+<td>~3–8 cm</td>
+<td>Roughly equal</td>
+</tr>
+<tr>
+<td>Lifespan</td>
+<td>Millions of cycles</td>
+<td>1,000–10,000 hrs</td>
+<td>Relay</td>
+</tr>
+<tr>
+<td>Fragility</td>
+<td>Robust</td>
+<td>Glass — fragile</td>
+<td>Relay</td>
+</tr>
+<tr>
+<td>Heat generated</td>
+<td>Low</td>
+<td>Very high</td>
+<td>Relay</td>
+</tr>
+<tr>
+<td>Control isolation</td>
+<td>Complete</td>
+<td>Partial</td>
+<td>Relay</td>
+</tr>
+</tbody>
+</table>
+<p>The tube wins on speed decisively. It loses on power, heat, and reliability. This is precisely why it was replaced by the transistor — which kept the speed while fixing the other problems.</p>
+<hr />
+<h2>The Williams Tube — First Electronic Memory, 1946</h2>
+<p>A key unsolved problem in early computers was memory. Paper tape and punch cards were slow. The Williams tube (1946, Manchester) used a cathode ray tube — normally a display device — as memory:</p>
+<ul>
+<li>Write a 1: fire the electron beam at a spot → leaves a positive charge on the phosphor</li>
+<li>Write a 0: don't fire (or fire differently) → no charge</li>
+<li>Read: scan the spot with a low-energy beam → the charge either absorbs or reflects the scan → detect the difference</li>
+</ul>
+<p>A Williams tube held ~1,024 bits. Manchester's Small-Scale Experimental Machine (Baby), the first stored-program computer, ran its first program on June 21, 1948, using Williams tubes for memory.</p>
+<p>This connects directly to Module 1.2's self-latching relay: the Williams tube was an electronic latch — state stored as charge, reading and writing using the same electron beam that Hollerith's pins had done with holes in cards.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p>The simulation has three tools:</p>
+<p><strong>Tool 1 — Triode Anatomy</strong></p>
+<ul>
+<li>Adjust the cathode temperature (heater current)</li>
+<li>Adjust the grid voltage (negative = cut off, positive = saturated)</li>
+<li>Watch the electron cloud density change</li>
+<li>See plate current on the output meter</li>
+<li>The characteristic curves (plate current vs grid voltage) plot live</li>
+</ul>
+<p><strong>Tool 2 — Tube as Switch</strong></p>
+<ul>
+<li>Set grid voltage to cut-off (−5V) or saturation (0V)</li>
+<li>See switching between ON and OFF states</li>
+<li>Compare switching time to a relay (animated side-by-side)</li>
+</ul>
+<p><strong>Tool 3 — ENIAC Scale Visualizer</strong></p>
+<ul>
+<li>See 17,468 tubes represented as a grid</li>
+<li>Click &quot;Simulate failure rate&quot; — random tubes fail over simulated time</li>
+<li>Watch how quickly the machine would go down without maintenance</li>
+<li>See how many tube-swaps per day were needed</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p>The triode was so valuable that AT&amp;T's Bell Labs spent years trying to replace it with something smaller and more reliable. The result, in 1947, was the transistor (Module 1.5). Ironically, the transistor was invented partly because Bell needed millions of tubes for its telephone network, and keeping them all working was becoming impossible.</p>
+<p>The vacuum tube didn't disappear entirely. <strong>Magnetrons</strong> (high-power microwave tubes) are still in every microwave oven. <strong>Klystrons</strong> are used in particle accelerators and radar. <strong>Traveling-wave tubes</strong> amplify signals in satellites. For extreme power and frequency applications, tubes still outperform transistors.</p>
+<p>And audiophiles still swear by tube amplifiers — the &quot;warm&quot; sound is a real phenomenon caused by the even-order harmonic distortion tubes produce, which many listeners find more pleasant than the odd-order distortion of transistor amplifiers.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Calculate ENIAC's tube failure statistics, compare relay vs tube switching speeds with real numbers, and use the triode simulator to map out a characteristic curve.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-1-3-relay-logic/lesson.html" class="btn-icon">← Prev: M 1.3</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-1-5-transistor/lesson.html" class="btn-icon btn-primary">Next: M 1.5 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

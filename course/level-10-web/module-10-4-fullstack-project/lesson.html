@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 10.4 — Building a Full-Stack Web App | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 10.4
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Building a Full-Stack Web App
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 10 • Web &amp; App Development</div>
+      <h1 class="article-title">Module 10.4 — Building a Full-Stack Web App</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-10-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 10.4 — Full-Stack Project</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>You have learned:</p>
+<ul>
+<li>HTML, CSS, JavaScript (frontend)</li>
+<li>HTTP and REST APIs (communication layer)</li>
+<li>Databases and SQL (data persistence)</li>
+<li>Sockets and servers (networking)</li>
+</ul>
+<p>But these skills in isolation do not make a working application.<br />
+A real application is these layers <strong>working together</strong>:<br />
+a user clicks a button in the browser →<br />
+JavaScript sends an HTTP request →<br />
+a server receives and validates it →<br />
+queries a database →<br />
+returns structured data →<br />
+JavaScript renders the result on screen.</p>
+<p>This module integrates everything by building a complete,<br />
+working application from scratch.</p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>The Full Stack Emerges</h3>
+<p>The term &quot;full stack&quot; was popularised around 2008–2012 as web applications became increasingly complex. The LAMP stack (Linux, Apache, MySQL, PHP) was an early full-stack: PHP generated HTML server-side, MySQL stored data.</p>
+<p><strong>AJAX</strong> (Asynchronous JavaScript and XML, named ~2005) changed the model: instead of the server rendering complete HTML pages, JavaScript would fetch data (via XMLHttpRequest) and update the page dynamically. Google Maps (2005) demonstrated this spectacularly — panning a map didn't reload the page.</p>
+<p>Modern full-stack typically means: a JavaScript or TypeScript <strong>frontend</strong> (React, Vue, Angular), a <strong>backend API</strong> (Node.js, Python, Go, Java), and a <strong>database</strong> (PostgreSQL, MySQL, MongoDB). The frontend and backend communicate via JSON REST APIs or GraphQL.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>Application Architecture</h3>
+<p>A modern full-stack web application has three tiers:</p>
+<pre><code>┌─────────────────────────────────────────────────────┐
+│   BROWSER (Client)                                  │
+│   HTML/CSS/JavaScript                               │
+│   React / Vue / plain JS                            │
+│   Fetches data from API                             │
+└──────────────────────────┬──────────────────────────┘
+                           │ HTTP/REST (JSON)
+┌──────────────────────────▼──────────────────────────┐
+│   WEB SERVER (Backend)                              │
+│   Python/Flask, Node.js/Express, etc.              │
+│   Handles requests, applies business logic         │
+│   Authentication, validation, authorisation        │
+└──────────────────────────┬──────────────────────────┘
+                           │ SQL / ORM
+┌──────────────────────────▼──────────────────────────┐
+│   DATABASE                                          │
+│   PostgreSQL / MySQL / SQLite                      │
+│   Persistent data storage                          │
+└─────────────────────────────────────────────────────┘
+</code></pre>
+<h3>The Project: A Task Manager</h3>
+<p>Build a simple but complete task manager app:</p>
+<ul>
+<li>Create tasks with title, description, and due date</li>
+<li>Mark tasks as complete</li>
+<li>Filter by status (all / pending / completed)</li>
+<li>Persist tasks in a database</li>
+</ul>
+<h3>Backend: Flask + SQLite</h3>
+<pre><code class="language-python"># app.py
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import sqlite3, json
+from datetime import datetime
+
+app = Flask(__name__)
+CORS(app)  # allow browser requests from different origin
+
+DB = 'tasks.db'
+
+def get_db():
+    conn = sqlite3.connect(DB)
+    conn.row_factory = sqlite3.Row  # rows as dicts
+    return conn
+
+def init_db():
+    with get_db() as db:
+        db.execute('''
+            CREATE TABLE IF NOT EXISTS tasks (
+                id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                title       TEXT NOT NULL,
+                description TEXT,
+                due_date    TEXT,
+                completed   INTEGER DEFAULT 0,
+                created_at  TEXT DEFAULT (datetime('now'))
+            )
+        ''')
+
+@app.route('/api/tasks', methods=['GET'])
+def list_tasks():
+    status = request.args.get('status')   # ?status=pending or ?status=completed
+    with get_db() as db:
+        if status == 'pending':
+            rows = db.execute('SELECT * FROM tasks WHERE completed=0 ORDER BY created_at DESC').fetchall()
+        elif status == 'completed':
+            rows = db.execute('SELECT * FROM tasks WHERE completed=1 ORDER BY created_at DESC').fetchall()
+        else:
+            rows = db.execute('SELECT * FROM tasks ORDER BY created_at DESC').fetchall()
+    return jsonify([dict(r) for r in rows])
+
+@app.route('/api/tasks', methods=['POST'])
+def create_task():
+    data = request.get_json()
+    if not data or not data.get('title'):
+        return jsonify(error='title is required'), 400
+    with get_db() as db:
+        cursor = db.execute(
+            'INSERT INTO tasks (title, description, due_date) VALUES (?, ?, ?)',
+            (data['title'], data.get('description'), data.get('due_date'))
+        )
+        task_id = cursor.lastrowid
+        task = dict(db.execute('SELECT * FROM tasks WHERE id=?', (task_id,)).fetchone())
+    return jsonify(task), 201
+
+@app.route('/api/tasks/&lt;int:task_id&gt;', methods=['PATCH'])
+def update_task(task_id):
+    data = request.get_json()
+    with get_db() as db:
+        task = db.execute('SELECT * FROM tasks WHERE id=?', (task_id,)).fetchone()
+        if not task: return jsonify(error='not found'), 404
+        if 'completed' in data:
+            db.execute('UPDATE tasks SET completed=? WHERE id=?', (int(data['completed']), task_id))
+        if 'title' in data:
+            db.execute('UPDATE tasks SET title=? WHERE id=?', (data['title'], task_id))
+        updated = dict(db.execute('SELECT * FROM tasks WHERE id=?', (task_id,)).fetchone())
+    return jsonify(updated)
+
+@app.route('/api/tasks/&lt;int:task_id&gt;', methods=['DELETE'])
+def delete_task(task_id):
+    with get_db() as db:
+        result = db.execute('DELETE FROM tasks WHERE id=?', (task_id,))
+        if result.rowcount == 0: return jsonify(error='not found'), 404
+    return '', 204
+
+init_db()
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
+</code></pre>
+<h3>Frontend: HTML + Vanilla JavaScript</h3>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+  &lt;title&gt;Task Manager&lt;/title&gt;
+  &lt;style&gt;
+    * { box-sizing: border-box; }
+    body { font-family: Inter, system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; }
+    .task { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 8px; }
+    .task.completed { opacity: 0.5; }
+    .task-title { flex: 1; font-size: 15px; }
+    .task.completed .task-title { text-decoration: line-through; }
+    button { padding: 8px 16px; border: 1px solid #333; background: #fff; cursor: pointer; border-radius: 4px; }
+    #add-form { display: flex; gap: 8px; margin-bottom: 24px; }
+    #task-input { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 15px; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Task Manager&lt;/h1&gt;
+  &lt;form id=&quot;add-form&quot;&gt;
+    &lt;input id=&quot;task-input&quot; placeholder=&quot;New task...&quot; required&gt;
+    &lt;button type=&quot;submit&quot;&gt;Add Task&lt;/button&gt;
+  &lt;/form&gt;
+  &lt;div id=&quot;filter-bar&quot;&gt;
+    &lt;button onclick=&quot;loadTasks()&quot;&gt;All&lt;/button&gt;
+    &lt;button onclick=&quot;loadTasks('pending')&quot;&gt;Pending&lt;/button&gt;
+    &lt;button onclick=&quot;loadTasks('completed')&quot;&gt;Completed&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div id=&quot;task-list&quot;&gt;&lt;/div&gt;
+
+  &lt;script&gt;
+    const API = 'http://localhost:5000/api';
+
+    async function loadTasks(status = '') {
+      const url = status ? `${API}/tasks?status=${status}` : `${API}/tasks`;
+      const res  = await fetch(url);
+      const tasks = await res.json();
+      renderTasks(tasks);
+    }
+
+    function renderTasks(tasks) {
+      const list = document.getElementById('task-list');
+      list.innerHTML = tasks.map(t =&gt; `
+        &lt;div class=&quot;task ${t.completed ? 'completed' : ''}&quot; id=&quot;task-${t.id}&quot;&gt;
+          &lt;input type=&quot;checkbox&quot; ${t.completed ? 'checked' : ''}
+            onchange=&quot;toggleTask(${t.id}, this.checked)&quot;&gt;
+          &lt;span class=&quot;task-title&quot;&gt;${t.title}&lt;/span&gt;
+          &lt;button onclick=&quot;deleteTask(${t.id})&quot;&gt;×&lt;/button&gt;
+        &lt;/div&gt;
+      `).join('');
+    }
+
+    async function toggleTask(id, completed) {
+      await fetch(`${API}/tasks/${id}`, {
+        method: 'PATCH',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({completed})
+      });
+      loadTasks();
+    }
+
+    async function deleteTask(id) {
+      await fetch(`${API}/tasks/${id}`, { method: 'DELETE' });
+      loadTasks();
+    }
+
+    document.getElementById('add-form').addEventListener('submit', async (e) =&gt; {
+      e.preventDefault();
+      const input = document.getElementById('task-input');
+      await fetch(`${API}/tasks`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({title: input.value})
+      });
+      input.value = '';
+      loadTasks();
+    });
+
+    loadTasks();
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h3>What You Just Built</h3>
+<p>This application demonstrates the complete stack:</p>
+<ul>
+<li><strong>Browser</strong> renders HTML/CSS, runs JavaScript</li>
+<li><strong>JavaScript</strong> makes <code>fetch()</code> calls to the REST API</li>
+<li><strong>Flask</strong> receives HTTP requests, validates input, queries the database</li>
+<li><strong>SQLite</strong> persists data to disk</li>
+</ul>
+<p>This is the same architecture — at different scales and with more components — used by every modern web application.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — API Request Trace</strong></p>
+<ul>
+<li>Click &quot;Add Task&quot; in the task manager</li>
+<li>Watch the full request: JS → fetch() → HTTP → Flask handler → SQLite → JSON response → DOM update</li>
+</ul>
+<p><strong>Tool 2 — Database Inspector</strong></p>
+<ul>
+<li>See the SQLite database contents update in real time</li>
+<li>Execute raw SQL and watch the API response change</li>
+</ul>
+<p><strong>Tool 3 — Network Tab</strong></p>
+<ul>
+<li>A simulated browser DevTools network tab</li>
+<li>See every HTTP request made by the app</li>
+<li>Identify which operations are GET, POST, PATCH, DELETE</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>React and component-based UIs</strong>: plain JavaScript for UIs becomes unmaintainable as complexity grows — you write endless <code>document.getElementById()</code> calls and lose track of what state is displayed. React's component model (<code>function TaskItem({task}) { return &lt;div&gt;...&lt;/div&gt;; }</code>) makes UI logic modular and testable. The virtual DOM handles efficient DOM updates. Understanding why React was invented requires first experiencing the pain of vanilla JS UI code at scale.</p>
+<p><strong>Authentication and sessions</strong>: our app has no authentication. Adding it requires: login endpoint (POST /api/auth/login → JWT), protected endpoints (verify JWT on every request), logout (invalidate token), and refresh tokens (short-lived access tokens + long-lived refresh tokens). This is a non-trivial addition that most production apps need from day one.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Extend the task manager with: due dates displayed and colour-coded (red if overdue), a search endpoint (<code>GET /api/tasks?q=keyword</code>), user authentication so each user only sees their own tasks, and a deployment checklist (what would you need to change to deploy this to a public server?).</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-10-3-rest-apis/lesson.html" class="btn-icon">← Prev: M 10.3</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../../level-11-ai-ml/module-11-1-search-intelligence/lesson.html" class="btn-icon btn-primary">Next: M 11.1 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

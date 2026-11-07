@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 7.3 — Sockets &amp; Network IPC | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 7.3
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 7.3 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Sockets &amp; Network IPC.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 7.3 — Network Sockets from Scratch</p>
+<p><strong>Type:</strong> Implementation + trace + reasoning<br />
+<strong>Estimated time:</strong> 45–55 minutes<br />
+<strong>Tools needed:</strong> Python</p>
+<hr />
+<h2>Part A — TCP Echo Server and Client</h2>
+<ol>
+<li>
+<p>Implement a TCP <strong>echo server</strong> that:</p>
+<ul>
+<li>Listens on port 9000</li>
+<li>Accepts one connection at a time</li>
+<li>Reads up to 1024 bytes from the client</li>
+<li>Sends the same bytes back (echo)</li>
+<li>Closes the connection and accepts the next one</li>
+<li>Runs until interrupted</li>
+</ul>
+</li>
+<li>
+<p>Implement a TCP <strong>echo client</strong> that:</p>
+<ul>
+<li>Connects to <code>127.0.0.1:9000</code></li>
+<li>Sends the string &quot;Hello, server!&quot;</li>
+<li>Reads the response and prints it</li>
+<li>Closes the connection</li>
+</ul>
+</li>
+<li>
+<p>Why do you need <code>server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)</code> after creating the server socket? What error occurs without it when you restart the server quickly?</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Multi-Client Server</h2>
+<ol start="4">
+<li>
+<p>Extend your echo server to handle <strong>multiple simultaneous clients</strong> using threads. Each accepted connection should be handled in a new thread.</p>
+</li>
+<li>
+<p>What is the maximum number of concurrent clients this threaded server can handle? What limits it?</p>
+</li>
+<li>
+<p>Rewrite the multi-client server using Python's <code>selectors</code> module (I/O multiplexing, no threads). Register the server socket and each client socket with the selector. Show the event loop.</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — TCP Handshake</h2>
+<p>Trace the <strong>three-way TCP handshake</strong> for a connection from <code>127.0.0.1:54321</code> to <code>127.0.0.1:9000</code>.</p>
+<ol start="7">
+<li>Fill in the sequence numbers and flags for each packet:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Direction</th>
+<th>Flags</th>
+<th>Seq</th>
+<th>Ack</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Client → Server</td>
+<td>?</td>
+<td>x</td>
+<td>—</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Server → Client</td>
+<td>?</td>
+<td>y</td>
+<td>?</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Client → Server</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+</tr>
+</tbody>
+</table>
+<ol start="8">
+<li>
+<p>After the handshake, the client sends &quot;Hello&quot; (5 bytes). What are the sequence and acknowledgement numbers in the client's data segment and the server's ACK?</p>
+</li>
+<li>
+<p>What is the purpose of the initial sequence number (ISN)? Why is it random rather than always starting at 0?</p>
+</li>
+</ol>
+<hr />
+<h2>Part D — UDP vs TCP</h2>
+<ol start="10">
+<li>
+<p>Implement a UDP <strong>echo server</strong> and <strong>client</strong>. Note the differences: no <code>accept()</code>, no <code>connect()</code> required, use <code>recvfrom()</code> and <code>sendto()</code>.</p>
+</li>
+<li>
+<p>Send 10 messages from the UDP client. On a local loopback interface, all 10 arrive. Over an unreliable network, some may be lost. Modify the client to detect lost messages by: adding a sequence number to each message, waiting 0.5 seconds for each reply, retrying up to 3 times if no reply arrives.</p>
+</li>
+<li>
+<p>Compare TCP and UDP for these applications:</p>
+<ul>
+<li>Video streaming (YouTube)</li>
+<li>Online gaming (position updates 60/s)</li>
+<li>File transfer</li>
+<li>DNS lookup</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2>Part E — Protocol Design</h2>
+<ol start="13">
+<li>
+<p>Design a simple binary protocol for sending messages over a TCP stream. The protocol must handle:</p>
+<ul>
+<li>Messages of variable length (0–65535 bytes)</li>
+<li>A message type identifier (1 byte)</li>
+<li>Reliable delivery (TCP handles this)</li>
+</ul>
+<p>Define the header format (which fields, how many bytes each).</p>
+</li>
+<li>
+<p>Implement <code>send_message(sock, msg_type, data)</code> and <code>recv_message(sock)</code> using your protocol. Why is it important to keep reading until you have all expected bytes (using a loop) rather than assuming one <code>recv()</code> call returns a complete message?</p>
+</li>
+<li>
+<p>Why does TCP need framing (your protocol) while UDP does not?</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A TCP echo (3 questions)</td>
+<td>20</td>
+</tr>
+<tr>
+<td>B multi-client (3 questions)</td>
+<td>24</td>
+</tr>
+<tr>
+<td>C handshake trace</td>
+<td>20</td>
+</tr>
+<tr>
+<td>D UDP (3 questions)</td>
+<td>22</td>
+</tr>
+<tr>
+<td>E protocol design</td>
+<td>14</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A.1+2 — TCP echo server and client</summary>
+<pre><code class="language-python"># Server
+import socket, threading
+
+def server():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.bind(('', 9000))
+    s.listen(5)
+    while True:
+        conn, addr = s.accept()
+        data = conn.recv(1024)
+        if data: conn.sendall(data)
+        conn.close()
+
+# Client
+import socket
+
+def client():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(('127.0.0.1', 9000))
+    s.sendall(b'Hello, server!')
+    response = s.recv(1024)
+    print(response.decode())
+    s.close()
+</code></pre>
+<p>SO_REUSEADDR allows binding to a port that is in TIME_WAIT state from a previous connection. Without it, you get &quot;Address already in use&quot; for ~60 seconds after the server closes.</p>
+</details>
+<details>
+<summary>Part E.14 — protocol framing</summary>
+<pre><code class="language-python">import struct
+
+# Header: [msg_type: 1B][length: 2B] = 3 bytes total
+HEADER_FMT = '!BH'   # big-endian: unsigned byte + unsigned short
+
+def send_message(sock, msg_type, data):
+    if isinstance(data, str): data = data.encode()
+    header = struct.pack(HEADER_FMT, msg_type, len(data))
+    sock.sendall(header + data)
+
+def recv_exact(sock, n):
+    buf = b''
+    while len(buf) &lt; n:
+        chunk = sock.recv(n - len(buf))
+        if not chunk: raise ConnectionError(&quot;Connection closed&quot;)
+        buf += chunk
+    return buf
+
+def recv_message(sock):
+    header = recv_exact(sock, 3)
+    msg_type, length = struct.unpack(HEADER_FMT, header)
+    data = recv_exact(sock, length)
+    return msg_type, data
+</code></pre>
+<p>TCP is a byte stream — <code>recv(1024)</code> may return 1 byte or 500 bytes regardless of how much was sent. You must loop until you have the exact bytes you need.</p>
+<p>UDP sends and receives whole datagrams — one <code>sendto()</code> = one <code>recvfrom()</code> (or the datagram is lost entirely). No partial datagrams.</p>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

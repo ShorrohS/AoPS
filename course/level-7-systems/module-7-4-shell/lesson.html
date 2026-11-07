@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 7.4 — Building a Tiny Shell | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 7.4
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Building a Tiny Shell
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 7 • Systems Programming</div>
+      <h1 class="article-title">Module 7.4 — Building a Tiny Shell</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-7-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 7.4 — Building a Tiny Shell</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>The shell is the user's interface to the operating system.<br />
+Every time you type <code>ls -la | grep .py &gt; output.txt</code>,<br />
+something reads that line, parses it, and executes it.</p>
+<p>Building a tiny shell from scratch teaches you:</p>
+<ul>
+<li>How <code>fork()</code> + <code>exec()</code> work together to create processes</li>
+<li>How pipes are implemented at the OS level</li>
+<li>How input/output redirection works</li>
+<li>What the shell actually does when you type a command</li>
+</ul>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>The Shell as the First Application</h3>
+<p>The shell was the very first interactive program run by Unix — it was already present in the initial PDP-7 Unix system in 1969. Ken Thompson wrote the first Unix shell (the Thompson shell, <code>sh</code>) in a single weekend.</p>
+<p><strong>Stephen Bourne</strong> rewrote it in 1977 as the Bourne shell (<code>/bin/sh</code>) — the ancestor of every POSIX-compatible shell today. <strong>Bill Joy</strong> (founder of Sun Microsystems) wrote the C shell (<code>csh</code>) in 1978, adding job control and command history. <strong>David Korn</strong> wrote the Korn shell (<code>ksh</code>) in 1983, combining features of both. The <strong>Bash</strong> shell (Bourne Again SHell, Brian Fox, 1989) is the default on most Linux systems today.</p>
+<p>All of these shells — despite their different features and syntaxes — implement the same fundamental mechanics: read a line, parse it, <code>fork()</code>, <code>exec()</code>, <code>wait()</code>.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>The Core Loop: REPL</h3>
+<p>A shell is a <strong>Read-Eval-Print Loop</strong>:</p>
+<pre><code class="language-python">import os, sys, subprocess
+
+def shell():
+    while True:
+        # 1. Print prompt
+        try:
+            line = input(f&quot;{os.getcwd()} $ &quot;)
+        except (EOFError, KeyboardInterrupt):
+            print(); break
+
+        line = line.strip()
+        if not line: continue
+
+        # 2. Parse
+        parts = line.split()
+
+        # 3. Built-in commands
+        if parts[0] == 'exit':
+            break
+        if parts[0] == 'cd':
+            try: os.chdir(parts[1] if len(parts) &gt; 1 else os.environ.get('HOME', '/'))
+            except FileNotFoundError as e: print(f&quot;cd: {e}&quot;)
+            continue
+
+        # 4. Execute external command
+        try:
+            proc = subprocess.run(parts)
+        except FileNotFoundError:
+            print(f&quot;{parts[0]}: command not found&quot;)
+
+shell()
+</code></pre>
+<h3>fork() + exec() — The Unix Process Model</h3>
+<p>Under the hood, <code>subprocess.run(['ls', '-la'])</code> does exactly this:</p>
+<pre><code class="language-python">import os
+
+pid = os.fork()
+if pid == 0:
+    # Child process
+    os.execvp('ls', ['ls', '-la'])   # replace child with 'ls'
+    # execvp never returns on success
+    sys.exit(1)
+else:
+    # Parent process (the shell)
+    os.waitpid(pid, 0)               # wait for child to finish
+</code></pre>
+<p><code>fork()</code> creates an exact copy of the current process. <code>exec()</code> replaces the running program with a new one. The child never returns from <code>exec()</code> on success. The parent waits.</p>
+<p>This two-step design gives the shell a window between <code>fork()</code> and <code>exec()</code> to manipulate file descriptors — which is how pipes and redirections are implemented.</p>
+<h3>I/O Redirection</h3>
+<pre><code class="language-bash">ls &gt; output.txt       # stdout → file
+cat &lt; input.txt       # stdin ← file
+ls 2&gt; errors.txt      # stderr → file
+</code></pre>
+<p>Between <code>fork()</code> and <code>exec()</code>, the shell redirects file descriptors using <code>dup2()</code>:</p>
+<pre><code class="language-python">if redirect_stdout:
+    fd = os.open(output_file, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o644)
+    os.dup2(fd, 1)    # make stdout (fd 1) point to the file
+    os.close(fd)      # close original (now duplicated)
+</code></pre>
+<p><code>dup2(src, dst)</code>: makes <code>dst</code> a duplicate of <code>src</code>. After <code>dup2(fd, 1)</code>, writes to stdout go to the file. The <code>exec()</code>'d program never knows — it just uses fd 1 as normal.</p>
+<h3>Pipes</h3>
+<pre><code class="language-bash">ls | grep .py | wc -l
+</code></pre>
+<p>A pipe <code>|</code> connects stdout of one process to stdin of the next.</p>
+<pre><code class="language-python">def run_pipeline(commands):
+    # commands = [['ls'], ['grep', '.py'], ['wc', '-l']]
+    n = len(commands)
+    pipes = [os.pipe() for _ in range(n - 1)]  # n-1 pipes for n commands
+
+    pids = []
+    for i, cmd in enumerate(commands):
+        pid = os.fork()
+        if pid == 0:  # child
+            # Connect stdin to previous pipe's read end
+            if i &gt; 0:
+                os.dup2(pipes[i-1][0], 0)  # stdin ← pipe read
+            # Connect stdout to next pipe's write end
+            if i &lt; n - 1:
+                os.dup2(pipes[i][1], 1)    # stdout → pipe write
+            # Close all pipe fds (child doesn't need them)
+            for r, w in pipes:
+                os.close(r); os.close(w)
+            os.execvp(cmd[0], cmd)
+            sys.exit(1)
+        pids.append(pid)
+
+    # Parent: close all pipe fds
+    for r, w in pipes:
+        os.close(r); os.close(w)
+
+    # Wait for all children
+    for pid in pids:
+        os.waitpid(pid, 0)
+</code></pre>
+<p>The kernel's <code>os.pipe()</code> creates a pair of file descriptors: <code>(read_end, write_end)</code>. Data written to <code>write_end</code> is buffered by the kernel and can be read from <code>read_end</code>. This is why <code>ls | grep</code> works: <code>ls</code>'s stdout writes to the pipe buffer; <code>grep</code>'s stdin reads from it.</p>
+<h3>Job Control</h3>
+<p>Real shells support background jobs (<code>cmd &amp;</code>), job suspension (<code>Ctrl+Z</code>), and foreground/background switching (<code>fg</code>, <code>bg</code>). This requires Unix signal handling:</p>
+<ul>
+<li><code>SIGCHLD</code>: sent to parent when a child changes state</li>
+<li><code>SIGINT</code> (Ctrl+C): interrupt the foreground job</li>
+<li><code>SIGTSTP</code> (Ctrl+Z): suspend the foreground job</li>
+<li><code>SIGCONT</code>: resume a suspended job</li>
+</ul>
+<p>A minimal implementation:</p>
+<pre><code class="language-python">import signal
+
+background_jobs = []
+
+def run_background(cmd):
+    pid = os.fork()
+    if pid == 0:
+        os.execvp(cmd[0], cmd); sys.exit(1)
+    background_jobs.append(pid)
+    print(f&quot;[{len(background_jobs)}] {pid}&quot;)
+</code></pre>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Command Parser</strong></p>
+<ul>
+<li>Type shell commands; watch the tokenisation and parsing</li>
+<li>See quoted strings handled correctly: <code>echo &quot;hello world&quot;</code> → 2 tokens</li>
+</ul>
+<p><strong>Tool 2 — fork/exec Visualiser</strong></p>
+<ul>
+<li>Type a command; watch the process tree</li>
+<li>See the parent shell fork a child, the child exec, and the parent wait</li>
+<li>See file descriptor table before and after dup2</li>
+</ul>
+<p><strong>Tool 3 — Pipe Chain</strong></p>
+<ul>
+<li>Enter <code>cmd1 | cmd2 | cmd3</code></li>
+<li>Watch the pipes created, fds redirected, and processes connected</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Signal handling in the shell</strong>: when you press Ctrl+C, the kernel sends SIGINT to the <strong>foreground process group</strong>, not just the shell. The shell must set up process groups correctly so that signals reach the running pipeline, not the shell itself. This is why running <code>sleep 100</code> and pressing Ctrl+C kills sleep, not the shell.</p>
+<p><strong>Environment variables</strong>: each process inherits a copy of its parent's environment. <code>export VAR=value</code> in the shell adds a variable to the environment, which is then passed to every child process. This is why you can run <code>PYTHONPATH=/my/lib python script.py</code> — the shell sets PYTHONPATH in the child's environment before exec.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Implement a shell that supports redirection (<code>&gt;</code>, <code>&lt;</code>) and pipes (<code>|</code>), trace exactly what happens when you run <code>cat file.txt | sort | uniq &gt; result.txt</code> at the kernel level (which fds, which dup2 calls, which exec calls), and extend the shell with a <code>history</code> built-in.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-7-3-sockets/lesson.html" class="btn-icon">← Prev: M 7.3</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-7-5-http-server/lesson.html" class="btn-icon btn-primary">Next: M 7.5 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

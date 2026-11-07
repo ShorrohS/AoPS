@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 0.3 — The Loom That Taught Computers | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 0.3
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        The Loom That Taught Computers
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 0 • Before Computers</div>
+      <h1 class="article-title">Module 0.3 — The Loom That Taught Computers</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-0-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <h1>Module 0.3 — The Loom That Taught Computers</h1>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>You own a silk weaving factory in Lyon, France, in 1800. Your most valuable product is fabric woven in complex patterns — flowers, birds, geometric designs that wealthy clients pay a fortune for.</p>
+<p>Each pattern requires a master weaver to manually control which threads go up and which go down on every single pass of the shuttle. One wrong move and the pattern breaks. A skilled weaver takes <strong>years</strong> to learn. They are expensive, they tire, they make mistakes, and they can only work on one pattern at a time.</p>
+<p>If a pattern is successful, you want to make thousands of metres of it. But the weaver must essentially re-learn the pattern for every metre — holding the entire sequence in their head.</p>
+<p>How do you separate the <em>knowledge of the pattern</em> from the <em>act of weaving</em>?</p>
+</blockquote>
+<p>This is not a question about fabric. It is the question that gave birth to the concept of <strong>stored instructions</strong> — the idea that a procedure can be written down and executed by a machine without a human in the loop.</p>
+<hr />
+<h2>The Story</h2>
+<h3>Weaving Before Jacquard</h3>
+<p>A loom works by lifting certain warp threads (running lengthwise) while passing a shuttle carrying the weft thread (running crosswise) through the gap. By changing which warp threads are raised on each pass, you create patterns.</p>
+<p>In a simple loom, this was done by hand — the weaver manually selected threads. For complex patterns, a <strong>drawboy</strong> sat beside the loom, pulling cords to raise groups of threads according to the weaver's shouted instructions. The drawboy had to memorize or follow a complex sequence. Errors were common. The drawboy had to be trained for each new pattern.</p>
+<p>The bottleneck: <strong>the pattern existed only in human memory and voice</strong>.</p>
+<hr />
+<h3>Basile Bouchon's Paper Roll — 1725</h3>
+<p>The first attempt to automate pattern control came from Basile Bouchon in 1725. He created a mechanism where a roll of paper with holes punched in it was pressed against a row of needles. Where there was a hole, a needle passed through and lifted a thread hook. Where there was no hole, the needle was blocked.</p>
+<p><strong>The profound shift</strong>: the pattern is no longer in a person's head. It is encoded as <strong>holes in paper</strong> — a physical, durable, reproducible medium.</p>
+<p>This is the first time in history that <strong>data was stored externally to a human mind and read by a machine</strong>.</p>
+<p>The limitation: Bouchon's roll only controlled a portion of the threads. A human operator still controlled the rest.</p>
+<hr />
+<h3>Falcon's Punched Cards — 1728</h3>
+<p>Jean-Baptiste Falcon improved on Bouchon three years later by replacing the paper roll with a <strong>chain of stiff punched cards</strong>, linked together in sequence. Each card controlled one row of the pattern. Cards could be detached and rearranged.</p>
+<p>Two key advances:</p>
+<ol>
+<li><strong>Discrete units</strong>: each card was a separate instruction (not a continuous roll)</li>
+<li><strong>Reordering</strong>: patterns could be modified by rearranging cards</li>
+</ol>
+<p>This is the birth of <strong>sequential, discrete instructions</strong> — the ancestor of every program ever written.</p>
+<hr />
+<h3>Jacquard's Loom — 1804</h3>
+<p>Joseph Marie Jacquard synthesized and perfected these ideas into a complete automated system in 1804. His attachment sat on top of a standard loom and completely automated the thread selection process.</p>
+<p><strong>How it works:</strong></p>
+<ol>
+<li>A chain of stiff punched cards passes over a square cylinder (prism)</li>
+<li>On each pass of the shuttle, the next card is pressed against a row of spring-loaded needles</li>
+<li><strong>Where there is a hole</strong>: the needle passes through, hooks its corresponding thread hook, raises the warp thread → thread is UP</li>
+<li><strong>Where there is no hole</strong>: the needle is blocked, the thread is NOT lifted → thread is DOWN</li>
+<li>The shuttle passes through the gap created by the raised threads</li>
+<li>The next card advances — the next row of the pattern is set</li>
+</ol>
+<p>The complete pattern — potentially thousands of rows — is stored in the card chain. The loom executes it automatically, row by row, without any human decision-making during operation.</p>
+<p><strong>One key number</strong>: A Jacquard loom could execute a pattern requiring 24,000 cards in sequence. A single weaver could then produce complex silk damask at the rate a simple loom produces plain fabric.</p>
+<hr />
+<h3>The Reaction</h3>
+<p>The impact was immediate and violent. Lyon's weavers rioted. Jacquard was attacked in the street. His looms were burned. The city council confiscated the machines.</p>
+<p>Then economics won. By 1812, Napoleon had ordered 11,000 Jacquard looms installed across France. By 1833, there were 30,000 in Lyon alone. The weavers who once opposed the machine now operated it.</p>
+<hr />
+<h3>Babbage Sees It</h3>
+<p>Charles Babbage visited a weaving exhibition in London in the 1830s and saw a portrait of Jacquard himself — <strong>woven in silk on a Jacquard loom</strong>, using 24,000 punch cards. The portrait had the photographic detail of an engraving.</p>
+<p>Babbage later wrote: <em>&quot;The Jacquard loom is capable of weaving any design which the imagination of man may conceive.&quot;</em></p>
+<p>He immediately grasped that the same principle — <strong>instructions stored on cards, read sequentially by a machine</strong> — could control a calculating engine. Not just weaving, but any computation.</p>
+<p>This insight is the direct intellectual link between the Jacquard loom and the Analytical Engine (Module 0.4) — and by extension, to every computer ever built.</p>
+<hr />
+<h2>The Concept: What a Punch Card Actually Is</h2>
+<p>A punch card is a <strong>binary encoding of instructions</strong>.</p>
+<p>Each position on the card can be either:</p>
+<ul>
+<li><strong>Hole</strong> → 1 (do this: lift this thread / read this data)</li>
+<li><strong>No hole</strong> → 0 (don't do this: leave thread down / skip)</li>
+</ul>
+<p>A row of 8 positions gives you 8 binary decisions. That's 1 byte. A card with 24 rows of 80 positions is 1,920 bits = 240 bytes.</p>
+<p>This is not a metaphor. IBM's 80-column punch cards, used until the 1980s, encoded exactly 80 characters of data per card using a binary hole/no-hole scheme — the direct industrial descendant of Jacquard's system.</p>
+<h3>The Three Revolutionary Ideas</h3>
+<table>
+<thead>
+<tr>
+<th>Idea</th>
+<th>What it meant</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>External instruction storage</strong></td>
+<td>The program lives outside the machine; it can be saved, copied, edited</td>
+</tr>
+<tr>
+<td><strong>Sequential execution</strong></td>
+<td>Cards are read in order; the machine follows a defined sequence of steps</td>
+</tr>
+<tr>
+<td><strong>Separation of program from machine</strong></td>
+<td>The same loom can weave any pattern; the same computer can run any program</td>
+</tr>
+</tbody>
+</table>
+<p>The third idea is the most profound. Before Jacquard, a machine did one thing. After Jacquard, a machine + a card chain was <strong>general-purpose within its domain</strong>. You didn't need a different loom for each pattern — you needed different cards.</p>
+<p>You don't need a different computer for each program. You need different software.</p>
+<p><strong>This is the conceptual birth of software.</strong></p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p>The simulation has two interconnected tools:</p>
+<p><strong>Tool 1 — Punch Card Designer</strong></p>
+<ul>
+<li>A grid of 8 columns × 8 rows</li>
+<li>Click any cell to punch a hole (●) or leave it blank (○)</li>
+<li>Each row represents one pass of the shuttle</li>
+<li>Each column controls one thread (UP if hole, DOWN if no hole)</li>
+</ul>
+<p><strong>Tool 2 — Loom Animator</strong></p>
+<ul>
+<li>Press &quot;Weave&quot; to execute your card chain row by row</li>
+<li>Watch which threads rise (shown in gold) and which stay down (shown in grey)</li>
+<li>Watch the woven pattern build up, row by row, in the fabric preview</li>
+</ul>
+<p><strong>What to try:</strong></p>
+<ol>
+<li>Punch a checkerboard pattern (alternate holes row by row) and weave it</li>
+<li>Create a diagonal stripe</li>
+<li>Try to create the letter &quot;H&quot; in the fabric</li>
+</ol>
+<p><strong>Key observation:</strong> Once you've designed the card chain, the loom executes it identically every time. Change one card → only that row changes.</p>
+<hr />
+<h2>Going Deeper</h2>
+<p>The Jacquard loom didn't just inspire Babbage. It is the ancestor of:</p>
+<ul>
+<li><strong>Piano rolls</strong> (1800s): punched paper rolls storing musical performances</li>
+<li><strong>Player pianos</strong>: reading holes → pressing keys (mechanical music playback)</li>
+<li><strong>Telegraphs and teletypes</strong>: punched tape for transmitting messages</li>
+<li><strong>IBM punch cards</strong>: 80-column cards used in mainframes until the 1980s</li>
+<li><strong>Perforated tape</strong>: used to program early NC (numerically controlled) machine tools</li>
+<li><strong>CD/DVD pits and lands</strong>: optical discs encode 0s and 1s as microscopic holes (pits) and flat areas (lands) — same principle, laser instead of needle</li>
+</ul>
+<p>The hole-as-instruction is one of humanity's most durable ideas.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Design a 4-row punch card sequence that weaves a specific pattern, encode it as binary, then decode a mystery card sequence and identify the pattern it produces.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-0-2-mechanical/lesson.html" class="btn-icon">← Prev: M 0.2</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-0-4-babbage-ada/lesson.html" class="btn-icon btn-primary">Next: M 0.4 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

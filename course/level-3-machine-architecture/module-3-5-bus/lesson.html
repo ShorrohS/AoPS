@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 3.5 — The Bus: Moving Data Around | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 3.5
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        The Bus: Moving Data Around
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 3 • Machine Architecture</div>
+      <h1 class="article-title">Module 3.5 — The Bus: Moving Data Around</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-3-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 3.5 — The Bus: Moving Data Around</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>The CPU computes. Memory stores. I/O devices communicate.</p>
+<p>But how do these components actually <em>talk to each other</em>?<br />
+The CPU is a chip on a motherboard. Memory is another chip. The GPU is a third.</p>
+<p>They cannot communicate by thought. They need a shared pathway — a physical medium, a protocol, and a set of rules for who talks when.</p>
+<p>That pathway is the <strong>bus</strong>.</p>
+</blockquote>
+<p>A bus is a shared communication channel — a set of wires connecting multiple components, plus the protocol that governs who uses those wires and when.</p>
+<hr />
+<h2>The Story</h2>
+<h3>The Early Bus: Everything Shared One Wire</h3>
+<p>The earliest computers wired components point-to-point: the CPU had a dedicated wire to memory, another to the printer, another to the card reader. Every new device required new wires and new control logic. Adding a device to a computer was a hardware engineering project.</p>
+<p>The invention of the <strong>shared bus</strong> — a common set of wires that all components connect to — was transformative. Now adding a device meant plugging it into the existing bus. The protocol managed who could talk and when.</p>
+<p>The <strong>Intel 8086 (1978)</strong> used a 16-bit data bus and 20-bit address bus. The <strong>IBM PC (1981)</strong> standardised the ISA bus (not to be confused with Instruction Set Architecture — the same acronym used for different purposes). <strong>PCI (1992)</strong> replaced ISA. <strong>PCIe (2003)</strong> replaced PCI with a point-to-point switched fabric that looks like a bus to software but is physically very different.</p>
+<hr />
+<h3>The Three Sub-Buses</h3>
+<p>A classical system bus consists of three logically separate groups of signals:</p>
+<p><strong>Address Bus</strong></p>
+<ul>
+<li>Carries the address of the memory location or I/O device being accessed</li>
+<li>Unidirectional: CPU → memory/devices</li>
+<li>Width determines addressable space: 32-bit → 4 GB, 64-bit → 16 EB</li>
+<li>Example: CPU places 0x0000_1000 on address bus → selects address 4096</li>
+</ul>
+<p><strong>Data Bus</strong></p>
+<ul>
+<li>Carries the actual data being read or written</li>
+<li>Bidirectional: CPU ↔ memory/devices</li>
+<li>Width determines how much data moves per transfer: 8, 16, 32, or 64 bits</li>
+<li>A 64-bit data bus moves 8 bytes per bus cycle</li>
+</ul>
+<p><strong>Control Bus</strong></p>
+<ul>
+<li>Carries control signals that coordinate the operation</li>
+<li>Signals include:
+<ul>
+<li><code>READ</code> / <code>WRITE</code> — direction of transfer</li>
+<li><code>MEMORY_SELECT</code> / <code>IO_SELECT</code> — is this a memory or I/O access?</li>
+<li><code>CLOCK</code> — timing signal</li>
+<li><code>INTERRUPT_REQUEST</code> — device requests CPU attention</li>
+<li><code>BUS_GRANT</code> / <code>BUS_REQUEST</code> — bus arbitration</li>
+<li><code>RESET</code> — system reset</li>
+</ul>
+</li>
+</ul>
+<p>All three buses operate simultaneously, coordinated by the clock.</p>
+<hr />
+<h3>Bus Arbitration</h3>
+<p>A bus is a <strong>shared resource</strong>. Only one device can use it at a time. When multiple components want to use the bus simultaneously, someone must decide who goes first. This is <strong>bus arbitration</strong>.</p>
+<p><strong>Daisy-chain arbitration</strong>: devices are chained in priority order. A bus grant signal passes down the chain — the first device in the chain that wants the bus takes it. Simple but unfair to low-priority devices.</p>
+<p><strong>Centralised arbitration</strong>: a dedicated <strong>bus arbiter</strong> receives requests from all devices and grants access based on a scheduling policy (round-robin, priority, etc.). Fairer but requires extra hardware.</p>
+<p><strong>Distributed arbitration</strong>: devices use a shared wire and a collision-detection protocol (similar to early Ethernet). Each device can &quot;bid&quot; for the bus simultaneously; the highest-priority wins based on wire-OR logic.</p>
+<p>Modern systems like PCIe avoid shared-bus arbitration entirely by using <strong>point-to-point switched connections</strong> — each device has its own dedicated link to a switch (like Ethernet vs a hub). But the software model still looks like a bus.</p>
+<hr />
+<h3>Von Neumann vs Harvard Architecture</h3>
+<p><strong>Von Neumann architecture</strong>: instructions and data share the same memory and the same bus. The CPU fetches an instruction, then fetches data — both using the same path. This creates the <strong>Von Neumann bottleneck</strong>: the bus bandwidth limits performance because the same resource is contended for both code and data.</p>
+<p>Almost all general-purpose computers (x86, ARM application cores) use Von Neumann architecture.</p>
+<p><strong>Harvard architecture</strong>: separate memory and separate buses for instructions and data. The CPU can fetch an instruction and read data simultaneously — no contention. Simpler to implement but more expensive (two separate memory systems).</p>
+<p>Used in: microcontrollers (PIC, AVR), DSPs, many embedded systems.</p>
+<p><strong>Modified Harvard</strong>: use separate L1 instruction cache and L1 data cache (effectively separate buses at the cache level), but share memory at L2 and beyond. This gives most of Harvard's performance benefit while keeping one unified address space. Used by: modern x86-64, ARM Cortex-A. This is why L1 is listed as &quot;L1i&quot; (instruction) and &quot;L1d&quot; (data) in CPU specs.</p>
+<hr />
+<h3>Bus Bandwidth and Latency</h3>
+<p><strong>Bandwidth</strong>: how much data can flow per second.</p>
+<pre><code>Bandwidth = (bus width in bytes) × (bus clock frequency)
+Example: 64-bit bus at 100 MHz = 8 bytes × 100 MHz = 800 MB/s
+DDR4-3200: 64-bit × 1,600 MHz (double-pumped) × 2 channels = 51.2 GB/s
+</code></pre>
+<p><strong>Latency</strong>: how long until the first data byte arrives after a request.</p>
+<pre><code>Latency = (bus request overhead) + (memory access time)
+Typical DRAM latency: 60–80 ns regardless of bus bandwidth
+</code></pre>
+<p>Bandwidth and latency are independent. A high-bandwidth bus can still have high latency. Latency dominates for small random accesses; bandwidth dominates for large sequential transfers.</p>
+<p><strong>Bus width vs bus speed</strong>: doubling bus width doubles bandwidth but requires more pins/wires (expensive). Doubling clock speed doubles bandwidth but increases power and electromagnetic interference. Real systems balance both.</p>
+<hr />
+<h3>PCIe: The Modern &quot;Bus&quot;</h3>
+<p>PCIe (Peripheral Component Interconnect Express) is the dominant high-speed interconnect in modern PCs. Technically it is not a shared bus — it is a <strong>switched point-to-point serial fabric</strong>.</p>
+<ul>
+<li>Each device has a <strong>dedicated serial link</strong> (lane) to the PCIe root complex (in the CPU or chipset)</li>
+<li>Each lane is 2 differential pairs: one transmit, one receive</li>
+<li>×1, ×4, ×8, ×16 slot configurations (1, 4, 8, or 16 lanes)</li>
+<li>PCIe 5.0: 4 GB/s per lane → ×16 = 64 GB/s bidirectional</li>
+</ul>
+<p>But from the software perspective, PCIe devices appear in the system address space, are configured via memory-mapped registers, and use the same read/write semantics as any bus. The abstraction holds.</p>
+<hr />
+<h2>The Concept: The Bus as Shared Protocol</h2>
+<p>The bus is the physical embodiment of the computing contract: any component that implements the protocol can participate in the system. This is why standards matter. The PCI bus standard let any manufacturer build cards that worked in any PCI motherboard. USB lets any peripheral connect to any host. PCIe lets any GPU or NVMe drive work in any compatible system.</p>
+<p>Without standardised bus protocols, the computer industry would be a fragmented ecosystem of incompatible proprietary interfaces — which is exactly what it was before the IBM PC standardised the ISA bus in 1981.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Bus Transaction Animator</strong></p>
+<ul>
+<li>A visual system with CPU, RAM, and two I/O devices sharing a bus</li>
+<li>Click &quot;Read&quot; or &quot;Write&quot; to initiate a bus transaction</li>
+<li>Watch: address bus lights up with the address, control bus signals activate, data flows on the data bus</li>
+<li>Each sub-bus is colour-coded (address=blue, data=red, control=gold)</li>
+</ul>
+<p><strong>Tool 2 — Bus Arbitration</strong></p>
+<ul>
+<li>Three devices simultaneously request the bus</li>
+<li>Try different arbitration schemes: fixed priority, round-robin, FCFS</li>
+<li>Observe which device waits, and for how long</li>
+<li>Calculate bus utilisation percentage</li>
+</ul>
+<p><strong>Tool 3 — Von Neumann vs Harvard</strong></p>
+<ul>
+<li>Two toy CPUs execute the same program: one Von Neumann, one Harvard</li>
+<li>Von Neumann: instruction fetch and data access contend on the same bus</li>
+<li>Harvard: both happen in parallel</li>
+<li>Compare instruction throughput</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Cache coherency</strong>: when multiple CPU cores share memory, each has its own L1/L2 cache. If Core 0 writes to address X and Core 1 has X cached, Core 1's cache is now stale (incoherent). The <strong>MESI protocol</strong> (Modified, Exclusive, Shared, Invalid) maintains coherency: cache lines carry state tags, and bus transactions notify other caches when a write occurs. Without coherency, multiprocessor programs would produce incorrect results silently.</p>
+<p><strong>Memory-mapped I/O vs port-mapped I/O revisited</strong>: on x86, both exist. The CPU has separate IN/OUT instructions for port-mapped I/O (64K I/O ports) and uses regular MOV for MMIO. Linux drivers almost exclusively use MMIO via <code>ioremap()</code>. Port I/O is relegated to legacy devices (PS/2 keyboard, COM ports, legacy DMA).</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Calculate bus bandwidth for different configurations, trace bus transactions through a Von Neumann system, compare arbitration strategies, and design a memory map for a small embedded system.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-3-4-io/lesson.html" class="btn-icon">← Prev: M 3.4</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../../level-4-software-foundations/module-4-1-machine-code/lesson.html" class="btn-icon btn-primary">Next: M 4.1 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

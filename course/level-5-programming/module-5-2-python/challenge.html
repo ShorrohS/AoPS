@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 5.2 — Python: High-Level Abstraction | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 5.2
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 5.2 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Python: High-Level Abstraction.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 5.2 — Python: Abstraction for Humans</p>
+<p><strong>Type:</strong> Implementation + trace + reasoning<br />
+<strong>Estimated time:</strong> 45–55 minutes<br />
+<strong>Tools needed:</strong> Python interpreter (or <code>simulation.html</code>)</p>
+<hr />
+<h2>Part A — Linked List in Python</h2>
+<p>Implement a singly linked list class with the following interface:</p>
+<pre><code class="language-python">class Node:
+    def __init__(self, data, next=None): ...
+
+class LinkedList:
+    def __init__(self): ...
+    def append(self, data): ...       # add to tail — O(n) acceptable
+    def prepend(self, data): ...      # add to head — O(1)
+    def delete(self, data): ...       # remove first occurrence
+    def __iter__(self): ...           # enable: for x in linked_list
+    def __repr__(self): ...           # e.g., &quot;1 → 2 → 3 → None&quot;
+</code></pre>
+<ol>
+<li>
+<p>Implement the class. Test with: <code>ll = LinkedList(); ll.append(1); ll.append(2); ll.prepend(0); ll.delete(1); print(ll)</code> → should print <code>0 → 2 → None</code>.</p>
+</li>
+<li>
+<p>What is the time complexity of <code>append</code>? How would you make it O(1)?</p>
+</li>
+<li>
+<p>Write a <code>reverse()</code> method that reverses the list in-place (no new nodes created). What is its time complexity?</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Timing Decorator</h2>
+<p>Write a <code>@timer</code> decorator that:</p>
+<ul>
+<li>Times any function it wraps</li>
+<li>Prints <code>&quot;function_name took X.XXXXs&quot;</code></li>
+<li>Returns the function's original return value unchanged</li>
+</ul>
+<pre><code class="language-python">@timer
+def slow_sort(lst):
+    import time; time.sleep(0.1)
+    return sorted(lst)
+
+result = slow_sort([3, 1, 2])
+# slow_sort took 0.1003s
+# result == [1, 2, 3]
+</code></pre>
+<ol start="4">
+<li>
+<p>Implement the decorator. Handle functions with any number of positional and keyword arguments.</p>
+</li>
+<li>
+<p>How do you preserve the wrapped function's <code>__name__</code> and <code>__doc__</code>? Why does this matter?</p>
+</li>
+<li>
+<p>Extend the decorator to accept a parameter: <code>@timer(unit='ms')</code> that prints time in milliseconds instead of seconds.</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — Reference Counting</h2>
+<p>Trace the reference count of each object through this sequence:</p>
+<pre><code class="language-python">a = [1, 2, 3]    # (1)
+b = a             # (2)
+c = [a, a]        # (3)
+del a             # (4)
+b[0] = 99         # (5)
+print(c)          # (6)
+del b             # (7)
+del c             # (8)
+</code></pre>
+<ol start="7">
+<li>After line (2): what is the reference count of the list <code>[1, 2, 3]</code>?</li>
+<li>After line (3): what is the reference count?</li>
+<li>After line (4): what is the reference count? Is the list freed?</li>
+<li>What does line (6) print? Why? (Think about what <code>c</code> contains.)</li>
+<li>After lines (7) and (8): what happens to the list? Why?</li>
+</ol>
+<hr />
+<h2>Part D — Mutability and Aliasing</h2>
+<pre><code class="language-python">def add_item(lst, item, default=[]):   # BUG
+    default.append(item)
+    lst.append(default)
+
+results = []
+add_item(results, 1)
+add_item(results, 2)
+add_item(results, 3)
+print(results)
+</code></pre>
+<ol start="12">
+<li>
+<p>What does <code>print(results)</code> actually output? Explain why, referencing how Python handles default argument evaluation.</p>
+</li>
+<li>
+<p>What was the programmer's intent? Rewrite the function correctly.</p>
+</li>
+<li>
+<p>Explain the difference between these two operations:</p>
+<pre><code class="language-python">a = [1, 2, 3]
+b = a          # case 1
+b = a[:]       # case 2 (slice copy)
+b = a.copy()   # case 3
+</code></pre>
+<p>In which case does modifying <code>b</code> affect <code>a</code>? Why?</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Python Internals</h2>
+<ol start="15">
+<li>
+<p>Why does this produce <code>True</code> in CPython but is not guaranteed by the language spec?</p>
+<pre><code class="language-python">a = 256
+b = 256
+print(a is b)   # True
+a = 257
+b = 257
+print(a is b)   # False (usually)
+</code></pre>
+<p>What is CPython's integer interning range? What does <code>is</code> test vs <code>==</code>?</p>
+</li>
+<li>
+<p>Explain why Python's <code>dict</code> preserves insertion order (since Python 3.7) while a hash table normally does not. What does Python's implementation do differently?</p>
+</li>
+<li>
+<p>What is the GIL? Give one scenario where threads run concurrently despite the GIL, and one where they don't.</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A linked list (3 questions)</td>
+<td>25</td>
+</tr>
+<tr>
+<td>B timer decorator (3 questions)</td>
+<td>25</td>
+</tr>
+<tr>
+<td>C reference counting (5 questions)</td>
+<td>25</td>
+</tr>
+<tr>
+<td>D mutability (3 questions)</td>
+<td>15</td>
+</tr>
+<tr>
+<td>E internals (3 questions)</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A — Linked List</summary>
+<pre><code class="language-python">class Node:
+    def __init__(self, data, next=None):
+        self.data = data
+        self.next = next
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    def prepend(self, data):
+        self.head = Node(data, self.head)
+
+    def append(self, data):
+        if not self.head:
+            self.head = Node(data); return
+        curr = self.head
+        while curr.next: curr = curr.next
+        curr.next = Node(data)
+
+    def delete(self, data):
+        if not self.head: return
+        if self.head.data == data:
+            self.head = self.head.next; return
+        curr = self.head
+        while curr.next:
+            if curr.next.data == data:
+                curr.next = curr.next.next; return
+            curr = curr.next
+
+    def __iter__(self):
+        curr = self.head
+        while curr: yield curr.data; curr = curr.next
+
+    def __repr__(self):
+        return ' → '.join(str(x) for x in self) + ' → None'
+
+    def reverse(self):
+        prev, curr = None, self.head
+        while curr:
+            nxt = curr.next
+            curr.next = prev
+            prev = curr; curr = nxt
+        self.head = prev
+</code></pre>
+</details>
+<details>
+<summary>Part B — Timer decorator</summary>
+<pre><code class="language-python">import time
+from functools import wraps
+
+def timer(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        elapsed = time.perf_counter() - start
+        print(f&quot;{func.__name__} took {elapsed:.4f}s&quot;)
+        return result
+    return wrapper
+
+# Parametrised version
+def timer(unit='s'):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            start = time.perf_counter()
+            result = func(*args, **kwargs)
+            elapsed = time.perf_counter() - start
+            val = elapsed * 1000 if unit == 'ms' else elapsed
+            print(f&quot;{func.__name__} took {val:.4f}{unit}&quot;)
+            return result
+        return wrapper
+    return decorator
+</code></pre>
+</details>
+<details>
+<summary>Part C — Reference counting answers</summary>
+<p>After (1): refcount = 1. After (2): refcount = 2. After (3): refcount = 4 (b + c[0] + c[1] + still a). After (4) del a: refcount = 3 (b + c[0] + c[1]). Not freed.</p>
+<p>Line (6): <code>c</code> contains two references to the SAME list object, which now has <code>b[0]</code> = 99. Output: <code>[[99, 2, 3], [99, 2, 3]]</code>.</p>
+<p>After del b (refcount=2) and del c (refcount=0): list is freed immediately.</p>
+</details>
+<details>
+<summary>Part D</summary>
+<ol start="12">
+<li>
+<p>Output: <code>[[[1], [1, 2], [1, 2, 3]]]</code>... Actually: <code>results = [[1], [1, 2], [1, 2, 3]]</code>. All three inner lists are THE SAME list object, each modified by successive calls. The default list <code>[]</code> is evaluated once at function definition time, not each call.</p>
+</li>
+<li>
+<p>Correct version:</p>
+</li>
+</ol>
+<pre><code class="language-python">def add_item(lst, item, default=None):
+    if default is None: default = []
+    default.append(item)
+    lst.append(default)
+</code></pre>
+<p>But if the intent was a fresh list each call: <code>lst.append([item])</code>.</p>
+<ol start="14">
+<li>Case 1 (<code>b = a</code>): same object. Modifying <code>b</code> modifies <code>a</code>. Case 2 and 3: shallow copy — new list object. Modifying <code>b</code> does not affect <code>a</code> (for non-nested lists).</li>
+</ol>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

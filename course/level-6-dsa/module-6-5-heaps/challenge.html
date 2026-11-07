@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 6.5 — Priority Queues &amp; Heaps | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 6.5
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 6.5 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Priority Queues &amp; Heaps.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 6.5 — Heaps and Priority Queues</p>
+<p><strong>Type:</strong> Trace + implementation + application<br />
+<strong>Estimated time:</strong> 45–55 minutes<br />
+<strong>Tools needed:</strong> pen and paper + Python</p>
+<hr />
+<h2>Part A — Heap Operations</h2>
+<p>Start with this <strong>max-heap</strong> (array representation): <code>[90, 80, 70, 50, 60, 40, 30, 20, 10]</code></p>
+<p>Indices: 0=90, 1=80, 2=70, 3=50, 4=60, 5=40, 6=30, 7=20, 8=10</p>
+<ol>
+<li>
+<p><strong>Insert 85</strong>: trace the sift-up operation. Show the array after every swap.</p>
+</li>
+<li>
+<p><strong>Extract-max</strong>: remove the maximum (90). Show every swap in the sift-down operation. What is the final array?</p>
+</li>
+<li>
+<p>What is the height of a max-heap containing n elements? Express as a function of n.</p>
+</li>
+<li>
+<p>For n=1,000,000 elements, what is the maximum number of swaps for a single <code>insert</code> or <code>extract-max</code>?</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Floyd's Build-Heap</h2>
+<p>Given the arbitrary array <code>[3, 9, 2, 1, 4, 5, 8, 7, 6]</code>, build a max-heap using Floyd's O(n) algorithm (sift down from last non-leaf).</p>
+<ol start="5">
+<li>
+<p>Identify the index of the last non-leaf node. (For n=9: <code>(9-2)//2 = 3</code>, so index 3.)</p>
+</li>
+<li>
+<p>Trace Floyd's algorithm: sift down from index 3 down to index 0. Show the array after each sift-down operation.</p>
+</li>
+<li>
+<p><strong>Compare to naive approach</strong>: if you insert each element one by one using the standard O(log n) insert, show the total number of swaps. Compare to Floyd's approach's total swaps.</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — Heapsort</h2>
+<ol start="8">
+<li>
+<p>Apply <strong>heapsort</strong> to <code>[4, 10, 3, 5, 1]</code>:</p>
+<ul>
+<li>Step 1: build a max-heap (show the array)</li>
+<li>Step 2: repeatedly swap root with last element, sift down on reduced heap</li>
+<li>Show the array after each swap-and-sift-down</li>
+</ul>
+</li>
+<li>
+<p>Heapsort is in-place but has poor cache behaviour. Explain why: what is the access pattern of sift-down compared to merge sort's sequential access?</p>
+</li>
+</ol>
+<hr />
+<h2>Part D — Priority Queue Applications</h2>
+<ol start="10">
+<li>
+<p><strong>K-th largest element</strong>: given an unsorted array of n integers, find the k-th largest element in O(n log k) time using a min-heap of size k. Implement this and trace on <code>arr=[3,2,1,5,6,4], k=2</code>. The answer is 5.</p>
+</li>
+<li>
+<p><strong>Merge k sorted lists</strong>: given k sorted lists with a total of n elements, merge them into one sorted list in O(n log k). Use a min-heap of size k. Trace on: <code>[[1,4,7],[2,5,8],[3,6,9]]</code>.</p>
+</li>
+<li>
+<p><strong>Sliding window maximum</strong>: given <code>arr=[1,3,-1,-3,5,3,6,7]</code> and window size k=3, find the maximum in each window of size k. The expected output is <code>[3,3,5,5,6,7]</code>. Implement using a deque (monotonic decreasing). What is the time complexity?</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Heap Variants</h2>
+<ol start="13">
+<li>
+<p>A <strong>d-ary heap</strong> has d children per node instead of 2. The height of an n-element d-ary heap is log_d(n). What is the trade-off between d=2 (binary) and d=4 (4-ary) for:</p>
+<ul>
+<li>Insert (sift-up) time</li>
+<li>Extract-min (sift-down) time</li>
+</ul>
+</li>
+<li>
+<p>For Dijkstra's algorithm, which is better: a binary heap or a 4-ary heap? The algorithm performs E edge relaxations (decrease-key or insert) and V extract-min operations. Set up the inequality.</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A heap operations</td>
+<td>24</td>
+</tr>
+<tr>
+<td>B Floyd's build-heap</td>
+<td>20</td>
+</tr>
+<tr>
+<td>C heapsort</td>
+<td>14</td>
+</tr>
+<tr>
+<td>D applications</td>
+<td>30</td>
+</tr>
+<tr>
+<td>E heap variants</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A.1 — insert 85</summary>
+<p>Append 85 at index 9. Parent of index 9 = (9-1)//2 = 4 (value 60).<br />
+85 &gt; 60 → swap. Array: [90,80,70,50,<strong>85</strong>,40,30,20,10,<strong>60</strong>]<br />
+New index=4, parent=(4-1)//2=1 (value 80). 85 &gt; 80 → swap.<br />
+Array: [90,<strong>85</strong>,70,50,<strong>80</strong>,40,30,20,10,60]<br />
+New index=1, parent=0 (value 90). 85 &lt; 90 → stop.<br />
+Final: [90,85,70,50,80,40,30,20,10,60]</p>
+</details>
+<details>
+<summary>Part D.10 — k-th largest</summary>
+<pre><code class="language-python">import heapq
+
+def kth_largest(arr, k):
+    heap = []  # min-heap of size k
+    for x in arr:
+        heapq.heappush(heap, x)
+        if len(heap) &gt; k:
+            heapq.heappop(heap)   # remove smallest, keep k largest
+    return heap[0]   # root of min-heap = k-th largest
+
+# Trace on [3,2,1,5,6,4], k=2:
+# After 3: heap=[3]
+# After 2: heap=[2,3]
+# After 1: heap=[2,3] (1 popped immediately)
+# After 5: heap=[3,5] (2 popped)
+# After 6: heap=[5,6] (3 popped)
+# After 4: heap=[5,6] (4 popped)
+# Answer: 5 ✓
+</code></pre>
+</details>
+<details>
+<summary>Part D.11 — merge k sorted lists</summary>
+<pre><code class="language-python">import heapq
+
+def merge_k_sorted(lists):
+    heap = []
+    for i, lst in enumerate(lists):
+        if lst: heapq.heappush(heap, (lst[0], i, 0))  # (val, list_idx, elem_idx)
+
+    result = []
+    while heap:
+        val, i, j = heapq.heappop(heap)
+        result.append(val)
+        if j + 1 &lt; len(lists[i]):
+            heapq.heappush(heap, (lists[i][j+1], i, j+1))
+    return result
+</code></pre>
+<p>Trace on [[1,4,7],[2,5,8],[3,6,9]]:</p>
+<ul>
+<li>Initial heap: [(1,0,0),(2,1,0),(3,2,0)]</li>
+<li>Pop (1,0,0): output 1, push (4,0,1)</li>
+<li>Pop (2,1,0): output 2, push (5,1,1)</li>
+<li>Pop (3,2,0): output 3, push (6,2,1)</li>
+<li>... continues to produce [1,2,3,4,5,6,7,8,9]</li>
+</ul>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

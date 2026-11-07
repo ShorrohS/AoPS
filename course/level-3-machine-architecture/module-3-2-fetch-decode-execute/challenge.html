@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 3.2 — The Fetch-Decode-Execute Cycle | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 3.2
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 3.2 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for The Fetch-Decode-Execute Cycle.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 3.2 — The Fetch-Decode-Execute Cycle</p>
+<p><strong>Type:</strong> Trace + reasoning + design<br />
+<strong>Estimated time:</strong> 45–55 minutes<br />
+<strong>Tools needed:</strong> <code>simulation.html</code> + pen and paper</p>
+<hr />
+<h2>Setup — The Toy CPU</h2>
+<p>This challenge uses a toy CPU with:</p>
+<ul>
+<li>4 general-purpose registers: <strong>A, B, C, D</strong> (each 8 bits, initially 0)</li>
+<li>A <strong>Program Counter (PC)</strong> (initially 0x00)</li>
+<li>16 bytes of memory (addresses 0x00–0x0F)</li>
+<li>A simple instruction set:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x01</td>
+<td>LOAD_A imm</td>
+<td>Load immediate value into A</td>
+</tr>
+<tr>
+<td>0x02</td>
+<td>LOAD_B imm</td>
+<td>Load immediate value into B</td>
+</tr>
+<tr>
+<td>0x03</td>
+<td>LOAD_C imm</td>
+<td>Load immediate value into C</td>
+</tr>
+<tr>
+<td>0x10</td>
+<td>ADD</td>
+<td>A ← A + B</td>
+</tr>
+<tr>
+<td>0x11</td>
+<td>SUB</td>
+<td>A ← A − B</td>
+</tr>
+<tr>
+<td>0x12</td>
+<td>AND</td>
+<td>A ← A AND B</td>
+</tr>
+<tr>
+<td>0x13</td>
+<td>OR</td>
+<td>A ← A OR B</td>
+</tr>
+<tr>
+<td>0x20</td>
+<td>STORE addr</td>
+<td>Memory[addr] ← A</td>
+</tr>
+<tr>
+<td>0x21</td>
+<td>LOAD_A_MEM addr</td>
+<td>A ← Memory[addr]</td>
+</tr>
+<tr>
+<td>0x30</td>
+<td>JMP addr</td>
+<td>PC ← addr (unconditional jump)</td>
+</tr>
+<tr>
+<td>0x31</td>
+<td>JZ addr</td>
+<td>If A=0: PC ← addr, else continue</td>
+</tr>
+<tr>
+<td>0xFF</td>
+<td>HALT</td>
+<td>Stop execution</td>
+</tr>
+</tbody>
+</table>
+<p>All instructions that take an operand are 2 bytes: opcode then operand.<br />
+Instructions with no operand (ADD, SUB, etc.) are 1 byte.</p>
+<hr />
+<h2>Part A — Manual FDE Trace</h2>
+<p>The following program is loaded into memory starting at 0x00:</p>
+<pre><code>0x00: 0x01    (LOAD_A)
+0x01: 0x0A    (immediate value: 10)
+0x02: 0x02    (LOAD_B)
+0x03: 0x06    (immediate value: 6)
+0x04: 0x11    (SUB — A ← A - B)
+0x05: 0x20    (STORE)
+0x06: 0x0E    (store address: 0x0E)
+0x07: 0xFF    (HALT)
+</code></pre>
+<p>For each FDE cycle, fill in this table:</p>
+<table>
+<thead>
+<tr>
+<th>Cycle</th>
+<th>PC (start)</th>
+<th>Fetch: IR←</th>
+<th>Decode: operation</th>
+<th>Execute: result</th>
+<th>PC (end)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0x00</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr>
+<td>2</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr>
+<td>3</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr>
+<td>4</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+</tr>
+</tbody>
+</table>
+<p>After cycle 4 (HALT), what is in:</p>
+<ul>
+<li>Register A?</li>
+<li>Register B?</li>
+<li>Memory[0x0E]?</li>
+</ul>
+<hr />
+<h2>Part B — PC Arithmetic</h2>
+<ol start="5">
+<li>
+<p>After the CPU fetches a <strong>1-byte instruction</strong> (like ADD = 0x10) from address 0x07, what does PC become?</p>
+</li>
+<li>
+<p>After the CPU fetches a <strong>2-byte instruction</strong> (like LOAD_A + operand) starting at address 0x04, what does PC become after the full instruction is processed (both bytes fetched)?</p>
+</li>
+<li>
+<p>A JMP instruction at address 0x09 carries the operand 0x02. After executing the jump:</p>
+<ul>
+<li>What is the new value of PC?</li>
+<li>What instruction will be fetched next?</li>
+</ul>
+</li>
+<li>
+<p>A program has a bug: the HALT instruction was accidentally overwritten and the CPU keeps executing past address 0x07 into undefined memory (all 0x00 bytes). What happens? (0x00 is not a valid opcode in our ISA — what would a real CPU do?)</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — Write a Program</h2>
+<p>Write a program in the toy ISA that computes <strong>3 × 4</strong> using only ADD and LOAD instructions (no multiply instruction exists). Store the result at address 0x0F.</p>
+<p>Constraints:</p>
+<ul>
+<li>You may use registers A, B, C</li>
+<li>You may use any addresses 0x08–0x0F for data storage</li>
+<li>Use HALT at the end</li>
+</ul>
+<p>Write out the full memory contents (opcode + operand for each instruction), and trace at least the first 3 FDE cycles.</p>
+<p><em>Hint: 3 × 4 = 4 + 4 + 4. Use a loop… or just unroll it.</em></p>
+<hr />
+<h2>Part D — Pipeline Reasoning</h2>
+<p>A 4-stage pipeline: <strong>Fetch → Decode → Execute → Writeback</strong></p>
+<ol start="9">
+<li>
+<p>A non-pipelined CPU takes 4 cycles to complete 1 instruction. How many cycles to complete 8 instructions?</p>
+</li>
+<li>
+<p>A 4-stage pipelined CPU takes 4 cycles for the first instruction to complete, then 1 additional cycle per instruction after that. How many total cycles for 8 instructions?</p>
+</li>
+<li>
+<p>The 5th instruction in the sequence is a conditional jump (JZ). The CPU predicts &quot;not taken&quot; and continues fetching the next 3 instructions speculatively. The jump is actually taken. What happens to those 3 speculatively-fetched instructions? How many cycles are wasted?</p>
+</li>
+<li>
+<p>In your own words: why does branch prediction matter more at higher clock speeds and deeper pipelines?</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Control Unit Design</h2>
+<p>The control unit for our toy CPU must generate control signals based on the decoded opcode. For each instruction below, list which hardware components receive an active control signal:</p>
+<table>
+<thead>
+<tr>
+<th>Instruction</th>
+<th>ALU?</th>
+<th>Memory Read?</th>
+<th>Memory Write?</th>
+<th>PC Change?</th>
+<th>Which registers involved?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LOAD_A imm</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ADD</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>STORE addr</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>JMP addr</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>HALT</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A trace (4 cycles)</td>
+<td>28</td>
+</tr>
+<tr>
+<td>B PC arithmetic (4 questions)</td>
+<td>20</td>
+</tr>
+<tr>
+<td>C program + trace</td>
+<td>25</td>
+</tr>
+<tr>
+<td>D pipeline (4 questions)</td>
+<td>17</td>
+</tr>
+<tr>
+<td>E control signals</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Hints</h2>
+<details>
+<summary>Hint — Part A: how to handle 2-byte instructions</summary>
+For LOAD_A: Cycle 1 fetches the opcode (0x01) at PC=0x00, PC becomes 0x01. The execute phase then fetches the operand byte from PC=0x01, PC becomes 0x02. So a 2-byte instruction consumes 2 PC increments. The whole LOAD_A + operand is one "logical" instruction but touches two memory addresses.
+</details>
+<details>
+<summary>Hint — Part C: multiplication by repeated addition</summary>
+Load 4 into A. Load 4 into B. ADD (A=8). ADD (A=12). STORE. Or: Load 4 into B three times and ADD three times. Or load 4 once and add it three times using a loop structure (JZ + counter in C).
+</details>
+<hr />
+<h2>Solution</h2>
+<details>
+<summary>Part A — Full Trace</summary>
+<table>
+<thead>
+<tr>
+<th>Cycle</th>
+<th>PC start</th>
+<th>IR fetch</th>
+<th>Operation</th>
+<th>Result</th>
+<th>PC end</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0x00</td>
+<td>0x01, 0x0A</td>
+<td>LOAD_A 10</td>
+<td>A ← 10</td>
+<td>0x02</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0x02</td>
+<td>0x02, 0x06</td>
+<td>LOAD_B 6</td>
+<td>B ← 6</td>
+<td>0x04</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0x04</td>
+<td>0x11</td>
+<td>SUB</td>
+<td>A ← 10−6 = 4</td>
+<td>0x05</td>
+</tr>
+<tr>
+<td>4</td>
+<td>0x05</td>
+<td>0x20, 0x0E</td>
+<td>STORE 0x0E</td>
+<td>Mem[0x0E] ← 4</td>
+<td>0x07</td>
+</tr>
+</tbody>
+</table>
+<p>Cycle 5: HALT — execution stops.</p>
+<p>Final state: A=4, B=6, Memory[0x0E]=4</p>
+</details>
+<details>
+<summary>Part D answers</summary>
+<ol start="9">
+<li>
+<p>Non-pipelined: 8 × 4 = <strong>32 cycles</strong></p>
+</li>
+<li>
+<p>Pipelined: 4 + (8−1) × 1 = <strong>11 cycles</strong></p>
+</li>
+<li>
+<p>The 3 speculatively-fetched instructions are <strong>flushed</strong> (discarded). The pipeline restarts from the jump target. <strong>3 cycles wasted</strong> (one per flushed instruction stage).</p>
+</li>
+<li>
+<p>A deeper pipeline means more in-flight instructions at any moment. A misprediction wastes not 3 cycles but potentially 15–20 cycles (for a 15–20 stage pipeline like modern x86). At 5 GHz, 20 wasted cycles = 4 nanoseconds. Multiply by millions of branches per second and the performance impact is enormous. This is why branch predictors in modern CPUs are extremely sophisticated — some use machine learning.</p>
+</li>
+</ol>
+</details>
+<details>
+<summary>Part E — Control signals</summary>
+<table>
+<thead>
+<tr>
+<th>Instruction</th>
+<th>ALU?</th>
+<th>Mem Read?</th>
+<th>Mem Write?</th>
+<th>PC Change?</th>
+<th>Registers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LOAD_A imm</td>
+<td>No</td>
+<td>Yes (operand)</td>
+<td>No</td>
+<td>+2</td>
+<td>A (dest), PC</td>
+</tr>
+<tr>
+<td>ADD</td>
+<td>Yes (ADD)</td>
+<td>No</td>
+<td>No</td>
+<td>+1</td>
+<td>A, B (src), A (dest)</td>
+</tr>
+<tr>
+<td>STORE addr</td>
+<td>No</td>
+<td>Yes (address)</td>
+<td>Yes</td>
+<td>+2</td>
+<td>A (src), MAR, MDR</td>
+</tr>
+<tr>
+<td>JMP addr</td>
+<td>No</td>
+<td>Yes (address)</td>
+<td>No</td>
+<td>Set to operand</td>
+<td>PC</td>
+</tr>
+<tr>
+<td>HALT</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+<td>No</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

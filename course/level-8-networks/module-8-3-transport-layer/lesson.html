@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 8.3 — TCP &amp; Reliable Byte Streams | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 8.3
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        TCP &amp; Reliable Byte Streams
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 8 • Networks &amp; Protocols</div>
+      <h1 class="article-title">Module 8.3 — TCP &amp; Reliable Byte Streams</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-8-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 8.3 — Transport Layer: TCP and UDP</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>IP (Module 8.2) delivers packets between machines.<br />
+But a machine runs hundreds of programs, each communicating simultaneously.<br />
+How does the OS know which packets belong to which program?<br />
+How do we guarantee that data arrives completely and in order?<br />
+How do we prevent a fast sender from overwhelming a slow receiver?</p>
+<p>These are the transport layer's problems:<br />
+<strong>multiplexing</strong>, <strong>reliability</strong>, and <strong>flow control</strong>.</p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>TCP Was Born from Military Necessity</h3>
+<p>The ARPANET (1969) used a packet-switched protocol without reliability guarantees. When the US military needed reliable data transfer — routing commands, sensor data, and communications across potentially damaged or intermittent connections — a new protocol was needed.</p>
+<p>Vinton Cerf and Robert Kahn published the TCP specification in 1974. The original design had TCP and IP as one protocol. Jon Postel's famous contribution (1978) was separating them — TCP (Transport Control Protocol) handled reliability and ordering; IP handled routing. This separation of concerns enabled the internet to accommodate different transport needs: UDP for simple datagram delivery, TCP for reliable streams.</p>
+<p>Cerf and Kahn received the Turing Award in 2004 for this work.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>Port Numbers — Multiplexing</h3>
+<p>A machine has one IP address but hundreds of applications needing network access. <strong>Port numbers</strong> (16-bit, 0–65535) distinguish between applications:</p>
+<ul>
+<li><strong>Well-known ports</strong> (0–1023): reserved for standard services. HTTP=80, HTTPS=443, SSH=22, DNS=53, FTP=21, SMTP=25.</li>
+<li><strong>Registered ports</strong> (1024–49151): by application convention. MySQL=3306, PostgreSQL=5432, Redis=6379, MongoDB=27017.</li>
+<li><strong>Dynamic/ephemeral ports</strong> (49152–65535): assigned by the OS for outbound connections.</li>
+</ul>
+<p>A connection is uniquely identified by a <strong>5-tuple</strong>: <code>(protocol, src_IP, src_port, dst_IP, dst_port)</code>. Two different browsers can connect to the same server simultaneously because they have different ephemeral source ports.</p>
+<h3>UDP — Simple Datagram</h3>
+<p>UDP adds only port numbers to IP:</p>
+<pre><code>UDP Header (8 bytes):
+[src_port 2B] [dst_port 2B] [length 2B] [checksum 2B]
+[payload]
+</code></pre>
+<p><strong>Properties</strong>: connectionless, unreliable (no delivery guarantee), no ordering, no flow control. Fire and forget.</p>
+<p><strong>When to use UDP</strong>:</p>
+<ul>
+<li><strong>DNS</strong>: a query fits in one packet; if no reply arrives, just retry. TCP overhead is unnecessary.</li>
+<li><strong>Real-time media</strong> (VoIP, video streaming): a dropped packet is better than a delayed one. Applications handle loss gracefully (video skips a frame, audio conceals the gap).</li>
+<li><strong>Online games</strong>: low latency matters more than reliability. Games send position updates 60/s — a missed one is just outdated data.</li>
+<li><strong>QUIC</strong>: uses UDP as a substrate and builds its own reliability mechanism on top.</li>
+</ul>
+<h3>TCP — Reliable Byte Stream</h3>
+<p>TCP provides an ordered, reliable, flow-controlled byte stream between two endpoints.</p>
+<p><strong>TCP Header</strong> (20 bytes minimum):</p>
+<pre><code>[src_port 2B] [dst_port 2B]
+[sequence_number 4B]
+[acknowledgement_number 4B]
+[flags: SYN ACK FIN RST PSH URG] [window_size 2B]
+[checksum 2B] [urgent_pointer 2B]
+[options variable] [data variable]
+</code></pre>
+<h3>The Three-Way Handshake</h3>
+<p>Before data transfer, TCP establishes a connection:</p>
+<pre><code>Client → Server: SYN, seq=x
+Server → Client: SYN-ACK, seq=y, ack=x+1
+Client → Server: ACK, seq=x+1, ack=y+1
+(connection established)
+</code></pre>
+<p><code>SYN</code> (synchronise) starts a connection and carries the initial sequence number. The sequence number is a 32-bit counter for tracking byte positions.</p>
+<p><strong>Connection termination</strong> (four-way):</p>
+<pre><code>Client → Server: FIN, seq=m
+Server → Client: ACK, ack=m+1
+Server → Client: FIN, seq=n
+Client → Server: ACK, ack=n+1
+</code></pre>
+<p>Both sides must explicitly close — TCP connections are full-duplex and each direction closes independently.</p>
+<h3>Reliability — Sequence Numbers and ACKs</h3>
+<p>Each byte in the stream has a sequence number. The receiver sends acknowledgements (<code>ACK</code>) confirming bytes received.</p>
+<p><strong>Retransmission</strong>: if the sender doesn't receive an ACK within a timeout (RTO — Retransmission Timeout), it resends the unacknowledged data.</p>
+<p><strong>Sliding window</strong>: the sender can have multiple unacknowledged segments in flight (up to the window size). This is essential for performance on high-latency links — waiting for one ACK per segment at 100ms RTT means only 10 round trips per second regardless of bandwidth.</p>
+<h3>Flow Control — Receiver Window</h3>
+<p>The receiver advertises how much buffer space it has (<code>window_size</code> in the header). The sender never sends more data than the receiver can buffer.</p>
+<p>If the receiver's buffer fills (window=0), the sender stops and periodically probes with a 1-byte segment to check if the window reopened.</p>
+<h3>Congestion Control</h3>
+<p>The network can become congested — routers drop packets when buffers overflow. TCP detects congestion via:</p>
+<ul>
+<li><strong>Packet loss</strong> (timeout or duplicate ACKs)</li>
+<li><strong>ECN</strong> (Explicit Congestion Notification): routers mark packets instead of dropping them</li>
+</ul>
+<p>TCP's congestion control algorithms:</p>
+<p><strong>Slow Start</strong>: begin with cwnd (congestion window) = 1 MSS (maximum segment size). Double cwnd every RTT. This is &quot;slow&quot; compared to sending immediately at full rate, not actually slow.</p>
+<p><strong>Congestion Avoidance</strong>: when cwnd exceeds ssthresh (slow start threshold), increase linearly by 1 MSS per RTT.</p>
+<p><strong>On packet loss</strong> (Reno): set ssthresh = cwnd/2, reset cwnd = 1 MSS, restart slow start.</p>
+<p><strong>BBR</strong> (Bottleneck Bandwidth and RTT, Google 2016): models the network path's bandwidth and RTT rather than responding to loss. Achieves much better throughput on long-distance links and in data centres. Used by ~50% of TCP traffic on YouTube.</p>
+<h3>TCP vs UDP Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>TCP</th>
+<th>UDP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Connection</td>
+<td>Yes (3-way handshake)</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Reliability</td>
+<td>Guaranteed delivery</td>
+<td>Best effort</td>
+</tr>
+<tr>
+<td>Ordering</td>
+<td>In-order delivery</td>
+<td>Out of order possible</td>
+</tr>
+<tr>
+<td>Flow control</td>
+<td>Yes (window)</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Congestion control</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Overhead</td>
+<td>~20 byte header + state</td>
+<td>8 byte header</td>
+</tr>
+<tr>
+<td>Latency</td>
+<td>Higher (handshake, retransmit)</td>
+<td>Lower</td>
+</tr>
+<tr>
+<td>Use cases</td>
+<td>HTTP, email, file transfer, databases</td>
+<td>DNS, video, gaming, QUIC</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — TCP Handshake and State Machine</strong></p>
+<ul>
+<li>Step through the three-way handshake</li>
+<li>See the sequence/acknowledgement numbers</li>
+<li>Watch the TCP state machine: CLOSED → SYN_SENT → ESTABLISHED → FIN_WAIT → CLOSED</li>
+</ul>
+<p><strong>Tool 2 — Sliding Window</strong></p>
+<ul>
+<li>A sender with window size 4</li>
+<li>Send 8 segments; watch which are in-flight, which are acknowledged</li>
+<li>Drop one segment — watch retransmission and window stop-and-wait</li>
+</ul>
+<p><strong>Tool 3 — Congestion Control</strong></p>
+<ul>
+<li>Watch CWND grow: slow start (exponential), congestion avoidance (linear)</li>
+<li>Trigger a loss event — watch CWND drop and recovery</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>TCP Fast Retransmit</strong>: if 3 duplicate ACKs arrive (receiver gets packets 1, 3, 4, 5 but not 2 — so it ACKs packet 1 three times), the sender retransmits packet 2 immediately without waiting for the timeout. This is much faster than waiting for the RTO (~1 second) when a single packet is dropped.</p>
+<p><strong>SCTP and MPTCP</strong>: SCTP (Stream Control Transmission Protocol, 2000) addresses some TCP limitations: multi-homing (failover between network interfaces), multi-streaming (no head-of-line blocking), and message-oriented delivery. MPTCP (Multipath TCP) allows a single connection to use multiple paths simultaneously (e.g., Wi-Fi + cellular) — used in iOS for Siri.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Trace the sequence numbers in a TCP exchange for a 3-segment file transfer, calculate the maximum throughput for a TCP connection with a 64 KB window over a 100ms RTT link, explain why three duplicate ACKs are a better congestion signal than timeout, and write the UDP and TCP server/client code for a simple echo service.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-8-2-network-layer/lesson.html" class="btn-icon">← Prev: M 8.2</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-8-4-application-layer/lesson.html" class="btn-icon btn-primary">Next: M 8.4 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

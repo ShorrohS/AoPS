@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 1.2 — Switches: The Atom of Computing | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 1.2
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Switches: The Atom of Computing
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 1 • Physical Computing</div>
+      <h1 class="article-title">Module 1.2 — Switches: The Atom of Computing</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-1-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <h1>Module 1.2 — Switches: The Atom of Computing</h1>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>We now know electricity flows through circuits and obeys Ohm's Law. We know a switch opens or closes a circuit. Simple enough.</p>
+<p>But here is the question that changes everything:</p>
+<p><strong>What if the switch itself is controlled by electricity — not by a human hand?</strong></p>
+<p>If a tiny electrical signal can open and close a much larger circuit, you have a device that can make decisions automatically. You have a device that can respond to one electrical condition and change another. You have, in principle, the ability to build any logical operation from pure electricity.</p>
+<p>That single idea — the electrically-controlled switch — is the atom from which all computing is built.</p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>The Telegraph and the Relay — 1837</h3>
+<p>Samuel Morse's telegraph (1837) sent electrical pulses down a wire to ring a bell at the other end. But there was a problem: over long distances, the signal weakened. After a few hundred kilometres, it was too faint to ring the bell.</p>
+<p>The solution was a <strong>relay station</strong>: a box placed along the wire that used the weak incoming signal to switch a fresh, strong local battery into the line. The weak signal didn't drive the bell directly — it controlled a switch that let a strong local current drive the next segment.</p>
+<p>This device was called a <strong>relay</strong> because it &quot;relayed&quot; the signal forward. And it was the first electrically-controlled switch.</p>
+<p><strong>How a relay works:</strong></p>
+<ol>
+<li>A weak current flows through a coil of wire wrapped around an iron core</li>
+<li>The coil becomes an <strong>electromagnet</strong></li>
+<li>The electromagnet attracts a metal arm (the <strong>armature</strong>)</li>
+<li>The armature moves, closing (or opening) a separate set of electrical contacts</li>
+<li>Those contacts switch a completely separate circuit — which can carry much more current</li>
+</ol>
+<p>The key insight: <strong>the control circuit and the switched circuit are electrically isolated</strong>. A tiny signal (5mA) can switch a circuit carrying amperes. The relay is an electrical amplifier of control.</p>
+<hr />
+<h3>Binary Is the Natural Language of Switches</h3>
+<p>A switch has exactly two stable states:</p>
+<ul>
+<li><strong>Closed</strong> (contacts touching) — current flows — call this <strong>1</strong></li>
+<li><strong>Open</strong> (contacts separated) — no current flows — call this <strong>0</strong></li>
+</ul>
+<p>There is no &quot;half-closed&quot; switch. There is no &quot;37% closed.&quot; A switch is binary by nature.</p>
+<p>This is why digital computing uses binary — not because binary is mathematically elegant (though it is), but because <strong>the physical devices we use to build computers have exactly two stable states</strong>. We could have built computers around three-state devices (ternary logic), and some researchers have tried. But binary won because every switch ever made — mechanical, relay, vacuum tube, transistor — naturally has two states.</p>
+<p>The connection from Module 0.3 completes here: Jacquard's card had hole (1) or no hole (0). Hollerith's card had hole (electrical contact) or no hole (blocked). Relay contacts are closed (1) or open (0). Transistors are on (1) or off (0). The binary digit — the bit — is the universal language of switching.</p>
+<hr />
+<h3>The Telegraph's Hidden Contribution</h3>
+<p>The telegraph didn't just send messages. It established the entire vocabulary of digital communication:</p>
+<table>
+<thead>
+<tr>
+<th>Telegraph concept</th>
+<th>Modern computing equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dot / dash pulse</td>
+<td>Bit (0 / 1)</td>
+</tr>
+<tr>
+<td>Start / stop bits</td>
+<td>Framing in serial communication</td>
+</tr>
+<tr>
+<td>Relay amplification</td>
+<td>Signal regeneration / buffering</td>
+</tr>
+<tr>
+<td>Code (Morse)</td>
+<td>Encoding (ASCII, Unicode)</td>
+</tr>
+<tr>
+<td>Transmission line</td>
+<td>Network cable / optical fibre</td>
+</tr>
+<tr>
+<td>Repeater station</td>
+<td>Network router / amplifier</td>
+</tr>
+</tbody>
+</table>
+<p>Morse code is, literally, a binary encoding: each letter is a sequence of short pulses (dots = 0) and long pulses (dashes = 1). Telegraph operators were the first data encoders.</p>
+<hr />
+<h3>Relay Characteristics</h3>
+<p>Understanding what a relay can and cannot do sets up the entire story of why vacuum tubes and transistors were needed.</p>
+<p><strong>What relays do well:</strong></p>
+<ul>
+<li>Electrically isolate control from output (safety, noise immunity)</li>
+<li>Switch high currents with tiny control signals</li>
+<li>Physically robust — relay contacts can carry 10A+</li>
+<li>Visible and audible (click!) — easy to debug</li>
+</ul>
+<p><strong>What relays do poorly:</strong></p>
+<ul>
+<li><strong>Speed</strong>: A relay's armature is a mechanical part. It takes 5–50 milliseconds to move. That limits switching to ~100–1000 times per second.</li>
+<li><strong>Size</strong>: A relay is centimetres long — you can't pack many of them together</li>
+<li><strong>Power</strong>: The electromagnet consumes power continuously while held closed</li>
+<li><strong>Wear</strong>: Mechanical contacts eventually erode — relays have a finite lifespan</li>
+</ul>
+<p>The first electromechanical computers — Zuse's Z3 (1941), Harvard Mark I (1944) — used relays. The Z3 had 2,600 relays and could do about 3 additions per second. ENIAC (1945), with vacuum tubes, could do 5,000 additions per second. Same logic, 1,000× faster.</p>
+<hr />
+<h3>The Relay as a Binary Memory</h3>
+<p>Here's something surprising: a relay can remember a state. Consider this circuit:</p>
+<ol>
+<li>Press button A → relay closes → contacts latch (hold) closed</li>
+<li>Release button A → relay stays closed (the latch current flows through its own contacts)</li>
+<li>Only pressing a separate &quot;reset&quot; button opens the circuit</li>
+</ol>
+<p>This is called <strong>self-latching</strong> — a relay that holds its own state. It's the first mechanical implementation of a <strong>flip-flop</strong>: a device with two stable states that can be set and reset. This is the fundamental memory cell. Every RAM bit in every computer is a more sophisticated version of this circuit.</p>
+<hr />
+<h3>From Relay to Every Switch That Followed</h3>
+<p>The relay established the template that every subsequent switching technology follows:</p>
+<pre><code>Control input  →  [switching device]  →  Output circuit
+
+Relay:         Control coil current   →  Armature movement    →  Contact closure
+Vacuum tube:   Grid voltage           →  Electron stream      →  Plate current
+Transistor:    Base/gate current      →  Semiconductor state  →  Collector/drain current
+</code></pre>
+<p>Same structure. Shrinking size. Increasing speed. Decreasing power. This is the entire story of Level 1.</p>
+<hr />
+<h2>The Concept: The Switch as a Logic Element</h2>
+<p>Once you have an electrically-controlled switch, you can build logic:</p>
+<p><strong>NOT (Inverter)</strong>: Wire a relay so that the contacts are <strong>normally closed</strong> (touching when no current flows). Apply a control signal → electromagnet pulls armature → contacts open → output turns OFF. The input being ON makes the output be OFF. That's NOT.</p>
+<p><strong>AND</strong>: Wire two relays in <strong>series</strong> on the output circuit. Both electromagnets must be energised for current to flow through both contact sets. Both inputs must be 1 for the output to be 1. That's AND.</p>
+<p><strong>OR</strong>: Wire two relays in <strong>parallel</strong> on the output circuit. Either electromagnet closes its contacts → current flows. Either input being 1 produces output 1. That's OR.</p>
+<p>You've seen this before in Module 1.1's challenge — series switches give AND behaviour, parallel switches give OR behaviour. The same topology, now driven electrically rather than manually.</p>
+<p>These three operations — AND, OR, NOT — are sufficient to build any logic circuit that exists. This was proven by George Boole in 1854 and connected to circuits by Claude Shannon in 1937. You will build them in Module 1.3.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p>The simulation has three tools:</p>
+<p><strong>Tool 1 — Relay Anatomy</strong></p>
+<ul>
+<li>An interactive cross-section of a relay</li>
+<li>Slide the control current from 0 to 100%</li>
+<li>Watch the electromagnet energise, the armature move, and the contacts close</li>
+<li>See the control circuit and output circuit separately coloured</li>
+</ul>
+<p><strong>Tool 2 — Self-Latching Relay</strong></p>
+<ul>
+<li>Two buttons: SET and RESET</li>
+<li>Press SET → relay latches (holds state even after releasing)</li>
+<li>Press RESET → relay releases</li>
+<li>This is your first 1-bit memory cell</li>
+</ul>
+<p><strong>Tool 3 — Switch Logic Preview</strong></p>
+<ul>
+<li>Three circuits: NOT, AND, OR — each built from relay symbols</li>
+<li>Toggle the inputs; watch the output respond</li>
+<li>Truth tables fill automatically as you test each combination</li>
+</ul>
+<p><strong>What to observe:</strong></p>
+<ul>
+<li>What is the minimum control current needed to close the relay?</li>
+<li>After latching, what happens if you remove all input signals?</li>
+<li>Can you find all 4 rows of the AND truth table by toggling the inputs?</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p>The Harvard Mark I (1944) had 765,000 components and 3,000+ relays. It was 15 metres long and weighed 4,500 kg. Its operators could hear it computing — a rhythmic clicking of thousands of relays. Grace Hopper, one of its first programmers, found a moth stuck in a relay causing a malfunction. She taped it into the logbook with the note: &quot;First actual case of bug being found.&quot; The term &quot;debugging&quot; comes from this literal event.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Wire up AND, OR, and NOT logic using the relay simulator. Fill in complete truth tables. Then design a relay circuit that implements XOR (either input but not both) and explain how it works.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-1-1-electricity/lesson.html" class="btn-icon">← Prev: M 1.1</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-1-3-relay-logic/lesson.html" class="btn-icon btn-primary">Next: M 1.3 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

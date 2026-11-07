@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 6.3 — Hash Tables &amp; Collisions | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 6.3
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 6.3 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Hash Tables &amp; Collisions.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 6.3 — Hash Tables</p>
+<p><strong>Type:</strong> Trace + implementation + analysis<br />
+<strong>Estimated time:</strong> 45–55 minutes<br />
+<strong>Tools needed:</strong> pen and paper + Python</p>
+<hr />
+<h2>Part A — Linear Probing Trace</h2>
+<p>Hash table of size <strong>M = 7</strong>. Hash function: <code>h(k) = k % 7</code>. Collision resolution: <strong>linear probing</strong> (probe at <code>(h(k) + i) % M</code> for i = 0, 1, 2, ...).</p>
+<p>Insert keys in order: <strong>10, 22, 31, 4, 15, 28, 17, 88, 59</strong></p>
+<ol>
+<li>
+<p>For each key, calculate <code>h(k)</code> and trace the probe sequence until an empty slot is found. Draw the final table.</p>
+</li>
+<li>
+<p>How many total probes were needed across all insertions?</p>
+</li>
+<li>
+<p>What is the load factor after all 9 insertions?</p>
+</li>
+<li>
+<p>Now search for key <strong>28</strong>. Trace the probe sequence. How many probes are needed?</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Tombstone Deletion</h2>
+<p>Using the table from Part A:</p>
+<ol start="5">
+<li>
+<p>Delete key <strong>31</strong> by placing a <strong>tombstone</strong> (a marker indicating &quot;deleted but probed-through&quot;).</p>
+</li>
+<li>
+<p>After deletion, search for key <strong>59</strong>. Does the tombstone affect the search? Show the probe sequence.</p>
+</li>
+<li>
+<p>Now insert key <strong>100</strong> (<code>100 % 7 = 2</code>). Does the tombstone affect the insertion? At which slot does it land?</p>
+</li>
+<li>
+<p>Why can't you simply mark a slot as &quot;empty&quot; when deleting in linear probing? Construct a concrete example where doing so would cause a search to incorrectly report &quot;not found.&quot;</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — Chaining vs Open Addressing</h2>
+<ol start="9">
+<li>
+<p>Insert keys <code>{10, 17, 24, 31, 38}</code> into a hash table of size <strong>M = 7</strong> using <strong>separate chaining</strong> (<code>h(k) = k % 7</code>). Draw the table with chains.</p>
+</li>
+<li>
+<p>Compare the worst-case lookup time for chaining vs linear probing when the load factor α = 0.9. What is the expected probe count for linear probing: <code>1/(1 - α)</code> (unsuccessful) and <code>(1 + 1/(1-α)²)/2</code> (successful)?</p>
+</li>
+<li>
+<p>For which load factor does linear probing's expected probe count exceed 5? Use the formula for unsuccessful search.</p>
+</li>
+</ol>
+<hr />
+<h2>Part D — Hash Table Implementation</h2>
+<p>Implement a hash table with <strong>separate chaining</strong> in Python:</p>
+<pre><code class="language-python">class HashTable:
+    def __init__(self, capacity=16):
+        self._buckets  = [[] for _ in range(capacity)]
+        self._size     = 0
+        self._capacity = capacity
+        self._threshold = 0.75   # resize when load factor exceeds this
+
+    def _hash(self, key): ...
+    def set(self, key, value): ...   # O(1) average
+    def get(self, key): ...          # O(1) average, raises KeyError if absent
+    def delete(self, key): ...       # O(1) average
+    def _resize(self): ...           # double capacity and rehash all entries
+    def __len__(self): return self._size
+</code></pre>
+<ol start="12">
+<li>
+<p>Implement all methods. Test with 100 random insertions + 50 lookups.</p>
+</li>
+<li>
+<p>What happens to existing keys when you resize? Why must you <strong>rehash</strong> rather than just copy?</p>
+</li>
+<li>
+<p>Implement <code>keys()</code> that returns all keys and <code>items()</code> that returns all (key, value) pairs.</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Hash Flooding Attack</h2>
+<ol start="15">
+<li>
+<p>Consider a hash table where all keys hash to the same bucket (adversarially crafted input). What is the lookup time in the worst case?</p>
+</li>
+<li>
+<p>Python (since 3.3) uses <strong>SipHash</strong> with a random seed for string hashing. How does this prevent hash flooding? What is the trade-off?</p>
+</li>
+<li>
+<p>For a hash function <code>h(k) = k % M</code>, if M is a power of 2 (e.g., 16), only the low bits of k affect the bucket. Why is this problematic? What is a better choice for M?</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A linear probing trace</td>
+<td>24</td>
+</tr>
+<tr>
+<td>B tombstone deletion</td>
+<td>20</td>
+</tr>
+<tr>
+<td>C chaining vs open addressing</td>
+<td>18</td>
+</tr>
+<tr>
+<td>D implementation</td>
+<td>24</td>
+</tr>
+<tr>
+<td>E security analysis</td>
+<td>14</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A — final table after insertions</summary>
+<p>h values: 10%7=3, 22%7=1, 31%7=3(→4), 4%7=4(→5), 15%7=1(→2), 28%7=0, 17%7=3(→6), 88%7=4(→6 already taken→new slot), 59%7=3(probe 3,4,5,6,0,1,2→2 taken→...).</p>
+<table>
+<thead>
+<tr>
+<th>Slot</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>28</td>
+</tr>
+<tr>
+<td>1</td>
+<td>22</td>
+</tr>
+<tr>
+<td>2</td>
+<td>15</td>
+</tr>
+<tr>
+<td>3</td>
+<td>10</td>
+</tr>
+<tr>
+<td>4</td>
+<td>31</td>
+</tr>
+<tr>
+<td>5</td>
+<td>4</td>
+</tr>
+<tr>
+<td>6</td>
+<td>17</td>
+</tr>
+<tr>
+<td>Remaining 88 and 59 require additional probes as the table is nearly full (load=9/7 &gt; 1 — this table would need resizing in practice).</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</details>
+<details>
+<summary>Part B.8 — deletion bug</summary>
+<p>Example: keys A, B, C all hash to slot 0. Inserted with linear probing → A at 0, B at 1, C at 2. Delete B: if we mark slot 1 as empty, searching for C: hash=0, check slot 0 (A, not C), check slot 1 (empty → stop). C is not found even though it's in slot 2. The tombstone ensures we continue probing past the deleted slot.</p>
+</details>
+<details>
+<summary>Part C.11 — α for probe count > 5</summary>
+<p>Unsuccessful search: 1/(1-α)² × 1/2 for some formulas, or simply 1/(1-α).</p>
+<p>For 1/(1-α) &gt; 5: 1-α &lt; 0.2, so α &gt; 0.8.</p>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

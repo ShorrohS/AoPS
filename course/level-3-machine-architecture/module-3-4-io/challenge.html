@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 3.4 — Input/Output: Connecting to the World | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 3.4
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 3.4 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Input/Output: Connecting to the World.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 3.4 — Input/Output: Connecting to the World</p>
+<p><strong>Type:</strong> Calculation + trace + code + reasoning<br />
+<strong>Estimated time:</strong> 40–50 minutes<br />
+<strong>Tools needed:</strong> <code>simulation.html</code> + pen and paper</p>
+<hr />
+<h2>Part A — Polling vs Interrupts: Cost Analysis</h2>
+<p>A CPU runs at 1 GHz (1 cycle = 1 ns). A keyboard generates keypresses at an average rate of <strong>10 per second</strong> (once every 100 ms). The polling loop checks the keyboard status register every <strong>1,000 cycles</strong> (1 µs).</p>
+<ol>
+<li>
+<p>How many times does the CPU check the status register per second?</p>
+</li>
+<li>
+<p>How many of those checks actually find a keypress waiting? (Assume a keypress takes exactly 1 check to detect once it arrives.)</p>
+</li>
+<li>
+<p>What percentage of CPU time is <strong>wasted</strong> on polling? (Wasted cycles = total checks × 1,000 cycles/check, minus the ~10 &quot;useful&quot; checks per second that actually found data.)</p>
+</li>
+<li>
+<p>Now switch to interrupt-driven I/O. The interrupt handler takes <strong>500 cycles</strong> to execute. The keyboard fires 10 interrupts per second. What percentage of CPU time is now spent on keyboard I/O?</p>
+</li>
+<li>
+<p>What is the <strong>efficiency ratio</strong> of interrupts vs polling for this scenario?</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — DMA Transfer</h2>
+<p>A disk sector is 512 bytes. Without DMA, the CPU must copy each byte individually: LOAD from device register (2 cycles) + STORE to memory (2 cycles) = 4 cycles/byte.</p>
+<ol start="6">
+<li>
+<p>How many cycles does a non-DMA 512-byte sector read consume?</p>
+</li>
+<li>
+<p>The CPU runs at 3 GHz. How long in nanoseconds does the non-DMA copy take?</p>
+</li>
+<li>
+<p>A DMA controller handles the same transfer. Once programmed, it takes 200 cycles to set up, then runs the transfer autonomously. The CPU is free during the transfer (512 × 4 cycles of DMA activity). When done, it fires an interrupt taking 500 cycles. What is the total CPU overhead for a DMA-assisted 512-byte read?</p>
+</li>
+<li>
+<p>What percentage of the transfer time is the CPU <strong>free</strong> to do other work with DMA?</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — MMIO Programming</h2>
+<p>A simple embedded system has this memory map:</p>
+<pre><code>0x0000 – 0x0FFF: RAM (4 KB)
+0x1000:          LED control register (bit 0 = LED on/off)
+0x1001:          Button status register (bit 0 = button pressed)
+0x1002:          Timer counter register (read-only, increments each ms)
+</code></pre>
+<p>Write a <strong>polling-based</strong> pseudo-assembly program that:</p>
+<ul>
+<li>Turns the LED on when the button is pressed</li>
+<li>Turns it off when the button is released</li>
+<li>Runs forever</li>
+</ul>
+<p>Then write an <strong>interrupt-driven</strong> version:</p>
+<ul>
+<li>The button press fires interrupt vector 1</li>
+<li>The interrupt handler toggles the LED</li>
+</ul>
+<p>Use the toy ISA from Module 3.3 (extended with MMIO addresses).</p>
+<hr />
+<h2>Part D — Interrupt Trace</h2>
+<p>A CPU is executing a program. At cycle 1,000, it receives an interrupt from the keyboard. The interrupt handler (ISR) is at address 0x0200.</p>
+<ol start="10">
+<li>
+<p>List the exact sequence of steps the CPU takes from the moment it detects the interrupt to the moment it returns to the interrupted program. (Minimum 6 steps.)</p>
+</li>
+<li>
+<p>The CPU was in the middle of a 3-cycle ADD instruction when the interrupt arrived (2 cycles complete, 1 remaining). Does the CPU handle the interrupt immediately, or does it finish ADD first? Why does this matter for correctness?</p>
+</li>
+<li>
+<p>A second, higher-priority interrupt (timer tick) arrives while the keyboard ISR is running. Describe what happens. What data must the ISR save before it is interrupted?</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — I/O Bus Bandwidth</h2>
+<ol start="13">
+<li>
+<p>A USB 3.0 connection transfers at 5 Gbits/s. An NVMe SSD connected via PCIe 4.0 ×4 transfers at 64 Gbits/s. How many times faster is the SSD interface than USB 3.0?</p>
+</li>
+<li>
+<p>A 4K video stream requires 3.82 GB/s sustained throughput. Can USB 3.0 handle it? Can PCIe 4.0 ×4 handle it? Show calculations (convert Gbits/s to GB/s for comparison).</p>
+</li>
+<li>
+<p>A network card receives packets at 10 Gbits/s. Each packet is 1,500 bytes (maximum Ethernet frame). How many packets per second arrive? If the CPU must handle each packet individually via polling (1,000 cycles per packet at 3 GHz), what fraction of the CPU is consumed? What does this imply about why DMA is essential for high-speed networking?</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A polling analysis (5 questions)</td>
+<td>25</td>
+</tr>
+<tr>
+<td>B DMA calculations (4 questions)</td>
+<td>20</td>
+</tr>
+<tr>
+<td>C MMIO code (polling + interrupt)</td>
+<td>25</td>
+</tr>
+<tr>
+<td>D interrupt trace (3 questions)</td>
+<td>18</td>
+</tr>
+<tr>
+<td>E bandwidth (3 questions)</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A</summary>
+<ol>
+<li>1,000,000 checks/second (1 GHz / 1,000 cycles/check)</li>
+<li>10 useful checks/second (one per keypress)</li>
+<li>Wasted: (1,000,000 − 10) checks × 1,000 cycles = ~999,990,000 cycles/second ≈ <strong>99.999% waste</strong></li>
+<li>Interrupts: 10 interrupts × 500 cycles = 5,000 cycles/second = <strong>0.0005% of CPU time</strong></li>
+<li>Efficiency ratio: ~200,000× more efficient with interrupts</li>
+</ol>
+</details>
+<details>
+<summary>Part B</summary>
+<ol start="6">
+<li>512 bytes × 4 cycles/byte = <strong>2,048 cycles</strong></li>
+<li>2,048 cycles ÷ 3 GHz = <strong>682 ns</strong></li>
+<li>CPU overhead = 200 (setup) + 500 (interrupt) = <strong>700 cycles total</strong>. The DMA runs for 2,048 cycles autonomously — CPU is free for that entire period.</li>
+<li>CPU free time = 2,048 ÷ (200 + 2,048 + 500) = 2,048 ÷ 2,748 ≈ <strong>74.5%</strong> of the transfer time</li>
+</ol>
+</details>
+<details>
+<summary>Part E</summary>
+<ol start="13">
+<li>
+<p>PCIe 4.0 ×4 (64 Gbits/s) ÷ USB 3.0 (5 Gbits/s) = <strong>12.8× faster</strong></p>
+</li>
+<li>
+<p>4K stream = 3.82 GB/s = 3.82 × 8 = 30.56 Gbits/s. USB 3.0 at 5 Gbits/s = 0.625 GB/s — <strong>cannot handle it</strong>. PCIe 4.0 ×4 at 64 Gbits/s = 8 GB/s — <strong>yes, easily</strong>.</p>
+</li>
+<li>
+<p>10 Gbits/s ÷ (1,500 × 8 bits) = 10,000,000,000 ÷ 12,000 ≈ <strong>833,333 packets/second</strong>. At 1,000 cycles/packet × 3 GHz: 833,333,000 cycles/second ÷ 3,000,000,000 = <strong>27.8% of CPU</strong>. At 10 Gbps that's just one interface — a server handles multiple. Without DMA, I/O processing would consume the entire CPU.</p>
+</li>
+</ol>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 4.4 — Memory Management &amp; Paging | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 4.4
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Memory Management &amp; Paging
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 4 • Software Foundations</div>
+      <h1 class="article-title">Module 4.4 — Memory Management &amp; Paging</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-4-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 4.4 — Memory Management</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>A 64-bit CPU can address 16 exabytes of memory.<br />
+A typical machine has 16 gigabytes of RAM.</p>
+<p>Every program believes it has its own private address space starting at 0x0000.<br />
+Two different programs can both have a variable at address 0x4000 — and they never interfere.</p>
+<p>How?</p>
+<p>And how does a 4 GB program run on a machine with only 8 GB of RAM when other programs are also running?</p>
+</blockquote>
+<p>These two mysteries have the same answer: <strong>virtual memory</strong> — one of the most elegant engineering solutions in the history of computing.</p>
+<hr />
+<h2>The Story</h2>
+<h3>The Problem of Running Multiple Programs</h3>
+<p>On early computers, programs ran at fixed physical addresses. Loading two programs simultaneously was impossible — they would overwrite each other. The programmer had to know exactly where in physical RAM the program would be placed and write addresses accordingly.</p>
+<p><strong>Relocation</strong> (1950s) was the first solution: a hardware register held the base address of the current program. Every memory access added this base. Programs could move anywhere in RAM without being rewritten. But they still shared the same physical address space — a bug in one program could corrupt another's memory.</p>
+<p><strong>Segmentation</strong> (1960s, Multics) added boundaries: each program had a base and a limit. Hardware enforced that no access exceeded the limit. But segments were variable-size, leading to fragmentation.</p>
+<p><strong>Paging</strong> (late 1960s) solved fragmentation: divide all memory into fixed-size <strong>pages</strong> (typically 4 KB). Give each process its own mapping from virtual pages to physical pages. This is the system used today in every general-purpose OS.</p>
+<hr />
+<h3>Virtual vs Physical Addresses</h3>
+<p>Every user-space program uses <strong>virtual addresses</strong>. These are what the program sees — addresses starting at 0x0000_0000_0000_0000 and extending to 0xFFFF_FFFF_FFFF_FFFF (on 64-bit, though only 48 bits are used in practice).</p>
+<p><strong>Physical addresses</strong> are the actual locations in RAM chips. The CPU's <strong>Memory Management Unit (MMU)</strong> translates every virtual address into a physical address on the fly, for every memory access.</p>
+<pre><code>Virtual address  →  [MMU / Page Table Walk]  →  Physical address
+0x00007FFF_1000          translation              0x0000_1A40_3000
+</code></pre>
+<p>Two processes can both use virtual address 0x401000 — they map to different physical addresses. Neither can see the other's memory. The OS controls the mapping.</p>
+<hr />
+<h3>Pages, Frames, and Page Tables</h3>
+<p><strong>Page</strong>: a fixed-size block of virtual memory. Typically 4 KB (4096 bytes).<br />
+<strong>Frame</strong>: a fixed-size block of physical memory. Same size as a page.<br />
+<strong>Page table</strong>: a data structure mapping virtual page numbers to physical frame numbers.</p>
+<p>For a 32-bit address space with 4 KB pages:</p>
+<ul>
+<li>Virtual address = 20-bit page number + 12-bit page offset</li>
+<li>2²⁰ = 1,048,576 possible virtual pages</li>
+<li>Each page table entry (PTE) = 4 bytes → 4 MB page table per process!</li>
+</ul>
+<p>That is too large. The solution: <strong>multi-level page tables</strong>.</p>
+<p>A 2-level page table for 32-bit systems:</p>
+<pre><code>Virtual address: [10 bits dir] [10 bits table] [12 bits offset]
+                     ↓                ↓               ↓
+               Page Directory → Page Table → Physical Frame + Offset
+</code></pre>
+<p>x86-64 uses a <strong>4-level page table</strong>:</p>
+<pre><code>Virtual address: [9 bits PML4] [9 bits PDP] [9 bits PD] [9 bits PT] [12 bits offset]
+</code></pre>
+<p>Only page directories that are actually in use need to exist. A sparse address space uses very little memory for its page table.</p>
+<hr />
+<h3>Page Table Entries (PTEs)</h3>
+<p>Each PTE contains:</p>
+<ul>
+<li><strong>Physical frame number</strong> — which RAM frame this page maps to</li>
+<li><strong>Present bit (P)</strong> — 1 = this mapping exists; 0 = page not in memory (triggers page fault)</li>
+<li><strong>Writable bit (W)</strong> — 0 = read-only; 1 = writable. Enforces code section immutability.</li>
+<li><strong>User bit (U)</strong> — 0 = kernel only; 1 = user space accessible</li>
+<li><strong>Accessed bit (A)</strong> — set by hardware when the page is read. Used by page replacement algorithms.</li>
+<li><strong>Dirty bit (D)</strong> — set by hardware when the page is written. Used to know if a page needs to be written back to disk before reclaiming.</li>
+<li><strong>NX bit (No-Execute)</strong> — prevents code execution from this page. Makes data pages non-executable — critical for stack/heap security.</li>
+</ul>
+<hr />
+<h3>The TLB — Translation Lookaside Buffer</h3>
+<p>A page table walk requires up to 4 memory accesses (on x86-64). That would make every memory access 5× slower. The solution: the <strong>TLB</strong> — a small, fast cache of recent virtual→physical translations.</p>
+<ul>
+<li>Capacity: 64–4096 entries (tiny)</li>
+<li>Speed: 1 cycle (same as L1 cache)</li>
+<li>Hit rate: &gt;99% for well-behaved programs (due to temporal and spatial locality)</li>
+</ul>
+<p><strong>TLB miss</strong>: the hardware page table walker reads the page table hierarchy, loads the translation into the TLB, and retries. On x86, this is done entirely by hardware (hardware page table walker). On ARM, software can handle TLB misses.</p>
+<p><strong>TLB shootdown</strong>: when the OS modifies a process's page table (e.g., unmaps a page), it must invalidate the corresponding TLB entries on <em>all</em> CPU cores. On a multiprocessor system, this requires an inter-processor interrupt (IPI) to each core. TLB shootdowns are expensive and a significant performance cost of shared-memory multiprocessors.</p>
+<hr />
+<h3>Demand Paging and the Page Fault</h3>
+<p>A process does not need all its pages in physical RAM simultaneously. The OS uses <strong>demand paging</strong>: pages are loaded into RAM only when first accessed.</p>
+<p>When a process accesses a virtual address whose PTE has Present=0:</p>
+<ol>
+<li>The CPU raises a <strong>page fault</strong> exception</li>
+<li>The kernel's page fault handler runs</li>
+<li>It checks: is this a valid virtual address for this process?
+<ul>
+<li>Yes: load the page from disk (swap space / file), update PTE, return</li>
+<li>No: invalid access → send SIGSEGV to the process (segmentation fault)</li>
+</ul>
+</li>
+<li>The process resumes, unaware that it paused</li>
+</ol>
+<p><strong>Copy-on-Write (CoW)</strong>: when <code>fork()</code> creates a child process, the OS does not immediately copy the parent's memory. Instead, both parent and child share the same physical pages, marked read-only. When either process writes to a shared page, a page fault fires, the kernel copies just that page, and the write proceeds. This makes <code>fork()</code> nearly free even for large processes.</p>
+<hr />
+<h3>Swap Space</h3>
+<p>When RAM is full and a new page must be loaded, the OS must <strong>evict</strong> an existing page. If the page is dirty (modified), it is written to <strong>swap space</strong> on disk before eviction. If clean (matches the disk copy), it can be silently discarded.</p>
+<p><strong>Page replacement algorithms:</strong></p>
+<ul>
+<li><strong>LRU (Least Recently Used)</strong>: evict the page accessed longest ago. Optimal in practice but expensive to implement precisely.</li>
+<li><strong>Clock algorithm (Second Chance)</strong>: approximates LRU using the Accessed bit. Scan pages in circular order; if A=1, clear it and give a second chance; if A=0, evict.</li>
+<li><strong>LFU (Least Frequently Used)</strong>: evict the page accessed fewest times. Suffers from outdated frequency counts.</li>
+</ul>
+<p>Modern Linux uses variants of the clock algorithm plus separate active/inactive page lists.</p>
+<hr />
+<h3>Process Memory Layout</h3>
+<p>A typical Linux process's virtual address space (64-bit):</p>
+<pre><code>0xFFFFFFFF_FFFFFFFF  ┐
+                     │  Kernel space (user cannot access)
+0xFFFF8000_00000000  ┘
+        ...
+0x00007FFF_FFFFFFFF  ┐
+                     │  Stack (grows downward)
+0x00007FFE_XXXXXXXX  ┘  ← RSP here
+        ...
+        [random ASLR gap]
+        ...
+                        Heap (grows upward) ← sbrk/mmap
+                     ┐
+                     │  .bss (uninitialised globals, zeroed)
+                     │  .data (initialised globals)
+0x00000000_00401000  │  .text (code, read+execute, not writable)
+0x00000000_00400000  ┘  ← ELF header
+</code></pre>
+<hr />
+<h2>The Concept: The MMU Makes Every Process Think It Owns All of Memory</h2>
+<p>This is the central illusion of modern operating systems. Each process has a complete, private virtual address space. The physical RAM is shared invisibly. The OS and MMU cooperate to maintain the illusion seamlessly — except when debugging, when the illusion's mechanics become visible and useful.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Virtual Address Translator</strong></p>
+<ul>
+<li>Enter a virtual address</li>
+<li>Step through the 4-level x86-64 page table walk</li>
+<li>See which physical address it maps to</li>
+<li>Toggle the Present bit to trigger a page fault</li>
+</ul>
+<p><strong>Tool 2 — Page Fault Handler</strong></p>
+<ul>
+<li>A process accesses pages in a specific sequence</li>
+<li>Watch pages being loaded from &quot;disk&quot; into available frames</li>
+<li>See the page replacement algorithm evict pages when RAM is full</li>
+</ul>
+<p><strong>Tool 3 — Process Memory Map</strong></p>
+<ul>
+<li>A visual representation of a process's virtual address space</li>
+<li>Show .text, .data, .bss, heap, stack regions</li>
+<li>Toggle ASLR to see how base addresses shift between runs</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Huge pages</strong>: using 4 KB pages for large memory workloads (databases, JVMs, ML models) generates enormous TLB pressure. Huge pages (2 MB on x86) reduce TLB misses by 512× for the same memory coverage. Linux supports transparent huge pages (THP), which tries to merge small pages automatically.</p>
+<p><strong>mmap and memory-mapped files</strong>: <code>mmap()</code> maps a file directly into a process's virtual address space. Reading from the mapped region reads from the file. Writing to it (if MAP_SHARED) writes back to the file. This is how database files, executable files, and shared libraries are loaded — the dynamic linker mmap's the ELF file sections into the process's address space.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Walk a page table manually, calculate physical addresses, trace page faults, and reason about copy-on-write and process isolation.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-4-3-os-concepts/lesson.html" class="btn-icon">← Prev: M 4.3</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-4-5-file-systems/lesson.html" class="btn-icon btn-primary">Next: M 4.5 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

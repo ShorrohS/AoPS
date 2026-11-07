@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 2.2 — Number Systems: Bin, Oct, Hex &amp; Two&#x27;s Complement | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 2.2
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Number Systems: Bin, Oct, Hex &amp; Two&#x27;s Complement
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 2 • Digital Foundations</div>
+      <h1 class="article-title">Module 2.2 — Number Systems: Bin, Oct, Hex &amp; Two&#x27;s Complement</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-2-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <h1>Module 2.2 — Number Systems: Binary, Octal, Hex, Two's Complement</h1>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>You've accepted binary. Everything is 0s and 1s. Now you need to check what's stored at memory address 0b0001110101001100.</p>
+<p>That's: memory address 7,500. Not hard in decimal. But in binary? Reading 16 bits of binary at a glance takes a trained eye — and you'll need to read thousands of them while debugging.</p>
+<p>There is also the problem of negative numbers. Binary naturally represents only non-negative integers. How do you represent −1 in bits?</p>
+</blockquote>
+<p>Both problems have elegant solutions that every computer scientist uses daily: hexadecimal as shorthand for binary, and two's complement for signed integers. Understanding these isn't optional — they appear in every debugger, every disassembler, every network packet, every colour code on a webpage.</p>
+<hr />
+<h2>The Story</h2>
+<h3>Positional Notation</h3>
+<p>Every number system we use is <strong>positional</strong> — the value of a digit depends on its position.</p>
+<p>In decimal (base 10):</p>
+<pre><code>3 4 7
+│ │ └── 7 × 10⁰ = 7 × 1   =    7
+│ └──── 4 × 10¹ = 4 × 10  =   40
+└────── 3 × 10² = 3 × 100 =  300
+                            ─────
+                              347
+</code></pre>
+<p>The <em>base</em> tells you how many symbols exist (10: 0–9) and what each position is worth (powers of 10).</p>
+<p>The same principle works for any base:</p>
+<p><strong>Binary (base 2):</strong> symbols are 0,1. Positions are powers of 2.</p>
+<pre><code>1 0 1 1 0 1
+│ │ │ │ │ └── 1 × 2⁰ = 1
+│ │ │ │ └──── 0 × 2¹ = 0
+│ │ │ └────── 1 × 2² = 4
+│ │ └──────── 1 × 2³ = 8
+│ └────────── 0 × 2⁴ = 0
+└──────────── 1 × 2⁵ = 32
+                       ──
+                       45
+</code></pre>
+<p>So <code>0b101101</code> = 45 in decimal.</p>
+<hr />
+<h3>Binary ↔ Decimal Conversions</h3>
+<p><strong>Decimal to binary</strong> — repeated division by 2, read remainders bottom to top:</p>
+<pre><code>45 ÷ 2 = 22 remainder 1   ← LSB (least significant bit)
+22 ÷ 2 = 11 remainder 0
+11 ÷ 2 =  5 remainder 1
+ 5 ÷ 2 =  2 remainder 1
+ 2 ÷ 2 =  1 remainder 0
+ 1 ÷ 2 =  0 remainder 1   ← MSB (most significant bit)
+
+Reading bottom to top: 101101
+</code></pre>
+<p><strong>Binary to decimal</strong> — sum the positional values of each 1 bit (as shown above).</p>
+<p><strong>Shortcut for powers of 2:</strong></p>
+<pre><code>2⁰=1, 2¹=2, 2²=4, 2³=8, 2⁴=16, 2⁵=32, 2⁶=64, 2⁷=128
+2⁸=256, 2⁹=512, 2¹⁰=1024, 2¹⁶=65536, 2³²≈4 billion
+</code></pre>
+<p>Memorise up to 2¹⁰. The rest follow by doubling.</p>
+<hr />
+<h3>Hexadecimal — Binary's Shorthand</h3>
+<p><strong>Hexadecimal (base 16):</strong> symbols are 0–9 then A–F (where A=10, B=11, C=12, D=13, E=14, F=15).</p>
+<p>The key insight: 16 = 2⁴. So <strong>one hex digit encodes exactly 4 binary bits</strong>. This makes conversion trivial:</p>
+<pre><code>Binary:  1010  1111  0011  1100
+Hex:       A     F     3     C
+= 0xAF3C
+</code></pre>
+<p>To convert any binary number to hex: group bits in fours from the right, convert each group.<br />
+To convert hex to binary: expand each digit to 4 bits.</p>
+<p><strong>Why hex is everywhere:</strong></p>
+<ul>
+<li>Memory addresses: <code>0x7FFF0000</code> is much more readable than <code>0111 1111 1111 1111 0000 0000 0000 0000</code></li>
+<li>Colour codes: <code>#FF5733</code> = RGB(255, 87, 51) — three bytes in six hex digits</li>
+<li>Machine code: <code>0x48 0x89 0xE5</code> is the first instruction of almost every x86-64 function</li>
+<li>Ethernet addresses: <code>A4:C3:F0:85:AC:2D</code></li>
+<li>IPv6: <code>2001:0db8:85a3:0000:0000:8a2e:0370:7334</code></li>
+</ul>
+<hr />
+<h3>Octal — The Forgotten Sibling</h3>
+<p>Octal (base 8) groups binary in threes. It was used in old minicomputers and Unix file permissions.</p>
+<pre><code>Binary: 111 101 100
+Octal:    7   5   4
+= 0754 (a Unix file permission: rwxr-xr--)
+</code></pre>
+<p>Octal has largely been replaced by hex in modern systems, but you'll still encounter it in Unix <code>chmod</code> commands.</p>
+<hr />
+<h3>Binary Arithmetic: Addition</h3>
+<p>Binary addition follows the same rules as decimal, with carries:</p>
+<pre><code>Bit addition table:
+0 + 0 = 0          (no carry)
+0 + 1 = 1          (no carry)
+1 + 0 = 1          (no carry)
+1 + 1 = 0 carry 1  (like decimal: 9+1=0 carry 1)
+1 + 1 + 1 = 1 carry 1
+
+Example: 0101 + 0011
+  0101   (5)
++ 0011   (3)
+──────
+  1000   (8)   ✓
+</code></pre>
+<p>The carry propagation rule is exactly what the Pascaline implemented mechanically in 1642 — and what every adder circuit in every CPU implements today.</p>
+<hr />
+<h3>Two's Complement: Negative Numbers</h3>
+<p>How do you represent −1 in binary? Several approaches exist; only one is used in practice.</p>
+<p><strong>Sign-magnitude</strong> (naive approach): use the leftmost bit as a sign (0=positive, 1=negative).</p>
+<ul>
+<li>Problem: two representations of zero (0000 and 1000)</li>
+<li>Problem: addition doesn't work normally — need separate add/subtract circuits</li>
+</ul>
+<p><strong>Two's complement</strong> (the universal standard):</p>
+<p><strong>Rule</strong>: to negate a number, invert all bits and add 1.</p>
+<pre><code>+5 in 8-bit binary:  00000101
+Invert all bits:      11111010
+Add 1:                11111011
+= −5 in two's complement
+</code></pre>
+<p>Verify: 5 + (−5) = 0?</p>
+<pre><code>  00000101   (+5)
++ 11111011   (−5)
+──────────
+ 100000000   = 9 bits, but we only keep 8 → 00000000 = 0 ✓
+</code></pre>
+<p><strong>Two's complement range</strong> for n bits: −2^(n-1) to +2^(n-1)−1</p>
+<ul>
+<li>8-bit: −128 to +127</li>
+<li>16-bit: −32,768 to +32,767</li>
+<li>32-bit: −2,147,483,648 to +2,147,483,647</li>
+</ul>
+<p><strong>Why two's complement wins:</strong></p>
+<ul>
+<li>Only one representation of zero</li>
+<li>Addition and subtraction work with the <strong>same circuit</strong> — no special cases</li>
+<li>The most significant bit still acts as a sign indicator (1 = negative)</li>
+<li>Hardware is simpler: one adder handles both add and subtract</li>
+</ul>
+<hr />
+<h3>Overflow</h3>
+<p>When a result exceeds the representable range, <strong>overflow</strong> occurs.</p>
+<pre><code>8-bit signed: max positive = 127 = 0111 1111
+127 + 1:
+  0111 1111
++ 0000 0001
+──────────
+  1000 0000  = 128 in unsigned, but = −128 in signed!
+</code></pre>
+<p>The CPU sets an <strong>overflow flag</strong> when this happens. If you're writing a program and ignore overflow, you get silent corruption — the classic source of security vulnerabilities. The <code>signed integer overflow</code> bug has caused spacecraft failures, financial miscalculations, and legendary security exploits.</p>
+<hr />
+<h2>The Concept: Every Computer Uses These</h2>
+<p>Every value in your computer right now — every pixel colour, every instruction address, every floating-point number, every timestamp — is encoded in binary and often displayed in hex. Two's complement is how every signed integer works on every mainstream CPU (x86, ARM, MIPS, RISC-V, all of them).</p>
+<p>Understanding these representations is the difference between reading machine output as &quot;noise&quot; vs reading it as structured information.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p>Three tools:</p>
+<p><strong>Tool 1 — Interactive Base Converter</strong></p>
+<ul>
+<li>Type any number in any base (decimal, binary, hex, octal)</li>
+<li>See all four representations simultaneously, updating in real time</li>
+<li>Each bit position labelled with its weight (2⁷, 2⁶, etc.)</li>
+<li>Step-by-step conversion working shown</li>
+</ul>
+<p><strong>Tool 2 — Two's Complement Explorer</strong></p>
+<ul>
+<li>Enter a positive number → see its two's complement negative</li>
+<li>Watch the invert-and-add-1 animation step by step</li>
+<li>Adjust bit width (4, 8, 16 bits)</li>
+<li>Overflow indicator: shows when you've gone past the range</li>
+</ul>
+<p><strong>Tool 3 — Binary Arithmetic Trainer</strong></p>
+<ul>
+<li>Addition and subtraction problems in binary</li>
+<li>Work through them manually, then check</li>
+<li>Carry/borrow propagation animated</li>
+</ul>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Convert between all four number systems, perform binary addition and subtraction using two's complement, and identify overflow conditions.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-2-1-why-binary/lesson.html" class="btn-icon">← Prev: M 2.1</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-2-3-logic-gates/lesson.html" class="btn-icon btn-primary">Next: M 2.3 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

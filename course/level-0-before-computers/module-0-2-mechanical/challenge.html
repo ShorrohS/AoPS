@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 0.2 — Early Mechanical Computation | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 0.2
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 0.2 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Early Mechanical Computation.
+      </p>
+    </div>
+
+    <article class="prose">
+      <h1>Challenge 0.2 — Gears and Carries</h1>
+<p><strong>Type:</strong> Simulation use + written mechanical trace<br />
+<strong>Estimated time:</strong> 25–35 minutes<br />
+<strong>Tools needed:</strong> <code>simulation.html</code> open in your browser + pen and paper</p>
+<hr />
+<h2>Part A — Napier's Bones (Simulation)</h2>
+<p>Use the <strong>Napier's Bones tool</strong> in the simulation to solve these multiplications. For each one, write down:</p>
+<ol>
+<li>Which rods you selected</li>
+<li>Which row you read</li>
+<li>The diagonal values you added</li>
+<li>The final answer</li>
+</ol>
+<h3>Problems</h3>
+<ol>
+<li><code>347 × 6</code></li>
+<li><code>829 × 7</code></li>
+<li><code>1284 × 9</code></li>
+</ol>
+<p><strong>After completing each:</strong> verify your answer using regular multiplication. They must match.</p>
+<hr />
+<h2>Part B — Pascaline Carry Trace (Written + Simulation)</h2>
+<p>Use the <strong>Pascaline tool</strong> in the simulation and add <code>798 + 203</code>.</p>
+<p>Watch the animation carefully. Then answer:</p>
+<ol>
+<li>
+<p>When the units wheel processes <code>8 + 3 = 11</code>, what physically happens to the units wheel? What happens to the tens wheel?</p>
+</li>
+<li>
+<p>When the tens wheel processes <code>9 + 0 + (carry from units) = 10</code>, what happens next?</p>
+</li>
+<li>
+<p>When the hundreds wheel processes <code>7 + 2 + (carry from tens) = 10</code>, what happens?</p>
+</li>
+<li>
+<p>Write out the full carry trace in this format:</p>
+</li>
+</ol>
+<pre><code>Units:    8 + 3 = 11  → write 1, carry 1 to tens
+Tens:     9 + 0 + 1 = __ → write ?, carry ? to hundreds
+Hundreds: 7 + 2 + ? = __ → write ?, carry ? to thousands
+Thousands: 0 + 0 + ? = __  → final result
+</code></pre>
+<ol start="5">
+<li>What is the final result? Verify: <code>798 + 203 = ?</code></li>
+</ol>
+<hr />
+<h2>Part C — The Overflow Question</h2>
+<p>Add <code>9999 + 1</code> on the Pascaline simulator.</p>
+<ol>
+<li>How many wheels move?</li>
+<li>What is the result displayed?</li>
+<li>What <em>should</em> the result be?</li>
+<li>This is called <strong>integer overflow</strong>. In one sentence, explain what overflow means in terms of the physical machine.</li>
+<li>Where will you encounter this same problem again in modern computers? (Hint: think about what happens when a 32-bit counter reaches its maximum value.)</li>
+</ol>
+<hr />
+<h2>Part D — Design Thinking</h2>
+<p>Without using any electronics, describe in 3–5 sentences how you would build a mechanical device that automatically multiplies two single-digit numbers (1–9) using only gears and wheels. You don't need to be technically precise — focus on the principle.</p>
+<p><em>There is no single right answer here. We're looking for mechanical reasoning.</em></p>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+<th>What we're looking for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A — 3 multiplications</td>
+<td>30</td>
+<td>Correct rods, rows, diagonal addition, verified answer</td>
+</tr>
+<tr>
+<td>B1–B3</td>
+<td>20</td>
+<td>Correct description of what each wheel does</td>
+</tr>
+<tr>
+<td>B4 — carry trace</td>
+<td>20</td>
+<td>Correctly filled-in trace table</td>
+</tr>
+<tr>
+<td>B5 — final result</td>
+<td>5</td>
+<td>1001 ✓</td>
+</tr>
+<tr>
+<td>C1–C4</td>
+<td>15</td>
+<td>Correct overflow analysis</td>
+</tr>
+<tr>
+<td>D</td>
+<td>10</td>
+<td>Thoughtful mechanical reasoning</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Hints</h2>
+<details>
+<summary>Hint — Napier's Bones diagonal addition</summary>
+Read each diagonal from top-right to bottom-left. Add the two numbers sharing a diagonal cell. Write down the ones digit, carry the tens digit to the next diagonal left.
+</details>
+<details>
+<summary>Hint — Part B carry trace</summary>
+Each wheel can only show 0–9. When the sum exceeds 9, the wheel shows (sum - 10) and sends a carry of 1 to the next wheel.
+</details>
+<details>
+<summary>Hint — Part C overflow</summary>
+A 4-wheel Pascaline can only represent 0000–9999. What is 9999 + 1 if you only have 4 digits?
+</details>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A Solutions</summary>
+<p><strong>347 × 6:</strong></p>
+<ul>
+<li>Rods: 3, 4, 7 — Row 6</li>
+<li>Diagonals: <code>1/8 | 2/4 | 4/2</code></li>
+<li>Addition: <code>1 | (8+2) | (4+4) | 2</code> = <code>1 | 10 | 8 | 2</code></li>
+<li>Carry the 10: <code>2 | 0 | 8 | 2</code> = <strong>2082</strong></li>
+</ul>
+<p><strong>829 × 7:</strong></p>
+<ul>
+<li>Rods: 8, 2, 9 — Row 7</li>
+<li>Diagonals: <code>5/6 | 1/4 | 6/3</code></li>
+<li>Addition: <code>5 | (6+1) | (4+6) | 3</code> = <code>5 | 7 | 10 | 3</code></li>
+<li>Carry: <code>5 | 8 | 0 | 3</code> = <strong>5803</strong></li>
+</ul>
+<p><strong>1284 × 9:</strong></p>
+<ul>
+<li>Rods: 1, 2, 8, 4 — Row 9</li>
+<li>Diagonals: <code>0/9 | 1/8 | 7/2 | 3/6</code></li>
+<li>Addition: <code>0 | (9+1) | (8+7) | (2+3) | 6</code> = <code>0 | 10 | 15 | 5 | 6</code></li>
+<li>Carry: <code>1 | 1 | 5 | 5 | 6</code> = <strong>11556</strong></li>
+</ul>
+</details>
+<details>
+<summary>Part B Solution</summary>
+<pre><code>Units:    8 + 3 = 11  → write 1, carry 1 to tens
+Tens:     9 + 0 + 1 = 10 → write 0, carry 1 to hundreds
+Hundreds: 7 + 2 + 1 = 10 → write 0, carry 1 to thousands
+Thousands: 0 + 0 + 1 = 1 → write 1, no carry
+</code></pre>
+<p>Final result: <strong>1001</strong> ✓</p>
+</details>
+<details>
+<summary>Part C Solution</summary>
+<ol>
+<li>All 4 wheels move (a cascade carry through every position)</li>
+<li>The display shows <strong>0000</strong></li>
+<li>The correct result is <strong>10000</strong> — which needs 5 digits</li>
+<li>Overflow: the machine's physical capacity (4 wheels = max 9999) was exceeded; the result wraps around to 0 because there is no fifth wheel to receive the final carry</li>
+<li>Same problem in 32-bit integers: max value 4,294,967,295 — add 1 and it wraps to 0. Classic overflow bug.</li>
+</ol>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

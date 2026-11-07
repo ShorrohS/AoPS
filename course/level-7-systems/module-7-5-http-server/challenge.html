@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 7.5 — Building a Tiny HTTP Server | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 7.5
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 7.5 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Building a Tiny HTTP Server.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 7.5 — Building a Tiny HTTP Server</p>
+<p><strong>Type:</strong> Implementation + trace + extension<br />
+<strong>Estimated time:</strong> 50–60 minutes<br />
+<strong>Tools needed:</strong> Python</p>
+<hr />
+<h2>Part A — HTTP Request Parsing</h2>
+<p>Given this raw HTTP request as bytes:</p>
+<pre><code>POST /api/users HTTP/1.1\r\n
+Host: localhost:8080\r\n
+Content-Type: application/json\r\n
+Content-Length: 27\r\n
+Authorization: Bearer abc123\r\n
+\r\n
+{&quot;name&quot;:&quot;Alice&quot;,&quot;age&quot;:30}
+</code></pre>
+<ol>
+<li>
+<p>Parse this request into a dict with keys: <code>method</code>, <code>path</code>, <code>version</code>, <code>headers</code> (dict), <code>body</code> (string). Show your <code>parse_request</code> function.</p>
+</li>
+<li>
+<p>What is the significance of the blank line <code>\r\n\r\n</code>? What does the <code>Content-Length</code> header tell the server?</p>
+</li>
+<li>
+<p>The server receives data in chunks (TCP is a byte stream). Write a loop that reads until it has received the complete request (headers + body), using <code>Content-Length</code> to know when the body is complete.</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Router Implementation</h2>
+<ol start="4">
+<li>Implement a router that maps <code>(method, path_pattern)</code> → handler function. Support:
+<ul>
+<li>Exact matches: <code>GET /health</code></li>
+<li>Path parameters: <code>GET /users/{id}</code> — capture the <code>{id}</code> value</li>
+</ul>
+</li>
+</ol>
+<pre><code class="language-python">router = Router()
+
+@router.route(&quot;GET&quot;, &quot;/health&quot;)
+def health(req): ...
+
+@router.route(&quot;GET&quot;, &quot;/users/{id}&quot;)
+def get_user(req, id): ...
+
+@router.route(&quot;POST&quot;, &quot;/users&quot;)
+def create_user(req): ...
+</code></pre>
+<ol start="5">
+<li>
+<p>Implement <code>Router.dispatch(request)</code> that finds the matching route, extracts path parameters, and calls the handler.</p>
+</li>
+<li>
+<p>What HTTP status code should be returned if:</p>
+<ul>
+<li>No route matches the path at all?</li>
+<li>The path matches but the method is wrong?</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2>Part C — Static File Server</h2>
+<ol start="7">
+<li>
+<p>Implement a static file handler that:</p>
+<ul>
+<li>Serves files from a <code>./static/</code> directory</li>
+<li>Sets correct <code>Content-Type</code> using the file extension</li>
+<li>Returns 404 if the file doesn't exist</li>
+<li>Prevents directory traversal (e.g., <code>/../../etc/passwd</code>)</li>
+</ul>
+</li>
+<li>
+<p>Add <strong>gzip compression</strong>: if the request has <code>Accept-Encoding: gzip</code> and the file is larger than 1 KB, compress the response body and add <code>Content-Encoding: gzip</code>.</p>
+</li>
+</ol>
+<pre><code class="language-python">import gzip
+
+def maybe_gzip(body, request_headers):
+    if 'gzip' in request_headers.get('accept-encoding', ''):
+        if len(body) &gt; 1024:
+            return gzip.compress(body), {'Content-Encoding': 'gzip'}
+    return body, {}
+</code></pre>
+<hr />
+<h2>Part D — HTTP/1.1 Features</h2>
+<ol start="9">
+<li>
+<p>Implement <strong>keep-alive</strong>: after serving a response, instead of closing the connection, wait for the next request on the same socket. Use the <code>Connection</code> header to determine whether to keep alive.</p>
+</li>
+<li>
+<p>Implement a <code>/time</code> route that returns the current UTC time as JSON: <code>{&quot;time&quot;: &quot;2026-09-10T22:00:00Z&quot;, &quot;timestamp&quot;: 1757523600}</code>.</p>
+</li>
+<li>
+<p>Implement <strong>rate limiting</strong>: allow at most 100 requests per minute per IP address. Return HTTP 429 Too Many Requests with a <code>Retry-After: 60</code> header when exceeded. Use an in-memory dict: <code>{ip: [timestamps...]}</code>.</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Full Request Trace</h2>
+<p>Trace the complete lifecycle of this HTTP request through your server:<br />
+<code>GET /static/hello.txt HTTP/1.1\r\nHost: localhost:8080\r\n\r\n</code></p>
+<ol start="12">
+<li>
+<p>List every step from <code>server.accept()</code> to the final <code>conn.close()</code>:</p>
+<ul>
+<li>Receive raw bytes</li>
+<li>Parse request</li>
+<li>Router lookup</li>
+<li>File system access</li>
+<li>Build response</li>
+<li>Send response</li>
+<li>Decision: close or keep-alive?</li>
+</ul>
+</li>
+<li>
+<p>What is the minimum number of system calls (socket operations) to handle this request?</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A request parsing</td>
+<td>20</td>
+</tr>
+<tr>
+<td>B router</td>
+<td>22</td>
+</tr>
+<tr>
+<td>C static file server</td>
+<td>22</td>
+</tr>
+<tr>
+<td>D HTTP/1.1 features</td>
+<td>22</td>
+</tr>
+<tr>
+<td>E full trace</td>
+<td>14</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part B.4 — Router implementation</summary>
+<pre><code class="language-python">import re
+
+class Router:
+    def __init__(self):
+        self._routes = []
+
+    def route(self, method, pattern):
+        def decorator(fn):
+            regex = re.sub(r'\{(\w+)\}', r'(?P&lt;\1&gt;[^/]+)', pattern) + '$'
+            self._routes.append((method, re.compile(regex), fn))
+            return fn
+        return decorator
+
+    def dispatch(self, req):
+        for method, regex, fn in self._routes:
+            if req['method'] != method: continue
+            m = regex.match(req['path'])
+            if m:
+                return fn(req, **m.groupdict())
+        # Check if path matches but method doesn't
+        for _, regex, _ in self._routes:
+            if regex.match(req['path']):
+                return build_response(405, {}, b'Method Not Allowed')
+        return build_response(404, {}, b'Not Found')
+</code></pre>
+</details>
+<details>
+<summary>Part D.11 — rate limiter</summary>
+<pre><code class="language-python">import time
+from collections import defaultdict
+
+rate_limit = defaultdict(list)
+LIMIT = 100
+WINDOW = 60
+
+def check_rate_limit(ip):
+    now = time.time()
+    # Keep only timestamps within the last 60 seconds
+    rate_limit[ip] = [t for t in rate_limit[ip] if now - t &lt; WINDOW]
+    if len(rate_limit[ip]) &gt;= LIMIT:
+        return False   # rate limited
+    rate_limit[ip].append(now)
+    return True
+
+# In request handler:
+ip = addr[0]
+if not check_rate_limit(ip):
+    return build_response(429, {'Retry-After': '60'}, b'Too Many Requests')
+</code></pre>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

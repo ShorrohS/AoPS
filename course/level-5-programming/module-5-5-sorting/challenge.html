@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 5.5 — Memory Allocation &amp; Heap | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 5.5
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 5.5 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Memory Allocation &amp; Heap.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 5.5 — Sorting: Putting Things in Order</p>
+<p><strong>Type:</strong> Trace + implementation + analysis<br />
+<strong>Estimated time:</strong> 45–55 minutes<br />
+<strong>Tools needed:</strong> pen and paper + Python</p>
+<hr />
+<h2>Part A — Merge Sort Trace</h2>
+<p>Sort the array <code>[5, 3, 8, 1, 9, 2, 7, 4]</code> using Merge Sort. Show every step.</p>
+<ol>
+<li>
+<p>Draw the <strong>divide phase</strong>: show the array split recursively into sub-arrays until you reach single elements.</p>
+</li>
+<li>
+<p>Draw the <strong>merge phase</strong>: show every merge operation, listing the two input sub-arrays and the merged output.</p>
+</li>
+<li>
+<p>Count the total number of comparisons made during all merge operations. Compare to the theoretical bound of n log n = 8 × 3 = 24.</p>
+</li>
+<li>
+<p>Merge Sort is <strong>stable</strong> — equal elements maintain their original relative order. Show why: if two equal elements appear in different halves during a merge, which one ends up first, and why?</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Quicksort Worst Case</h2>
+<ol start="5">
+<li>
+<p>What input array causes O(n²) behaviour in a Quicksort that always picks the <strong>last element</strong> as pivot? Show the partition sequence for this worst-case input of length 6.</p>
+</li>
+<li>
+<p>What input causes O(n²) behaviour in a Quicksort that always picks the <strong>first element</strong> as pivot?</p>
+</li>
+<li>
+<p>With <strong>randomised pivot</strong> (random element from the sub-array), what is the probability of always choosing the minimum element as pivot for an array of length n? How does this explain why the average case is O(n log n)?</p>
+</li>
+<li>
+<p>Implement 3-way partitioning (Dutch National Flag). Show that <code>quicksort_3way([3,1,3,3,2,3,1])</code> runs in O(n) — one partition, elements equal to the pivot are never recursed into.</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — Counting Sort</h2>
+<p>Counting sort is O(n + k) where k is the range of values.</p>
+<ol start="9">
+<li>
+<p>Sort <code>[3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]</code> using counting sort. Show:</p>
+<ul>
+<li>The count array after tallying</li>
+<li>The cumulative count array</li>
+<li>How each element from the input is placed in the output (right to left for stability)</li>
+</ul>
+</li>
+<li>
+<p>Implement <code>counting_sort(arr, k)</code> where k is the maximum value. Return the sorted array.</p>
+</li>
+<li>
+<p>Counting sort requires O(k) space. If the values are in range [0, 10⁹], is counting sort practical? What does this suggest about when to use it?</p>
+</li>
+</ol>
+<hr />
+<h2>Part D — The Lower Bound</h2>
+<p>The O(n log n) lower bound for comparison-based sorting comes from decision trees.</p>
+<ol start="12">
+<li>
+<p>For sorting 3 elements {a, b, c}, there are 3! = 6 possible orderings. Draw the decision tree for <strong>insertion sort</strong> on 3 elements:</p>
+<ul>
+<li>Each internal node is a comparison</li>
+<li>Each leaf is one of the 6 orderings</li>
+<li>The tree must have at least 6 leaves</li>
+</ul>
+</li>
+<li>
+<p>What is the <strong>height</strong> of your tree? How does this relate to log₂(6) ≈ 2.58?</p>
+</li>
+<li>
+<p>For n = 4 elements (4! = 24 orderings), the minimum tree height is ⌈log₂(24)⌉ = 5. This means at least 5 comparisons are needed in the worst case for any comparison sort. Verify: does Merge Sort achieve this minimum for n=4?</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Real-World Sorting</h2>
+<ol start="15">
+<li>
+<p>Python's <code>list.sort()</code> uses <strong>Timsort</strong>. Run the following and explain why the output appears before the program ends:</p>
+<pre><code class="language-python">import time
+
+# Nearly sorted array
+arr1 = list(range(1000)) + [500]   # almost sorted
+arr2 = list(range(1000, 0, -1))    # reverse sorted
+
+t1 = time.perf_counter()
+sorted(arr1)
+t2 = time.perf_counter()
+sorted(arr2)
+t3 = time.perf_counter()
+
+print(f&quot;Nearly sorted: {(t2-t1)*1000:.3f}ms&quot;)
+print(f&quot;Reverse sorted: {(t3-t2)*1000:.3f}ms&quot;)
+</code></pre>
+<p>Which is faster? Why? What does Timsort detect?</p>
+</li>
+<li>
+<p>You need to sort 10 million 32-bit integers. The values are uniformly distributed in [0, 10⁶]. Compare Merge Sort vs Radix Sort (base 256, 4 passes) in terms of: number of operations, cache behaviour, memory usage. Which would you choose?</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A Merge Sort trace</td>
+<td>28</td>
+</tr>
+<tr>
+<td>B Quicksort worst case</td>
+<td>24</td>
+</tr>
+<tr>
+<td>C Counting Sort</td>
+<td>20</td>
+</tr>
+<tr>
+<td>D Lower bound</td>
+<td>18</td>
+</tr>
+<tr>
+<td>E Real-world</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A.3 — comparison count</summary>
+<p>For 8 elements, merge sort makes at most n·log₂(n) = 8·3 = 24 comparisons. The actual count depends on data: merging [1,5] with [2,3] makes 3 comparisons (1&lt;2→take 1; 5&gt;2→take 2; 5&gt;3→take 3; then take 5 without comparison). For random data, the expected count is n·log₂(n) - n + 1 ≈ 17 for n=8.</p>
+</details>
+<details>
+<summary>Part B.5 — worst case pivot sequence</summary>
+<p>With last-element pivot, sorted array [1,2,3,4,5,6] is worst case:</p>
+<ul>
+<li>Partition [1,2,3,4,5,<strong>6</strong>]: pivot=6, left=[1,2,3,4,5], right=[]</li>
+<li>Partition [1,2,3,4,<strong>5</strong>]: pivot=5, left=[1,2,3,4], right=[]</li>
+<li>... each partition produces one sub-array of size n-1</li>
+<li>Total partitions: n-1 = 5. Total comparisons: 5+4+3+2+1 = 15 = O(n²).</li>
+</ul>
+</details>
+<details>
+<summary>Part C.9 — Counting Sort trace</summary>
+<p>Array: [3,1,4,1,5,9,2,6,5,3,5], k=9</p>
+<p>Count: [0,2,1,2,1,3,1,0,0,1] (index = value, value = count)<br />
+Cumulative: [0,2,3,5,6,9,10,10,10,11]</p>
+<p>Place elements right to left for stability:</p>
+<ul>
+<li>5 → cumulative[5]=9, place at index 8 (0-indexed), decrement to 8</li>
+<li>3 → cumulative[3]=5, place at index 4, decrement to 4</li>
+<li>... continue for all elements</li>
+</ul>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

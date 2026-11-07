@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 4.5 — File Systems &amp; Inodes | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 4.5
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 4.5 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for File Systems &amp; Inodes.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 4.5 — File Systems</p>
+<p><strong>Type:</strong> Calculation + trace + reasoning + design<br />
+<strong>Estimated time:</strong> 45–55 minutes<br />
+<strong>Tools needed:</strong> <code>simulation.html</code> + pen and paper</p>
+<hr />
+<h2>Setup</h2>
+<p>A Unix-like file system with:</p>
+<ul>
+<li>Block size: 4 KB (4096 bytes)</li>
+<li>Inode structure: 12 direct block pointers + 1 single-indirect + 1 double-indirect</li>
+<li>Each block pointer: 4 bytes</li>
+<li>Inode table starts at block 1; data blocks start at block 100</li>
+</ul>
+<hr />
+<h2>Part A — File Size Limits</h2>
+<ol>
+<li>
+<p>A file uses only <strong>direct blocks</strong> (12 entries). What is the maximum file size?</p>
+</li>
+<li>
+<p>The <strong>single-indirect block</strong> holds block pointers. How many pointers fit in one 4 KB block? What additional file size does the single-indirect block support?</p>
+</li>
+<li>
+<p>The <strong>double-indirect block</strong> adds another level. What is the total additional file size it can support?</p>
+</li>
+<li>
+<p>What is the <strong>total maximum file size</strong> supported by this inode structure (direct + single + double indirect)?</p>
+</li>
+<li>
+<p>A simple text file is 300 bytes. How many blocks does it consume? How many bytes are <strong>wasted</strong> (internal fragmentation)?</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Directory Lookup Trace</h2>
+<p>The following directory structure exists:</p>
+<pre><code>/ (root, inode 1)
+├── home/ (inode 15)
+│   └── alice/ (inode 42)
+│       ├── notes.txt (inode 103)
+│       └── code/ (inode 88)
+│           └── main.c (inode 217)
+└── etc/ (inode 7)
+    └── passwd (inode 12)
+</code></pre>
+<p>Each directory read requires one disk access (to read the directory's data block).</p>
+<ol start="6">
+<li>
+<p>Trace all disk accesses required to open <code>/home/alice/notes.txt</code>. List each step in order.</p>
+</li>
+<li>
+<p>How many disk accesses are needed to open <code>/home/alice/code/main.c</code>? List them.</p>
+</li>
+<li>
+<p>Why does accessing a deeply nested file like <code>/a/b/c/d/e/f/g/data.txt</code> (7 levels deep) have worse performance than a file at <code>/data.txt</code>? What is the worst-case disk access count?</p>
+</li>
+<li>
+<p>Modern file systems maintain a <strong>dentrycache</strong> (directory entry cache) in RAM. How does this change the answer to question 7 for frequently accessed files?</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — Disk Space Calculation</h2>
+<p>A disk has:</p>
+<ul>
+<li>Total capacity: 100 MB</li>
+<li>Block size: 4 KB</li>
+<li>Inode table: 100 inodes, each 128 bytes</li>
+</ul>
+<ol start="10">
+<li>
+<p>How many data blocks does the disk have? (Ignore inode table space for simplicity.)</p>
+</li>
+<li>
+<p>A directory contains 50 files, each exactly 1 byte of data. How much disk space is used in total? (Consider inodes, directory entries, and data blocks.)</p>
+</li>
+<li>
+<p>The same 50 files are each 5000 bytes. How much total disk space is used now?</p>
+</li>
+<li>
+<p><strong>Fragmentation</strong>: a disk is 50% full. Files have been deleted and new ones added many times. The free blocks are scattered. A new 100 KB file is allocated. How many block reads might be needed to read this file sequentially? Compare to a defragmented disk. What does this imply about database storage?</p>
+</li>
+</ol>
+<hr />
+<h2>Part D — Hard Links, Symlinks, and Deletion</h2>
+<ol start="14">
+<li>User runs:</li>
+</ol>
+<pre><code class="language-bash">echo &quot;hello&quot; &gt; file.txt     # creates file.txt, inode 500
+ln file.txt link.txt        # hard link
+rm file.txt                 # delete file.txt
+cat link.txt                # read via link.txt
+</code></pre>
+<p>Does the data still exist after <code>rm file.txt</code>? What is the inode's <code>nlinks</code> value after each command?</p>
+<ol start="15">
+<li>
+<p>User creates a symlink: <code>ln -s /home/alice/notes.txt shortcut.txt</code><br />
+Then <code>/home/alice/notes.txt</code> is deleted. What happens when you <code>cat shortcut.txt</code>? Why? How does this differ from the hard link case?</p>
+</li>
+<li>
+<p>A user runs <code>rm bigfile.txt</code> on a 10 GB file. The <code>rm</code> command returns almost instantly. Did the 10 GB of data get &quot;erased&quot;? What actually happened? How long does the space become available for reuse?</p>
+</li>
+<li>
+<p>Forensic investigators can often recover &quot;deleted&quot; files from a disk. Why? What would need to happen to make recovery impossible?</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Journaling and Consistency</h2>
+<p>An ext4 file system is in &quot;ordered&quot; journal mode. A program creates a new file:</p>
+<p>Operations needed:</p>
+<ol>
+<li>Allocate inode (update inode bitmap)</li>
+<li>Write file data to data blocks</li>
+<li>Update inode (fill in block pointers, size)</li>
+<li>Update directory (add entry: &quot;newfile&quot; → inode)</li>
+</ol>
+<p>The system loses power after step 2 but before step 3.</p>
+<ol start="18">
+<li>
+<p>Without journaling: what inconsistency exists on disk after power loss? What would <code>fsck</code> have to do to repair it?</p>
+</li>
+<li>
+<p>With journaling (ordered mode): what was written to the journal before the crash? What happens during recovery?</p>
+</li>
+<li>
+<p>With journaling (writeback mode): is the data guaranteed to be present after recovery? What might be missing or corrupted, even with the metadata repaired?</p>
+</li>
+<li>
+<p>A programmer argues: &quot;I'll skip <code>fsync()</code> after writing — the journal will protect my data.&quot; Is this correct? What exactly does journaling protect, and what does it not protect?</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A file size limits</td>
+<td>20</td>
+</tr>
+<tr>
+<td>B directory lookup</td>
+<td>20</td>
+</tr>
+<tr>
+<td>C disk space</td>
+<td>20</td>
+</tr>
+<tr>
+<td>D links and deletion</td>
+<td>22</td>
+</tr>
+<tr>
+<td>E journaling</td>
+<td>18</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A</summary>
+<ol>
+<li>12 × 4 KB = <strong>48 KB</strong> maximum with direct blocks only.</li>
+<li>Pointers per block = 4096 / 4 = <strong>1024</strong>. Additional size = 1024 × 4 KB = <strong>4 MB</strong>.</li>
+<li>Double indirect: 1024 × 1024 × 4 KB = <strong>4 GB</strong>.</li>
+<li>Total = 48 KB + 4 MB + 4 GB ≈ <strong>~4 GB</strong> (dominated by double-indirect).</li>
+<li>300-byte file occupies <strong>1 block</strong> (4 KB). Wasted = 4096 − 300 = <strong>3796 bytes</strong> (92.6% waste!).</li>
+</ol>
+</details>
+<details>
+<summary>Part B trace</summary>
+<ol start="6">
+<li>
+<p><code>/home/alice/notes.txt</code>:</p>
+<ol>
+<li>Read root inode (inode 1) — know block of root directory</li>
+<li>Read root directory block → find &quot;home&quot; → inode 15</li>
+<li>Read inode 15 → find home's data block</li>
+<li>Read home's directory block → find &quot;alice&quot; → inode 42</li>
+<li>Read inode 42 → find alice's data block</li>
+<li>Read alice's directory block → find &quot;notes.txt&quot; → inode 103</li>
+<li>Read inode 103 → get block list</li>
+<li>Read data block(s) of notes.txt</li>
+</ol>
+<p><strong>8 disk accesses</strong> (minimum, assuming no caching).</p>
+</li>
+<li>
+<p><code>/home/alice/code/main.c</code>: one more directory level → +2 accesses (code's inode + code's directory block) = <strong>10 disk accesses</strong>.</p>
+</li>
+</ol>
+</details>
+<details>
+<summary>Part D</summary>
+<ol start="14">
+<li>
+<p>After <code>echo &gt; file.txt</code>: nlinks=1. After <code>ln file.txt link.txt</code>: nlinks=2. After <code>rm file.txt</code>: nlinks=1 (the data still exists, only the directory entry was removed). <code>cat link.txt</code> succeeds — data is fully intact. The inode and data blocks are freed only when nlinks reaches 0.</p>
+</li>
+<li>
+<p>After deleting <code>/home/alice/notes.txt</code> (assuming nlinks drops to 0, data freed): <code>cat shortcut.txt</code> fails with &quot;No such file or directory&quot;. The symlink still exists but its target path no longer resolves. Hard links avoid this because they reference the inode directly, not the path.</p>
+</li>
+<li>
+<p><code>rm bigfile.txt</code> removes the directory entry and decrements nlinks to 0 in the inode — essentially instant (one metadata write). The <strong>inode and block bitmap bits are cleared</strong>, marking the space as available. The data bytes are NOT overwritten. The space becomes available immediately for new allocations. The old data physically remains until new files overwrite those blocks.</p>
+</li>
+<li>
+<p>Recovery is possible because the data bytes remain until overwritten. To make recovery impossible: overwrite the data blocks with zeros (or random data) before freeing them — the <code>shred</code> command does this. Secure deletion tools and full-disk encryption make forensic recovery infeasible.</p>
+</li>
+</ol>
+</details>
+<details>
+<summary>Part E</summary>
+<ol start="18">
+<li>
+<p>Without journaling: inode not updated → inode points to no data blocks but bitmap says data blocks are allocated → &quot;orphaned&quot; blocks (allocated but not referenced). fsck must: scan all inodes, compare against block bitmap, find discrepancies, mark orphaned blocks as free. Time = proportional to disk size.</p>
+</li>
+<li>
+<p>In ordered mode: data blocks written first, then journal entry written with metadata changes (inode + directory). After crash: data is on disk (step 2 done), journal entry for steps 3+4 may or may not exist. Recovery: if journal entry present, replay it (write inode and directory). If not, the file doesn't exist in the directory and inode isn't updated — no inconsistency, just the file is not created. No fsck needed.</p>
+</li>
+<li>
+<p>Writeback: journal protects metadata consistency but data and metadata order is not guaranteed. After recovery, the file might exist (metadata written) but contain garbage data from old blocks that happened to be allocated. The journal ensures you won't have an inconsistent inode structure, but the file's content may be corrupt.</p>
+</li>
+<li>
+<p><strong>Incorrect</strong>. Journaling protects <strong>file system metadata consistency</strong> — inode structures, directory entries, block allocations. It does NOT guarantee that application data written to a file reaches durable storage. Without <code>fsync()</code>, data may still be in the kernel's page cache (not yet on disk). A power loss drops the cached but unsynced data. <code>fsync()</code> forces the OS to flush all pending writes for that file to disk before returning.</p>
+</li>
+</ol>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

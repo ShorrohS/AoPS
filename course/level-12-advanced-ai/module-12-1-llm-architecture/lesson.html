@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 12.1 — Transformer &amp; LLM Architecture | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 12.1
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Transformer &amp; LLM Architecture
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 12 • Advanced AI &amp; Frontiers</div>
+      <h1 class="article-title">Module 12.1 — Transformer &amp; LLM Architecture</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-12-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 12.1 — Large Language Models: Architecture and Training</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>In 2017, a team at Google published &quot;Attention Is All You Need.&quot;<br />
+The transformer architecture they described — without convolutions or recurrence —<br />
+became the foundation of GPT, BERT, Claude, Gemini, LLaMA,<br />
+and virtually every large language model in existence.</p>
+<p>How does a system trained to predict the next word in a document<br />
+learn to write code, translate languages, answer questions,<br />
+and reason about complex problems?</p>
+<p>Understanding the transformer architecture — from attention mechanisms<br />
+to the training process — is the prerequisite for working with<br />
+any modern AI system at a technical level.</p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>The Road to Transformers</h3>
+<p><strong>Recurrent Neural Networks (RNNs)</strong> and their variants — LSTMs (Hochreiter &amp; Schmidhuber, 1997) and GRUs — dominated sequence modelling from the 2000s. They processed tokens one at a time, maintaining a hidden state. The problem: long-range dependencies were hard to learn (vanishing gradients even with LSTM), and sequential processing prevented parallelisation.</p>
+<p><strong>Sequence-to-sequence models</strong> (Sutskever, Vinyals, Le, 2014) added an encoder-decoder structure with attention — the decoder could &quot;attend&quot; to different parts of the encoder's output. This was the breakthrough for machine translation.</p>
+<p><strong>&quot;Attention Is All You Need&quot;</strong> (Vaswani et al., Google, 2017) eliminated recurrence entirely. Pure attention. Every token attends to every other token in the sequence simultaneously. Training is fully parallelisable. The result: dramatically larger models could be trained.</p>
+<p><strong>GPT-1</strong> (OpenAI, 2018): the first demonstration that large-scale pretraining on text + fine-tuning worked for many tasks. 117 million parameters. GPT-2 (2019): 1.5B parameters. GPT-3 (2020): 175B parameters, few-shot learning without fine-tuning. GPT-4 (2023): architecture undisclosed, dramatically better. The scale at which capabilities emerged was surprising even to the researchers.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>Tokenisation</h3>
+<p>Before processing text, the model converts it to tokens — integer IDs from a fixed vocabulary.</p>
+<p><strong>BPE (Byte Pair Encoding)</strong>: the dominant tokenisation scheme for LLMs. Start with individual bytes, iteratively merge the most frequent adjacent pair:</p>
+<pre><code>&quot;the cat sat&quot; → [&quot;the&quot;, &quot; cat&quot;, &quot; sat&quot;]
+                → [464, 3797, 4992]  (GPT-4 token IDs)
+</code></pre>
+<p>GPT-4 uses ~100,000 tokens. Common words are single tokens (&quot;the&quot; → 1 token). Uncommon or non-English words may split into multiple tokens (&quot;Königsberg&quot; → [&quot;K&quot;, &quot;ön&quot;, &quot;igs&quot;, &quot;berg&quot;] → 4 tokens).</p>
+<p><strong>Why it matters</strong>: token count affects both cost and context length. A 4,096-token context window is roughly 3,000 words of English.</p>
+<h3>The Transformer Architecture</h3>
+<pre><code>Input tokens
+     ↓
+[Token Embeddings + Positional Embeddings]
+     ↓
+[Transformer Block 1]
+[Transformer Block 2]
+...
+[Transformer Block N]
+     ↓
+[Linear + Softmax]
+     ↓
+Next token probabilities
+</code></pre>
+<p><strong>Each Transformer Block:</strong></p>
+<pre><code>Input
+  ↓
+[Multi-Head Self-Attention]
+  ↓ (+ residual connection)
+[Layer Normalisation]
+  ↓
+[Feed-Forward Network (MLP)]
+  ↓ (+ residual connection)
+[Layer Normalisation]
+  ↓
+Output
+</code></pre>
+<h3>Self-Attention — The Core Mechanism</h3>
+<p>Self-attention allows every token to &quot;look at&quot; every other token and incorporate relevant context.</p>
+<p>For each token, compute three vectors via learned linear projections:</p>
+<ul>
+<li><strong>Query (Q)</strong>: &quot;what am I looking for?&quot;</li>
+<li><strong>Key (K)</strong>: &quot;what do I contain?&quot;</li>
+<li><strong>Value (V)</strong>: &quot;what do I provide if attended to?&quot;</li>
+</ul>
+<pre><code class="language-python">import numpy as np
+
+def self_attention(X, W_Q, W_K, W_V):
+    # X shape: (seq_len, d_model)
+    Q = X @ W_Q    # (seq_len, d_k)
+    K = X @ W_K    # (seq_len, d_k)
+    V = X @ W_V    # (seq_len, d_v)
+
+    # Attention scores: how much each token attends to each other
+    d_k = Q.shape[-1]
+    scores = Q @ K.T / np.sqrt(d_k)    # (seq_len, seq_len)
+
+    # For causal (decoder) models: mask future tokens
+    # scores[i, j] = -inf if j &gt; i  (can't attend to future)
+
+    # Softmax over keys for each query
+    weights = softmax(scores, axis=-1)    # (seq_len, seq_len)
+
+    # Weighted sum of values
+    output = weights @ V    # (seq_len, d_v)
+    return output
+</code></pre>
+<p><strong>Multi-head attention</strong>: run h parallel attention heads with different W_Q, W_K, W_V projections. Each head can attend to different aspects of the input. Concatenate and project:</p>
+<pre><code class="language-python">def multi_head_attention(X, num_heads, W_Q, W_K, W_V, W_O):
+    # Split into heads, apply attention, concatenate
+    head_dim = d_model // num_heads
+    heads = []
+    for h in range(num_heads):
+        # Each head has its own projections
+        out = self_attention(X, W_Q[h], W_K[h], W_V[h])
+        heads.append(out)
+    concat = np.concatenate(heads, axis=-1)   # (seq_len, d_model)
+    return concat @ W_O                        # (seq_len, d_model)
+</code></pre>
+<h3>Positional Encoding</h3>
+<p>Self-attention is order-invariant (shuffling tokens gives the same attention scores). Positional encodings inject position information:</p>
+<p><strong>Sinusoidal positional encoding</strong> (original Transformer):</p>
+<pre><code class="language-python">def positional_encoding(seq_len, d_model):
+    PE = np.zeros((seq_len, d_model))
+    for pos in range(seq_len):
+        for i in range(0, d_model, 2):
+            PE[pos, i]   = np.sin(pos / 10000**(i / d_model))
+            PE[pos, i+1] = np.cos(pos / 10000**(i / d_model))
+    return PE
+</code></pre>
+<p>Modern LLMs (GPT-NeoX, LLaMA) use <strong>RoPE (Rotary Positional Embedding)</strong> — relative position encoding that generalises better to sequences longer than seen during training.</p>
+<h3>Pretraining: Next-Token Prediction</h3>
+<p>LLMs are trained on the <strong>causal language modelling</strong> objective: given tokens 1..t, predict token t+1. For a sequence of N tokens, one forward pass generates N training examples (teacher forcing):</p>
+<pre><code class="language-python"># Input:  [The, cat, sat, on]
+# Target: [cat, sat, on, the]   (each token predicts the next)
+
+# Cross-entropy loss over vocabulary for each position
+loss = -sum(log P(token_t+1 | tokens_1..t) for t in 1..N-1) / (N-1)
+</code></pre>
+<p>This simple objective — <strong>predict the next token</strong> — when applied to hundreds of billions of tokens from the web, books, and code, produces a model that learns to compress and generalise the statistical structure of human language and knowledge.</p>
+<p>Why does next-token prediction produce &quot;understanding&quot;? The hypothesis: to predict the next token well, a model must learn everything knowable about the context — facts, reasoning patterns, coding conventions, stylistic norms. The task is simple; the knowledge required to do it well is enormous.</p>
+<h3>Inference: Autoregressive Generation</h3>
+<p>At inference time, the model generates tokens one at a time:</p>
+<pre><code class="language-python">def generate(model, prompt_tokens, max_new_tokens, temperature=1.0):
+    tokens = list(prompt_tokens)
+    for _ in range(max_new_tokens):
+        logits = model.forward(tokens)        # (vocab_size,) for last position
+        logits /= temperature                  # temperature scales confidence
+        probs = softmax(logits)
+        next_token = np.random.choice(len(probs), p=probs)   # sample
+        tokens.append(next_token)
+        if next_token == EOS_TOKEN: break
+    return tokens[len(prompt_tokens):]
+</code></pre>
+<p><strong>Temperature</strong>: lower → more deterministic (greedy), higher → more random.<br />
+<strong>Top-k sampling</strong>: only consider the k most likely tokens.<br />
+<strong>Top-p (nucleus) sampling</strong>: only consider tokens whose cumulative probability ≥ p.</p>
+<p>The <strong>KV cache</strong> stores key/value matrices for previously generated tokens, so each new token only requires one new row of attention computation rather than recomputing the entire sequence.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Attention Pattern Visualiser</strong></p>
+<ul>
+<li>Input a short sentence</li>
+<li>See the attention weight matrix for each head</li>
+<li>Observe which tokens attend to which others (e.g., pronouns attending to their antecedents)</li>
+</ul>
+<p><strong>Tool 2 — Tokeniser</strong></p>
+<ul>
+<li>Enter text; watch it get tokenised</li>
+<li>See how different languages tokenise (English vs Chinese vs code)</li>
+<li>Count tokens to understand context window implications</li>
+</ul>
+<p><strong>Tool 3 — Autoregressive Generation</strong></p>
+<ul>
+<li>A tiny language model (for demonstration)</li>
+<li>Watch token-by-token generation</li>
+<li>Adjust temperature: see deterministic vs random output</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Scaling laws</strong>: Kaplan et al. (OpenAI, 2020) showed that language model loss decreases as a power law with: number of parameters (N), training tokens (D), and compute (C=6ND). These scaling laws predicted the performance of GPT-3 and GPT-4 before they were trained. They also suggested an &quot;optimal&quot; allocation of compute between model size and data size.</p>
+<p><strong>Emergent capabilities</strong>: behaviours that appear only above certain model scales — arithmetic, chain-of-thought reasoning, code generation, in-context learning. Smaller models simply cannot do these things; larger models do them without explicit training on those tasks. The emergence appears sudden relative to scale. Understanding why capabilities emerge at scale is one of the most important open questions in AI research.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Implement scaled dot-product attention from scratch in NumPy for a 4-token sequence, trace what happens to the KV cache as the model generates a 10-token response (how many key/value vectors are stored?), tokenise a given sentence using a simple BPE vocabulary, and explain why a model trained on next-token prediction can perform few-shot learning (completing tasks described in the prompt it has never explicitly trained on).</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../../level-11-ai-ml/module-11-5-backpropagation/lesson.html" class="btn-icon">← Prev: M 11.5</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-12-2-embeddings/lesson.html" class="btn-icon btn-primary">Next: M 12.2 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

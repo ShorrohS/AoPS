@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 2.6 — From Gates to a Simple ALU | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 2.6
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        From Gates to a Simple ALU
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 2 • Digital Foundations</div>
+      <h1 class="article-title">Module 2.6 — From Gates to a Simple ALU</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-2-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <h1>Module 2.6 — From Gates to a Simple ALU</h1>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>You have:</p>
+<ul>
+<li>Logic gates that compute AND, OR, NOT, XOR</li>
+<li>Adders that add binary numbers</li>
+<li>Multiplexers that select between signals</li>
+</ul>
+<p>Now: how do you combine these into a single unit that can perform any arithmetic or logical operation on demand?</p>
+<p>The answer is the <strong>Arithmetic Logic Unit (ALU)</strong> — the computational core of every processor ever built.</p>
+</blockquote>
+<p>The ALU is the machine that executes the instructions of every program ever written. When Python evaluates <code>x + 1</code>, the compiler translates this to an ADD instruction, the CPU fetches it, decodes it, and routes the operands through the ALU. The ALU computes the result in one clock cycle.</p>
+<p>Understanding the ALU is the bridge between Level 2 (circuits) and Level 3 (machine architecture). Once you have an ALU, you have a machine that can compute. Add memory, a program counter, and control logic — and you have a CPU.</p>
+<hr />
+<h2>The Story</h2>
+<h3>What an ALU Must Do</h3>
+<p>A minimal ALU for a real processor needs to support at least:</p>
+<p><strong>Arithmetic operations:</strong></p>
+<ul>
+<li>ADD: A + B</li>
+<li>SUB: A − B (= A + (−B) = A + two's complement of B)</li>
+<li>INC: A + 1</li>
+<li>DEC: A − 1</li>
+</ul>
+<p><strong>Logical operations:</strong></p>
+<ul>
+<li>AND: A AND B</li>
+<li>OR: A OR B</li>
+<li>XOR: A XOR B</li>
+<li>NOT: NOT A (bitwise invert)</li>
+</ul>
+<p><strong>Comparison (produces flags, not data):</strong></p>
+<ul>
+<li>Zero flag: result = 0?</li>
+<li>Carry flag: unsigned overflow?</li>
+<li>Negative flag: most significant bit = 1?</li>
+<li>Overflow flag: signed overflow?</li>
+</ul>
+<p><strong>Shifts (often included):</strong></p>
+<ul>
+<li>LSR: logical shift right (divide by 2)</li>
+<li>LSL: logical shift left (multiply by 2)</li>
+</ul>
+<p>All of these from gates, adders, and multiplexers.</p>
+<hr />
+<h3>Building the 4-Bit ALU</h3>
+<p><strong>Step 1: Arithmetic unit</strong></p>
+<p>ADD and SUB use the same adder. For SUB, we negate B using two's complement (invert B and set Cin=1).</p>
+<p>Control signal: <code>sub</code> (0=add, 1=subtract)</p>
+<pre><code>B_effective = B XOR sub  (when sub=1, inverts B)
+Cin = sub                (when sub=1, adds 1 to complete two's complement)
+Result = A + B_effective + Cin
+</code></pre>
+<p>One 4-bit adder handles both ADD and SUB. This is elegant: subtraction is free once you have addition and XOR.</p>
+<p><strong>Step 2: Logic unit</strong></p>
+<p>For each bit position i, compute:</p>
+<pre><code>AND_result[i]  = A[i] AND B[i]
+OR_result[i]   = A[i] OR  B[i]
+XOR_result[i]  = A[i] XOR B[i]
+NOT_result[i]  = NOT A[i]
+</code></pre>
+<p>All four computed simultaneously — no selection yet.</p>
+<p><strong>Step 3: Multiplexer selects the operation</strong></p>
+<p>A 2-bit <strong>operation select</strong> (op[1:0]) controls a 4-to-1 multiplexer:</p>
+<pre><code>op = 00 → select AND result
+op = 01 → select OR result
+op = 10 → select XOR result  
+op = 11 → select NOT result
+</code></pre>
+<p><strong>Step 4: Arithmetic/Logic mode select</strong></p>
+<p>A 1-bit <code>mode</code> signal selects between arithmetic unit output and logic unit output:</p>
+<pre><code>mode = 0 → arithmetic (ADD/SUB)
+mode = 1 → logic (AND/OR/XOR/NOT)
+</code></pre>
+<p><strong>Combined control word: 3 bits (sub, mode, op[1:0])</strong></p>
+<table>
+<thead>
+<tr>
+<th>mode</th>
+<th>sub</th>
+<th>op</th>
+<th>Operation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>—</td>
+<td>ADD</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>—</td>
+<td>SUB</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>00</td>
+<td>AND</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>01</td>
+<td>OR</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>10</td>
+<td>XOR</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>11</td>
+<td>NOT A</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>Flags</h3>
+<p>The ALU doesn't just produce a result — it also produces <strong>status flags</strong> that the control unit reads to make decisions (for branch instructions like <code>if</code>, <code>while</code>, comparisons).</p>
+<p><strong>Zero flag (Z):</strong></p>
+<pre><code>Z = NOR(result[3], result[2], result[1], result[0])
+Z = 1 when all result bits are 0
+</code></pre>
+<p>Application: <code>JZ</code> (jump if zero) — the basis of all equality tests.</p>
+<p><strong>Carry flag (C):</strong></p>
+<pre><code>C = carry-out of the most significant adder stage
+C = 1 when unsigned result overflowed (exceeded 15 for 4-bit)
+</code></pre>
+<p>Application: multi-precision arithmetic — add 64-bit numbers as two 32-bit adds using the carry from the first.</p>
+<p><strong>Negative flag (N):</strong></p>
+<pre><code>N = result[3]  (most significant bit)
+N = 1 when result is negative in two's complement
+</code></pre>
+<p>Application: <code>JN</code> (jump if negative) — signed comparisons.</p>
+<p><strong>Overflow flag (V):</strong><br />
+Signed overflow — result's sign is wrong.</p>
+<pre><code>V = Cout XOR Cin_of_MSB
+V = 1 when adding two positives gives a negative (or two negatives gives a positive)
+</code></pre>
+<p>Application: detecting signed arithmetic errors.</p>
+<hr />
+<h3>Real-World ALU: Intel x86-64 EFLAGS</h3>
+<p>The x86-64 processor's EFLAGS register contains all four flags plus more:</p>
+<ul>
+<li><strong>CF</strong> — Carry Flag</li>
+<li><strong>ZF</strong> — Zero Flag</li>
+<li><strong>SF</strong> — Sign Flag (= Negative flag)</li>
+<li><strong>OF</strong> — Overflow Flag</li>
+<li><strong>PF</strong> — Parity Flag (count of 1 bits in result)</li>
+<li><strong>AF</strong> — Auxiliary Carry (carry from bit 3 to bit 4, used in BCD arithmetic)</li>
+</ul>
+<p>Every arithmetic instruction sets these flags. Conditional jump instructions (JE, JNE, JL, JG, etc.) test these flags and branch accordingly. Your <code>if (x == 0)</code> in C compiles to a CMP + JE — the ALU does the comparison, sets ZF, and the JE checks it.</p>
+<hr />
+<h3>Putting It All Together</h3>
+<p>Here is the complete datapath for our 4-bit ALU:</p>
+<pre><code>Input: A[3:0], B[3:0], control[2:0] = {mode, sub, op[1:0]}
+
+                    B ──[XOR sub]──┐
+                                   │
+A ──────────────────[4-bit adder]──┤── arith_result ──┐
+        Cin = sub ──┘               │                  │
+                                   │                  [MUX]── result
+A ──[AND]──┐                       │    sub ──────────┘
+B ──┘      ├── logic_results ──────┘
+A ──[OR]───┤
+B ──┘      │                    Z = NOR(result)
+A ──[XOR]──┤                    C = carry_out
+B ──┘      │                    N = result[3]
+A ──[NOT]──┘                    V = overflow
+</code></pre>
+<p>This 4-bit ALU uses approximately 100 gates. A modern CPU's 64-bit ALU uses thousands. The structure is identical — wider data paths, more operations, more flags.</p>
+<hr />
+<h2>The Concept: One Hardware, Many Operations</h2>
+<p>The ALU's elegance is that it contains <strong>multiple computation paths running simultaneously</strong>. The ADD path is always computing A+B. The AND path is always computing A AND B. The XOR path is always computing A XOR B.</p>
+<p>The <strong>multiplexer</strong> at the output selects which result to forward based on the instruction opcode. The &quot;unused&quot; computation results are simply discarded.</p>
+<p>This is a form of <strong>spatial parallelism</strong> — computing multiple things at once and selecting the needed result. It's faster and simpler than sequentially deciding what to compute.</p>
+<p>The same principle scales up: modern CPUs have multiple ALUs running in parallel (superscalar execution), and GPU shader cores have thousands of ALUs.</p>
+<hr />
+<h2>Level 2 Capstone</h2>
+<p>You have now completed Level 2. You can:</p>
+<ol>
+<li>Explain why binary beats analog (Module 2.1)</li>
+<li>Convert between binary, hex, octal, and decimal; negate using two's complement (Module 2.2)</li>
+<li>Write truth tables, apply Boolean algebra, build circuits from expressions (Module 2.3)</li>
+<li>Build a half adder, full adder, and 4-bit ripple-carry adder (Module 2.4)</li>
+<li>Explain SR latches, D flip-flops, registers, and counters (Module 2.5)</li>
+<li>Design a simple ALU with arithmetic, logic, and flag outputs (Module 2.6)</li>
+</ol>
+<p>This is the complete <strong>digital foundations</strong> layer. Everything above it — CPU architecture, instruction sets, operating systems, programming languages — is built on what you now understand.</p>
+<p><strong>Level 3 — Machine Architecture</strong> assembles these components into a CPU: an ALU + registers + program counter + memory bus + control unit = a machine that can execute instructions.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — 4-Bit ALU</strong></p>
+<ul>
+<li>Enter A and B as 4-bit numbers</li>
+<li>Select operation (ADD, SUB, AND, OR, XOR, NOT)</li>
+<li>Watch the result and all four flags update</li>
+<li>Step through the ADD/SUB mux and logic unit visually</li>
+</ul>
+<p><strong>Tool 2 — Flag Explorer</strong></p>
+<ul>
+<li>Set specific A and B values</li>
+<li>Observe when each flag lights up</li>
+<li>Understand: when does Carry fire vs Overflow?</li>
+</ul>
+<p><strong>Tool 3 — ALU Program</strong></p>
+<ul>
+<li>Write a 5-step &quot;program&quot; using ALU operations</li>
+<li>Execute step by step — accumulate a result across operations</li>
+<li>Preview of Level 3: this is the ALU stage of fetch-decode-execute</li>
+</ul>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Execute ALU operations by hand, predict flags before running, write a mini-program using only ALU operations, and explain the difference between carry and overflow.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-2-5-sequential-circuits/lesson.html" class="btn-icon">← Prev: M 2.5</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../../level-3-machine-architecture/module-3-1-memory/lesson.html" class="btn-icon btn-primary">Next: M 3.1 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

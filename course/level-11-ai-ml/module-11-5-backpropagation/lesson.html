@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 11.5 — Backpropagation Derived | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 11.5
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Backpropagation Derived
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 11 • AI &amp; Machine Learning</div>
+      <h1 class="article-title">Module 11.5 — Backpropagation Derived</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-11-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 11.5 — Backpropagation: Derived and Implemented</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>A neural network has millions of parameters.<br />
+Training requires computing the gradient of the loss<br />
+with respect to every single parameter — millions of partial derivatives.</p>
+<p>Computing each gradient separately by finite differences<br />
+would require millions of forward passes — impossibly slow.</p>
+<p>Backpropagation computes all gradients in one backward pass<br />
+using the chain rule of calculus.<br />
+It is the algorithm that makes deep learning possible.<br />
+Understanding it deeply is the difference between<br />
+a user of ML tools and a builder of ML systems.</p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>A Rediscovery That Changed Everything</h3>
+<p>The backpropagation algorithm (backprop) is an efficient application of the chain rule for computing gradients in computational graphs. It was independently discovered multiple times:</p>
+<ul>
+<li><strong>Seppo Linnainmaa</strong> (1970, Finland): first description of reverse-mode automatic differentiation in his master's thesis</li>
+<li><strong>Paul Werbos</strong> (1974): applied it to neural networks in his PhD thesis</li>
+<li><strong>David Rumelhart, Geoffrey Hinton, Ronald Williams</strong> (1986): the paper &quot;Learning Representations by Back-propagating Errors&quot; — the paper that launched modern neural network research</li>
+</ul>
+<p>The 1986 paper was not the first derivation, but it clearly articulated why backprop was significant for learning distributed representations in multi-layer networks. It showed that networks with hidden layers could learn features that were not hand-engineered.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>The Chain Rule</h3>
+<p>If y = f(x) and x = g(t), then <code>dy/dt = (dy/dx) × (dx/dt)</code>.</p>
+<p>For a composed function <code>L = loss(softmax(W₂ × relu(W₁ × x + b₁) + b₂))</code>:</p>
+<p>Each partial derivative propagates backward through all operations that depend on it.</p>
+<h3>Computational Graphs</h3>
+<p>Think of the network as a graph where:</p>
+<ul>
+<li><strong>Nodes</strong> are operations (+, ×, relu, sigmoid, etc.)</li>
+<li><strong>Edges</strong> carry values (forward pass) and gradients (backward pass)</li>
+</ul>
+<pre><code>x → [W₁] → z₁ → [ReLU] → a₁ → [W₂] → z₂ → [Softmax] → p → [Loss] → L
+</code></pre>
+<p><strong>Forward pass</strong>: compute values left to right, store intermediate values.<br />
+<strong>Backward pass</strong>: compute gradients right to left using chain rule.</p>
+<h3>Deriving Backprop for a Simple Network</h3>
+<p><strong>Architecture</strong>: input x → linear W₁ → ReLU → linear W₂ → MSE loss</p>
+<p><strong>Forward:</strong></p>
+<pre><code class="language-python">z1 = x @ W1 + b1          # linear
+a1 = relu(z1)              # activation
+z2 = a1 @ W2 + b2          # output layer
+L  = mse_loss(z2, y)       # loss
+</code></pre>
+<p><strong>Backward</strong> (chain rule, right to left):</p>
+<pre><code class="language-python"># ∂L/∂z2 — gradient of MSE
+dL_dz2 = 2/n * (z2 - y)            # shape: (n, out_dim)
+
+# ∂L/∂W2 = a1ᵀ @ dL_dz2
+dL_dW2 = a1.T @ dL_dz2             # shape: (hidden, out_dim)
+dL_db2 = dL_dz2.mean(axis=0)
+
+# ∂L/∂a1 = dL_dz2 @ W2ᵀ
+dL_da1 = dL_dz2 @ W2.T             # shape: (n, hidden)
+
+# ∂L/∂z1 — chain rule through ReLU: da1/dz1 = 1 if z1&gt;0 else 0
+dL_dz1 = dL_da1 * (z1 &gt; 0)        # shape: (n, hidden)
+
+# ∂L/∂W1 = xᵀ @ dL_dz1
+dL_dW1 = x.T @ dL_dz1              # shape: (in_dim, hidden)
+dL_db1 = dL_dz1.mean(axis=0)
+</code></pre>
+<p><strong>Update rules (SGD):</strong></p>
+<pre><code class="language-python">W2 -= lr * dL_dW2
+b2 -= lr * dL_db2
+W1 -= lr * dL_dW1
+b1 -= lr * dL_db1
+</code></pre>
+<h3>The Vanishing Gradient Problem</h3>
+<p>For a deep network with sigmoid activations, the gradient of the loss with respect to early layers involves many products of <code>sigmoid'(z) = σ(z)(1-σ(z))</code> — which has maximum value 0.25.</p>
+<p>For a 10-layer network: gradient magnitude ≈ 0.25¹⁰ ≈ 0.000001. The early layers receive almost no gradient signal — they learn extremely slowly or not at all.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li><strong>ReLU activations</strong>: gradient is 1 for positive inputs, 0 otherwise. No squashing for positive values → gradients can propagate further.</li>
+<li><strong>Residual connections (ResNets)</strong>: add skip connections <code>output = F(x) + x</code>. Gradients flow directly through the <code>+x</code> path — no vanishing.</li>
+<li><strong>Batch normalisation</strong>: normalises layer inputs, preventing extreme values that push activations into saturation.</li>
+<li><strong>Careful initialisation</strong>: He (for ReLU) or Xavier (for sigmoid/tanh) initialisation keeps activation variances roughly constant across layers.</li>
+</ul>
+<h3>Automatic Differentiation (Autograd)</h3>
+<p>Modern frameworks (PyTorch, JAX, TensorFlow) implement <strong>automatic differentiation</strong> — the computer derives and computes gradients automatically from the forward computation:</p>
+<pre><code class="language-python">import torch
+
+x  = torch.tensor([[1.0, 2.0]], requires_grad=True)
+W1 = torch.randn(2, 3, requires_grad=True)
+b1 = torch.zeros(3, requires_grad=True)
+W2 = torch.randn(3, 1, requires_grad=True)
+b2 = torch.zeros(1, requires_grad=True)
+y  = torch.tensor([[3.0]])
+
+# Forward — PyTorch builds a computational graph
+z1 = x @ W1 + b1
+a1 = torch.relu(z1)
+z2 = a1 @ W2 + b2
+L  = ((z2 - y)**2).mean()
+
+# Backward — traverse the graph, compute gradients
+L.backward()
+
+print(W1.grad)   # ∂L/∂W1 — computed automatically
+print(W2.grad)   # ∂L/∂W2
+</code></pre>
+<p>PyTorch builds a dynamic computational graph during the forward pass and traverses it in reverse during <code>backward()</code>. This is exactly reverse-mode automatic differentiation (Linnainmaa's algorithm from 1970).</p>
+<h3>The Complete Training Loop (NumPy from Scratch)</h3>
+<pre><code class="language-python">class TwoLayerNet:
+    def __init__(self, in_d, h_d, out_d):
+        self.W1 = np.random.randn(in_d, h_d)  * np.sqrt(2/in_d)
+        self.b1 = np.zeros(h_d)
+        self.W2 = np.random.randn(h_d, out_d) * np.sqrt(2/h_d)
+        self.b2 = np.zeros(out_d)
+
+    def forward(self, X):
+        self.X  = X
+        self.z1 = X  @ self.W1 + self.b1
+        self.a1 = np.maximum(0, self.z1)    # ReLU
+        self.z2 = self.a1 @ self.W2 + self.b2
+        return self.z2
+
+    def backward(self, y_true, lr=0.01):
+        n = len(y_true)
+        dz2 = 2/n * (self.z2 - y_true)          # ∂L/∂z2
+
+        dW2 = self.a1.T @ dz2                    # ∂L/∂W2
+        db2 = dz2.mean(axis=0)
+        da1 = dz2 @ self.W2.T
+        dz1 = da1 * (self.z1 &gt; 0)               # chain rule through ReLU
+
+        dW1 = self.X.T @ dz1
+        db1 = dz1.mean(axis=0)
+
+        self.W2 -= lr * dW2; self.b2 -= lr * db2
+        self.W1 -= lr * dW1; self.b1 -= lr * db1
+
+        return np.mean((self.z2 - y_true)**2)    # loss
+</code></pre>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Chain Rule Calculator</strong></p>
+<ul>
+<li>Build a computational graph node by node</li>
+<li>Enter function compositions (e.g., f(g(h(x))))</li>
+<li>Watch the chain rule applied step by step in both directions</li>
+</ul>
+<p><strong>Tool 2 — Gradient Flow Visualiser</strong></p>
+<ul>
+<li>A 4-layer network with sigmoid vs ReLU activations</li>
+<li>Train both and watch gradient magnitudes at each layer</li>
+<li>Observe vanishing gradients with sigmoid, healthy flow with ReLU</li>
+</ul>
+<p><strong>Tool 3 — Numerical vs Analytical Gradients</strong></p>
+<ul>
+<li>For a given network and input, compute gradients by finite difference: (f(w+ε) - f(w-ε)) / 2ε</li>
+<li>Compare to backprop gradients</li>
+<li>Verify they match (gradient checking — used to debug implementations)</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Second-order methods</strong>: gradient descent uses only first derivatives. Newton's method also uses second derivatives (Hessian matrix) to take a better step direction. But the Hessian of a neural network is n×n (n = number of parameters) — storing it requires n² memory (billions of elements for a modern network). <strong>Quasi-Newton methods</strong> (L-BFGS, Adam) approximate the curvature from gradient history, achieving better convergence than pure SGD without the Hessian cost.</p>
+<p><strong>Transformers and attention gradients</strong>: the self-attention mechanism in transformers (Module 12.1) introduces a specific gradient structure. The query-key dot product creates a score matrix; softmax converts scores to weights; the weighted sum of values computes the output. Deriving the gradient of this operation — and understanding why it works for sequence modelling — requires applying backprop to matrix operations with batch dimensions.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Derive the gradient of MSE loss with respect to weights in a single linear layer (no activation). Implement gradient checking (compare numerical vs analytical gradients) for a 2-layer network. Trace the backward pass through a sigmoid activation: if the forward sigmoid output is 0.7, what is the gradient that flows back? And explain why the vanishing gradient problem is worse with 10 layers of sigmoid than 10 layers of ReLU.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-11-4-neural-networks/lesson.html" class="btn-icon">← Prev: M 11.4</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../../level-12-advanced-ai/module-12-1-llm-architecture/lesson.html" class="btn-icon btn-primary">Next: M 12.1 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 4.2 — The Stack &amp; Calling Conventions | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 4.2
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        The Stack &amp; Calling Conventions
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 4 • Software Foundations</div>
+      <h1 class="article-title">Module 4.2 — The Stack &amp; Calling Conventions</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-4-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 4.2 — The Stack and Calling Conventions</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>You can write assembly instructions.<br />
+You know how to jump to a label.</p>
+<p>But how do functions work at the machine level?<br />
+How does a function receive its arguments?<br />
+How does it return a value?<br />
+How does it return to <em>exactly where it was called from</em> — even when functions call other functions?</p>
+<p>The answer is the <strong>stack</strong> — and the rules that govern its use are the <strong>calling convention</strong>.</p>
+</blockquote>
+<p>Without the stack, you cannot have functions. Without functions, you cannot have programs longer than a few dozen lines. The stack is the structural foundation on which all procedural programming rests.</p>
+<hr />
+<h2>The Story</h2>
+<h3>The Problem of Return Addresses</h3>
+<p>Suppose function A calls function B, which calls function C. Each call must eventually return to exactly the right place. How?</p>
+<p>The naive solution: store the return address in a fixed register. But if B calls C, B's return address gets overwritten. The solution to nested calls is a <strong>stack</strong> — a last-in, first-out structure that grows as calls nest and shrinks as they return.</p>
+<p>The stack was invented independently by several people in the early 1950s. <strong>Friedrich Bauer</strong> and <strong>Klaus Samelson</strong> in Germany, <strong>Charles Leonard Hamblin</strong> in Australia, and others all recognised that a pushdown automaton could solve the nested-call problem elegantly. By the late 1950s, the call stack was universal.</p>
+<hr />
+<h3>The Stack in Hardware</h3>
+<p>The x86-64 stack is a region of memory that grows <strong>downward</strong> (toward lower addresses). Two registers manage it:</p>
+<p><strong>RSP (Stack Pointer)</strong> — always points to the current top of the stack (the most recently pushed value). Lower RSP = more stack used.</p>
+<p><strong>RBP (Base Pointer / Frame Pointer)</strong> — points to the base of the <strong>current stack frame</strong>. Fixed while a function executes, allowing stable access to local variables and parameters regardless of what RSP does.</p>
+<p><strong>PUSH instruction:</strong></p>
+<pre><code class="language-nasm">push rax     ; RSP -= 8; memory[RSP] = rax
+</code></pre>
+<p><strong>POP instruction:</strong></p>
+<pre><code class="language-nasm">pop rbx      ; rbx = memory[RSP]; RSP += 8
+</code></pre>
+<p>The stack is not a special hardware structure — it is ordinary memory, accessed through a convention. Any memory region could be a stack if you use it this way.</p>
+<hr />
+<h3>The CALL and RET Instructions</h3>
+<p><strong>CALL target:</strong></p>
+<pre><code class="language-nasm">; equivalent to:
+push rip + instruction_size   ; save return address (next instruction)
+jmp target                    ; jump to function
+</code></pre>
+<p><strong>RET:</strong></p>
+<pre><code class="language-nasm">; equivalent to:
+pop rip       ; restore return address
+; (CPU resumes execution at the saved address)
+</code></pre>
+<p>This is how nested calls work. Each CALL pushes a return address. Each RET pops and jumps to it. They interleave correctly because of LIFO order:</p>
+<pre><code>main calls A    → stack: [main_ret]
+A    calls B    → stack: [main_ret, A_ret]
+B    calls C    → stack: [main_ret, A_ret, B_ret]
+C    returns    → pops B_ret, resumes in B
+B    returns    → pops A_ret, resumes in A
+A    returns    → pops main_ret, resumes in main
+</code></pre>
+<hr />
+<h3>The Stack Frame</h3>
+<p>When a function is called, it creates a <strong>stack frame</strong> — a region of the stack containing:</p>
+<ol>
+<li>The saved return address (pushed by CALL)</li>
+<li>The saved RBP (pushed by the function prologue)</li>
+<li>Local variables (allocated by subtracting from RSP)</li>
+<li>Saved registers (if the function uses callee-saved registers)</li>
+</ol>
+<p><strong>Standard function prologue (x86-64):</strong></p>
+<pre><code class="language-nasm">push rbp          ; save caller's frame pointer
+mov  rbp, rsp     ; set frame pointer to current stack top
+sub  rsp, N       ; allocate N bytes for locals
+</code></pre>
+<p><strong>Standard function epilogue:</strong></p>
+<pre><code class="language-nasm">mov  rsp, rbp     ; restore stack pointer (deallocate locals)
+pop  rbp          ; restore caller's frame pointer
+ret               ; pop return address and jump
+</code></pre>
+<p>After the prologue, local variables live at negative offsets from RBP:</p>
+<pre><code>[rbp - 4]  → local int a
+[rbp - 8]  → local int b
+[rbp - 12] → local int c
+</code></pre>
+<p>And the saved return address and caller's RBP live above RBP:</p>
+<pre><code>[rbp + 8]  → return address (pushed by CALL)
+[rbp + 0]  → saved RBP (pushed by prologue)
+[rbp - 4]  → first local variable
+</code></pre>
+<hr />
+<h3>Calling Conventions — The Rules Everyone Agrees On</h3>
+<p>A <strong>calling convention</strong> is the agreement between caller and callee about:</p>
+<ul>
+<li>Which registers hold function arguments</li>
+<li>Which register holds the return value</li>
+<li>Which registers the callee must preserve (callee-saved)</li>
+<li>Which registers the callee may destroy (caller-saved)</li>
+<li>How the stack must be aligned</li>
+</ul>
+<p><strong>Linux x86-64 (System V AMD64 ABI):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Purpose</th>
+<th>Registers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Integer arguments 1–6</td>
+<td><code>rdi, rsi, rdx, rcx, r8, r9</code></td>
+</tr>
+<tr>
+<td>Floating-point args 1–8</td>
+<td><code>xmm0–xmm7</code></td>
+</tr>
+<tr>
+<td>Return value</td>
+<td><code>rax</code> (integer), <code>xmm0</code> (float)</td>
+</tr>
+<tr>
+<td>Callee-saved</td>
+<td><code>rbx, rbp, r12–r15</code> (must restore)</td>
+</tr>
+<tr>
+<td>Caller-saved</td>
+<td><code>rax, rcx, rdx, rsi, rdi, r8–r11</code> (may be destroyed)</td>
+</tr>
+<tr>
+<td>Stack alignment</td>
+<td>RSP must be 16-byte aligned at CALL site</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Windows x64 ABI (different!):</strong></p>
+<ul>
+<li>First 4 integer args: <code>rcx, rdx, r8, r9</code></li>
+<li>32-byte &quot;shadow space&quot; on stack required by callee</li>
+<li>Different callee/caller-saved register split</li>
+</ul>
+<p>This is why Windows DLLs and Linux shared libraries are binary-incompatible even on the same CPU.</p>
+<hr />
+<h3>A Complete Function Call Example</h3>
+<pre><code class="language-c">// C
+int add(int a, int b) {
+    return a + b;
+}
+
+int main() {
+    int result = add(3, 4);
+    return 0;
+}
+</code></pre>
+<pre><code class="language-nasm">; Linux x86-64 — what the compiler generates
+
+add:
+    push rbp
+    mov  rbp, rsp
+    ; a is in edi (first arg), b is in esi (second arg)
+    mov  eax, edi       ; eax = a
+    add  eax, esi       ; eax = a + b
+    pop  rbp
+    ret                 ; return value is in eax
+
+main:
+    push rbp
+    mov  rbp, rsp
+    sub  rsp, 16        ; allocate space for local 'result'
+    mov  edi, 3         ; first arg = 3
+    mov  esi, 4         ; second arg = 4
+    call add            ; call add(3, 4)
+    mov  [rbp-4], eax   ; result = return value
+    mov  eax, 0         ; return 0
+    pop  rbp
+    ret
+</code></pre>
+<hr />
+<h3>Stack Overflow and Buffer Overflows</h3>
+<p><strong>Stack overflow</strong>: when recursive function calls nest so deeply that RSP runs out of stack space and crashes into other memory. Default stack size is typically 1–8 MB. An infinite recursive function will always stack overflow.</p>
+<p><strong>Buffer overflow</strong>: when a local array on the stack is written past its end, corrupting adjacent stack data — potentially overwriting the saved return address. If an attacker controls what the return address is overwritten with, they can redirect execution to arbitrary code. This is one of the oldest and most dangerous classes of security vulnerabilities. Modern defences: stack canaries, ASLR, non-executable stack (NX bit).</p>
+<hr />
+<h2>The Concept: The Stack Enforces Scope</h2>
+<p>The stack's LIFO property naturally enforces the nesting of function calls. A function's local variables appear when it is called and disappear when it returns — exactly corresponding to lexical scope in high-level languages.</p>
+<p>This is why local variables in C are &quot;on the stack&quot; and go away when the function returns. It is not a design decision — it is a direct consequence of how the call stack works.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Stack Frame Visualiser</strong></p>
+<ul>
+<li>Watch the stack grow and shrink as functions are called and returned</li>
+<li>Step through a main→add→multiply call chain</li>
+<li>See RSP and RBP update, local variables appear and disappear</li>
+</ul>
+<p><strong>Tool 2 — Calling Convention Explorer</strong></p>
+<ul>
+<li>Enter a function signature (arguments + return type)</li>
+<li>See which registers receive which arguments per Linux ABI</li>
+<li>Observe what happens when a 7th argument is needed (goes on stack)</li>
+</ul>
+<p><strong>Tool 3 — Stack Overflow Demonstrator</strong></p>
+<ul>
+<li>A recursive function with no base case</li>
+<li>Watch the stack grow frame by frame until it crashes</li>
+<li>Observe how a stack canary would detect the overflow</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Tail call optimisation (TCO)</strong>: if a function's last action is a call to another function, the compiler can reuse the current stack frame instead of creating a new one. This makes certain recursive algorithms (tail-recursive) use O(1) stack space instead of O(n). Functional languages (Scheme, Haskell) rely on TCO for their looping idioms.</p>
+<p><strong>Debugging with stack traces</strong>: when a crash occurs, the debugger walks the chain of saved RBP values to reconstruct the sequence of function calls that led to the crash. This is the &quot;stack trace&quot; or &quot;backtrace&quot; you see in error messages. Frame pointers (RBP) are essential for reliable stack unwinding — which is why performance-sensitive code that omits them (<code>-fomit-frame-pointer</code>) makes debugging harder.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Trace function call sequences through the stack, compute frame layouts, identify callee/caller-saved registers, and analyse a buffer overflow scenario.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-4-1-machine-code/lesson.html" class="btn-icon">← Prev: M 4.1</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-4-3-os-concepts/lesson.html" class="btn-icon btn-primary">Next: M 4.3 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

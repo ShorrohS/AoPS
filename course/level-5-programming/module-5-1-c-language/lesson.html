@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 5.1 — C: Close to the Metal | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 5.1
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        C: Close to the Metal
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 5 • Programming &amp; Runtimes</div>
+      <h1 class="article-title">Module 5.1 — C: Close to the Metal</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-5-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 5.1 — C: Close to the Metal</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>Assembly language gives you full control over the hardware.<br />
+But assembly is architecture-specific: x86-64 assembly won't run on ARM.<br />
+Writing an operating system, a compiler, or a database in pure assembly means rewriting it for every CPU.</p>
+<p>In 1972, Dennis Ritchie at Bell Labs asked:<br />
+<em>Can we have a language that is portable across hardware but still compiles down to efficient machine code with no hidden overhead?</em></p>
+<p>The answer was <strong>C</strong> — and it changed computing permanently.</p>
+</blockquote>
+<p>C sits at the exact boundary between human-readable and machine-executable. Every concept in C maps directly to a small number of machine instructions. There is no garbage collector, no runtime, no virtual machine. If you write <code>x++</code>, the CPU executes one instruction. This is why C is called &quot;portable assembly.&quot;</p>
+<hr />
+<h2>The Story</h2>
+<h3>Why C Was Invented</h3>
+<p>Before C, operating systems were written in assembly. The PDP-7 version of Unix (1969) was written entirely in assembly. Porting it to a new machine meant rewriting every line.</p>
+<p>Ritchie's predecessor language, <strong>B</strong> (1969), was portable but too slow for OS work — it had no types, so every operation treated data as machine words, requiring extra work to handle bytes or floats.</p>
+<p>C added:</p>
+<ul>
+<li><strong>Types</strong>: <code>int</code>, <code>char</code>, <code>float</code>, <code>struct</code> — the compiler uses type information to generate correct machine code without programmer overhead</li>
+<li><strong>Structs</strong>: group related data into a single compound type</li>
+<li><strong>Pointers</strong>: explicit memory addresses — full hardware access</li>
+<li><strong>Arrays</strong>: contiguous memory blocks with typed access</li>
+</ul>
+<p>In 1973, the Unix kernel was rewritten in C. This was the first major operating system written in a high-level language. It could now be ported to new hardware in weeks instead of years. This single decision — rewriting Unix in C — is why C became universal.</p>
+<hr />
+<h3>The Compilation Pipeline (Review)</h3>
+<pre><code>Source (.c)  →  Preprocessor  →  Compiler  →  Assembler  →  Linker  →  Executable
+</code></pre>
+<p><strong>Preprocessor</strong> (<code>cpp</code>): expands <code>#include</code>, <code>#define</code>, <code>#ifdef</code>. Produces pure C.<br />
+<strong>Compiler</strong> (<code>cc1</code>): translates C to assembly. Performs optimisation.<br />
+<strong>Assembler</strong> (<code>as</code>): translates assembly to object code (<code>.o</code>).<br />
+<strong>Linker</strong> (<code>ld</code>): combines object files, resolves symbols, produces final binary.</p>
+<p>Understanding this pipeline explains why a missing semicolon in <code>foo.c</code> can produce an error message referencing <code>foo.h</code> — the preprocessor merged them first.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>Pointers — The Core of C</h3>
+<p>A <strong>pointer</strong> is a variable that holds a memory address.</p>
+<pre><code class="language-c">int  x = 42;      // x is an int stored at some address
+int *p = &amp;x;      // p holds the address of x (&amp; = &quot;address of&quot;)
+int  y = *p;      // y = the value at address p (* = &quot;dereference&quot;)
+*p = 100;         // write 100 to the address p points to → x is now 100
+</code></pre>
+<p>This is not abstraction — this is exactly what the CPU does. <code>p</code> contains a 64-bit integer that happens to be a memory address. The dereference <code>*p</code> compiles to a single <code>MOV</code> instruction using an indirect addressing mode.</p>
+<p><strong>Why pointers matter:</strong></p>
+<ul>
+<li>Pass large data to functions without copying (pass by reference)</li>
+<li>Build dynamic data structures (linked lists, trees) that grow at runtime</li>
+<li>Interface with hardware registers (embedded systems)</li>
+<li>Implement your own memory allocator</li>
+</ul>
+<p><strong>Common pointer mistakes:</strong></p>
+<ul>
+<li><strong>Null pointer dereference</strong>: <code>int *p = NULL; *p = 5;</code> → segfault</li>
+<li><strong>Dangling pointer</strong>: pointer to memory that has been freed</li>
+<li><strong>Buffer overrun</strong>: writing past the end of an array via pointer arithmetic</li>
+<li><strong>Memory leak</strong>: allocating with <code>malloc()</code> without ever calling <code>free()</code></li>
+</ul>
+<h3>Memory Allocation</h3>
+<p>C has two kinds of memory:</p>
+<p><strong>Stack</strong> — automatic, managed by the compiler:</p>
+<pre><code class="language-c">void fn() {
+    int x = 5;      // allocated on stack when fn() called
+    char buf[64];   // 64 bytes on stack
+}                   // all freed when fn() returns
+</code></pre>
+<p><strong>Heap</strong> — manual, managed by the programmer:</p>
+<pre><code class="language-c">int *arr = malloc(100 * sizeof(int));  // allocate 400 bytes
+if (arr == NULL) { /* handle error */ }
+arr[0] = 42;        // use it
+free(arr);          // you must free it — no garbage collector
+arr = NULL;         // good practice: clear the pointer after free
+</code></pre>
+<p>This manual memory management is what makes C fast and dangerous simultaneously. No GC pause, but also no safety net.</p>
+<h3>Structs — User-Defined Types</h3>
+<pre><code class="language-c">struct Point {
+    int x;
+    int y;
+};
+
+struct Point p1;
+p1.x = 10;
+p1.y = 20;
+
+struct Point *pp = &amp;p1;
+pp-&gt;x = 30;          // arrow operator: (*pp).x = 30
+</code></pre>
+<p>Structs are laid out contiguously in memory. <code>struct Point</code> occupies 8 bytes: 4 for x, 4 for y. The compiler may add <strong>padding bytes</strong> to ensure alignment rules are met, which is why <code>sizeof(struct)</code> can surprise you.</p>
+<h3>Functions and the Call Stack</h3>
+<p>C functions map directly to the calling convention from Module 4.2:</p>
+<pre><code class="language-c">int add(int a, int b) {
+    return a + b;
+}
+
+int main() {
+    int result = add(3, 4);  // a→rdi, b→rsi; return→rax
+    return 0;
+}
+</code></pre>
+<p>Recursion works naturally because each call gets its own stack frame:</p>
+<pre><code class="language-c">int factorial(int n) {
+    if (n &lt;= 1) return 1;         // base case
+    return n * factorial(n - 1);  // recursive case
+}
+</code></pre>
+<h3>Building a Memory Allocator</h3>
+<p>To truly understand C, you build a simplified <code>malloc()</code>. The core idea:</p>
+<pre><code class="language-c">// A minimal slab allocator — conceptual sketch
+static char heap[65536];  // 64 KB of pretend heap
+static int  top = 0;      // current allocation pointer
+
+void *my_malloc(int size) {
+    if (top + size &gt; sizeof(heap)) return NULL;  // out of memory
+    void *ptr = &amp;heap[top];
+    top += size;
+    return ptr;
+}
+// (No free() in this sketch — a real allocator needs a free list)
+</code></pre>
+<p>A real <code>malloc()</code> implementation (like <code>ptmalloc</code> in glibc) manages a free list of blocks, coalesces adjacent free blocks, and calls <code>brk()</code>/<code>mmap()</code> to request more memory from the OS when needed.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Pointer Visualiser</strong></p>
+<ul>
+<li>Declare variables and take their addresses</li>
+<li>Watch memory addresses appear in the pointer variable</li>
+<li>Dereference pointers and observe the value change at the target address</li>
+</ul>
+<p><strong>Tool 2 — Stack vs Heap</strong></p>
+<ul>
+<li>Call a function and watch local variables appear on the stack</li>
+<li>Call <code>malloc()</code> and watch a heap block get allocated</li>
+<li>Call <code>free()</code> and watch it get released</li>
+<li>Introduce a memory leak — observe that freed status shows the block is still in memory</li>
+</ul>
+<p><strong>Tool 3 — Build a Linked List</strong></p>
+<ul>
+<li>Use <code>malloc()</code> to allocate nodes</li>
+<li>Link them together using pointer fields</li>
+<li>Traverse the list following pointers</li>
+<li>Free them one by one and watch heap usage drop</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>undefined behaviour</strong>: C has a large category of operations that are &quot;undefined behaviour&quot; (UB) — the language standard makes no guarantee about what happens. Signed integer overflow, reading uninitialised memory, modifying a string literal: all UB. The compiler is allowed to assume UB never happens, which means it can and does optimise away code that would prevent UB from being exploited. This is a major source of security vulnerabilities. Tools like AddressSanitizer and UBSanitizer catch UB at runtime during development.</p>
+<p><strong>C in 2024</strong>: Despite being 50+ years old, C is still the primary language for operating system kernels (Linux, Windows, macOS, iOS), embedded systems (microcontrollers), and anywhere that raw performance and minimal runtime overhead are required. Every Python interpreter, every JavaScript engine, every database is written substantially in C or C++.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Trace pointer operations through memory, find and fix a memory leak, implement <code>strlen()</code> without any library functions, and reason about struct padding.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../../level-4-software-foundations/module-4-5-file-systems/lesson.html" class="btn-icon">← Prev: M 4.5</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-5-2-python/lesson.html" class="btn-icon btn-primary">Next: M 5.2 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

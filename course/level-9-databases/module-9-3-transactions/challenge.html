@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 9.3 — Transactions, ACID &amp; WAL | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 9.3
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 9.3 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Transactions, ACID &amp; WAL.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 9.3 — Transactions, ACID, and Isolation</p>
+<p><strong>Type:</strong> SQL + trace + reasoning<br />
+<strong>Estimated time:</strong> 45–55 minutes<br />
+<strong>Tools needed:</strong> pen and paper</p>
+<hr />
+<h2>Part A — ACID Properties</h2>
+<p>Classify each scenario and explain which ACID property it violates:</p>
+<ol>
+<li>
+<p>A bank transfer: <code>UPDATE accounts SET balance = balance - 100 WHERE id = 1</code>. The system crashes before <code>UPDATE accounts SET balance = balance + 100 WHERE id = 2</code> runs. Which property fails without transactions?</p>
+</li>
+<li>
+<p>Two transactions read the same account balance simultaneously, both compute <code>new_balance = old_balance + interest</code>, and both write the new value. One update is lost. Which property does this violate?</p>
+</li>
+<li>
+<p>A transaction adds 500 rows to an <code>orders</code> table. After <code>COMMIT</code>, the database crashes and restarts. The 500 rows are gone. Which property does this violate?</p>
+</li>
+<li>
+<p>A foreign key constraint (<code>orders.customer_id</code> references <code>customers.id</code>) is violated by a transaction. The transaction commits anyway. Which property does this violate?</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Write-Ahead Log</h2>
+<p>A transaction performs these operations:</p>
+<pre><code>BEGIN
+UPDATE products SET stock = stock - 1 WHERE id = 101  -- stock was 10, now 9
+UPDATE orders SET status = 'processing' WHERE id = 5   -- was 'pending'
+COMMIT
+</code></pre>
+<ol start="5">
+<li>
+<p>Write out the <strong>WAL entries</strong> this transaction would generate, including:</p>
+<ul>
+<li>BEGIN marker</li>
+<li>For each UPDATE: before-image, after-image, affected row</li>
+<li>COMMIT marker</li>
+</ul>
+</li>
+<li>
+<p>The system crashes after the COMMIT marker is written to the WAL but before the data pages are updated on disk. What happens during recovery? Does the transaction commit or roll back?</p>
+</li>
+<li>
+<p>The system crashes after the first UPDATE is written to the WAL but before COMMIT. What happens during recovery?</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — Isolation Levels</h2>
+<p>Two transactions run concurrently. Session A reads account balance; Session B updates it.</p>
+<pre><code>Time  Session A                           Session B
+ 1:   BEGIN                               BEGIN
+ 2:   SELECT balance FROM acct WHERE id=1  -- reads 1000
+ 3:                                       UPDATE acct SET balance=1200 WHERE id=1
+ 4:                                       COMMIT
+ 5:   SELECT balance FROM acct WHERE id=1  -- reads ?
+ 6:   COMMIT
+</code></pre>
+<ol start="8">
+<li>
+<p>At <strong>Read Committed</strong> isolation: what does Session A read at t=2 and t=5?</p>
+</li>
+<li>
+<p>At <strong>Repeatable Read</strong> isolation: what does Session A read at t=5?</p>
+</li>
+<li>
+<p>At <strong>Serializable</strong> isolation: can both transactions complete if Session A also writes (not just reads)?</p>
+</li>
+<li>
+<p>Describe the <strong>phantom read</strong> anomaly. Which isolation level prevents it but is not prevented by Repeatable Read?</p>
+</li>
+</ol>
+<hr />
+<h2>Part D — Preventing Double-Booking</h2>
+<p>A hotel room booking system must prevent two users from booking the same room on the same night.</p>
+<ol start="12">
+<li>Write a transaction using <code>SELECT ... FOR UPDATE</code> that:
+<ul>
+<li>Checks if room 101 is available on 2026-09-15</li>
+<li>If available, creates a booking</li>
+<li>Ensures no other transaction can book the same room simultaneously</li>
+</ul>
+</li>
+</ol>
+<pre><code class="language-sql">BEGIN;
+-- Step 1: lock the availability row
+-- Step 2: check if room is available
+-- Step 3: if yes, insert booking
+-- Step 4: update availability
+COMMIT;
+</code></pre>
+<ol start="13">
+<li>
+<p>What isolation level is required for this to work correctly? Explain why Read Committed is insufficient.</p>
+</li>
+<li>
+<p>If <code>SELECT FOR UPDATE</code> is not available, what alternative pessimistic locking mechanism could you use? Describe an optimistic locking alternative using a version counter.</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Two-Phase Commit</h2>
+<p>A distributed purchase spans two databases: the payment database (deduct $50) and the inventory database (decrement stock by 1).</p>
+<ol start="15">
+<li>
+<p>Describe the <strong>two-phase commit</strong> protocol for this transaction. What happens if the payment database replies &quot;ready&quot; but the inventory database crashes before responding?</p>
+</li>
+<li>
+<p>What is the <strong>blocking problem</strong> with 2PC? Under what conditions is a participant blocked indefinitely?</p>
+</li>
+<li>
+<p>Modern databases like <strong>CockroachDB</strong> use Paxos consensus instead of 2PC for distributed transactions. What property does Paxos provide that makes it non-blocking?</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A ACID scenarios</td>
+<td>20</td>
+</tr>
+<tr>
+<td>B WAL trace</td>
+<td>22</td>
+</tr>
+<tr>
+<td>C isolation levels</td>
+<td>24</td>
+</tr>
+<tr>
+<td>D double-booking</td>
+<td>22</td>
+</tr>
+<tr>
+<td>E 2PC</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part B.5 — WAL entries</summary>
+<pre><code>LSN 1001: BEGIN txn#42
+LSN 1002: UPDATE products id=101 [before: stock=10] [after: stock=9]
+LSN 1003: UPDATE orders id=5 [before: status='pending'] [after: status='processing']
+LSN 1004: COMMIT txn#42
+</code></pre>
+<ol start="6">
+<li>
+<p>Crash after COMMIT written: recovery replays LSNs 1002 and 1003 (redo). Transaction commits. Data pages updated. ✓</p>
+</li>
+<li>
+<p>Crash after LSN 1002 but before COMMIT: no COMMIT in WAL. Recovery applies undo for LSN 1002 (stock back to 10). Transaction rolled back. ✓</p>
+</li>
+</ol>
+</details>
+<details>
+<summary>Part C.8–9</summary>
+<ol start="8">
+<li>
+<p>Read Committed: t=2 reads 1000 (B hasn't committed). t=5 reads 1200 (B committed between t=2 and t=5). This is a <strong>non-repeatable read</strong>.</p>
+</li>
+<li>
+<p>Repeatable Read: t=5 still reads 1000. The transaction's snapshot is taken at BEGIN (or first read). Changes committed by other transactions after the snapshot are invisible within this transaction.</p>
+</li>
+</ol>
+</details>
+<details>
+<summary>Part D.12</summary>
+<pre><code class="language-sql">BEGIN;
+SELECT * FROM availability 
+WHERE room_id = 101 AND date = '2026-09-15' AND available = true
+FOR UPDATE;  -- locks the row; other transactions wait
+
+-- application checks if row was found
+-- if found:
+INSERT INTO bookings (room_id, date, guest_id) VALUES (101, '2026-09-15', 99);
+UPDATE availability SET available = false WHERE room_id = 101 AND date = '2026-09-15';
+COMMIT;
+</code></pre>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

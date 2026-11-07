@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 1.1 — What is Electricity? | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 1.1
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        What is Electricity?
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 1 • Physical Computing</div>
+      <h1 class="article-title">Module 1.1 — What is Electricity?</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-1-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <h1>Module 1.1 — What is Electricity? (Only What We Need)</h1>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>Gears work. The Pascaline proved it. The Difference Engine proved it. But gears have a hard limit: to go faster, you need to move mass faster. Moving mass requires force. Force creates friction, heat, and wear.</p>
+<p>By 1900, the fastest mechanical calculators could do a few operations per second. The 1890 census used Hollerith's electromechanical machines — the mechanical counters still moved physical gear wheels, just driven by electricity rather than hand-cranking.</p>
+<p>To reach a million operations per second — let alone a billion — you need something that has almost no mass to move. You need <strong>electrons</strong>.</p>
+</blockquote>
+<p>Before we can understand how transistors and circuits work, we need to understand what electricity actually is — not as a mysterious force, but as the movement of charged particles through a material, governed by three simple relationships.</p>
+<hr />
+<h2>The Story</h2>
+<h3>What Is Electricity?</h3>
+<p>Everything around you is made of atoms. Atoms have a nucleus (protons and neutrons) surrounded by electrons in orbits. Electrons carry a <strong>negative charge</strong>; protons carry a <strong>positive charge</strong>.</p>
+<p>In most materials, electrons are tightly bound to their atoms. But in <strong>conductors</strong> — metals like copper, gold, and silver — the outermost electrons are loosely bound. They can drift from atom to atom through the material.</p>
+<p><strong>Electric current</strong> is the flow of these loosely-bound electrons through a conductor. Think of a copper wire as a tube packed with electrons. Push on one end (apply a voltage), and electrons drift through the tube from one end to the other.</p>
+<p>One important convention: by historical accident, electric current is defined as flowing <strong>from positive to negative</strong> — the opposite direction from electron flow. We stick with this convention because it's universal, but always remember electrons actually move the other way.</p>
+<hr />
+<h3>The Three Quantities: A Water Analogy</h3>
+<p>The best way to build intuition about electricity is through water flowing in pipes.</p>
+<p><strong>Voltage (V) — Water Pressure</strong></p>
+<p>Voltage is the &quot;pressure&quot; that pushes electrons through a circuit. A higher voltage means a stronger push. Measured in <strong>Volts (V)</strong>.</p>
+<ul>
+<li>A AA battery: 1.5V</li>
+<li>A phone charger: 5V</li>
+<li>A household outlet: 120V (US) / 230V (EU)</li>
+<li>A lightning bolt: ~300,000,000V</li>
+</ul>
+<p>No voltage → no flow. Voltage is always measured <em>between two points</em> — it's a difference in electrical potential, like measuring the height difference between two water tanks.</p>
+<p><strong>Current (I) — Water Flow Rate</strong></p>
+<p>Current is how many electrons actually flow past a point per second. Measured in <strong>Amperes (A)</strong> — 1 Amp = 6.24 × 10¹⁸ electrons per second passing a point.</p>
+<ul>
+<li>An LED: ~0.02A (20 milliamps)</li>
+<li>A phone charging: ~1–2A</li>
+<li>A household circuit: 15–20A</li>
+<li>A lightning bolt: ~30,000A (briefly)</li>
+</ul>
+<p><strong>Resistance (R) — Pipe Narrowness</strong></p>
+<p>Resistance is how much a material opposes the flow of electrons. A narrow pipe resists water flow; a thin wire resists electron flow. Measured in <strong>Ohms (Ω)</strong>.</p>
+<ul>
+<li>A human body (dry): ~100,000 Ω</li>
+<li>A piece of copper wire (1m): ~0.017 Ω</li>
+<li>A 60W light bulb filament: ~240 Ω</li>
+<li>An open circuit (air gap): essentially infinite Ω</li>
+</ul>
+<hr />
+<h3>Ohm's Law: The Fundamental Relationship</h3>
+<p>These three quantities are connected by one of the most important equations in physics:</p>
+<pre><code>V = I × R
+</code></pre>
+<p><strong>Voltage = Current × Resistance</strong></p>
+<p>Rearranged:</p>
+<ul>
+<li><code>I = V / R</code> — more voltage or less resistance → more current</li>
+<li><code>R = V / I</code> — measure voltage and current to find resistance</li>
+</ul>
+<p>This single equation predicts the behavior of most simple circuits. Every resistor, every LED, every transistor bias calculation starts here.</p>
+<p><strong>Example:</strong> A 5V battery connected to a 250Ω resistor:</p>
+<pre><code>I = V / R = 5 / 250 = 0.02A = 20mA
+</code></pre>
+<p>That's exactly the right current for a standard LED. This is why resistors are always paired with LEDs.</p>
+<hr />
+<h3>Open vs Closed Circuits</h3>
+<p>A circuit needs to be a <strong>complete loop</strong> for current to flow.</p>
+<ul>
+<li><strong>Closed circuit</strong>: the path from + terminal, through components, back to − terminal is unbroken → current flows</li>
+<li><strong>Open circuit</strong>: the path is broken somewhere (a switch is open, a wire is cut) → no current flows</li>
+<li><strong>Short circuit</strong>: the + and − terminals are connected directly with no resistance → enormous current flows, generating heat (dangerous)</li>
+</ul>
+<p>A <strong>switch</strong> is simply a device that opens or closes a circuit on demand. When the switch is closed, the circuit is complete and current flows. When it's open, current stops.</p>
+<p>This is the key connection to computing: <strong>a switch is a binary device</strong>. Closed = 1. Open = 0. Everything in digital electronics is built from switches.</p>
+<hr />
+<h3>Series vs Parallel</h3>
+<p><strong>Series circuit</strong>: components connected end-to-end in a single path.</p>
+<ul>
+<li>The same current flows through all components</li>
+<li>Voltages add up: <code>V_total = V1 + V2 + V3</code></li>
+<li>Resistances add up: <code>R_total = R1 + R2 + R3</code></li>
+<li>If one component fails (opens), the entire circuit stops (old Christmas lights)</li>
+</ul>
+<p><strong>Parallel circuit</strong>: components connected side-by-side, sharing the same two endpoints.</p>
+<ul>
+<li>The same voltage appears across all components</li>
+<li>Currents add up: <code>I_total = I1 + I2 + I3</code></li>
+<li>Total resistance is <em>less</em> than any individual resistor: <code>1/R_total = 1/R1 + 1/R2 + 1/R3</code></li>
+<li>If one component fails, others keep working (modern Christmas lights, house wiring)</li>
+</ul>
+<hr />
+<h3>Power: The Heat Problem</h3>
+<p>Power is the rate at which a circuit consumes energy:</p>
+<pre><code>P = V × I     (also P = I²×R = V²/R)
+</code></pre>
+<p>Measured in <strong>Watts (W)</strong>. Every electron pushed through a resistance generates heat. This is why:</p>
+<ul>
+<li>Your phone gets warm while charging</li>
+<li>Early computers (vacuum tube era) required massive cooling systems</li>
+<li>Modern CPUs have heat sinks and fans</li>
+<li>Power consumption is one of the central engineering constraints of chip design</li>
+</ul>
+<p>The transistor's dominance over vacuum tubes came partly from power: a vacuum tube might dissipate 1–5 watts; a modern transistor dissipates picowatts (10⁻¹² W). A billion transistors at a picowatt each = 1mW total — manageable.</p>
+<hr />
+<h3>Conductors, Insulators, and Semiconductors</h3>
+<table>
+<thead>
+<tr>
+<th>Material</th>
+<th>Resistance</th>
+<th>Examples</th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Conductor</td>
+<td>Very low</td>
+<td>Copper, gold, aluminum</td>
+<td>Wires, circuit traces</td>
+</tr>
+<tr>
+<td>Insulator</td>
+<td>Very high</td>
+<td>Glass, rubber, air</td>
+<td>Wire coating, PCB substrate</td>
+</tr>
+<tr>
+<td>Semiconductor</td>
+<td>In between, controllable</td>
+<td>Silicon, germanium</td>
+<td>Transistors, diodes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Semiconductors</strong> are the key. Their resistance can be controlled — made higher or lower — by adding tiny amounts of impurities (a process called <strong>doping</strong>) or by applying a voltage. This controllable resistance is what makes transistors possible.</p>
+<p>Pure silicon is a poor conductor. Dope it with phosphorus → extra electrons → <strong>N-type</strong> silicon (carries negative charge). Dope it with boron → electron holes → <strong>P-type</strong> silicon (carries positive charge). Put N-type and P-type together → a <strong>P-N junction</strong> → a diode. Two junctions → a transistor. This is Module 1.5's story.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p>The simulation has three interactive tools:</p>
+<p><strong>Tool 1 — Circuit Sandbox</strong></p>
+<ul>
+<li>Drag a battery, resistors, bulbs, and switches onto the canvas</li>
+<li>Connect components with wires</li>
+<li>Watch current flow animate through the circuit (moving dots = electrons)</li>
+<li>The bulb glows brighter with more current</li>
+</ul>
+<p><strong>Tool 2 — Ohm's Law Calculator</strong></p>
+<ul>
+<li>Set any two of V, I, R — the third calculates automatically</li>
+<li>Slide voltage up: watch current increase proportionally</li>
+<li>Slide resistance up: watch current decrease</li>
+</ul>
+<p><strong>Tool 3 — Series vs Parallel</strong></p>
+<ul>
+<li>Pre-built series and parallel circuits</li>
+<li>Open one bulb in each — see which circuit survives</li>
+</ul>
+<p><strong>What to observe:</strong></p>
+<ul>
+<li>What happens to brightness when you add a second bulb in series?</li>
+<li>What happens to brightness when you add a second bulb in parallel?</li>
+<li>What happens when you short-circuit the battery (connect + to − directly)?</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p>The water analogy breaks down in one important way: water flow is continuous, but electric current is quantized — it moves in discrete electron jumps. At the scale of circuit design this doesn't matter, but at the scale of individual transistors (where gates are just a few atoms thick), quantum effects become dominant and classical circuit models fail. This is part of why Moore's Law is slowing down (Module 1.6).</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>You'll apply Ohm's Law to calculate circuit values, predict what happens when components are rearranged, and explain the water analogy in your own words.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../../level-0-before-computers/module-0-5-hollerith/lesson.html" class="btn-icon">← Prev: M 0.5</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-1-2-switches/lesson.html" class="btn-icon btn-primary">Next: M 1.2 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 5.6 — Debugging &amp; Profiling | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 5.6
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Debugging &amp; Profiling
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 5 • Programming &amp; Runtimes</div>
+      <h1 class="article-title">Module 5.6 — Debugging &amp; Profiling</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-5-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 5.6 — Searching: Finding What You Need</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>A phone book has 5 million entries.<br />
+Finding a name by scanning every entry takes minutes.<br />
+Finding it by binary search takes microseconds.</p>
+<p>Google's index has 100 billion web pages.<br />
+Finding pages matching a query in under 100 milliseconds<br />
+requires not just a fast search algorithm but an entirely<br />
+different data structure designed for search from the ground up.</p>
+</blockquote>
+<p>Searching is the inverse of sorting, and understanding how to find things efficiently — from a sorted array, an unsorted collection, a graph, or a text string — is foundational to almost every software system ever built.</p>
+<hr />
+<h2>The Story</h2>
+<h3>From Card Catalogues to Search Engines</h3>
+<p>Before computers, librarians invented efficient search structures: alphabetical catalogues, Dewey Decimal classification, card indexes. These were manual implementations of data structures designed to reduce lookup time from O(n) (scan every card) to O(log n) (binary search through a sorted index).</p>
+<p><strong>Vannevar Bush</strong> (1945) described the Memex in his essay &quot;As We May Think&quot; — a hypothetical device that could store and rapidly retrieve vast amounts of information using associative links. This vision directly inspired hypertext and the web.</p>
+<p>The first web search engine, <strong>Archie</strong> (1990), simply indexed FTP filenames. <strong>AltaVista</strong> (1995) indexed full page text. <strong>Google</strong> (1998) introduced PageRank — ranking by link structure rather than just keyword frequency — and transformed search from a text-matching problem into a graph analysis problem. Today, a Google search traverses an index of 100 billion pages in under 100ms on a cluster of thousands of machines.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>Linear Search — O(n)</h3>
+<p>The simplest possible search: check every element until you find the target or exhaust the collection.</p>
+<pre><code class="language-python">def linear_search(arr, target):
+    for i, x in enumerate(arr):
+        if x == target:
+            return i      # found at index i
+    return -1             # not found
+</code></pre>
+<p><strong>When to use</strong>: unsorted data, small collections (n &lt; ~50), or when you need to find all occurrences.<br />
+<strong>When not to use</strong>: large sorted collections — binary search is orders of magnitude faster.</p>
+<h3>Binary Search — O(log n)</h3>
+<p>Requires the array to be sorted. At each step, compare the target to the middle element and eliminate half the remaining search space.</p>
+<pre><code class="language-python">def binary_search(arr, target):
+    low, high = 0, len(arr) - 1
+    while low &lt;= high:
+        mid = (low + high) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] &lt; target:
+            low = mid + 1    # target is in the right half
+        else:
+            high = mid - 1   # target is in the left half
+    return -1                 # not found
+</code></pre>
+<p><strong>Why O(log n)?</strong> Each comparison halves the remaining search space. Starting with n elements, after k comparisons we have n/2^k elements left. When n/2^k = 1, k = log₂(n). For n = 1,000,000: at most 20 comparisons.</p>
+<p><strong>Invariant</strong>: at every iteration, if the target exists, it is in <code>arr[low..high]</code>. Maintaining this invariant is the key to getting the boundary conditions right.</p>
+<p><strong>Common mistakes</strong>:</p>
+<ul>
+<li>Off-by-one in <code>mid + 1</code> / <code>mid - 1</code> — leads to infinite loops or missed elements</li>
+<li>Integer overflow in <code>(low + high) // 2</code> for very large arrays (use <code>low + (high - low) // 2</code> in C)</li>
+</ul>
+<h3>Binary Search Variants</h3>
+<p>Binary search has many useful generalisations:</p>
+<p><strong>Find first occurrence of target</strong> (duplicates in array):</p>
+<pre><code class="language-python">def first_occurrence(arr, target):
+    low, high, result = 0, len(arr) - 1, -1
+    while low &lt;= high:
+        mid = (low + high) // 2
+        if arr[mid] == target:
+            result = mid
+            high = mid - 1   # keep searching left for earlier occurrence
+        elif arr[mid] &lt; target:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return result
+</code></pre>
+<p><strong>Find insertion point</strong> (like Python's <code>bisect.bisect_left</code>):<br />
+Returns the index where target should be inserted to keep the array sorted.</p>
+<p><strong>Search on answer</strong> — a powerful technique: binary search on the <em>answer space</em> rather than the data. For example: &quot;what is the minimum speed at which I can complete a task within T hours?&quot; Binary search over possible speeds, using a feasibility function to check each candidate.</p>
+<h3>Hash Tables — O(1) Average</h3>
+<p>Binary search requires sorted data and gives O(log n). For O(1) average-case search, we use a <strong>hash table</strong> (covered in depth in Level 6):</p>
+<pre><code class="language-python">d = {'alice': 30, 'bob': 25, 'carol': 28}
+d['alice']        # O(1) average — hash lookup
+'bob' in d        # O(1) average
+</code></pre>
+<p>The hash function maps the key to an array index. Lookup: hash the key, go directly to that index. No comparisons needed. The price: hash tables use more memory, and worst-case is O(n) if many keys hash to the same slot.</p>
+<h3>Graph Search — BFS and DFS</h3>
+<p>When data has relationships (not just linear order), we need graph search. Covered fully in Level 6 (Module 6.6), but the foundations are:</p>
+<p><strong>Breadth-First Search (BFS)</strong>: explore level by level, using a queue.</p>
+<ul>
+<li>Finds the shortest path (fewest edges) in an unweighted graph</li>
+<li>O(V + E) where V = vertices, E = edges</li>
+</ul>
+<p><strong>Depth-First Search (DFS)</strong>: go as deep as possible before backtracking, using a stack (or recursion).</p>
+<ul>
+<li>Detects cycles, topological sort, connected components</li>
+<li>O(V + E)</li>
+</ul>
+<h3>String Search — KMP Algorithm</h3>
+<p>Finding a pattern of length m within a text of length n. Naive: try every position → O(nm). The <strong>Knuth-Morris-Pratt (KMP)</strong> algorithm preprocesses the pattern to avoid redundant comparisons → O(n + m).</p>
+<pre><code>Text:     AAABAAABAAAC
+Pattern:  AAABAAAC
+
+Naive: would restart from scratch on each mismatch
+KMP: uses a failure function to skip characters already matched
+</code></pre>
+<p>The core idea: when a mismatch occurs, the pattern's internal structure tells us how far to shift without losing already-matched characters. This makes substring search in a 1GB log file fast enough to be done in seconds.</p>
+<h3>Trie — O(m) Prefix Search</h3>
+<p>A trie (prefix tree) stores strings as paths in a tree where each node is a character:</p>
+<pre><code>Insert: &quot;cat&quot;, &quot;car&quot;, &quot;card&quot;, &quot;care&quot;, &quot;bat&quot;
+
+         root
+        /    \
+       c      b
+       |      |
+       a      a
+      / \     |
+     t   r    t
+         |
+        d/e
+</code></pre>
+<p>Lookup: &quot;care&quot; → follow c→a→r→e. O(m) where m = string length, regardless of how many strings are stored. Tries enable prefix-based autocomplete: finding all words starting with &quot;car&quot; takes O(m + output size).</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Linear vs Binary Search Race</strong></p>
+<ul>
+<li>An array of 1,000 sorted integers</li>
+<li>Search for the same target using both algorithms simultaneously</li>
+<li>Watch the step counter: linear takes up to 1,000 steps, binary at most 10</li>
+<li>Try a worst-case search (target not present)</li>
+</ul>
+<p><strong>Tool 2 — Binary Search Variants</strong></p>
+<ul>
+<li>An array with duplicates</li>
+<li>Run: find any occurrence, find first occurrence, find last occurrence, find insertion point</li>
+<li>See how each variant differs only in how it updates <code>low</code>/<code>high</code> on a match</li>
+</ul>
+<p><strong>Tool 3 — Trie Builder</strong></p>
+<ul>
+<li>Type words to insert into a trie</li>
+<li>Watch the prefix tree grow</li>
+<li>Type a prefix and see all matching words highlighted</li>
+<li>Count how many nodes are traversed vs scanning a list</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Bloom filters</strong>: a probabilistic data structure that can answer &quot;is this element in the set?&quot; with no false negatives and a configurable false positive rate, using a fraction of the memory of a hash table. Used in databases (avoid expensive disk lookups for non-existent keys), web browsers (safe browsing lists), and network routers. The tradeoff: you cannot enumerate elements, and you cannot delete elements without a counting variant.</p>
+<p><strong>B-trees and database indices</strong>: database tables with millions of rows need search in O(log n) disk accesses. A B-tree keeps all data sorted in a balanced tree where each node holds many keys — a typical node fills one disk page (4–16 KB). This minimises disk reads. B-trees are the data structure behind almost every database index ever built. Level 9 covers them in detail.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Trace binary search on a 16-element sorted array, implement <code>bisect_left</code>, analyse when linear search beats binary search (hint: consider overhead), and insert five words into a trie by hand and draw the resulting tree.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-5-5-sorting/lesson.html" class="btn-icon">← Prev: M 5.5</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../../level-6-dsa/module-6-1-arrays-linked-lists/lesson.html" class="btn-icon btn-primary">Next: M 6.1 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 2.6 — From Gates to a Simple ALU | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 2.6
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 2.6 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for From Gates to a Simple ALU.
+      </p>
+    </div>
+
+    <article class="prose">
+      <h1>Challenge 2.6 — The Simple ALU (Level 2 Capstone)</h1>
+<p><strong>Type:</strong> ALU execution + flag analysis + design + capstone<br />
+<strong>Estimated time:</strong> 50–60 minutes<br />
+<strong>Tools needed:</strong> <code>simulation.html</code> + pen and paper</p>
+<hr />
+<h2>Part A — ALU Operations by Hand</h2>
+<p>Execute each operation on the 4-bit ALU. Inputs are 4-bit unsigned. Predict results AND flags before simulating.</p>
+<p>The ALU operations: ADD, SUB (using two's complement), AND, OR, XOR, NOT A.</p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>Operation</th>
+<th>Result (binary)</th>
+<th>Decimal</th>
+<th>Z</th>
+<th>C</th>
+<th>N</th>
+<th>V</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0101</td>
+<td>0011</td>
+<td>ADD</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr>
+<td>1001</td>
+<td>0111</td>
+<td>ADD</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr>
+<td>1010</td>
+<td>0110</td>
+<td>SUB (A-B)</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr>
+<td>0011</td>
+<td>0011</td>
+<td>SUB (A-B)</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr>
+<td>1111</td>
+<td>1010</td>
+<td>AND</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>0000</td>
+<td>1111</td>
+<td>OR</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1010</td>
+<td>1010</td>
+<td>XOR</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>0110</td>
+<td>—</td>
+<td>NOT A</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Part B — Flag Deep Dive</h2>
+<p>For each scenario, explain which flags fire and why.</p>
+<ol>
+<li>
+<p>ALU computes <code>7 + 7</code> in a <strong>4-bit signed</strong> (two's complement) system. Both operands are positive. The result in 4 bits is... what? What flag fires?</p>
+</li>
+<li>
+<p>ALU computes <code>9 + 9</code> in 4-bit <strong>unsigned</strong>. What is the result? What flag fires?</p>
+</li>
+<li>
+<p>ALU computes <code>0101 - 0101</code>. What are Z, N, C, V?</p>
+</li>
+<li>
+<p>ALU computes <code>0000 - 0001</code> (0 minus 1) in 4-bit two's complement. The result is −1 = <code>1111</code>. What flags fire?</p>
+</li>
+<li>
+<p><strong>Carry vs Overflow — explain the difference</strong> in 3 sentences. When does Carry fire but not Overflow? When does Overflow fire but not Carry? (Hint: think unsigned vs signed.)</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — ALU Mini-Program</h2>
+<p>Write a sequence of ALU operations to compute this formula:<br />
+<code>result = (A AND B) + C</code> where A = <code>0110</code>, B = <code>1011</code>, C = <code>0011</code></p>
+<p>Step through it:</p>
+<ol>
+<li>Operation 1: ?  Inputs: ?, ?  Result: ?  Store in accumulator</li>
+<li>Operation 2: ?  Inputs: accumulator, ?  Result: ?</li>
+</ol>
+<p>Verify: AND(0110, 1011) = ? Then + 0011 = ?</p>
+<hr />
+<h2>Part D — ALU Design Extension</h2>
+<p>Extend the 4-bit ALU to add two new operations:</p>
+<ol>
+<li>
+<p><strong>Arithmetic shift right (ASR)</strong>: shifts A right by 1, copies MSB into new MSB.<br />
+Example: <code>1010</code> → <code>1101</code> (sign-preserving divide by 2)<br />
+Example: <code>0110</code> → <code>0011</code> (divide by 2)<br />
+Describe the circuit: what gates/connections are needed?</p>
+</li>
+<li>
+<p><strong>Increment (INC)</strong>: A + 1<br />
+How would you implement this using the existing adder with a fixed B=0001 input? What control signals select it?</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Level 2 Capstone Essay</h2>
+<p>Write 4–6 sentences for each question.</p>
+<p><strong>E1 — The abstraction ladder</strong><br />
+You started this level with transistors (Module 2.1). You ended it with an ALU (Module 2.6). Name every abstraction layer you passed through. What did each layer hide, and what did it expose?</p>
+<p><strong>E2 — Why binary arithmetic works</strong><br />
+Explain why the same adder circuit correctly handles both addition and subtraction (via two's complement). What is the mathematical insight that makes this possible?</p>
+<p><strong>E3 — The stored-program connection</strong><br />
+The ALU computes. Registers hold values. A counter tracks position. Connecting these three things gives you a computer. Describe in your own words how these three components from Level 2 will combine in Level 3 (Machine Architecture) to form a CPU that can execute programs.</p>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A ALU operations (8 rows)</td>
+<td>24</td>
+</tr>
+<tr>
+<td>B flag analysis</td>
+<td>20</td>
+</tr>
+<tr>
+<td>C mini-program</td>
+<td>16</td>
+</tr>
+<tr>
+<td>D design extension</td>
+<td>15</td>
+</tr>
+<tr>
+<td>E capstone essays</td>
+<td>25</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A — Key rows</summary>
+<ul>
+<li><code>0101+0011</code> = 1000 = 8, Z=0, C=0, N=1, V=1 (5+3=8, but in 4-bit signed max is 7 → overflow!)</li>
+<li><code>1001+0111</code> = 10000 → keep 4 bits = 0000 = 0, Z=1, C=1, N=0, V=0</li>
+<li><code>1010-0110</code> = 1010 + 1001 + 1 = 10100 → 0100 = 4 (10−6=4 ✓), Z=0, C=1, N=0, V=0</li>
+<li><code>0011-0011</code> = 0011 + 1100 + 1 = 10000 → 0000 = 0 (3−3=0 ✓), Z=1, C=1, N=0, V=0</li>
+<li><code>1111 AND 1010</code> = 1010, Z=0, C=0, N=1</li>
+<li><code>0000 OR 1111</code> = 1111, Z=0, N=1</li>
+<li><code>1010 XOR 1010</code> = 0000, Z=1</li>
+<li><code>NOT 0110</code> = 1001, Z=0, N=1</li>
+</ul>
+</details>
+<details>
+<summary>Part B.5 — Carry vs Overflow</summary>
+<p><strong>Carry</strong> indicates unsigned overflow — the result exceeded the maximum value representable as an unsigned n-bit integer. <strong>Overflow</strong> indicates signed overflow — the result has the wrong sign for a two's complement interpretation (two positives summed to a negative, or two negatives summed to a positive).</p>
+<p>Carry fires without overflow when: <code>1001 + 1000</code> = unsigned 9+8=17 &gt; 15, but in signed this is −7 + (−8) = −15, which fits in 4-bit signed (range −8 to +7)... actually this IS signed overflow too. A clear case: <code>1111 + 0001</code> = carry set (unsigned 15+1=16), no signed overflow (−1+1=0).</p>
+<p>Overflow fires without carry: <code>0111 + 0001</code> = no carry (8 fits in 4 bits), but in signed: 7+1=8 exceeds the max of 7 → overflow.</p>
+</details>
+<details>
+<summary>Part C</summary>
+<p>Step 1: AND(0110, 1011) = 0010<br />
+Step 2: ADD(0010, 0011) = 0101 = 5<br />
+Verify: (6 AND 11) = (0110 AND 1011) = 0010 = 2. Then 2 + 3 = 5 ✓</p>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

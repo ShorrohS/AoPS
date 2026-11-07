@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 5.2 — Python: High-Level Abstraction | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 5.2
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Python: High-Level Abstraction
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 5 • Programming &amp; Runtimes</div>
+      <h1 class="article-title">Module 5.2 — Python: High-Level Abstraction</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-5-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 5.2 — Python: Abstraction for Humans</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>C gives you total control and total responsibility.<br />
+Writing a web scraper in C means managing memory, parsing strings byte by byte,<br />
+handling network sockets manually.</p>
+<p>Most programmers most of the time are not writing operating systems.<br />
+They are solving problems: process this data, build this web service, train this model.</p>
+<p><em>What if the language handled memory, types, and low-level details automatically<br />
+so the programmer could focus entirely on the problem?</em></p>
+</blockquote>
+<p>This question produced Python (1991), and then a generation of languages with similar philosophy. Python's design principle: <strong>readability counts</strong>. Code is read far more than it is written. A program that takes 10 lines in C and 2 lines in Python is almost always faster to write, debug, and maintain — even if it runs 50× slower at execution time.</p>
+<hr />
+<h2>The Story</h2>
+<h3>Guido van Rossum and the Christmas Holiday</h3>
+<p>Guido van Rossum was a Dutch programmer working at CWI (Netherlands) in December 1989. During the holiday break, he decided to write a new scripting language as a personal project — something easier to use than C for quick programming tasks, better-designed than the shells and AWK scripts he was using.</p>
+<p>He named it Python after Monty Python's Flying Circus, not the snake. His design goals:</p>
+<ul>
+<li>Elegant syntax that reads almost like pseudocode</li>
+<li>A comprehensive standard library (&quot;batteries included&quot;)</li>
+<li>Automatic memory management — no <code>malloc</code>/<code>free</code></li>
+<li>Dynamic typing — no type declarations needed</li>
+<li>A single, clear way to do each thing</li>
+</ul>
+<p>Python 1.0 was released in 1994. Python 2.0 (2000) added garbage collection and list comprehensions. Python 3.0 (2008) was a backward-incompatible redesign that fixed accumulated design mistakes. By 2020, Python was the most-used programming language in the world by survey.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>Interpreted vs Compiled</h3>
+<p>C source code is compiled to machine code once; the CPU runs the machine code directly.</p>
+<p>Python source code is interpreted at runtime by the Python interpreter (CPython, written in C):</p>
+<pre><code>Python source (.py)
+      ↓ Compilation (fast, at runtime)
+Bytecode (.pyc)
+      ↓ Interpretation (CPython virtual machine)
+Result
+</code></pre>
+<p>The CPython VM executes bytecode instructions in a loop. Each Python operation (like <code>x + y</code>) may compile to hundreds of machine instructions — type-checking, object dispatch, reference counting. This is why Python is 50–100× slower than C for CPU-intensive code.</p>
+<p><strong>When Python speed doesn't matter:</strong></p>
+<ul>
+<li>I/O-bound tasks (network requests, file reads) — most time is waiting, not computing</li>
+<li>NumPy/SciPy/PyTorch operations — these call into C/Fortran/CUDA code, so the speed is C speed</li>
+<li>Prototyping — development time matters more than runtime for one-off scripts</li>
+</ul>
+<h3>Dynamic Typing</h3>
+<p>In C: <code>int x = 5;</code> — the type <code>int</code> is fixed at compile time.</p>
+<p>In Python: <code>x = 5</code> — the type is attached to the <em>value</em>, not the variable. <code>x</code> can point to any type:</p>
+<pre><code class="language-python">x = 5         # x refers to an int object
+x = &quot;hello&quot;   # now x refers to a str object
+x = [1, 2, 3] # now x refers to a list object
+</code></pre>
+<p>Under the hood, every Python value is a C struct (<code>PyObject</code>) containing:</p>
+<ul>
+<li>A reference count (for garbage collection)</li>
+<li>A pointer to the type object</li>
+<li>The actual value</li>
+</ul>
+<p>This indirection — going through a type pointer for every operation — is most of Python's overhead compared to C.</p>
+<h3>The Python Data Model</h3>
+<p>Everything in Python is an <strong>object</strong>. Integers, strings, functions, classes, modules — all objects. Every object has:</p>
+<ul>
+<li>An <strong>identity</strong> (<code>id(x)</code> — the memory address)</li>
+<li>A <strong>type</strong> (<code>type(x)</code>)</li>
+<li>A <strong>value</strong></li>
+</ul>
+<p><strong>Immutable types</strong>: <code>int</code>, <code>float</code>, <code>str</code>, <code>tuple</code>, <code>frozenset</code> — cannot be changed after creation.<br />
+<strong>Mutable types</strong>: <code>list</code>, <code>dict</code>, <code>set</code>, custom objects — can be modified in-place.</p>
+<pre><code class="language-python"># Immutable: creates a NEW object
+x = &quot;hello&quot;
+y = x.upper()    # y is a new string &quot;HELLO&quot;, x unchanged
+
+# Mutable: modifies IN PLACE
+lst = [1, 2, 3]
+lst.append(4)    # lst is now [1, 2, 3, 4] — same object
+</code></pre>
+<p>This distinction matters for correctness and performance. Passing a list to a function and modifying it changes the original (pass by reference to the object). Passing an int and &quot;modifying&quot; it just rebinds the local variable (pass by value of the reference — effectively pass by value for immutables).</p>
+<h3>Garbage Collection</h3>
+<p>Python uses <strong>reference counting</strong> as its primary GC mechanism:</p>
+<pre><code class="language-python">x = [1, 2, 3]    # ref count of the list = 1
+y = x             # ref count = 2
+del x             # ref count = 1
+del y             # ref count = 0 → object freed
+</code></pre>
+<p>When an object's reference count reaches 0, it is immediately freed. This is fast and deterministic — no GC pause.</p>
+<p>Problem: <strong>circular references</strong>:</p>
+<pre><code class="language-python">a = {}
+b = {}
+a['other'] = b    # b's ref count = 2 (b itself + a['other'])
+b['other'] = a    # a's ref count = 2
+del a             # a's ref count = 1 (still referenced by b)
+del b             # b's ref count = 1 (still referenced by a)
+# Both are now unreachable but neither is freed!
+</code></pre>
+<p>Python's <strong>cycle garbage collector</strong> (runs periodically) detects and collects such cycles. This is why Python can have occasional GC pauses for long-lived programs.</p>
+<h3>Key Built-in Types and Their Internals</h3>
+<p><strong>List</strong> — a dynamic array of object pointers:</p>
+<pre><code class="language-python">lst = [1, 2, 3]
+lst.append(4)     # O(1) amortised — pre-allocates extra space
+lst.insert(0, 0)  # O(n) — shifts all elements right
+lst[2]            # O(1) — direct index access
+</code></pre>
+<p><strong>Dict</strong> — a hash table:</p>
+<pre><code class="language-python">d = {'name': 'Alice', 'age': 30}
+d['name']         # O(1) average — hash lookup
+d['city'] = 'NYC' # O(1) average — insert
+'name' in d       # O(1) average — membership test
+</code></pre>
+<p>Python dicts since 3.7 maintain insertion order. The implementation uses open addressing with a compact layout since Python 3.6.</p>
+<p><strong>Set</strong> — a hash table without values:</p>
+<pre><code class="language-python">s = {1, 2, 3, 4}
+s.add(5)           # O(1) average
+3 in s             # O(1) average
+s1 &amp; s2            # set intersection — O(min(len(s1), len(s2)))
+</code></pre>
+<h3>Decorators — Functions That Transform Functions</h3>
+<pre><code class="language-python">import time
+
+def timer(func):
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(f&quot;{func.__name__} took {end - start:.4f}s&quot;)
+        return result
+    return wrapper
+
+@timer
+def slow_function():
+    time.sleep(1)
+
+slow_function()   # prints: slow_function took 1.0003s
+</code></pre>
+<p><code>@timer</code> is syntactic sugar for <code>slow_function = timer(slow_function)</code>. The decorator wraps the function in new behaviour without modifying its source. This pattern is used extensively in Python frameworks — Flask's <code>@app.route</code>, Django's <code>@login_required</code>, pytest's <code>@pytest.mark.parametrize</code>.</p>
+<h3>The Python Object Model: Everything is an Object</h3>
+<pre><code class="language-python">def add(a, b):
+    return a + b
+
+print(type(add))        # &lt;class 'function'&gt;
+print(add.__name__)     # 'add'
+print(add.__code__)     # code object with bytecode
+print(add(3, 4))        # 7
+</code></pre>
+<p>Functions are first-class objects. They can be passed to other functions, stored in lists, returned from functions. This enables functional programming patterns and closures.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Reference Counter</strong></p>
+<ul>
+<li>Create objects and take references</li>
+<li>Watch reference counts increment and decrement</li>
+<li>Delete references and watch objects get freed</li>
+<li>Create a circular reference — observe that it doesn't free automatically</li>
+</ul>
+<p><strong>Tool 2 — Data Structure Internals</strong></p>
+<ul>
+<li>Create a list, dict, and set</li>
+<li>Insert and look up elements</li>
+<li>See the underlying array/hash table structure</li>
+<li>Observe time complexity of operations</li>
+</ul>
+<p><strong>Tool 3 — Decorator Builder</strong></p>
+<ul>
+<li>Write a function</li>
+<li>Apply a timer decorator</li>
+<li>Step through: the decorator wraps the function, the wrapper is called, timing is captured</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>The GIL (Global Interpreter Lock)</strong>: CPython has a single lock that any thread must hold to execute Python bytecode. This means multiple Python threads cannot run Python code truly in parallel, even on a multi-core CPU. CPU-bound multithreaded Python code often runs slower than single-threaded code due to GIL contention. The workarounds: use <code>multiprocessing</code> (separate processes, no GIL), use <code>asyncio</code> (cooperative concurrency for I/O-bound code), or use libraries that release the GIL (NumPy, I/O operations). Python 3.13 introduced experimental GIL removal (<code>python3.13t</code>).</p>
+<p><strong>CPython vs alternatives</strong>: CPython is the reference implementation. PyPy uses a JIT compiler and runs many Python programs 5–10× faster. Cython compiles Python-like code to C extensions. Numba JIT-compiles numerical Python to LLVM IR. MicroPython runs on microcontrollers with 256 KB of RAM.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Implement a linked list in pure Python using classes, write a timing decorator, trace reference counting for a circular structure, and explain why <code>a = []; b = a; a.append(1)</code> makes <code>b</code> contain <code>[1]</code>.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-5-1-c-language/lesson.html" class="btn-icon">← Prev: M 5.1</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-5-3-algorithms-intro/lesson.html" class="btn-icon btn-primary">Next: M 5.3 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

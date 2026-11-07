@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 4.1 — Machine Code &amp; Assembly | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 4.1
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 4.1 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Machine Code &amp; Assembly.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 4.1 — Machine Code and Assembly Language</p>
+<p><strong>Type:</strong> Translation + encoding + trace + reasoning<br />
+<strong>Estimated time:</strong> 45–55 minutes<br />
+<strong>Tools needed:</strong> <code>simulation.html</code> + pen and paper</p>
+<hr />
+<h2>Part A — C to Assembly</h2>
+<p>Translate each C snippet into assembly using the toy ISA from Level 3 (or simplified x86-like pseudocode). Show register assignments and every instruction required.</p>
+<ol>
+<li>
+<p><code>int x = 10; int y = 4; int z = x - y;</code> → Translate to assembly. Where is z stored?</p>
+</li>
+<li>
+<p><code>if (a &gt; b) { result = a; } else { result = b; }</code> — Translate to assembly. Use CMP and conditional jumps. (This is <code>max(a, b)</code>.)</p>
+</li>
+<li>
+<p>The following loop: <code>int sum = 0; for (int i = 1; i &lt;= 5; i++) { sum += i; }</code> — Translate to assembly. Which register holds sum, which holds i?</p>
+</li>
+<li>
+<p>A function call: <code>int square(int n) { return n * n; }</code> — In which register does the argument arrive (Linux x86-64 ABI)? In which register must the result be placed before RET?</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Encode to Hex</h2>
+<p>Using this simplified encoding table:</p>
+<table>
+<thead>
+<tr>
+<th>Mnemonic</th>
+<th>Encoding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MOV reg, imm</td>
+<td>0xB8 + reg_num, then 4-byte little-endian immediate</td>
+</tr>
+<tr>
+<td>ADD reg, reg</td>
+<td>0x01, ModRM byte</td>
+</tr>
+<tr>
+<td>SUB reg, reg</td>
+<td>0x29, ModRM byte</td>
+</tr>
+<tr>
+<td>CMP reg, imm</td>
+<td>0x83 reg_ext/7, ModRM, imm8</td>
+</tr>
+<tr>
+<td>JMP rel8</td>
+<td>0xEB, signed offset byte</td>
+</tr>
+<tr>
+<td>JE  rel8</td>
+<td>0x74, signed offset byte</td>
+</tr>
+<tr>
+<td>JNE rel8</td>
+<td>0x75, signed offset byte</td>
+</tr>
+<tr>
+<td>CALL rel32</td>
+<td>0xE8, 4-byte signed offset</td>
+</tr>
+<tr>
+<td>RET</td>
+<td>0xC3</td>
+</tr>
+<tr>
+<td>NOP</td>
+<td>0x90</td>
+</tr>
+</tbody>
+</table>
+<ol start="5">
+<li>Encode: <code>MOV eax, 5</code> (reg_num for eax = 0)</li>
+<li>Encode: <code>RET</code> then <code>NOP</code> then <code>NOP</code></li>
+<li>Encode: <code>JMP +3</code> (jump forward 3 bytes from the byte after the JMP instruction)</li>
+<li>Why does x86 store multi-byte immediates in <strong>little-endian</strong> order? What would <code>MOV eax, 0x0000_0005</code> look like in little-endian hex?</li>
+</ol>
+<hr />
+<h2>Part C — Two-Pass Assembler Trace</h2>
+<p>The following assembly program is fed to a two-pass assembler. Address counter starts at 0x00. Assume all instructions are 3 bytes except JMP (2 bytes) and HALT (1 byte).</p>
+<pre><code>start:  LOAD A, 10      ; 3 bytes
+        LOAD B, 3       ; 3 bytes
+        SUB  A, B       ; 3 bytes
+loop:   ADD  A, 1       ; 3 bytes
+        JMP  done       ; 2 bytes — forward reference!
+        ADD  A, 99      ; 3 bytes  (dead code, never reached)
+done:   HALT            ; 1 byte
+</code></pre>
+<ol start="9">
+<li>
+<p><strong>Pass 1</strong>: Build the symbol table. What address does each label map to?</p>
+</li>
+<li>
+<p><strong>Pass 2</strong>: The <code>JMP done</code> instruction is at address 0x0C. <code>done</code> is at address 0x12. The JMP encoding uses a <strong>relative</strong> offset: offset = target_address − (JMP_address + 2). Calculate the offset byte that gets encoded into the JMP instruction.</p>
+</li>
+<li>
+<p>What is a <strong>forward reference</strong>? Why does the two-pass approach solve it?</p>
+</li>
+<li>
+<p>If the assembler made only <strong>one pass</strong>, how could it handle the <code>JMP done</code> forward reference? What is the common technique used?</p>
+</li>
+</ol>
+<hr />
+<h2>Part D — Linker and Object Files</h2>
+<p>Two object files are produced:</p>
+<p><strong>math.o</strong> exports the symbol <code>add_two</code> at local address 0x00.<br />
+<strong>main.o</strong> imports <code>add_two</code> (uses it with a CALL instruction) at its local address 0x10.</p>
+<p>The linker places <code>main.o</code> starting at 0x1000 and <code>math.o</code> starting at 0x2000.</p>
+<ol start="13">
+<li>
+<p>What is the final (linked) address of <code>add_two</code>?</p>
+</li>
+<li>
+<p>The CALL instruction in <code>main.o</code> used a placeholder address of 0x00000000. What value does the linker patch it to? (CALL uses a relative offset on x86: offset = target − (call_site + 5))</p>
+<p>The CALL instruction is at linked address 0x1010.</p>
+</li>
+<li>
+<p>What is a <strong>symbol table</strong> in an object file? What is a <strong>relocation table</strong>? How do they work together during linking?</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Disassembly</h2>
+<p>Decode these x86-64 hex bytes into mnemonics. Use the encoding table from Part B.</p>
+<pre><code>B8 07 00 00 00    ; ?
+B9 03 00 00 00    ; ?
+90                ; ?
+C3                ; ?
+</code></pre>
+<ol start="16">
+<li>What value is in <code>eax</code> after the first instruction? In <code>ecx</code> after the second?</li>
+<li>B8 = MOV eax, ...; B9 = MOV ecx, .... The register number is encoded in the low 3 bits of the opcode. B8 = 0xB8 + 0 (eax). What opcode would <code>MOV ebx, 7</code> use? (ebx = register 3)</li>
+<li>What does a disassembler do that an assembler does not? Why is disassembly always possible for machine code but <strong>compilation</strong> from assembly to C is not?</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A C→assembly (4 questions)</td>
+<td>24</td>
+</tr>
+<tr>
+<td>B hex encoding (4 questions)</td>
+<td>20</td>
+</tr>
+<tr>
+<td>C two-pass trace (4 questions)</td>
+<td>24</td>
+</tr>
+<tr>
+<td>D linker (3 questions)</td>
+<td>18</td>
+</tr>
+<tr>
+<td>E disassembly (3 questions)</td>
+<td>14</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A answers</summary>
+<p><strong>A1:</strong></p>
+<pre><code>MOV eax, 10    ; x = 10
+MOV ebx, 4     ; y = 4
+SUB eax, ebx   ; eax = x - y = 6 → z
+MOV [z], eax   ; store z in memory
+</code></pre>
+<p><strong>A2 (max function):</strong></p>
+<pre><code>CMP eax, ebx    ; compare a, b
+JLE else_branch ; if a ≤ b, goto else
+MOV [result], eax ; result = a
+JMP done
+else_branch:
+MOV [result], ebx ; result = b
+done:
+</code></pre>
+<p><strong>A3 (loop):</strong></p>
+<pre><code>MOV eax, 0     ; sum = 0
+MOV ecx, 1     ; i = 1
+loop_start:
+CMP ecx, 5     ; i &lt;= 5?
+JG  loop_end
+ADD eax, ecx   ; sum += i
+INC ecx        ; i++
+JMP loop_start
+loop_end:
+; eax = 15
+</code></pre>
+<p><strong>A4:</strong> Argument <code>n</code> arrives in <code>rdi</code> (Linux x86-64 ABI, first argument). Result must be in <code>rax</code> before <code>RET</code>.</p>
+<pre><code>; square(n): n in rdi
+MOV rax, rdi    ; rax = n
+IMUL rax, rdi   ; rax = n * n
+RET             ; return rax
+</code></pre>
+</details>
+<details>
+<summary>Part B answers</summary>
+<ol start="5">
+<li>
+<p><code>MOV eax, 5</code>: B8 05 00 00 00 (opcode 0xB8+0=0xB8, then 5 in 4 bytes LE = 05 00 00 00)</p>
+</li>
+<li>
+<p><code>RET NOP NOP</code>: C3 90 90</p>
+</li>
+<li>
+<p><code>JMP +3</code>: EB 03 (offset = 3, jumps 3 bytes past the byte after JMP)</p>
+</li>
+<li>
+<p>Little-endian stores the <strong>least significant byte first</strong>. <code>MOV eax, 5</code> = B8 <strong>05 00 00 00</strong> — the 05 (value 5) is at the lowest address. This matches x86's memory byte ordering. A big-endian encoding would be B8 00 00 00 05.</p>
+</li>
+</ol>
+</details>
+<details>
+<summary>Part C — two-pass trace</summary>
+<p><strong>Pass 1 — symbol table:</strong></p>
+<pre><code>start → 0x00  (LOAD A,10 starts at 0)
+        0x03  (LOAD B,3)
+        0x06  (SUB A,B)
+loop  → 0x09  (ADD A,1)
+        0x0C  (JMP done) ← 2 bytes
+        0x0E  (ADD A,99)
+done  → 0x11  (HALT)
+</code></pre>
+<ol start="10">
+<li>
+<p>Offset = 0x11 − (0x0C + 2) = 0x11 − 0x0E = 0x03. The JMP encodes as <code>JMP 0x03</code> meaning &quot;jump 3 bytes forward from the next instruction.&quot;</p>
+</li>
+<li>
+<p>A forward reference is a label used before it is defined (e.g., jumping to <code>done</code> before the assembler has seen <code>done:</code>). Two-pass: Pass 1 records all labels and their addresses. Pass 2 can resolve all references because the symbol table is complete.</p>
+</li>
+<li>
+<p><strong>Backpatching</strong>: in a single pass, the assembler emits a placeholder (e.g., 0x00) for unknown forward references, records the location, and patches it after the whole file is processed. Functionally equivalent to two-pass but more complex to implement correctly.</p>
+</li>
+</ol>
+</details>
+<details>
+<summary>Part D — linker</summary>
+<ol start="13">
+<li>
+<p><code>add_two</code> is at math.o local 0x00, placed at 0x2000 → <strong>final address: 0x2000</strong></p>
+</li>
+<li>
+<p>CALL at linked 0x1010. Offset = target − (call_site + 5) = 0x2000 − (0x1010 + 5) = 0x2000 − 0x1015 = <strong>0x0FEB</strong>. Linker patches the 4-byte placeholder with 0xEB 0x0F 0x00 0x00 (little-endian).</p>
+</li>
+<li>
+<p><strong>Symbol table</strong>: maps exported names to their local addresses in the object file. <strong>Relocation table</strong>: lists locations in the code that contain addresses needing adjustment when the file is placed at its final linked address. During linking: the linker places all object files at their final addresses, then uses each relocation entry to patch the corresponding address in the code with the correct final value.</p>
+</li>
+</ol>
+</details>
+<details>
+<summary>Part E</summary>
+<ol start="16">
+<li>
+<p><code>B8 07 00 00 00</code> → <code>MOV eax, 7</code> → eax = <strong>7</strong>. <code>B9 03 00 00 00</code> → <code>MOV ecx, 3</code> → ecx = <strong>3</strong>.</p>
+</li>
+<li>
+<p><code>MOV ebx, 7</code>: ebx is register 3. Opcode = 0xB8 + 3 = <strong>0xBB</strong>. Full: <code>BB 07 00 00 00</code>.</p>
+</li>
+<li>
+<p>A disassembler decodes bytes back to mnemonics — this always works because the encoding is deterministic and complete. <strong>Decompilation</strong> (machine code → C) is not reliably possible because: variable names, type information, high-level control structures, and comments are all destroyed during compilation. Multiple C programs can compile to identical machine code. Disassembly is lossless in structure; decompilation is not.</p>
+</li>
+</ol>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

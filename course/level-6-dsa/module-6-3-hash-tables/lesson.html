@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 6.3 — Hash Tables &amp; Collisions | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 6.3
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Hash Tables &amp; Collisions
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 6 • Data Structures &amp; Algorithms</div>
+      <h1 class="article-title">Module 6.3 — Hash Tables &amp; Collisions</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-6-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 6.3 — Hash Tables</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>You have 10 million user records.<br />
+For each web request, you need to look up a user by username.<br />
+A sorted array gives O(log n) — about 23 comparisons per lookup.<br />
+A linear scan gives O(n) — up to 10 million comparisons.</p>
+<p>Can we do better than O(log n)?<br />
+Can we achieve O(1) — constant time regardless of how many users exist?</p>
+</blockquote>
+<p>Yes. The answer is a <strong>hash table</strong> — one of the most important data structures ever invented, used in every database, every caching layer, every programming language's built-in dictionary type.</p>
+<hr />
+<h2>The Story</h2>
+<h3>The Birth of Hashing</h3>
+<p>The concept of hash functions appeared in the early 1950s as a way to accelerate data retrieval on magnetic tape systems, where random access was impossible. <strong>Hans Peter Luhn</strong> of IBM described a hashing technique in 1953 for chained overflow buckets — essentially the same as what we use today.</p>
+<p>The first thorough theoretical treatment came from <strong>Arnold Dumey</strong> (1956), who coined the term &quot;hash&quot; and analysed collision resolution strategies. By the 1960s, every major database system used hash indexes for O(1) lookup.</p>
+<p>The insight: instead of storing elements in order (requiring log n steps to find), store each element at the index determined by a function of its key. Finding it later requires only recomputing that function — one step, regardless of table size.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>The Core Idea</h3>
+<p>A hash table uses an array of fixed size <code>M</code> (the &quot;buckets&quot;) and a <strong>hash function</strong> <code>h(key) → [0, M-1]</code> to map keys to array indices.</p>
+<p><strong>Insert</strong>: compute <code>h(key)</code>, store the key-value pair at <code>table[h(key)]</code>.<br />
+<strong>Lookup</strong>: compute <code>h(key)</code>, return <code>table[h(key)]</code>.<br />
+<strong>Delete</strong>: compute <code>h(key)</code>, remove from <code>table[h(key)]</code>.</p>
+<p>If the hash function maps different keys to different indices, all operations are O(1).</p>
+<pre><code class="language-python"># Extremely simplified — no collision handling
+class TinyHashTable:
+    def __init__(self, size=16):
+        self.size = size
+        self.table = [None] * size
+
+    def _hash(self, key):
+        return hash(key) % self.size   # Python's built-in hash function
+
+    def set(self, key, value):
+        self.table[self._hash(key)] = value
+
+    def get(self, key):
+        return self.table[self._hash(key)]
+</code></pre>
+<h3>The Collision Problem</h3>
+<p>A collision occurs when two different keys hash to the same index. This is inevitable: if you store 1 million keys in a table of 1 million slots, by the Birthday Paradox, collisions start happening after only ~1,000 insertions. Two strategies:</p>
+<p><strong>1. Chaining (Separate Chaining)</strong></p>
+<p>Each bucket holds a linked list of all key-value pairs that hash there:</p>
+<pre><code>Table:
+index 0: → [(alice, 30)] → None
+index 1: → None
+index 2: → [(bob, 25)] → [(carol, 28)] → None   ← collision
+index 3: → [(dave, 22)] → None
+...
+</code></pre>
+<p>Lookup: hash key → find bucket → scan linked list for matching key.</p>
+<ul>
+<li><strong>Average case</strong>: O(1) if the load factor (n/M) is bounded by a constant</li>
+<li><strong>Worst case</strong>: O(n) if all keys hash to the same bucket</li>
+<li><strong>Space</strong>: extra pointer per element</li>
+</ul>
+<p>Python's <code>dict</code> uses a variant of open addressing (below), but conceptually, chaining is the cleaner mental model.</p>
+<p><strong>2. Open Addressing (Linear Probing)</strong></p>
+<p>No linked lists — all entries stored in the array itself. On collision, probe for the next empty slot:</p>
+<pre><code class="language-python">def _insert(self, key, value):
+    idx = self._hash(key)
+    while self.table[idx] is not None:
+        if self.table[idx][0] == key:    # update existing
+            self.table[idx] = (key, value); return
+        idx = (idx + 1) % self.size      # linear probe: try next slot
+    self.table[idx] = (key, value)
+</code></pre>
+<ul>
+<li><strong>Better cache performance</strong> than chaining (no pointer chasing, everything in one array)</li>
+<li><strong>Clustering problem</strong>: long runs of occupied slots form, making probing slow</li>
+<li><strong>Load factor must stay below ~0.7</strong> — resize when exceeded</li>
+<li><strong>Deletion is tricky</strong>: cannot just clear a slot (breaks the probe chain). Use a &quot;tombstone&quot; marker.</li>
+</ul>
+<p><strong>Quadratic probing</strong> (<code>idx = (idx + c₁i + c₂i²) % M</code>) and <strong>double hashing</strong> (<code>idx = (h1(key) + i × h2(key)) % M</code>) spread keys more evenly and reduce clustering.</p>
+<h3>The Hash Function</h3>
+<p>A good hash function:</p>
+<ul>
+<li>Is deterministic: <code>h(k) = h(k)</code> always</li>
+<li>Is fast to compute: ideally O(1) for fixed-size keys</li>
+<li>Distributes keys uniformly across buckets</li>
+<li>Minimises collisions for real-world key distributions</li>
+</ul>
+<p><strong>For integers</strong>: simple approaches include modular hashing <code>h(k) = k mod M</code>. But if M is a power of 2, only the low bits matter — if keys cluster in low bits, so do their hashes. Better: use a prime M, or multiply by a large constant and take the high bits.</p>
+<p><strong>For strings</strong>: sum character values mod M is poor (anagrams collide). Better:</p>
+<pre><code class="language-python">def hash_string(s, M):
+    h = 0
+    for c in s:
+        h = (h * 31 + ord(c)) % M   # Horner's method, prime multiplier
+    return h
+</code></pre>
+<p>Python's <code>hash()</code> for strings uses <strong>SipHash-1-3</strong>, a cryptographic-strength hash function, specifically to prevent <strong>hash flooding attacks</strong> — an adversary who knows the hash function can craft inputs that all map to the same bucket, turning O(1) lookup into O(n). SipHash uses a secret seed randomised per process startup.</p>
+<h3>Load Factor and Resizing</h3>
+<p>The <strong>load factor</strong> α = n / M (number of stored items / table size).</p>
+<p>With chaining: expected O(1 + α) per lookup. Keep α &lt; 1.<br />
+With open addressing: performance degrades rapidly above α ≈ 0.7. Keep α &lt; 0.7.</p>
+<p>When α exceeds the threshold, <strong>resize</strong>: allocate a new table of size ~2M, rehash all existing entries into the new table. This is O(n) work but happens infrequently.</p>
+<p>Python's <code>dict</code> resizes when 2/3 full. Java's <code>HashMap</code> resizes at load factor 0.75.</p>
+<h3>Python's dict Implementation</h3>
+<p>Python <code>dict</code> uses <strong>open addressing with pseudo-random probing</strong>:</p>
+<ol>
+<li>Initial size: 8 slots</li>
+<li>Hash function: <code>hash(key) % size</code> for initial index</li>
+<li>On collision: use a probe sequence based on the full hash value (not linear) to reduce clustering</li>
+<li>Load factor threshold: 2/3 → resize to ~2× size, rehash all entries</li>
+<li>Since Python 3.7: dicts preserve <strong>insertion order</strong> — achieved by maintaining a separate compact array of entry indices</li>
+</ol>
+<p>The CPython dict implementation is one of the most carefully optimised data structures in existence. It has been tuned over 30 years to be fast for the most common Python use cases.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Hash Table with Chaining</strong></p>
+<ul>
+<li>Insert key-value pairs and watch buckets fill</li>
+<li>See collisions form chains</li>
+<li>Look up keys and trace the hash → bucket → list scan</li>
+<li>Observe how uneven hash functions cause clusters</li>
+</ul>
+<p><strong>Tool 2 — Open Addressing / Linear Probing</strong></p>
+<ul>
+<li>Watch probing in action when a collision occurs</li>
+<li>See the clustering problem develop</li>
+<li>Trigger a resize and watch rehashing</li>
+</ul>
+<p><strong>Tool 3 — Hash Function Quality</strong></p>
+<ul>
+<li>Test different hash functions on the same set of keys</li>
+<li>See the distribution across buckets</li>
+<li>Compare good vs bad hash functions visually</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Consistent hashing</strong>: used in distributed databases and content delivery networks. When you add or remove a server, consistent hashing reassigns only n/m keys (where n = total keys, m = number of servers) rather than all keys. This is why DynamoDB, Cassandra, and Memcached can add/remove nodes without a full data reshuffle.</p>
+<p><strong>Robin Hood hashing</strong>: an open addressing variant that keeps probe sequences short by &quot;stealing&quot; slots from rich (low probe count) elements and giving them to poor (high probe count) ones. Used in Rust's <code>HashMap</code> and several modern hash table implementations. Achieves better worst-case performance than standard linear probing.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Trace the insertion of 5 keys into a table of size 7 using linear probing, calculate the expected probe length at load factor 0.5 vs 0.9, implement a hash table class with chaining in Python, and explain why deletion in open addressing requires tombstones.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-6-2-stacks-queues/lesson.html" class="btn-icon">← Prev: M 6.2</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-6-4-trees/lesson.html" class="btn-icon btn-primary">Next: M 6.4 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 3.3 — Instruction Set Architecture | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 3.3
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 3.3 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Instruction Set Architecture.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 3.3 — Instruction Set Architecture</p>
+<p><strong>Type:</strong> Programming + encoding + design + analysis<br />
+<strong>Estimated time:</strong> 50–60 minutes<br />
+<strong>Tools needed:</strong> <code>simulation.html</code> + pen and paper</p>
+<hr />
+<h2>Setup — The Toy ISA (same as Module 3.2)</h2>
+<table>
+<thead>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Format</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x01</td>
+<td>LOAD</td>
+<td>01 rr vv</td>
+<td>Load immediate vv into register rr</td>
+</tr>
+<tr>
+<td>0x02</td>
+<td>LOAD_MEM</td>
+<td>02 rr aa</td>
+<td>Load memory[aa] into register rr</td>
+</tr>
+<tr>
+<td>0x03</td>
+<td>STORE</td>
+<td>03 rr aa</td>
+<td>Store register rr to memory[aa]</td>
+</tr>
+<tr>
+<td>0x10</td>
+<td>ADD</td>
+<td>10 r1 r2</td>
+<td>r1 ← r1 + r2</td>
+</tr>
+<tr>
+<td>0x11</td>
+<td>SUB</td>
+<td>11 r1 r2</td>
+<td>r1 ← r1 − r2</td>
+</tr>
+<tr>
+<td>0x20</td>
+<td>JMP</td>
+<td>20 aa</td>
+<td>PC ← aa</td>
+</tr>
+<tr>
+<td>0x21</td>
+<td>JZ</td>
+<td>21 rr aa</td>
+<td>If rr=0: PC ← aa</td>
+</tr>
+<tr>
+<td>0xFF</td>
+<td>HALT</td>
+<td>FF</td>
+<td>Stop</td>
+</tr>
+</tbody>
+</table>
+<p>Registers: A=0x00, B=0x01, C=0x02, D=0x03</p>
+<hr />
+<h2>Part A — Decode These Instructions</h2>
+<p>Decode each hex sequence into a mnemonic instruction:</p>
+<ol>
+<li><code>01 00 0A</code> → ?</li>
+<li><code>10 00 01</code> → ?</li>
+<li><code>03 00 0F</code> → ?</li>
+<li><code>21 02 06</code> → ?</li>
+<li><code>11 01 02</code> → ?</li>
+<li><code>20 00</code> → ?</li>
+</ol>
+<hr />
+<h2>Part B — Encode These Instructions</h2>
+<p>Encode each mnemonic into hex bytes:</p>
+<ol start="7">
+<li><code>LOAD B, 255</code></li>
+<li><code>ADD C, D</code></li>
+<li><code>STORE D, 0x08</code></li>
+<li><code>JZ A, 0x02</code></li>
+<li><code>LOAD_MEM C, 0x0A</code></li>
+</ol>
+<hr />
+<h2>Part C — Write a Program</h2>
+<p><strong>Program 1:</strong> Write a toy ISA program that computes <code>1 + 2 + 3 + 4 + 5</code> and stores the result (15) at address 0x0F. Use a loop — do not just add five LOAD/ADD instructions manually.</p>
+<p>Write it as hex bytes, starting at address 0x00. Then trace the first 4 FDE cycles.</p>
+<p><strong>Program 2:</strong> Write a program that finds the maximum of two values (stored at addresses 0x0C and 0x0D) and stores the result at 0x0E.</p>
+<p><em>Hint: max(A, B) — load both, subtract B from A. If result is negative (or zero and B was larger), B is max. If positive, A is max. JZ can help.</em></p>
+<hr />
+<h2>Part D — RISC vs CISC Analysis</h2>
+<p>A CISC CPU has a single instruction: <code>ADD_MEM [addr1], [addr2]</code> — adds the value at addr1 to the value at addr2 and stores the result at addr1. This is 1 instruction, 5 bytes.</p>
+<p>A RISC CPU must do this with 3 instructions:</p>
+<pre><code>LOAD_MEM A, addr1    ; 3 bytes
+LOAD_MEM B, addr2    ; 3 bytes
+ADD A, B             ; 3 bytes
+STORE A, addr1       ; 3 bytes
+</code></pre>
+<p>That is 4 instructions, 12 bytes.</p>
+<ol start="12">
+<li>
+<p>What is the code size advantage of the CISC approach? (bytes saved per operation)</p>
+</li>
+<li>
+<p>The RISC CPU runs at 2 GHz and executes each instruction in 1 cycle. The CISC CPU runs at 1.5 GHz and the complex instruction takes 4 cycles to complete. Which finishes the operation faster? Show the calculation.</p>
+</li>
+<li>
+<p>The RISC pipeline can be 8 stages deep (no instruction takes more than 1 cycle to pass through any stage). The CISC pipeline can only be 3 stages deep (the complex instruction has a multi-cycle execute stage). Both processors need 100 of these ADD_MEM operations. Estimate the throughput advantage of the RISC pipeline once it is full.</p>
+</li>
+<li>
+<p>In 3–4 sentences: why did ARM (RISC) win in mobile/embedded computing, while x86-64 (CISC) still dominates desktops and servers? What does each architecture optimise for?</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Design a New Instruction</h2>
+<p>You need to add a <strong>MUL (multiply)</strong> instruction to the toy ISA.</p>
+<ol start="16">
+<li>
+<p>Design the encoding: what opcode, format, and byte length?</p>
+</li>
+<li>
+<p>What hardware does the control unit need to activate that ADD does not? (Consider: the ALU in Module 2.6 had no multiply. What new circuit is required?)</p>
+</li>
+<li>
+<p>A RISC purist argues: &quot;Don't add MUL — just use repeated ADD in a loop.&quot; For 8-bit numbers, what is the worst case? (What is the maximum number of additions needed?) Is this a reasonable argument?</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A decode (6 instructions)</td>
+<td>18</td>
+</tr>
+<tr>
+<td>B encode (5 instructions)</td>
+<td>15</td>
+</tr>
+<tr>
+<td>C Program 1 (loop)</td>
+<td>20</td>
+</tr>
+<tr>
+<td>C Program 2 (max)</td>
+<td>15</td>
+</tr>
+<tr>
+<td>D analysis (4 questions)</td>
+<td>20</td>
+</tr>
+<tr>
+<td>E design (3 questions)</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A — Decoded</summary>
+<ol>
+<li><code>01 00 0A</code> → <code>LOAD A, 10</code></li>
+<li><code>10 00 01</code> → <code>ADD A, B</code></li>
+<li><code>03 00 0F</code> → <code>STORE A, 0x0F</code></li>
+<li><code>21 02 06</code> → <code>JZ C, 0x06</code></li>
+<li><code>11 01 02</code> → <code>SUB B, C</code></li>
+<li><code>20 00</code> → <code>JMP 0x00</code></li>
+</ol>
+</details>
+<details>
+<summary>Part B — Encoded</summary>
+<ol start="7">
+<li><code>LOAD B, 255</code> → <code>01 01 FF</code></li>
+<li><code>ADD C, D</code> → <code>10 02 03</code></li>
+<li><code>STORE D, 0x08</code> → <code>03 03 08</code></li>
+<li><code>JZ A, 0x02</code> → <code>21 00 02</code></li>
+<li><code>LOAD_MEM C, 0x0A</code> → <code>02 02 0A</code></li>
+</ol>
+</details>
+<details>
+<summary>Part D answers</summary>
+<ol start="12">
+<li>
+<p>CISC saves 7 bytes per operation (12 − 5 = 7 bytes).</p>
+</li>
+<li>
+<p>RISC: 4 instructions at 2 GHz = 4 × 0.5 ns = <strong>2.0 ns</strong>. CISC: 4 cycles at 1.5 GHz = 4 × 0.667 ns = <strong>2.67 ns</strong>. RISC is faster despite needing more instructions.</p>
+</li>
+<li>
+<p>RISC pipeline depth 8: throughput ≈ 1 instruction/cycle after fill. 400 RISC instructions ÷ 1 per cycle = 400 cycles (ignoring fill). CISC pipeline depth 3: 1 complex instruction per 1 cycle (once pipelined), but only 3-deep so fill overhead is less. However at 2 GHz vs 1.5 GHz: 100 RISC ops take 100 + 7 fill = 107 ns / (2 GHz / 4 ops/complex) ≈ better throughput for RISC. The exact answer depends on assumptions — the key insight is: deeper pipeline × higher clock &gt;&gt; fewer instructions.</p>
+</li>
+<li>
+<p>ARM won in mobile because RISC's simplicity means smaller, cooler, more power-efficient chips — crucial when running on a battery. x86-64 dominates desktops/servers because of the 40-year software investment and backward compatibility — every Windows program expects x86-64. Intel and AMD have also poured billions into making x86-64 fast, offsetting the inherent inefficiency of the CISC ISA.</p>
+</li>
+</ol>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

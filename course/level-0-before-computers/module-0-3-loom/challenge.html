@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 0.3 — The Loom That Taught Computers | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 0.3
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 0.3 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for The Loom That Taught Computers.
+      </p>
+    </div>
+
+    <article class="prose">
+      <h1>Challenge 0.3 — Program the Loom</h1>
+<p><strong>Type:</strong> Simulation design + binary encoding + pattern decoding<br />
+<strong>Estimated time:</strong> 30–40 minutes<br />
+<strong>Tools needed:</strong> <code>simulation.html</code> open in your browser + pen and paper</p>
+<hr />
+<h2>Part A — Design and Weave (Simulation)</h2>
+<p>Using the <strong>Punch Card Designer</strong> in the simulation, design card chains to produce the following patterns. For each, take note of your card design (which holes you punched).</p>
+<p>The loom has <strong>8 threads</strong> (columns) and you can use up to <strong>8 cards</strong> (rows).</p>
+<h3>Pattern 1 — Checkerboard</h3>
+<p>Row 1: threads 1,3,5,7 UP<br />
+Row 2: threads 2,4,6,8 UP<br />
+Row 3: threads 1,3,5,7 UP<br />
+Row 4: threads 2,4,6,8 UP</p>
+<p>Punch this pattern, weave it, and confirm the checkerboard appears in the fabric preview.</p>
+<h3>Pattern 2 — Horizontal Stripes</h3>
+<p>Design a pattern that produces <strong>two thick horizontal stripes</strong> — a dark band of 3 rows, then a light band of 3 rows (or similar alternating blocks). Define your own hole pattern to achieve this.</p>
+<h3>Pattern 3 — Your Initials</h3>
+<p>Try to weave the first letter of your name. Use all 8 rows. Describe the pattern you're going for and how you encoded it.</p>
+<hr />
+<h2>Part B — Binary Encoding</h2>
+<p>A punch card row can be written as a binary number. We use this convention:</p>
+<ul>
+<li>Column 1 = most significant bit (leftmost, bit 7)</li>
+<li>Column 8 = least significant bit (rightmost, bit 0)</li>
+<li>Hole = <strong>1</strong>, No hole = <strong>0</strong></li>
+</ul>
+<h3>Task</h3>
+<p>Write out your <strong>8-card chain for the Checkerboard pattern</strong> (Part A, Pattern 1) as:</p>
+<ol>
+<li>A binary string for each row (8 bits)</li>
+<li>The decimal equivalent of each row</li>
+<li>The hexadecimal equivalent of each row</li>
+</ol>
+<p>Use this table format:</p>
+<table>
+<thead>
+<tr>
+<th>Card</th>
+<th>Binary</th>
+<th>Decimal</th>
+<th>Hex</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>????</code></td>
+<td>??</td>
+<td>0x??</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>????</code></td>
+<td>??</td>
+<td>0x??</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>????</code></td>
+<td>??</td>
+<td>0x??</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>????</code></td>
+<td>??</td>
+<td>0x??</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Part C — Decode the Mystery Pattern</h2>
+<p>Below is a card chain encoded as binary. Decode it to answer: <strong>what pattern does this weave?</strong></p>
+<table>
+<thead>
+<tr>
+<th>Card</th>
+<th>Binary</th>
+<th>Your decoding (which threads are UP?)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>11100000</code></td>
+<td>?</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>10010000</code></td>
+<td>?</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>10010000</code></td>
+<td>?</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>11100000</code></td>
+<td>?</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>10010000</code></td>
+<td>?</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>10010000</code></td>
+<td>?</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>11100000</code></td>
+<td>?</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>00000000</code></td>
+<td>?</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Fill in which threads are UP for each row (thread 1=leftmost bit)</li>
+<li>Sketch the resulting pattern on graph paper (or describe it precisely)</li>
+<li>What letter of the alphabet does this pattern most closely resemble?</li>
+</ol>
+<hr />
+<h2>Part D — The Big Idea Question</h2>
+<p>Answer these in writing (2–4 sentences each):</p>
+<ol>
+<li>
+<p><strong>Before Jacquard</strong>, how did the weaver know which threads to raise? What were the limitations of this approach?</p>
+</li>
+<li>
+<p><strong>After Jacquard</strong>, what changed? Who or what now holds the &quot;knowledge&quot; of the pattern?</p>
+</li>
+<li>
+<p><strong>The connection to software</strong>: Explain in your own words why the punch card principle is the conceptual foundation of software. Use the phrase &quot;separation of program from machine&quot; in your answer.</p>
+</li>
+<li>
+<p><strong>Trade-off</strong>: The Jacquard system made mass production of complex patterns easy. But what capability did weavers <em>lose</em> that a skilled hand-weaver had? (Hint: think about what a human can do that a card cannot.)</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+<th>What we're looking for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A — 3 patterns woven correctly</td>
+<td>30</td>
+<td>Patterns match description; simulation used</td>
+</tr>
+<tr>
+<td>B — Binary/Hex encoding table</td>
+<td>25</td>
+<td>Correct bit mapping and conversions</td>
+</tr>
+<tr>
+<td>C — Mystery decode + letter ID</td>
+<td>20</td>
+<td>Correct thread decode; letter identified</td>
+</tr>
+<tr>
+<td>D1–D4 — Written answers</td>
+<td>25</td>
+<td>Precise, thoughtful, uses correct vocabulary</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Hints</h2>
+<details>
+<summary>Hint — Part B conversion</summary>
+For binary to decimal: weight each bit by its power of 2 from right.
+`10101010` = 128+0+32+0+8+0+2+0 = 170 = 0xAA
+</details>
+<details>
+<summary>Hint — Part C mystery letter</summary>
+Draw an 8×8 grid. Shade the cells where the bit is 1. Look at the shape from a distance.
+</details>
+<details>
+<summary>Hint — Part D trade-off</summary>
+Think about what happens when a weaver makes a mistake mid-pattern on a Jacquard loom vs by hand.
+</details>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part B — Checkerboard Encoding Solution</summary>
+<p>Threads 1,3,5,7 UP = columns 1,3,5,7 = bits 7,5,3,1 = <code>10101010</code><br />
+Threads 2,4,6,8 UP = columns 2,4,6,8 = bits 6,4,2,0 = <code>01010101</code></p>
+<table>
+<thead>
+<tr>
+<th>Card</th>
+<th>Binary</th>
+<th>Decimal</th>
+<th>Hex</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>10101010</code></td>
+<td>170</td>
+<td>0xAA</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>01010101</code></td>
+<td>85</td>
+<td>0x55</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>10101010</code></td>
+<td>170</td>
+<td>0xAA</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>01010101</code></td>
+<td>85</td>
+<td>0x55</td>
+</tr>
+</tbody>
+</table>
+<p>Note: 0xAA and 0x55 are the classic alternating-bit byte patterns used in memory testing to this day.</p>
+</details>
+<details>
+<summary>Part C — Mystery Decode Solution</summary>
+<pre><code>Card 1: 11100000 → threads 1,2,3 UP      ███░░░░░
+Card 2: 10010000 → threads 1,4 UP         █░░█░░░░
+Card 3: 10010000 → threads 1,4 UP         █░░█░░░░
+Card 4: 11100000 → threads 1,2,3 UP      ███░░░░░
+Card 5: 10010000 → threads 1,4 UP         █░░█░░░░
+Card 6: 10010000 → threads 1,4 UP         █░░█░░░░
+Card 7: 11100000 → threads 1,2,3 UP      ███░░░░░
+Card 8: 00000000 → no threads UP          ░░░░░░░░
+</code></pre>
+<p>The pattern is the letter <strong>P</strong> (or B depending on interpretation).<br />
+The top three rows form the top curve of a P/B; rows 4–7 are the bottom bulge; row 8 is the baseline.</p>
+</details>
+<details>
+<summary>Part D — Sample Answers</summary>
+<p><strong>D1:</strong> Before Jacquard, the weaver (or drawboy) held the pattern in memory and manually raised threads by hand or with pulled cords. Limitations: prone to error, couldn't run unattended, new patterns required new training, couldn't run faster than the weaver could think.</p>
+<p><strong>D2:</strong> After Jacquard, the &quot;knowledge&quot; of the pattern moved into the card chain. The loom reads the cards and acts mechanically. No human memory is required during operation — just card loading and maintenance.</p>
+<p><strong>D3:</strong> Software is the separation of instructions from the machine that executes them. Before the punch card, a loom could only weave what its physical structure determined. After the punch card, the same loom could weave any pattern — all that changed was the cards. Similarly, a computer's hardware stays fixed; only the software (program) changes. The punch card proved that instructions can be encoded, stored, and loaded separately from the executing mechanism. That is the definition of a program.</p>
+<p><strong>D4:</strong> A skilled hand-weaver could <em>adapt</em> in real-time — they could improvise, correct errors mid-row, make creative decisions on the fly, or adjust to a broken thread. A Jacquard loom follows the card chain literally. It cannot decide, adapt, or improvise. A error on card 47 in a 2,000-card chain runs identically every time until a human intervenes and replaces the card.</p>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

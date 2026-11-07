@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 6.1 — Arrays &amp; Contiguous Memory | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 6.1
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 6.1 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Arrays &amp; Contiguous Memory.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 6.1 — Arrays and Linked Lists</p>
+<p><strong>Type:</strong> Implementation + trace + analysis<br />
+<strong>Estimated time:</strong> 45–55 minutes<br />
+<strong>Tools needed:</strong> pen and paper + Python</p>
+<hr />
+<h2>Part A — Linked List Implementation</h2>
+<p>Implement a singly linked list with these methods:</p>
+<pre><code class="language-python">class Node:
+    def __init__(self, data): ...
+
+class LinkedList:
+    def prepend(self, data): ...      # O(1)
+    def append(self, data): ...       # O(n) — no tail pointer
+    def delete(self, data): ...       # remove first occurrence
+    def reverse(self): ...            # in-place, O(n)
+    def to_list(self): ...            # convert to Python list
+</code></pre>
+<ol>
+<li>
+<p>Implement all five methods. Test: <code>ll = LinkedList(); [ll.append(i) for i in [1,2,3,4]]; ll.reverse(); print(ll.to_list())</code> → <code>[4,3,2,1]</code>.</p>
+</li>
+<li>
+<p>Trace <code>reverse()</code> on <code>[1→2→3→4→None]</code> step by step. Draw the pointer state after each reassignment.</p>
+</li>
+<li>
+<p>What three operations on a singly linked list require O(n) time? For which of these could a doubly linked list help? When?</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Memory Layout Calculation</h2>
+<ol start="4">
+<li>
+<p>A Python list (<code>[]</code>) stores object <strong>references</strong> (pointers). Each pointer is 8 bytes on 64-bit systems, plus the list object overhead of 56 bytes. Calculate the memory used by a Python list of 1,000 integers.</p>
+</li>
+<li>
+<p>A singly linked list of 1,000 Python integers: each <code>Node</code> has a <code>data</code> field and a <code>next</code> pointer. Python object overhead is ~28 bytes per Node object plus 8 bytes per pointer field. Estimate total memory.</p>
+</li>
+<li>
+<p>Which uses more memory for 1,000 elements, and by roughly how much? What does this suggest about when to prefer each structure?</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — Dynamic Array Internals</h2>
+<ol start="7">
+<li>
+<p>A Python list starts empty. Trace the capacity at each step after appending elements 1 through 9. (Python doubles capacity starting from some initial value when the list is full.) What is the capacity after each append?</p>
+</li>
+<li>
+<p>n appends to an initially empty list cost O(2n) total (geometric series). Prove this: if the list doubles from size k to 2k, the cost of that resize is k copies. Sum all resize costs for n appends.</p>
+</li>
+<li>
+<p>Implement a <code>DynamicArray</code> class in Python that manages its own backing array (use a fixed-size list pre-allocated to <code>capacity</code>). When full, double the capacity and copy. Include <code>append</code>, <code>__getitem__</code>, and <code>__len__</code>.</p>
+</li>
+</ol>
+<hr />
+<h2>Part D — Practical Choice</h2>
+<p>For each scenario, state whether you would use a dynamic array or linked list, and why:</p>
+<ol start="10">
+<li>
+<p>A undo/redo history for a text editor where the most recent 1,000 actions are stored and you frequently add/remove from the front.</p>
+</li>
+<li>
+<p>A database result set of 10 million rows that will be iterated once from beginning to end and accessed by index.</p>
+</li>
+<li>
+<p>A scheduler that processes jobs in order of arrival, inserting new jobs at the back and removing from the front, with at most 10,000 jobs at any time.</p>
+</li>
+<li>
+<p>A cache of the 100 most recently accessed web pages where you need to move an accessed page to the front in O(1).</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Classic Linked List Problems</h2>
+<ol start="14">
+<li>
+<p><strong>Detect a cycle</strong>: given a linked list, determine if it contains a cycle (a node whose <code>next</code> points to an earlier node). Implement <strong>Floyd's tortoise and hare algorithm</strong> — two pointers moving at speeds 1 and 2. If they ever point to the same node, there is a cycle.</p>
+</li>
+<li>
+<p><strong>Find the middle node</strong>: return the middle node of a linked list in a single pass (no pre-computing the length). Use slow/fast pointers. For even-length lists, return the second of the two middle nodes.</p>
+</li>
+<li>
+<p><strong>Merge two sorted linked lists</strong>: given <code>l1 = 1→3→5→None</code> and <code>l2 = 2→4→6→None</code>, return <code>1→2→3→4→5→6→None</code>. Implement this recursively and iteratively. What are the time and space complexities of each?</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A linked list (3 questions)</td>
+<td>25</td>
+</tr>
+<tr>
+<td>B memory layout</td>
+<td>15</td>
+</tr>
+<tr>
+<td>C dynamic array</td>
+<td>20</td>
+</tr>
+<tr>
+<td>D practical choice</td>
+<td>16</td>
+</tr>
+<tr>
+<td>E classic problems</td>
+<td>24</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A.2 — reverse trace</summary>
+<pre><code>Initial: head → [1] → [2] → [3] → [4] → None
+
+Step 1: prev=None, curr=[1], nxt=[2]
+  [1].next = None; prev=[1]; curr=[2]
+  State: None ← [1]   [2] → [3] → [4] → None
+
+Step 2: prev=[1], curr=[2], nxt=[3]
+  [2].next = [1]; prev=[2]; curr=[3]
+  State: None ← [1] ← [2]   [3] → [4] → None
+
+Step 3: prev=[2], curr=[3], nxt=[4]
+  [3].next = [2]; prev=[3]; curr=[4]
+
+Step 4: prev=[3], curr=[4], nxt=None
+  [4].next = [3]; prev=[4]; curr=None
+
+head = [4]; done.
+Result: [4] → [3] → [2] → [1] → None
+</code></pre>
+</details>
+<details>
+<summary>Part C.9 — DynamicArray</summary>
+<pre><code class="language-python">class DynamicArray:
+    def __init__(self):
+        self._capacity = 1
+        self._size = 0
+        self._data = [None] * self._capacity
+
+    def _resize(self):
+        new_data = [None] * (self._capacity * 2)
+        for i in range(self._size):
+            new_data[i] = self._data[i]
+        self._data = new_data
+        self._capacity *= 2
+
+    def append(self, val):
+        if self._size == self._capacity:
+            self._resize()
+        self._data[self._size] = val
+        self._size += 1
+
+    def __getitem__(self, i):
+        if 0 &lt;= i &lt; self._size: return self._data[i]
+        raise IndexError
+
+    def __len__(self): return self._size
+</code></pre>
+</details>
+<details>
+<summary>Part E.14 — Floyd's cycle detection</summary>
+<pre><code class="language-python">def has_cycle(head):
+    slow = fast = head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        if slow is fast: return True
+    return False
+</code></pre>
+<p>If there's a cycle of length k, and the cycle starts at position m from the head: the fast pointer enters the cycle first. Once both are in the cycle, fast gains 1 position per step. They meet after at most k steps.</p>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

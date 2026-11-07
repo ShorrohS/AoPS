@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 6.2 — Linked Lists, Stacks &amp; Queues | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 6.2
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Linked Lists, Stacks &amp; Queues
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 6 • Data Structures &amp; Algorithms</div>
+      <h1 class="article-title">Module 6.2 — Linked Lists, Stacks &amp; Queues</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-6-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 6.2 — Stacks and Queues</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>Two fundamental questions about collections:</p>
+<ol>
+<li>
+<p>When you take something out, should it be the <em>most recently added</em> item (Last In, First Out)?<br />
+→ A stack of plates, the call stack, the browser back button.</p>
+</li>
+<li>
+<p>Or should it be the <em>least recently added</em> item (First In, First Out)?<br />
+→ A print queue, a line at a ticket counter, CPU job scheduling.</p>
+</li>
+</ol>
+<p>Stacks and queues are not clever data structures.<br />
+They are principled <em>restrictions</em> on how a collection is accessed —<br />
+and those restrictions turn out to match the natural structure of dozens of important problems.</p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>The Call Stack and the History of Stacks</h3>
+<p>The concept of a stack in computing is inseparable from the call stack — the hardware mechanism for function calls described in Module 4.2. Every time you call a function, the return address is pushed; every time you return, it is popped. This is a stack in its purest form.</p>
+<p>Alan Turing described stack-like mechanisms in 1946 for his ACE computer design. Friedrich Bauer and Klaus Samelson in Germany, and Charles Hamblin in Australia, independently formalised the push-down stack in the late 1950s.</p>
+<p>The calculator application of stacks came from Hamblin: <strong>Reverse Polish Notation (RPN)</strong> — write <code>3 4 +</code> instead of <code>3 + 4</code>. RPN evaluates perfectly with a stack and requires no parentheses, no operator precedence rules, no parse tree. HP's engineering calculators used RPN through the 1970s–80s. Understanding why RPN works is the clearest introduction to stack-based computation.</p>
+<p>Queues formalise the fair waiting structure that humans already understood intuitively — but computers needed an explicit data structure to implement scheduling, buffering, and breadth-first search.</p>
+<hr />
+<h2>The Concept</h2>
+<h3>Stacks — LIFO</h3>
+<p>A stack supports two operations:</p>
+<ul>
+<li><strong>push(item)</strong>: add item to the top</li>
+<li><strong>pop()</strong>: remove and return the top item</li>
+<li><strong>peek()</strong>: look at the top item without removing it</li>
+<li><strong>is_empty()</strong>: return True if no items</li>
+</ul>
+<pre><code class="language-python">class Stack:
+    def __init__(self):
+        self._data = []
+
+    def push(self, item):
+        self._data.append(item)       # O(1) amortised
+
+    def pop(self):
+        if self.is_empty():
+            raise IndexError(&quot;pop from empty stack&quot;)
+        return self._data.pop()       # O(1) amortised
+
+    def peek(self):
+        return self._data[-1]         # O(1)
+
+    def is_empty(self):
+        return len(self._data) == 0
+</code></pre>
+<p>All operations O(1) amortised using a dynamic array as backing store.</p>
+<p><strong>Key applications:</strong></p>
+<p><strong>Expression evaluation</strong> (RPN):</p>
+<pre><code class="language-python">def eval_rpn(tokens):
+    stack = Stack()
+    for t in tokens:
+        if t in '+-*/':
+            b, a = stack.pop(), stack.pop()
+            result = {'+':a+b, '-':a-b, '*':a*b, '/':a/b}[t]
+            stack.push(result)
+        else:
+            stack.push(float(t))
+    return stack.pop()
+
+eval_rpn(['3','4','+','2','*'])   # (3+4)*2 = 14
+</code></pre>
+<p><strong>Balanced parentheses check</strong>:</p>
+<pre><code class="language-python">def is_balanced(s):
+    stack = Stack()
+    pairs = {')':'(', ']':'[', '}':'{'}
+    for c in s:
+        if c in '([{':
+            stack.push(c)
+        elif c in ')]}':
+            if stack.is_empty() or stack.pop() != pairs[c]:
+                return False
+    return stack.is_empty()
+
+is_balanced(&quot;({[]})&quot;)   # True
+is_balanced(&quot;({[}])&quot;)   # False
+</code></pre>
+<p><strong>Undo/redo</strong>: push each action onto the undo stack. <code>Ctrl+Z</code> pops from the undo stack and pushes onto the redo stack.</p>
+<p><strong>DFS without recursion</strong>:</p>
+<pre><code class="language-python">def dfs(graph, start):
+    stack = Stack()
+    visited = set()
+    stack.push(start)
+    while not stack.is_empty():
+        node = stack.pop()
+        if node not in visited:
+            visited.add(node)
+            for neighbour in graph[node]:
+                stack.push(neighbour)
+</code></pre>
+<h3>Queues — FIFO</h3>
+<p>A queue supports:</p>
+<ul>
+<li><strong>enqueue(item)</strong>: add item to the back</li>
+<li><strong>dequeue()</strong>: remove and return the front item</li>
+<li><strong>peek()</strong>: look at the front item</li>
+<li><strong>is_empty()</strong></li>
+</ul>
+<p>Implementing a queue with a Python list is inefficient: <code>list.pop(0)</code> is O(n) because it shifts every element. Use Python's <code>collections.deque</code> (doubly linked list):</p>
+<pre><code class="language-python">from collections import deque
+
+class Queue:
+    def __init__(self):
+        self._data = deque()
+
+    def enqueue(self, item):
+        self._data.append(item)         # O(1)
+
+    def dequeue(self):
+        if self.is_empty():
+            raise IndexError(&quot;dequeue from empty queue&quot;)
+        return self._data.popleft()     # O(1)
+
+    def is_empty(self):
+        return len(self._data) == 0
+</code></pre>
+<p><strong>Key applications:</strong></p>
+<p><strong>BFS (Breadth-First Search)</strong>:</p>
+<pre><code class="language-python">def bfs(graph, start):
+    queue = Queue()
+    visited = set([start])
+    queue.enqueue(start)
+    while not queue.is_empty():
+        node = queue.dequeue()
+        for neighbour in graph[node]:
+            if neighbour not in visited:
+                visited.add(neighbour)
+                queue.enqueue(neighbour)
+</code></pre>
+<p><strong>Process scheduling</strong>: the OS maintains a run queue of processes waiting for CPU time. Round Robin scheduling enqueues a process when its turn ends and dequeues the next one.</p>
+<p><strong>Printer spooler</strong>: jobs arrive and are enqueued. The printer dequeues and prints one at a time.</p>
+<h3>Circular Buffer (Ring Buffer)</h3>
+<p>A fixed-size queue implemented as an array with two pointers (<code>head</code> and <code>tail</code>). When they reach the end of the array, they wrap around. No dynamic resizing needed:</p>
+<pre><code>Array: [_, _, 3, 4, 5, _, _]   (size 7)
+            ↑           ↑
+           head         tail (next write position)
+</code></pre>
+<p>Used in: audio buffers (steady stream of samples), network packet buffers, producer-consumer queues in embedded systems. O(1) enqueue and dequeue with a fixed, pre-allocated memory footprint.</p>
+<h3>Monotonic Stack</h3>
+<p>A stack where elements are always in sorted order (either monotonically increasing or decreasing). Used to solve problems like &quot;next greater element&quot; in O(n):</p>
+<pre><code class="language-python">def next_greater_element(arr):
+    result = [-1] * len(arr)
+    stack = []                    # stores indices
+    for i, x in enumerate(arr):
+        while stack and arr[stack[-1]] &lt; x:
+            idx = stack.pop()
+            result[idx] = x       # x is the next greater for arr[idx]
+        stack.append(i)
+    return result
+
+next_greater_element([4, 1, 2, 3])   # [-1, 2, 3, -1]
+</code></pre>
+<p>The naïve nested loop approach is O(n²). The monotonic stack approach is O(n) — each element is pushed and popped at most once.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Stack Operations</strong></p>
+<ul>
+<li>Push and pop items manually</li>
+<li>Visualise the stack growing and shrinking</li>
+<li>Run the balanced parentheses checker step by step</li>
+<li>Watch RPN expression evaluation</li>
+</ul>
+<p><strong>Tool 2 — Queue Operations</strong></p>
+<ul>
+<li>Enqueue and dequeue items</li>
+<li>Visualise the front and back pointers</li>
+<li>Run BFS on a small graph and watch the queue guide the traversal</li>
+</ul>
+<p><strong>Tool 3 — Circular Buffer</strong></p>
+<ul>
+<li>Set a fixed buffer size</li>
+<li>Enqueue items until full, then dequeue and enqueue again</li>
+<li>Watch head and tail pointers wrap around</li>
+<li>Observe what happens on overflow</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Priority queues</strong>: a generalisation of the queue where each item has a priority, and <code>dequeue()</code> always returns the highest-priority item. Implemented with a heap (Module 6.5). Used in: Dijkstra's shortest path, A* search, OS task scheduling, Huffman coding, event-driven simulation.</p>
+<p><strong>Lock-free queues</strong>: in multi-threaded systems, locking a queue for every enqueue/dequeue creates a bottleneck. Lock-free queues use CPU atomic compare-and-swap (CAS) instructions to safely update head/tail pointers without locks. Michael and Scott's lock-free queue (1996) is the standard algorithm — it uses a sentinel node and a pair of atomic pointer updates. Used in high-performance message queues, garbage collectors, and OS schedulers.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Implement a stack using two queues, implement a queue using two stacks, evaluate RPN expressions step by step, and trace a BFS traversal on a given graph recording the queue state at each step.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-6-1-arrays-linked-lists/lesson.html" class="btn-icon">← Prev: M 6.1</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-6-3-hash-tables/lesson.html" class="btn-icon btn-primary">Next: M 6.3 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 12.5 — AI Alignment, Safety &amp; Ethics | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 12.5
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        AI Alignment, Safety &amp; Ethics
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 12 • Advanced AI &amp; Frontiers</div>
+      <h1 class="article-title">Module 12.5 — AI Alignment, Safety &amp; Ethics</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-12-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 12.5 — Ethics and Safety in AI Systems</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>A hiring algorithm trained on historical data learns to discriminate.<br />
+A content recommendation system optimises engagement — and radicalises users.<br />
+A self-driving car must decide who to harm in an unavoidable crash.<br />
+A large language model confidently states false information.</p>
+<p>These are not hypothetical future problems.<br />
+They are happening now, in systems deployed at scale.</p>
+<p>Building AI systems responsibly requires understanding<br />
+not just the technical mechanisms but the ethical frameworks,<br />
+failure modes, and safety techniques that prevent harm.</p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>From Science Fiction to Policy</h3>
+<p>The ethics of artificial intelligence has been discussed since the technology was theoretical. Isaac Asimov's Three Laws of Robotics (1942) were the first popular framing — and Asimov's stories systematically showed why rule-based ethics fails in complex situations.</p>
+<p>Real concerns emerged as AI systems moved from research to deployment:</p>
+<ul>
+<li><strong>2014</strong>: Microsoft's Tay chatbot learned to generate hate speech within 24 hours of deployment</li>
+<li><strong>2016</strong>: ProPublica reported that COMPAS (a recidivism prediction system) showed racial bias in US courts</li>
+<li><strong>2019</strong>: Amazon scrapped an AI recruiting tool that discriminated against women (trained on historical hiring data that was male-dominated)</li>
+<li><strong>2022</strong>: ChatGPT demonstrated that large language models could produce fluent, confident, incorrect text — &quot;hallucination&quot; — at scale</li>
+<li><strong>2023–2024</strong>: Regulatory responses — EU AI Act, US Executive Order on AI — attempted to create frameworks for accountability</li>
+</ul>
+<p>The technical AI safety field grew from concerns about existential risk. <strong>Nick Bostrom's</strong> <em>Superintelligence</em> (2014) and work at organisations like MIRI (Machine Intelligence Research Institute) and later Anthropic focused on alignment: how do you ensure an AI system pursues the goals its creators intended, not some proxy that diverges catastrophically?</p>
+<hr />
+<h2>The Concept</h2>
+<h3>Bias and Fairness</h3>
+<p><strong>What is bias in ML?</strong> A model trained on biased data learns biased patterns.</p>
+<pre><code class="language-python"># Simplified example
+# Historical data: women hired at lower rates (due to past discrimination)
+# Model trained on this data: predicts women as lower probability hires
+# Outcome: perpetuates and entrenches the historical bias
+</code></pre>
+<p><strong>Sources of bias:</strong></p>
+<ul>
+<li><strong>Historical bias</strong>: data reflects past discrimination</li>
+<li><strong>Representation bias</strong>: certain groups are underrepresented in training data</li>
+<li><strong>Measurement bias</strong>: the variable being predicted is a proxy for something else</li>
+<li><strong>Feedback loops</strong>: biased predictions → biased outcomes → biased future training data</li>
+</ul>
+<p><strong>Fairness metrics</strong> (often incompatible with each other):</p>
+<ul>
+<li><strong>Demographic parity</strong>: equal positive prediction rates across groups</li>
+<li><strong>Equal opportunity</strong>: equal true positive rates across groups</li>
+<li><strong>Predictive parity</strong>: equal precision across groups</li>
+<li><strong>Individual fairness</strong>: similar individuals treated similarly</li>
+</ul>
+<p><strong>Impossibility results</strong>: it is mathematically impossible to satisfy all fairness criteria simultaneously when base rates differ between groups. Any choice of fairness definition encodes a value judgment — there is no purely technical solution to what is fundamentally a societal question.</p>
+<h3>Explainability and Interpretability</h3>
+<p><strong>The black box problem</strong>: deep neural networks make decisions through millions of learned parameters. Even the system's creators cannot fully explain why it made a specific decision.</p>
+<p><strong>Why it matters</strong>: in high-stakes domains (medical diagnosis, loan decisions, criminal justice), decision subjects have a right to an explanation. The EU GDPR includes a &quot;right to explanation&quot; for automated decisions.</p>
+<p><strong>Techniques:</strong></p>
+<ul>
+<li><strong>LIME</strong> (Local Interpretable Model-Agnostic Explanations): approximate the model locally with a simpler interpretable model</li>
+<li><strong>SHAP</strong> (SHapley Additive exPlanations): use Shapley values (from game theory) to attribute each feature's contribution to a prediction</li>
+<li><strong>Attention visualisation</strong>: in transformer models, attention weights show which input tokens influenced the output</li>
+<li><strong>Gradient-based saliency</strong>: compute the gradient of the output with respect to inputs to identify which inputs most affected the decision</li>
+</ul>
+<pre><code class="language-python">import shap
+
+explainer = shap.TreeExplainer(model)
+shap_values = explainer.shap_values(X_test)
+shap.summary_plot(shap_values, X_test, feature_names=feature_names)
+</code></pre>
+<h3>Hallucination and Truthfulness</h3>
+<p><strong>Hallucination</strong>: a language model confidently states false information. This is not a bug in the traditional sense — it is an emergent property of how LLMs work:</p>
+<ul>
+<li>LLMs are trained to predict likely next tokens, not to retrieve facts from a verified database</li>
+<li>Fluent, confident-sounding text and accurate text are statistically correlated but not identical</li>
+<li>The model has no internal &quot;truth check&quot; — it cannot distinguish what it knows from what it is confabulating</li>
+</ul>
+<p><strong>Mitigation techniques:</strong></p>
+<ul>
+<li><strong>Retrieval-Augmented Generation (RAG)</strong>: ground LLM responses in retrieved documents (Module 12.3)</li>
+<li><strong>Calibration</strong>: train models to express uncertainty when appropriate</li>
+<li><strong>Constitutional AI</strong> (Anthropic): train models using AI feedback on their own outputs against a set of principles</li>
+<li><strong>Human feedback (RLHF)</strong>: fine-tune models on human ratings of response quality</li>
+</ul>
+<h3>Alignment: The Core Problem</h3>
+<p><strong>The alignment problem</strong>: how do you specify what you want an AI system to do, precisely enough that a system optimising for that specification actually does what you intended?</p>
+<p>Classic examples:</p>
+<ul>
+<li>&quot;Make users happy&quot; → system learns to addict users to endless scroll</li>
+<li>&quot;Get a high score in this game&quot; → agent discovers an exploit that earns points without playing the game as intended</li>
+<li>&quot;Reduce hospital wait times&quot; → system discharges sick patients early</li>
+</ul>
+<p><strong>Reward hacking</strong>: any learnable proxy metric can be gamed if the system is optimising it hard enough.</p>
+<p><strong>RLHF (Reinforcement Learning from Human Feedback)</strong>: a leading approach to alignment. Train a reward model from human preference comparisons, then use RL to fine-tune the LLM to produce responses that the reward model rates highly. Used to train GPT-4, Claude, and Gemini.</p>
+<p>The fundamental challenge: the reward model itself may have biases, blind spots, or specifications that diverge from true human values at the margin. Scalable oversight — how to supervise a system smarter than yourself — is an open research problem.</p>
+<h3>Privacy and Data</h3>
+<p><strong>Training data privacy concerns:</strong></p>
+<ul>
+<li>Models can <strong>memorise</strong> training data, including personal information. LLMs can be prompted to reveal training data examples — including private information, copyrighted text, or PII.</li>
+<li><strong>Membership inference attacks</strong>: determine whether a specific example was in the training set.</li>
+<li><strong>Differential privacy</strong>: add calibrated noise to training or outputs to provide mathematical privacy guarantees (Laplace mechanism, Gaussian mechanism). At the cost of some model quality.</li>
+</ul>
+<p><strong>Copyright and consent:</strong></p>
+<ul>
+<li>Training on web-scraped data involves text, images, and code for which creators did not give permission</li>
+<li>Multiple ongoing lawsuits (NYT vs OpenAI, Getty Images vs Stability AI, GitHub Copilot lawsuits)</li>
+<li>Technical and legal resolution is evolving rapidly</li>
+</ul>
+<h3>AI Safety Frameworks</h3>
+<p><strong>Red-teaming</strong>: systematically attempt to elicit harmful outputs from a model. Developed in security research, now standard practice before LLM deployment.</p>
+<p><strong>Responsible disclosure</strong>: when vulnerabilities are found in AI systems, how should they be reported? The same principles as software security but with less established norms.</p>
+<p><strong>Model cards</strong>: documentation accompanying ML models describing training data, evaluation metrics, known limitations, intended use cases, and out-of-scope uses. Introduced by Google researchers (Timnit Gebru et al., 2018).</p>
+<p><strong>Staged deployment</strong>: release models gradually (to researchers, then limited users, then generally) to identify failure modes before broad exposure.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Bias Audit</strong></p>
+<ul>
+<li>A loan approval model with demographic features</li>
+<li>Compute fairness metrics: demographic parity, equal opportunity, predictive parity</li>
+<li>See that optimising for one metric degrades others</li>
+</ul>
+<p><strong>Tool 2 — SHAP Explanation</strong></p>
+<ul>
+<li>A model predicts loan approval</li>
+<li>Explain one prediction: which features contributed how much?</li>
+<li>Interpret: &quot;this application was rejected primarily because income &lt; threshold, partially offset by long credit history&quot;</li>
+</ul>
+<p><strong>Tool 3 — Red Teaming Exercise</strong></p>
+<ul>
+<li>A simulated chatbot with safety guidelines</li>
+<li>Attempt various prompt injections and adversarial inputs</li>
+<li>See which succeed, which fail, and why</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>AI governance and regulation</strong>: the EU AI Act (2024) creates a risk-based framework: high-risk applications (medical, criminal justice, employment) require conformity assessments, transparency, and human oversight. Prohibited applications include: social scoring, real-time facial recognition in public spaces. Understanding the technical implications of compliance — what does it mean to document &quot;training data characteristics&quot; or provide &quot;meaningful human oversight&quot; for a production ML system — is a growing area of applied AI engineering.</p>
+<p><strong>AI consciousness and moral status</strong>: the question of whether AI systems can suffer or have interests is philosophically unresolved but increasingly practically relevant. As AI systems become more capable and exhibit more human-like behaviour, questions about their moral status will become urgent. Serious philosophers (David Chalmers, Nick Bostrom) and AI researchers (Geoffrey Hinton post-Google) engage with this seriously.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Audit a given ML model for demographic disparities (compute precision and recall separately for two groups), write a model card for a fictitious image classifier (what information should it contain?), propose a mitigation for each of three named AI failure modes (hallucination, reward hacking, training data bias), and explain why &quot;just remove the protected attribute&quot; does not eliminate discrimination in practice.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-12-4-ai-agents/lesson.html" class="btn-icon">← Prev: M 12.4</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

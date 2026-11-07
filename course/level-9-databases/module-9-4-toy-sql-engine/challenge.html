@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 9.4 — Building a Toy SQL Database | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 9.4
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 9.4 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Building a Toy SQL Database.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 9.4 — Building a Toy SQL Engine</p>
+<p><strong>Type:</strong> Implementation + trace + extension<br />
+<strong>Estimated time:</strong> 50–60 minutes<br />
+<strong>Tools needed:</strong> Python</p>
+<hr />
+<h2>Part A — Extend the Parser</h2>
+<p>The toy engine from the lesson supports: <code>SELECT</code>, <code>INSERT</code>, <code>WHERE</code> (single condition).</p>
+<ol>
+<li>
+<p>Extend the tokeniser to recognise <code>ORDER</code>, <code>BY</code>, <code>ASC</code>, <code>DESC</code>, <code>LIMIT</code>, <code>GROUP</code>, <code>COUNT</code>, <code>AND</code>, <code>OR</code>.</p>
+</li>
+<li>
+<p>Extend <code>parse_select</code> to handle:</p>
+<pre><code class="language-sql">SELECT name, age FROM users WHERE city = 'NYC' ORDER BY age DESC LIMIT 5
+</code></pre>
+<p>What new fields does the AST need?</p>
+</li>
+<li>
+<p>Extend the executor to apply <code>ORDER BY</code> and <code>LIMIT</code>. Show the implementation and trace on the query above given a table with 8 rows.</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Add GROUP BY and COUNT</h2>
+<ol start="4">
+<li>
+<p>Extend the engine to support:</p>
+<pre><code class="language-sql">SELECT city, COUNT(*) as cnt FROM users GROUP BY city
+</code></pre>
+<p>Implement <code>execute_group_by(table, group_col, agg_col)</code>. Show the result for a 10-row users table.</p>
+</li>
+<li>
+<p>What data structure do you use to accumulate groups? Write the implementation.</p>
+</li>
+<li>
+<p>Extend to support <code>HAVING COUNT(*) &gt; 2</code> (filter after aggregation).</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — Hash Join</h2>
+<ol start="7">
+<li>
+<p>Implement a nested loop JOIN (O(n×m)):</p>
+<pre><code class="language-sql">SELECT u.name, o.amount FROM users u JOIN orders o ON u.id = o.user_id
+</code></pre>
+</li>
+<li>
+<p>Implement a <strong>hash join</strong> (O(n+m)):</p>
+<ul>
+<li>Phase 1 (build): hash the smaller table on the join key</li>
+<li>Phase 2 (probe): scan the larger table; for each row, look up in the hash table</li>
+</ul>
+</li>
+<li>
+<p>For a users table with 1000 rows and an orders table with 50,000 rows:</p>
+<ul>
+<li>Nested loop: how many comparisons?</li>
+<li>Hash join: how many hash table operations?</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2>Part D — Execution Trace</h2>
+<p>Trace every step of executing:</p>
+<pre><code class="language-sql">SELECT u.name, COUNT(o.id) as order_count
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+WHERE u.city = 'London'
+GROUP BY u.name
+ORDER BY order_count DESC
+LIMIT 3
+</code></pre>
+<ol start="10">
+<li>
+<p>List the execution plan stages in order. For each stage, describe its input and output.</p>
+</li>
+<li>
+<p>If <code>users</code> has 500 rows and <code>orders</code> has 5000 rows, how many rows pass through each stage?</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Query Optimiser</h2>
+<ol start="12">
+<li>
+<p>The toy engine executes: <code>SELECT * FROM users WHERE city = 'London' AND age &gt; 25</code>. Without indexes, it scans every row. What is the naive execution order?</p>
+</li>
+<li>
+<p>If there is an index on <code>city</code> but not <code>age</code>, propose an optimised execution plan: use the index for the <code>city</code> filter, then apply the <code>age</code> filter to the reduced result set.</p>
+</li>
+<li>
+<p>Implement a simple <code>has_index(table_name, column)</code> check and modify the executor to use an index scan when available instead of a full table scan.</p>
+</li>
+<li>
+<p>What is the <strong>rule-based optimiser</strong> vs the <strong>cost-based optimiser</strong>? Give one example of a query transformation that is always safe to apply (rule-based) and one that requires statistics (cost-based).</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A parser extension</td>
+<td>22</td>
+</tr>
+<tr>
+<td>B GROUP BY and COUNT</td>
+<td>22</td>
+</tr>
+<tr>
+<td>C hash join</td>
+<td>22</td>
+</tr>
+<tr>
+<td>D execution trace</td>
+<td>18</td>
+</tr>
+<tr>
+<td>E query optimiser</td>
+<td>16</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A.3 — ORDER BY + LIMIT</summary>
+<pre><code class="language-python">def execute_select(db, ast):
+    table = db.get_table(ast['table'])
+    results = []
+    for row in table.scan():
+        if evaluate_condition(row, ast.get('where')):
+            cols = ast['columns']
+            results.append({c: row.get(c) for c in cols} if cols != ['*'] else dict(row))
+
+    if ast.get('order_by'):
+        col, direction = ast['order_by']
+        results.sort(key=lambda r: (r.get(col) is None, r.get(col)),
+                     reverse=(direction.upper() == 'DESC'))
+
+    if ast.get('limit') is not None:
+        results = results[:ast['limit']]
+
+    return results
+</code></pre>
+</details>
+<details>
+<summary>Part B.5 — GROUP BY implementation</summary>
+<pre><code class="language-python">from collections import defaultdict
+
+def execute_group_by(table, group_col, agg_col='*', having_count=None):
+    groups = defaultdict(list)
+    for row in table.scan():
+        key = row.get(group_col)
+        groups[key].append(row)
+
+    results = []
+    for key, rows in groups.items():
+        count = len(rows)
+        if having_count is None or count &gt; having_count:
+            results.append({group_col: key, 'count': count})
+
+    return results
+</code></pre>
+</details>
+<details>
+<summary>Part C.8 — hash join</summary>
+<pre><code class="language-python">def hash_join(left_rows, right_rows, left_key, right_key):
+    # Phase 1: build hash table from smaller (left) table
+    ht = defaultdict(list)
+    for row in left_rows:
+        ht[row[left_key]].append(row)
+
+    # Phase 2: probe
+    results = []
+    for row in right_rows:
+        for match in ht.get(row[right_key], []):
+            results.append({**match, **row})
+
+    return results
+</code></pre>
+<p>Nested loop: 1000 × 50,000 = 50,000,000 comparisons.<br />
+Hash join: 1000 inserts + 50,000 lookups = 51,000 operations. ~1000× fewer.</p>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

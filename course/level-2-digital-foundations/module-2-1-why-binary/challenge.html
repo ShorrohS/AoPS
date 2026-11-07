@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 2.1 — Why Binary? The Physics of Two States | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 2.1
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 2.1 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Why Binary? The Physics of Two States.
+      </p>
+    </div>
+
+    <article class="prose">
+      <h1>Challenge 2.1 — Why Binary?</h1>
+<p><strong>Type:</strong> Calculation + simulation + written analysis<br />
+<strong>Estimated time:</strong> 25–35 minutes<br />
+<strong>Tools needed:</strong> <code>simulation.html</code> + pen and paper</p>
+<hr />
+<h2>Part A — Noise Margin Calculations</h2>
+<p>A <strong>5V CMOS</strong> logic family has these specifications:</p>
+<ul>
+<li>Output HIGH guaranteed: ≥ 4.5V</li>
+<li>Output LOW guaranteed: ≤ 0.5V</li>
+<li>Input HIGH minimum: 3.5V</li>
+<li>Input LOW maximum: 1.5V</li>
+</ul>
+<p>A <strong>3.3V LVTTL</strong> logic family has:</p>
+<ul>
+<li>Output HIGH guaranteed: ≥ 2.4V</li>
+<li>Output LOW guaranteed: ≤ 0.4V</li>
+<li>Input HIGH minimum: 2.0V</li>
+<li>Input LOW maximum: 0.8V</li>
+</ul>
+<ol>
+<li>
+<p>Calculate the <strong>HIGH noise margin</strong> for both families:<br />
+<code>NM_H = V_OH(min) − V_IH(min)</code></p>
+</li>
+<li>
+<p>Calculate the <strong>LOW noise margin</strong> for both families:<br />
+<code>NM_L = V_IL(max) − V_OL(max)</code></p>
+</li>
+<li>
+<p>Which family tolerates more noise? By how much?</p>
+</li>
+<li>
+<p>A signal passes through <strong>50 gates in series</strong>. Each gate adds an average of 5mV of noise. Does either logic family survive? Show your working.</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Precision: Analog vs Digital</h2>
+<p>An <strong>analog computer</strong> represents a 10-digit decimal number as a voltage between 0V and 10V. Each decimal digit requires a distinct voltage level (0.0V, 1.0V, 2.0V… 9.0V for a 1-digit machine).</p>
+<ol>
+<li>
+<p>For 10 voltage levels (1 decimal digit): how much voltage separates adjacent levels?</p>
+</li>
+<li>
+<p>If the circuit adds ±0.3V of noise, which voltage levels can be confused? How many misreads are possible?</p>
+</li>
+<li>
+<p>A <strong>binary</strong> system encodes the same decimal range using 4 bits (0000 to 1001 = 0–9). Each bit uses the 5V CMOS thresholds above. What is the noise margin for each bit?</p>
+</li>
+<li>
+<p>Which system is more reliable? Quantify the comparison (noise margin ÷ level separation).</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — Bit Counting (Simulation)</h2>
+<p>Using the <strong>Bit Counter</strong> tool in the simulation:</p>
+<ol>
+<li>Find the binary representation of: 42, 127, 200, 255</li>
+<li>How many bits does each require?</li>
+<li>What is the largest decimal value representable with exactly 8 bits (unsigned)?</li>
+<li>With 8 bits signed (two's complement), what is the range? <em>(Hint: one bit is the sign bit)</em></li>
+<li>Your friend says &quot;I need to store numbers up to 1,000,000. What's the minimum number of bits I need?&quot; Calculate and verify in the simulator.</li>
+</ol>
+<hr />
+<h2>Part D — Signal Regeneration (Simulation)</h2>
+<p>Using the <strong>Signal Noise Demonstrator</strong>:</p>
+<ol>
+<li>Set noise to 20%. How many analog readings are misidentified vs binary?</li>
+<li>Increase noise to 40%. At what noise level does the binary system first produce errors?</li>
+<li>Set up a chain of 5 &quot;amplifier stages&quot; with 10% noise each. Compare accumulated noise in analog vs binary systems.</li>
+</ol>
+<hr />
+<h2>Part E — Written Analysis</h2>
+<ol>
+<li>
+<p><strong>Why not decimal?</strong> ENIAC was a decimal machine (10-state ring counters per digit). It required approximately 10 transistors per digit. A binary machine uses 1 transistor per bit, and 4 bits can represent 16 values (more than a decimal digit). How many transistors does a binary machine need per decimal digit's worth of range? Is binary more efficient?</p>
+</li>
+<li>
+<p><strong>The regeneration argument</strong>: A message is copied through 100 relay stations. In an analog relay system, each station amplifies both signal AND noise. In a digital system, each relay regenerates the signal. If each relay adds 1% noise (in analog), what is the signal-to-noise ratio after 100 relays? In binary? (Qualitative comparison is fine.)</p>
+</li>
+<li>
+<p><strong>Why does flash memory use multi-level cells but CPUs don't?</strong> Explain the trade-off that makes MLC practical for storage but not for compute logic.</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A noise margin calculations</td>
+<td>20</td>
+</tr>
+<tr>
+<td>B analog vs digital precision</td>
+<td>20</td>
+</tr>
+<tr>
+<td>C bit counting</td>
+<td>15</td>
+</tr>
+<tr>
+<td>D simulation observations</td>
+<td>15</td>
+</tr>
+<tr>
+<td>E written analysis (3 questions)</td>
+<td>30</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A</summary>
+<p><strong>5V CMOS:</strong><br />
+NM_H = 4.5 − 3.5 = <strong>1.0V</strong><br />
+NM_L = 1.5 − 0.5 = <strong>1.0V</strong></p>
+<p><strong>3.3V LVTTL:</strong><br />
+NM_H = 2.4 − 2.0 = <strong>0.4V</strong><br />
+NM_L = 0.8 − 0.4 = <strong>0.4V</strong></p>
+<p>5V CMOS tolerates <strong>2.5× more noise</strong> (1.0V vs 0.4V).</p>
+<p>50 gates × 5mV = 250mV total noise. 5V CMOS: 1000mV margin → <strong>survives</strong>. 3.3V LVTTL: 400mV margin → <strong>barely survives</strong> (250mV &lt; 400mV).</p>
+</details>
+<details>
+<summary>Part B</summary>
+<ol>
+<li>
+<p>10V ÷ 10 levels = <strong>1.0V</strong> separation between analog levels.</p>
+</li>
+<li>
+<p>±0.3V noise means any reading could be off by 0.3V. Adjacent levels (1.0V apart) need &gt;0.3V margin on each side — total margin is 0.4V. <strong>0.3V noise makes adjacent level confusion possible</strong> (e.g., 2.7V–3.3V overlaps both &quot;3.0V&quot; and nearby levels).</p>
+</li>
+<li>
+<p>Binary bits use 5V CMOS: noise margin = <strong>1.0V per bit</strong> — dramatically better than the 0.4V analog margin.</p>
+</li>
+<li>
+<p>Binary is 1.0/0.5 = <strong>2.5× more reliable</strong> per level-separation-unit.</p>
+</li>
+</ol>
+</details>
+<details>
+<summary>Part C</summary>
+<ol>
+<li>42 = <code>00101010</code>, 127 = <code>01111111</code>, 200 = <code>11001000</code>, 255 = <code>11111111</code></li>
+<li>All fit in 8 bits.</li>
+<li>8-bit unsigned max = 2⁸ − 1 = <strong>255</strong></li>
+<li>8-bit signed: −128 to +127</li>
+<li>1,000,000 &lt; 2²⁰ = 1,048,576. Need <strong>20 bits</strong> minimum.</li>
+</ol>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

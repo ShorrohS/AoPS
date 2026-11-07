@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 8.6 — TLS/SSL &amp; Cryptographic Channels | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 8.6
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 8.6 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for TLS/SSL &amp; Cryptographic Channels.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 8.6 — Building a Packet Analyzer</p>
+<p><strong>Type:</strong> Decode + implementation + reasoning<br />
+<strong>Estimated time:</strong> 45–55 minutes<br />
+<strong>Tools needed:</strong> pen and paper + Python</p>
+<hr />
+<h2>Part A — Manual Packet Decode</h2>
+<p>Decode this raw packet (hex bytes). It is a complete Ethernet/IPv4/TCP frame.</p>
+<pre><code>FF FF FF FF FF FF  AA BB CC DD EE FF  08 00
+45 00 00 3C 1A 2B 40 00 40 06 00 00
+C0 A8 01 05  08 08 08 08
+C3 50  01 BB  00 00 00 01  00 00 00 00
+50 02  20 00  00 00  00 00
+</code></pre>
+<ol>
+<li>
+<p>Parse the Ethernet header (bytes 0–13):</p>
+<ul>
+<li>Destination MAC</li>
+<li>Source MAC</li>
+<li>EtherType</li>
+</ul>
+</li>
+<li>
+<p>Parse the IPv4 header (bytes 14–33):</p>
+<ul>
+<li>Version and IHL</li>
+<li>Total length</li>
+<li>TTL</li>
+<li>Protocol</li>
+<li>Source IP</li>
+<li>Destination IP</li>
+</ul>
+</li>
+<li>
+<p>Parse the TCP header (bytes 34–53):</p>
+<ul>
+<li>Source port</li>
+<li>Destination port</li>
+<li>Sequence number</li>
+<li>Flags (identify which flags are set)</li>
+</ul>
+</li>
+<li>
+<p>Based on your decode: what kind of packet is this? Where is it going? What is the application?</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Python Decoder</h2>
+<ol start="5">
+<li>
+<p>Implement <code>parse_ethernet(frame_bytes)</code> that returns a dict with <code>dst_mac</code>, <code>src_mac</code>, <code>ethertype</code>, and <code>payload</code>.</p>
+</li>
+<li>
+<p>Implement <code>parse_ipv4(ip_bytes)</code> that returns a dict with <code>version</code>, <code>ihl</code>, <code>ttl</code>, <code>protocol</code>, <code>src_ip</code>, <code>dst_ip</code>, and <code>payload</code>.</p>
+</li>
+<li>
+<p>Implement <code>parse_tcp(tcp_bytes)</code> that returns a dict with <code>src_port</code>, <code>dst_port</code>, <code>seq</code>, <code>ack</code>, <code>flags</code> (as a set of strings: <code>{'SYN', 'ACK'}</code> etc.), and <code>payload</code>.</p>
+</li>
+<li>
+<p>Chain the three parsers: write <code>decode_frame(raw_bytes)</code> that calls each in turn and returns the full decoded structure as a nested dict.</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — DNS Packet</h2>
+<p>A DNS query packet (UDP payload only, 29 bytes):</p>
+<pre><code>AB CD 01 00 00 01 00 00 00 00 00 00
+03 77 77 77 06 67 69 74 68 75 62 03 63 6F 6D 00
+00 01 00 01
+</code></pre>
+<ol start="9">
+<li>
+<p>Parse the DNS header (bytes 0–11): transaction ID, flags, QDCOUNT (question count), ANCOUNT, NSCOUNT, ARCOUNT.</p>
+</li>
+<li>
+<p>Parse the question section (bytes 12–28): decode the DNS name encoding (length-prefixed labels). What domain name is being queried? What query type (byte 27–28) and class?</p>
+</li>
+<li>
+<p>Write <code>decode_dns_name(data, offset)</code> that decodes the length-prefixed label format into a dotted-string domain name.</p>
+</li>
+</ol>
+<hr />
+<h2>Part D — BPF Filters</h2>
+<ol start="12">
+<li>
+<p>Translate these tcpdump/BPF filter expressions into English descriptions:</p>
+<ul>
+<li><code>tcp port 443</code></li>
+<li><code>src host 192.168.1.5 and dst port 80</code></li>
+<li><code>icmp and not src host 127.0.0.1</code></li>
+<li><code>udp and port 53</code></li>
+</ul>
+</li>
+<li>
+<p>Write a Python function <code>matches_filter(packet, filter_spec)</code> that takes a decoded packet (as returned by your decoder) and a simple filter spec dict, and returns True/False:</p>
+</li>
+</ol>
+<pre><code class="language-python">filter_spec = {
+    'protocol': 'tcp',     # optional
+    'src_ip': '...',       # optional
+    'dst_port': 443,       # optional
+}
+</code></pre>
+<hr />
+<h2>Part E — Promiscuous Mode and Ethics</h2>
+<ol start="14">
+<li>
+<p>What is <strong>promiscuous mode</strong>? Why does a NIC normally discard frames not addressed to it? What does promiscuous mode change?</p>
+</li>
+<li>
+<p>Why does capturing packets on a network interface require <strong>root/admin privileges</strong> on most operating systems?</p>
+</li>
+<li>
+<p>Is it legal to run a packet analyzer on:</p>
+<ul>
+<li>Your own computer</li>
+<li>Your company's network with IT permission</li>
+<li>A public Wi-Fi network (capturing other users' traffic)</li>
+<li>A network you do not own or have permission to monitor</li>
+</ul>
+<p>Briefly explain the legal and ethical considerations for each.</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A manual decode</td>
+<td>28</td>
+</tr>
+<tr>
+<td>B Python decoder</td>
+<td>24</td>
+</tr>
+<tr>
+<td>C DNS packet</td>
+<td>20</td>
+</tr>
+<tr>
+<td>D BPF filters</td>
+<td>16</td>
+</tr>
+<tr>
+<td>E ethics</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A — decoded packet</summary>
+<p>Ethernet: Dst=FF:FF:FF:FF:FF:FF (broadcast), Src=AA:BB:CC:DD:EE:FF, EtherType=0x0800 (IPv4).</p>
+<p>IPv4: Ver=4, IHL=5 (20 bytes), TotalLen=0x003C=60, TTL=0x40=64, Protocol=0x06=TCP, Src=192.168.1.5, Dst=8.8.8.8.</p>
+<p>TCP: SrcPort=0xC350=50000, DstPort=0x01BB=443 (HTTPS), Seq=1, Ack=0, Flags=0x02=SYN.</p>
+<p>This is a TCP SYN packet from 192.168.1.5 initiating a connection to 8.8.8.8:443 (Google DNS HTTPS). This is the first packet of a TLS/HTTPS connection.</p>
+</details>
+<details>
+<summary>Part B.5–7 — decoders</summary>
+<pre><code class="language-python">import struct
+
+def fmt_mac(b): return ':'.join(f'{x:02X}' for x in b)
+def fmt_ip(b):  return '.'.join(str(x) for x in b)
+
+def parse_ethernet(frame):
+    return {
+        'dst_mac': fmt_mac(frame[0:6]),
+        'src_mac': fmt_mac(frame[6:12]),
+        'ethertype': struct.unpack('!H', frame[12:14])[0],
+        'payload': frame[14:]
+    }
+
+def parse_ipv4(ip):
+    ihl = (ip[0] &amp; 0x0F) * 4
+    ttl, proto = ip[8], ip[9]
+    return {
+        'version': ip[0] &gt;&gt; 4, 'ihl': ihl,
+        'ttl': ttl, 'protocol': proto,
+        'src_ip': fmt_ip(ip[12:16]),
+        'dst_ip': fmt_ip(ip[16:20]),
+        'payload': ip[ihl:]
+    }
+
+def parse_tcp(tcp):
+    sp, dp = struct.unpack('!HH', tcp[0:4])
+    seq, ack = struct.unpack('!II', tcp[4:12])
+    off = (tcp[12] &gt;&gt; 4) * 4
+    flags = tcp[13]
+    flag_names = {0x01:'FIN',0x02:'SYN',0x04:'RST',0x08:'PSH',0x10:'ACK',0x20:'URG'}
+    return {
+        'src_port': sp, 'dst_port': dp, 'seq': seq, 'ack': ack,
+        'flags': {n for m,n in flag_names.items() if flags &amp; m},
+        'payload': tcp[off:]
+    }
+</code></pre>
+</details>
+<details>
+<summary>Part C.10 — DNS name decode</summary>
+<p>Bytes 12–28: 03 77 77 77 = label length 3 + &quot;www&quot;; 06 67 69 74 68 75 62 = length 6 + &quot;github&quot;; 03 63 6F 6D = length 3 + &quot;com&quot;; 00 = end. Domain: &quot;www.github.com&quot;. Type 0x0001 = A record. Class 0x0001 = IN (Internet).</p>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

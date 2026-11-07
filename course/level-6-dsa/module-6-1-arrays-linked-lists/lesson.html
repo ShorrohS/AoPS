@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 6.1 — Arrays &amp; Contiguous Memory | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 6.1
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Arrays &amp; Contiguous Memory
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 6 • Data Structures &amp; Algorithms</div>
+      <h1 class="article-title">Module 6.1 — Arrays &amp; Contiguous Memory</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-6-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 6.1 — Arrays and Linked Lists</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>You need to store a collection of items.<br />
+You will add items, remove items, and access them by position or by searching.</p>
+<p>The obvious choice: just put them all in a row.<br />
+But &quot;in a row&quot; has hidden costs.<br />
+Inserting in the middle means moving everything else.<br />
+Not knowing the size in advance means either wasting space or copying everything.</p>
+<p>The first decision in every data structure course is the most fundamental:<br />
+<strong>contiguous or linked?</strong></p>
+</blockquote>
+<hr />
+<h2>The Story</h2>
+<h3>Arrays — The First Data Structure</h3>
+<p>The array is as old as stored-program computing. A memory address is a number; an array is just a block of memory at a base address, with each element at <code>base + index × element_size</code>. The CPU can compute any element's address in one multiplication and one addition — O(1) access.</p>
+<p>FORTRAN (1957), the first widely-used programming language, was built around arrays. Matrix arithmetic in FORTRAN was the entire point: scientific computing required fast access to elements by index. The array's O(1) access is why cache memory (Level 3) was designed the way it was — sequential memory access patterns fill cache lines efficiently.</p>
+<p>Linked lists were invented slightly later, when programmers needed to handle collections whose size wasn't known at compile time. John McCarthy's <strong>Lisp</strong> (1958) was the first language built around linked lists — in Lisp, everything is a list. The language's name stands for &quot;LISt Processing.&quot;</p>
+<hr />
+<h2>The Concept</h2>
+<h3>Arrays</h3>
+<p>An array stores elements in <strong>contiguous memory</strong>. For an array of <code>int</code> (4 bytes each) starting at address <code>A</code>:</p>
+<pre><code>Element:  arr[0]   arr[1]   arr[2]   arr[3]
+Address:  A+0      A+4      A+8      A+12
+</code></pre>
+<p><strong>Random access</strong>: <code>arr[i]</code> → address <code>A + i * sizeof(element)</code> → one instruction. <strong>O(1)</strong>.</p>
+<p><strong>Insertion at end</strong>: if capacity remains, write at <code>arr[length]</code> and increment length. <strong>O(1) amortised</strong> (Python lists, C++ <code>vector</code> double capacity when full).</p>
+<p><strong>Insertion at middle</strong>: must shift all elements after the insertion point right. <strong>O(n)</strong>.</p>
+<p><strong>Deletion at middle</strong>: shift all elements after the deletion point left. <strong>O(n)</strong>.</p>
+<p><strong>Search (unsorted)</strong>: scan from index 0 until found. <strong>O(n)</strong>.</p>
+<p><strong>Search (sorted)</strong>: binary search. <strong>O(log n)</strong>.</p>
+<p><strong>Memory</strong>: no overhead per element — just the data itself.</p>
+<h3>Dynamic Arrays</h3>
+<p>Static C arrays have fixed size declared at compile time. <strong>Dynamic arrays</strong> (Python <code>list</code>, C++ <code>vector</code>, Java <code>ArrayList</code>) grow automatically:</p>
+<pre><code class="language-python">lst = []           # empty, capacity 0
+lst.append(1)      # allocates initial capacity (e.g., 4 slots)
+lst.append(2)      # fits in existing capacity
+# ... append until capacity full
+lst.append(x)      # RESIZE: allocate new array (2× capacity),
+                   # copy all elements, free old array
+</code></pre>
+<p>The resize is O(n) work, but it happens rarely. Amortised analysis: n appends on a fresh list do at most O(2n) total work (geometric series: n + n/2 + n/4 + ...) → <strong>O(1) amortised per append</strong>.</p>
+<h3>Linked Lists</h3>
+<p>A linked list stores elements in <strong>nodes</strong> scattered anywhere in memory. Each node contains the data and a pointer to the next node:</p>
+<pre><code>[data:1 | next:→] → [data:2 | next:→] → [data:3 | next:None]
+  head                                     tail
+</code></pre>
+<p>In Python:</p>
+<pre><code class="language-python">class Node:
+    def __init__(self, data, next_node=None):
+        self.data = data
+        self.next = next_node
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    def prepend(self, data):
+        self.head = Node(data, self.head)   # O(1)
+
+    def append(self, data):                  # O(n) — must traverse to tail
+        if not self.head:
+            self.head = Node(data); return
+        curr = self.head
+        while curr.next:
+            curr = curr.next
+        curr.next = Node(data)
+
+    def delete(self, data):                  # O(n) — must find node
+        if not self.head: return
+        if self.head.data == data:
+            self.head = self.head.next; return
+        curr = self.head
+        while curr.next:
+            if curr.next.data == data:
+                curr.next = curr.next.next; return
+            curr = curr.next
+</code></pre>
+<p><strong>Insert at head</strong>: update head pointer only. <strong>O(1)</strong>.<br />
+<strong>Insert at tail</strong> (without tail pointer): traverse to last node. <strong>O(n)</strong>.<br />
+<strong>Insert at tail</strong> (with tail pointer maintained): <strong>O(1)</strong>.<br />
+<strong>Delete given node pointer</strong>: update previous node's <code>next</code>. <strong>O(1)</strong> if you have the previous node, <strong>O(n)</strong> if you must find it.<br />
+<strong>Random access</strong> (<code>list[5]</code>): must traverse from head. <strong>O(n)</strong> — no index formula exists.<br />
+<strong>Memory</strong>: each node stores a pointer (8 bytes on 64-bit) plus the data. More overhead than arrays.</p>
+<h3>Doubly Linked Lists</h3>
+<p>Each node has both a <code>next</code> and <code>prev</code> pointer:</p>
+<pre><code>None ← [1] ↔ [2] ↔ [3] → None
+</code></pre>
+<p>Enables O(1) deletion when you have a pointer to the node (update both neighbours without traversing). Python's <code>collections.deque</code> is implemented as a doubly linked list — O(1) append and pop from both ends.</p>
+<h3>When to Use Each</h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Array (dynamic)</th>
+<th>Linked List</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Access by index</td>
+<td>O(1)</td>
+<td>O(n)</td>
+</tr>
+<tr>
+<td>Insert at end</td>
+<td>O(1) amortised</td>
+<td>O(1) with tail ptr</td>
+</tr>
+<tr>
+<td>Insert at start</td>
+<td>O(n)</td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td>Insert at middle</td>
+<td>O(n)</td>
+<td>O(1) with node ptr</td>
+</tr>
+<tr>
+<td>Delete at middle</td>
+<td>O(n)</td>
+<td>O(1) with node ptr</td>
+</tr>
+<tr>
+<td>Memory per element</td>
+<td>Low</td>
+<td>High (pointer overhead)</td>
+</tr>
+<tr>
+<td>Cache friendliness</td>
+<td>Excellent</td>
+<td>Poor (nodes scattered)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>In practice</strong>: dynamic arrays (Python lists, C++ vectors) are used for almost everything. Their cache friendliness makes them faster than linked lists even for operations where linked lists have better asymptotic complexity. Linked lists are used when: insertions/deletions in the middle are extremely frequent and you already have node pointers, or when elements must not be moved in memory (e.g., intrusive linked lists in the Linux kernel, where struct members point to each other directly).</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Array Operations</strong></p>
+<ul>
+<li>Insert, delete, and access elements in a dynamic array</li>
+<li>Watch the resize happen when capacity is exceeded</li>
+<li>Count comparisons and copies for each operation</li>
+</ul>
+<p><strong>Tool 2 — Linked List Visualiser</strong></p>
+<ul>
+<li>Build a linked list node by node</li>
+<li>Insert at head, tail, and arbitrary position</li>
+<li>Delete a node — watch the pointer update</li>
+<li>Traverse the list following arrows</li>
+</ul>
+<p><strong>Tool 3 — Head-to-Head: Array vs Linked List</strong></p>
+<ul>
+<li>Same sequence of operations on both structures</li>
+<li>Compare total operation counts</li>
+<li>Visualise memory layout side by side</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Intrusive linked lists</strong>: the Linux kernel uses a linked list where the <code>next</code>/<code>prev</code> pointers live <em>inside</em> the struct being managed, rather than in a separate node wrapper. This eliminates one allocation per element and one pointer dereference. The entire kernel's scheduler, file system, and network stack use <code>list_head</code> — a two-line struct. Understanding this requires understanding pointer arithmetic, struct layout, and <code>container_of</code> macros.</p>
+<p><strong>Skip lists</strong>: a probabilistic data structure that adds multiple levels of linked lists, each skipping more elements. Supports O(log n) search, insert, and delete — competitive with balanced BSTs but much simpler to implement. Used in Redis as the backing data structure for sorted sets.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Implement a singly linked list with <code>prepend</code>, <code>append</code>, <code>delete</code>, and <code>reverse</code> in Python. Trace the insertion of 4 elements. Calculate the total bytes used for a linked list vs array of 1,000 integers. Prove that reversing a linked list is O(n).</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../../level-5-programming/module-5-6-searching/lesson.html" class="btn-icon">← Prev: M 5.6</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-6-2-stacks-queues/lesson.html" class="btn-icon btn-primary">Next: M 6.2 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

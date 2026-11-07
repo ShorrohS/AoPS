@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 0.5 — Hollerith &amp; The Punch Card Era | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 0.5
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Hollerith &amp; The Punch Card Era
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 0 • Before Computers</div>
+      <h1 class="article-title">Module 0.5 — Hollerith &amp; The Punch Card Era</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-0-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <h1>Module 0.5 — Hollerith and the Punch Card Era</h1>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>It is 1887. The US Census Bureau is staring at the results of the 1880 census — still being compiled, eight years later. The 1890 census is three years away and will count even more people. At the current rate, the results will still be coming in when the 1900 census begins.</p>
+<p>A young statistician named Herman Hollerith has an idea. He watched a train conductor punch passenger tickets to record seat, destination, and fare. He remembered Jacquard's loom. He had worked briefly at the Census Bureau himself.</p>
+<p>What if you could encode a person's census data as holes in a card — and have a machine read, sort, and tally those cards automatically?</p>
+</blockquote>
+<p>Hollerith's answer to this question didn't just solve the census problem. It invented the data processing industry, gave birth to IBM, and established the punch card as the dominant data storage medium for the next century.</p>
+<hr />
+<h2>The Story</h2>
+<h3>Hollerith's Key Insight — The Conductor's Ticket</h3>
+<p>The story Hollerith told about inspiration involves a train conductor punching passenger descriptions into tickets — hair color, eye color, height — to prevent ticket fraud (someone buying a ticket and passing it to someone else). Each punch described a person.</p>
+<p>Hollerith's leap: if you can describe a passenger in punched holes, you can describe a census respondent in punched holes. And if the card can represent a person, a machine that reads cards can process people — counting, sorting, tabulating — without any human doing the arithmetic.</p>
+<hr />
+<h3>The Hollerith Machine — 1890</h3>
+<p>Hollerith's tabulating system had three components:</p>
+<p><strong>1. The Pantograph Punch</strong><br />
+An operator sat with the completed paper census form and used a hand punch to create holes in the card at positions corresponding to each answer. Age 34 → punch position 34. Occupation &quot;Farmer&quot; → punch position in the occupations zone. Foreign-born → punch a specific position.</p>
+<p>Each card represented one person. The card had a grid of possible positions. The presence or absence of a hole at each position encoded that person's attributes as binary data.</p>
+<p><strong>2. The Tabulator</strong><br />
+The card was placed in a press. When the operator pressed down, a grid of spring-loaded pins descended onto the card. Where there was a hole, the pin passed through into a small cup of mercury, completing an electrical circuit. Where there was no hole, the pin was blocked by the card.</p>
+<p>Each completed circuit incremented a mechanical counter by 1 — a small gear wheel, like the Pascaline, but driven by an electromagnet rather than a human hand.</p>
+<p>This is the critical link: <strong>a hole in a card → electrical signal → counter increments</strong>. The physical hole becomes an electrical event becomes a counted datum.</p>
+<p><strong>3. The Sorter</strong><br />
+A separate device could sort cards into bins based on which circuit fired. This let operators group cards by any attribute — all farmers, all immigrants, all people over 65 — without manual searching.</p>
+<hr />
+<h3>The 1890 Census — By the Numbers</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>1880 (manual)</th>
+<th>1890 (Hollerith)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Population counted</td>
+<td>50,189,209</td>
+<td>62,979,766</td>
+</tr>
+<tr>
+<td>Time to basic count</td>
+<td>~2.5 years</td>
+<td><strong>6 weeks</strong></td>
+</tr>
+<tr>
+<td>Time to full tabulation</td>
+<td>8 years</td>
+<td>~2.5 years</td>
+</tr>
+<tr>
+<td>Error rate</td>
+<td>~5%</td>
+<td>&lt;1%</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>~$11.5M</td>
+<td>~$5M</td>
+</tr>
+</tbody>
+</table>
+<p>The Census Bureau saved over $5 million and delivered usable data in time to actually influence congressional apportionment. It was a decisive demonstration.</p>
+<hr />
+<h3>The Birth of IBM</h3>
+<p>Hollerith founded the <strong>Tabulating Machine Company</strong> in 1896 to lease his equipment to businesses. The census had proven the concept; now he applied it to payroll processing, freight statistics, and insurance accounting.</p>
+<p>In 1911, the company merged with two others to form the <strong>Computing-Tabulating-Recording Company (CTR)</strong>. In 1924, CTR was renamed by its new president, Thomas J. Watson Sr.:</p>
+<p><strong>International Business Machines — IBM.</strong></p>
+<p>The 80-column IBM punch card that became the standard by 1928 was a direct evolution of Hollerith's original design. It remained the dominant data input medium for computers until the early 1980s — nine decades of continuous use.</p>
+<hr />
+<h3>How Hollerith Encoding Works</h3>
+<p>The Hollerith code assigned positions on a 12-row, 80-column card:</p>
+<ul>
+<li><strong>Rows 0–9</strong>: digits 0 through 9</li>
+<li><strong>Rows 11–12</strong> (above row 0): &quot;zone punches&quot; — combined with digit rows to encode letters</li>
+</ul>
+<p>To encode the letter <strong>A</strong>: punch row 12 (zone) AND row 1 (digit 1) in the same column.<br />
+To encode the letter <strong>B</strong>: punch row 12 AND row 2.<br />
+...<br />
+To encode the letter <strong>Z</strong>: punch row 11 AND row 9.</p>
+<p>A single column = one character. 80 columns = 80 characters per card. A &quot;deck&quot; of cards = a file of records.</p>
+<p>This encoding scheme — a binary position encoding a character — is the ancestor of <strong>ASCII</strong> (1963), the character encoding system still used in every computer today.</p>
+<hr />
+<h3>The Legacy: From Holes to Bits</h3>
+<p>Trace the lineage from Jacquard to Hollerith to modern computing:</p>
+<pre><code>Jacquard loom (1804)
+    hole in card → thread lifts
+    → stored instructions for weaving
+
+Hollerith tabulator (1890)
+    hole in card → electrical circuit closes → counter increments
+    → stored data for processing
+
+IBM punch cards (1928–1980s)
+    80 columns × 12 rows = 960 bit positions per card
+    → stored programs AND data for early mainframes
+
+Magnetic storage (1950s onward)
+    magnetic domain = bit
+    → hard drives, tapes
+
+Semiconductor memory (1970s onward)
+    transistor state = bit
+    → RAM, flash storage
+
+The &quot;bit&quot; — the binary digit — is the hole in Jacquard's card,
+abstracted through a century of technology changes.
+</code></pre>
+<p>The hole is gone. The bit remains.</p>
+<hr />
+<h2>The Concept: Data Encoding</h2>
+<p>Every data encoding scheme answers the same question: <strong>how do we represent information as a physical state that a machine can read?</strong></p>
+<p>Hollerith's answers:</p>
+<ul>
+<li>Information unit: one census attribute (age, occupation, birthplace)</li>
+<li>Physical carrier: a stiff card</li>
+<li>Encoding method: hole position = attribute value</li>
+<li>Reading method: electrical continuity through hole = 1, blocked = 0</li>
+<li>Processing: electrical signal drives mechanical counter</li>
+</ul>
+<p>Modern answers:</p>
+<ul>
+<li>Information unit: one bit (0 or 1)</li>
+<li>Physical carrier: silicon, magnetic material, optical disc</li>
+<li>Encoding method: voltage level, magnetic polarity, pit/land</li>
+<li>Reading method: voltage comparator, magnetic sensor, laser reflection</li>
+<li>Processing: transistor logic</li>
+</ul>
+<p>The <strong>physical medium changes</strong>. The <strong>logical structure</strong> — binary encoding, sequential reading, positional addressing — does not.</p>
+<hr />
+<h3>What a &quot;Record&quot; Is</h3>
+<p>Hollerith invented the concept of a <strong>record</strong>: a fixed-format collection of fields that together describe one entity (one person, one transaction, one event).</p>
+<ul>
+<li>Each card = one record</li>
+<li>Each column zone = one field</li>
+<li>Each hole = one attribute value</li>
+</ul>
+<p>This is identical to a row in a database table. A SQL <code>SELECT * FROM census WHERE occupation='Farmer'</code> is the direct intellectual descendant of Hollerith's card sorter.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p>The simulation has three interconnected tools:</p>
+<p><strong>Tool 1 — Card Puncher</strong></p>
+<ul>
+<li>Enter a person's census data (name, age, occupation, birthplace, family size)</li>
+<li>The system encodes it as a punch card using Hollerith-style positional encoding</li>
+<li>See the physical card representation with holes marked</li>
+</ul>
+<p><strong>Tool 2 — Card Reader / Tabulator</strong></p>
+<ul>
+<li>Feed your punched cards through the virtual tabulator</li>
+<li>Watch circuits close as pins contact mercury cups through holes</li>
+<li>See counters increment in real time</li>
+</ul>
+<p><strong>Tool 3 — Card Sorter</strong></p>
+<ul>
+<li>Load a deck of 10 pre-punched cards representing different census respondents</li>
+<li>Choose a sort key (occupation, age group, birthplace)</li>
+<li>Watch cards sort into bins; observe the sorted distribution</li>
+</ul>
+<p><strong>What to observe:</strong></p>
+<ul>
+<li>How does the machine &quot;know&quot; what a hole means? (It doesn't — position is meaning)</li>
+<li>What happens if you change which column encodes which attribute?</li>
+<li>How is sorting achieved without any human reading the cards?</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p>Hollerith's cards were read electrically, not optically. The mercury cup system — where a pin contacts liquid mercury to complete a circuit — was replaced in later machines by mechanical contacts, then by optical readers in the 1950s (shining light through holes onto photocells), then by magnetic stripe readers.</p>
+<p>The optical reader — light source + card + photocell — is the same principle as a CD/DVD player (laser + disc + photodetector) and a barcode scanner (laser + label + photodetector). Hollerith's electrical reader evolved directly into the optical data reading that surrounds us today.</p>
+<hr />
+<h2>Level 0 Capstone</h2>
+<p>You have now completed Level 0. Before moving to Level 1, you should be able to answer:</p>
+<ol>
+<li>Why did mechanical computation become necessary? (Module 0.1)</li>
+<li>How did mechanical devices encode numbers in physical state? (Module 0.2)</li>
+<li>What does &quot;stored instructions&quot; mean, and where did the concept come from? (Module 0.3)</li>
+<li>What is the difference between a calculator and a computer? (Module 0.4)</li>
+<li>How does a hole in a card become a counted datum? (Module 0.5)</li>
+</ol>
+<p>If you can answer all five from memory, you are ready for <strong>Level 1: Physical Computing</strong> — where electricity replaces gears, and switching speed goes from milliseconds to nanoseconds.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Encode a 5-person census dataset as punch cards, run the tabulator simulation to tally occupations, then decode a mystery card deck and identify the population it represents.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-0-4-babbage-ada/lesson.html" class="btn-icon">← Prev: M 0.4</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../../level-1-physical-computing/module-1-1-electricity/lesson.html" class="btn-icon btn-primary">Next: M 1.1 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

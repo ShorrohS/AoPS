@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 11.4 — Neural Networks from Scratch | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 11.4
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 11.4 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Neural Networks from Scratch.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 11.4 — Neural Networks from Scratch</p>
+<p><strong>Type:</strong> Implementation + trace + analysis<br />
+<strong>Estimated time:</strong> 55–65 minutes<br />
+<strong>Tools needed:</strong> Python + NumPy</p>
+<hr />
+<h2>Part A — XOR from Scratch</h2>
+<p>XOR is not linearly separable: no single line can separate (0,0)→0, (1,1)→0 from (0,1)→1, (1,0)→1.</p>
+<ol>
+<li>
+<p>Prove XOR is not linearly separable: for any line <code>w₁x₁ + w₂x₂ + b = 0</code>, show that no choice of w₁, w₂, b correctly classifies all four points simultaneously.</p>
+</li>
+<li>
+<p>A 2-2-1 network (2 inputs, 2 hidden neurons with sigmoid, 1 output with sigmoid) CAN learn XOR. Implement this network in NumPy with:</p>
+<ul>
+<li>Manual weight initialisation</li>
+<li>Forward pass</li>
+<li>MSE loss</li>
+<li>Backpropagation</li>
+<li>10,000 training iterations</li>
+</ul>
+</li>
+<li>
+<p>After training, verify: <code>predict(0,0)≈0</code>, <code>predict(0,1)≈1</code>, <code>predict(1,0)≈1</code>, <code>predict(1,1)≈0</code>. Plot (describe) the loss curve over training iterations.</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Network Architecture</h2>
+<ol start="4">
+<li>
+<p>A network processes 28×28 grayscale images (MNIST) into 10 class probabilities. The architecture is: <code>784 → 256 → 128 → 10</code>. Calculate:</p>
+<ul>
+<li>Total parameters (weights + biases) for each layer</li>
+<li>Total parameters for the whole network</li>
+</ul>
+</li>
+<li>
+<p>Why does adding a 4th hidden layer of 64 neurons (<code>784 → 256 → 128 → 64 → 10</code>) sometimes <strong>not</strong> improve accuracy? Name two reasons.</p>
+</li>
+<li>
+<p><strong>Universal approximation theorem</strong>: a single hidden layer with enough neurons can approximate any continuous function. Does this mean one hidden layer is always best? What are the trade-offs of depth vs width?</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — Activation Functions</h2>
+<ol start="7">
+<li>
+<p>For <code>z = [-3, -1, 0, 1, 3]</code>, compute the output of:</p>
+<ul>
+<li>sigmoid(z)</li>
+<li>tanh(z)</li>
+<li>relu(z)</li>
+<li>leaky_relu(z, alpha=0.01)</li>
+</ul>
+</li>
+<li>
+<p><strong>Dead ReLU problem</strong>: a neuron with negative bias might have z &lt; 0 for all training examples. Its ReLU output is always 0, gradient is always 0, and it never learns. How do Leaky ReLU and PReLU address this?</p>
+</li>
+<li>
+<p>Why is tanh generally preferred over sigmoid for hidden layers? (Hint: consider the output range and its effect on gradient flow.)</p>
+</li>
+</ol>
+<hr />
+<h2>Part D — Weight Initialisation</h2>
+<ol start="10">
+<li>
+<p>A 3-layer network with 1000 neurons per layer. All weights initialised to <code>0</code>. What is the output of every hidden neuron? What is the gradient? Why does this fail?</p>
+</li>
+<li>
+<p>All weights initialised to <code>0.01</code> (small random). Explain the problem for a 10-layer network: what happens to the activation magnitudes and gradients as you go deeper?</p>
+</li>
+<li>
+<p><strong>He initialisation</strong> for ReLU: <code>W ~ N(0, 2/n_in)</code>. For a layer with 256 inputs, what is the standard deviation? Why is the factor 2 (not 1) used for ReLU?</p>
+</li>
+<li>
+<p>Implement and compare three initialisations for a 5-layer ReLU network: zeros, uniform(0,1), He. Record the mean activation magnitude at each layer for a forward pass on random input.</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — PyTorch Comparison</h2>
+<ol start="14">
+<li>
+<p>Rewrite your XOR network from Part A using PyTorch (<code>nn.Sequential</code>, <code>nn.Linear</code>, <code>nn.Sigmoid</code>, <code>optim.Adam</code>, <code>nn.MSELoss</code>). Compare:</p>
+<ul>
+<li>Lines of code: NumPy vs PyTorch</li>
+<li>Training speed: NumPy vs PyTorch on 10,000 epochs</li>
+<li>Code readability</li>
+</ul>
+</li>
+<li>
+<p>What does <code>optimizer.zero_grad()</code> do and why is it needed before every backward pass?</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A XOR from scratch</td>
+<td>28</td>
+</tr>
+<tr>
+<td>B network architecture</td>
+<td>18</td>
+</tr>
+<tr>
+<td>C activation functions</td>
+<td>20</td>
+</tr>
+<tr>
+<td>D weight initialisation</td>
+<td>22</td>
+</tr>
+<tr>
+<td>E PyTorch comparison</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A.1 — XOR not linearly separable</summary>
+<p>For a line <code>w₁x₁ + w₂x₂ + b = 0</code>:</p>
+<ul>
+<li>(0,0)→0: b &lt; 0</li>
+<li>(1,1)→0: w₁+w₂+b &lt; 0 → w₁+w₂ &lt; -b</li>
+<li>(0,1)→1: w₂+b &gt; 0 → w₂ &gt; -b</li>
+<li>(1,0)→1: w₁+b &gt; 0 → w₁ &gt; -b</li>
+</ul>
+<p>From constraints 3 and 4: w₁+w₂ &gt; -2b.<br />
+But constraint 2 says w₁+w₂ &lt; -b.<br />
+So: -2b &lt; -b → -b &gt; 0 → b &lt; 0.<br />
+And b &lt; 0 from constraint 1. OK so far.<br />
+But w₁+w₂ &gt; -2b and w₁+w₂ &lt; -b: need -2b &lt; -b → b &gt; 0. <strong>Contradiction</strong> with b &lt; 0.<br />
+No such w₁, w₂, b exists. ∎</p>
+</details>
+<details>
+<summary>Part B.4 — parameter count</summary>
+<p>Layer 1 (784→256): 784×256 + 256 = 200,960 + 256 = 201,216 params<br />
+Layer 2 (256→128): 256×128 + 128 = 32,768 + 128 = 32,896 params<br />
+Layer 3 (128→10): 128×10 + 10 = 1,280 + 10 = 1,290 params<br />
+Total: <strong>235,402 parameters</strong></p>
+</details>
+<details>
+<summary>Part D.10 — zero initialisation failure</summary>
+<p>All weights = 0: every hidden neuron computes <code>z = 0 × x₁ + 0 × x₂ + ... + b</code>. If b=0 too, every neuron outputs sigmoid(0)=0.5. Every neuron is identical. The gradient for all neurons is the same. All neurons update identically every step — they stay identical forever. The network has effectively one neuron at each layer. This is the &quot;symmetry breaking&quot; problem: weights must be different to learn different features.</p>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

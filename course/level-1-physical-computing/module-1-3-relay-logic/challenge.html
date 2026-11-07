@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 1.3 — Relay Logic: Metal Decisions | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 1.3
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 1.3 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Relay Logic: Metal Decisions.
+      </p>
+    </div>
+
+    <article class="prose">
+      <h1>Challenge 1.3 — Relay Logic and Boolean Algebra</h1>
+<p><strong>Type:</strong> Simulation circuit building + Boolean algebra + truth tables<br />
+<strong>Estimated time:</strong> 35–45 minutes<br />
+<strong>Tools needed:</strong> <code>simulation.html</code> + pen and paper</p>
+<hr />
+<h2>Part A — Boolean Algebra Manipulation</h2>
+<p>Simplify each expression using Boolean algebra identities. Show every step.</p>
+<ol>
+<li>
+<p><code>A AND (A OR B)</code><br />
+<em>(Hint: Absorption law — A AND (A OR B) = ?)</em></p>
+</li>
+<li>
+<p><code>(A AND B) OR (A AND NOT B)</code><br />
+<em>(Factor out A)</em></p>
+</li>
+<li>
+<p><code>NOT (NOT A AND NOT B)</code><br />
+<em>(Apply De Morgan's Law)</em></p>
+</li>
+<li>
+<p><code>(A OR B) AND (A OR NOT B)</code><br />
+<em>(Distribute, then simplify)</em></p>
+</li>
+<li>
+<p>Verify De Morgan's Law for the case A=1, B=0:<br />
+Show that <code>NOT (A AND B) = (NOT A) OR (NOT B)</code> evaluates to the same value on both sides.</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Truth Tables</h2>
+<p>Complete the truth tables for these expressions:</p>
+<h3>Expression 1: <code>(A AND B) OR (NOT A AND NOT B)</code></h3>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>A AND B</th>
+<th>NOT A</th>
+<th>NOT B</th>
+<th>NOT A AND NOT B</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What logic function does this implement?</strong> (Hint: when is the output 1?)</p>
+<h3>Expression 2: XOR from primitives: <code>(A OR B) AND NOT(A AND B)</code></h3>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>A OR B</th>
+<th>A AND B</th>
+<th>NOT(A AND B)</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Part C — Half Adder (Simulation)</h2>
+<p>Using the <strong>Half Adder</strong> tab in the simulation:</p>
+<ol>
+<li>Test all 4 input combinations and verify the Sum and Carry outputs match this table:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>Sum (XOR)</th>
+<th>Carry (AND)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>?</td>
+<td>?</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>?</td>
+<td>?</td>
+</tr>
+</tbody>
+</table>
+<ol start="2">
+<li>If you connected two half adders together (to add 3 bits instead of 2), what would you call the result? Describe what additional input it would need and what it would output.<br />
+<em>(This is a preview of the Full Adder you'll build in Module 2.4)</em></li>
+</ol>
+<hr />
+<h2>Part D — Build a 1-Bit Comparator</h2>
+<p>A <strong>1-bit comparator</strong> outputs 1 when inputs A and B are equal (both 0 or both 1), and 0 when they differ.</p>
+<ol>
+<li>
+<p>Look at the truth table from Part B, Expression 1. What is the relationship between that expression and the comparator function?</p>
+</li>
+<li>
+<p>Write the Boolean expression for the comparator in two ways:</p>
+<ul>
+<li>As a sum-of-products (OR of AND terms)</li>
+<li>As a simplified form (using XOR or XNOR)</li>
+</ul>
+</li>
+<li>
+<p>Using the <strong>Boolean Expression Evaluator</strong> in the simulation, enter your expression and verify it produces the correct truth table.</p>
+</li>
+<li>
+<p>How many relay contacts would you need to implement this comparator in hardware? Count them.</p>
+</li>
+</ol>
+<hr />
+<h2>Part E — Shannon's Impact (Written)</h2>
+<p>Answer each question in 2–4 sentences:</p>
+<ol>
+<li>
+<p><strong>Before Shannon (1937)</strong>, Boolean algebra and relay circuits were separate fields. Describe what gap Shannon's thesis bridged, and why that gap had existed for 83 years.</p>
+</li>
+<li>
+<p><strong>The Zuse Z3</strong> ran at 5.3 Hz. A modern CPU runs at 5 GHz. Express this as a ratio and explain what physical change made this improvement possible (not just &quot;transistors are faster&quot; — explain <em>why</em> they're faster).</p>
+</li>
+<li>
+<p><strong>The Mark I</strong> had 800 km of wire. Why does miniaturization matter beyond just saving space? Describe at least two computing advantages that come from physically smaller components (hint: think about signal travel time and power).</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+<th>What we're looking for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1–A5 simplifications</td>
+<td>25</td>
+<td>Correct steps, correct identities named</td>
+</tr>
+<tr>
+<td>B truth tables</td>
+<td>20</td>
+<td>All 8 entries correct per table</td>
+</tr>
+<tr>
+<td>B — function identification</td>
+<td>5</td>
+<td>Correctly names XNOR/equivalence</td>
+</tr>
+<tr>
+<td>C half adder verification</td>
+<td>10</td>
+<td>All 4 rows correct</td>
+</tr>
+<tr>
+<td>C full adder description</td>
+<td>10</td>
+<td>Correct: carry-in input, sum + carry-out outputs</td>
+</tr>
+<tr>
+<td>D comparator design</td>
+<td>15</td>
+<td>Correct expression + relay count</td>
+</tr>
+<tr>
+<td>E written questions</td>
+<td>15</td>
+<td>Precise, historically grounded</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Hints</h2>
+<details>
+<summary>Hint — Part A1 (Absorption)</summary>
+A AND (A OR B): distribute → (A AND A) OR (A AND B) → A OR (A AND B) → A.
+The result is just A. A "absorbs" the OR expression.
+</details>
+<details>
+<summary>Hint — Part A3 (De Morgan)</summary>
+NOT(NOT A AND NOT B) = NOT(NOT A) OR NOT(NOT B) = A OR B
+</details>
+<details>
+<summary>Hint — Part B Expression 1</summary>
+The output is 1 when A and B are both 0 OR both 1. That is: when A equals B. This is the XNOR function (equivalence).
+</details>
+<details>
+<summary>Hint — Part D relay count</summary>
+XNOR = NOT(XOR). XOR needs: 1 OR-relay pair (parallel) + 1 NAND-relay pair (series NC) + 1 AND connecting them. XNOR adds a NOT (1 NC contact). Count the contacts.
+</details>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A Solutions</summary>
+<ol>
+<li>
+<p><code>A AND (A OR B) = (A AND A) OR (A AND B) = A OR (A AND B) = A</code><br />
+(Absorption: A AND (A OR B) = A)</p>
+</li>
+<li>
+<p><code>(A AND B) OR (A AND NOT B) = A AND (B OR NOT B) = A AND 1 = A</code></p>
+</li>
+<li>
+<p><code>NOT(NOT A AND NOT B) = NOT(NOT A) OR NOT(NOT B) = A OR B</code><br />
+(De Morgan + double negation)</p>
+</li>
+<li>
+<p><code>(A OR B) AND (A OR NOT B) = A OR (B AND NOT B) = A OR 0 = A</code><br />
+(Distributive law + contradiction)</p>
+</li>
+<li>
+<p>A=1, B=0: <code>NOT(1 AND 0) = NOT(0) = 1</code><br />
+<code>(NOT 1) OR (NOT 0) = 0 OR 1 = 1</code> ✓ Both sides equal 1.</p>
+</li>
+</ol>
+</details>
+<details>
+<summary>Part B Solutions</summary>
+<p><strong>Expression 1 — XNOR:</strong></p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>A AND B</th>
+<th>NOT A</th>
+<th>NOT B</th>
+<th>NOT A AND NOT B</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td><strong>1</strong></td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td><strong>1</strong></td>
+</tr>
+</tbody>
+</table>
+<p>This is <strong>XNOR</strong> (equivalence): output 1 when A equals B.</p>
+<p><strong>Expression 2 — XOR:</strong></p>
+<table>
+<thead>
+<tr>
+<th>A</th>
+<th>B</th>
+<th>A OR B</th>
+<th>A AND B</th>
+<th>NOT(A AND B)</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td><strong>1</strong></td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td><strong>1</strong></td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td><strong>0</strong></td>
+</tr>
+</tbody>
+</table>
+</details>
+<details>
+<summary>Part D Solution</summary>
+<p>The comparator = XNOR = <code>(A AND B) OR (NOT A AND NOT B)</code></p>
+<p>Sum-of-products: <code>(A AND B) OR (NOT A AND NOT B)</code><br />
+Simplified: <code>NOT (A XOR B)</code> = XNOR(A, B)</p>
+<p>Relay count for XNOR via <code>(A AND B) OR (NOT A AND NOT B)</code>:</p>
+<ul>
+<li>A AND B: 2 NO contacts in series = 2 contacts</li>
+<li>NOT A AND NOT B: 2 NC contacts in series = 2 contacts</li>
+<li>OR: parallel paths (no extra contacts needed — just wire junction)</li>
+<li>Total: <strong>4 relay contacts</strong></li>
+</ul>
+<p>In a real relay implementation, each relay has one coil and one contact, so 4 relays minimum. A NOT requires a NC contact on a relay already driven by the signal, so with careful sharing you can do it in 4 relays (2 driven by A, 2 driven by B, with NO and NC contacts on each).</p>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

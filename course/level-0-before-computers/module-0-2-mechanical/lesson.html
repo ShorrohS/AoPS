@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 0.2 — Early Mechanical Computation | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 0.2
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Early Mechanical Computation
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 0 • Before Computers</div>
+      <h1 class="article-title">Module 0.2 — Early Mechanical Computation</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-0-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <h1>Module 0.2 — Early Mechanical Computation</h1>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>You are a 17th-century merchant calculating compound interest on a loan. The calculation requires multiplying large numbers together — numbers with 6, 8, even 10 digits. There are no calculators. There are no computers. There is only you, a quill, and arithmetic rules you learned as a child.</p>
+<p>A single multiplication can take <strong>30 minutes</strong>. A mistake means starting over. You need to do dozens of these calculations a day.</p>
+<p>What if a machine could do it for you?</p>
+</blockquote>
+<p>Arithmetic at scale was exhausting, slow, and error-prone. Long before electronics, inventors tried to solve this with <strong>gears, levers, and rotating cylinders</strong> — encoding numbers in physical positions and letting mechanical motion do the work.</p>
+<hr />
+<h2>The Story</h2>
+<h3>The Abacus — The First Computational Tool (~2400 BC)</h3>
+<p>The abacus wasn't a calculator — it was a <strong>memory aid</strong>. By moving beads into positions, an operator could hold intermediate results without relying on mental memory alone. The abacus offloaded working memory to a physical object.</p>
+<p>Key insight: <strong>externalizing state</strong>. Instead of keeping numbers in your head, you encode them in something physical you can see and manipulate. This idea — state stored in a physical medium — is the seed of all computing.</p>
+<p>A skilled abacus user can beat a calculator on simple additions. But an abacus can't carry its own operations. A human must still perform each step.</p>
+<hr />
+<h3>Napier's Bones — 1617</h3>
+<p>John Napier, a Scottish mathematician, invented a set of <strong>multiplication rods</strong> in 1617. Each rod was engraved with a multiplication table for a single digit. Laid side by side, they turned multi-digit multiplication into a series of additions that even a non-mathematician could perform.</p>
+<p><strong>How they work:</strong></p>
+<ol>
+<li>Pick the rods corresponding to each digit of your multiplicand</li>
+<li>Lay them side by side</li>
+<li>Read off the row corresponding to your multiplier</li>
+<li>Add the diagonal entries to get the product</li>
+</ol>
+<p>For <code>357 × 8</code>:</p>
+<ul>
+<li>Place rods for 3, 5, 7</li>
+<li>Read row 8: <code>2/4 | 4/0 | 5/6</code></li>
+<li>Add diagonals: <code>2 | (4+4) | (0+5) | 6</code> = <code>2 | 8 | 5 | 6</code> = 2856</li>
+</ul>
+<p>The machine didn't compute — it <strong>encoded multiplication tables</strong> so a human could assemble the answer from simpler lookups. This is a precursor to lookup tables in software.</p>
+<hr />
+<h3>Schickard's Calculating Clock — 1623</h3>
+<p>Wilhelm Schickard built the first known mechanical calculator in 1623 — it was called the &quot;calculating clock.&quot; It used a set of Napier-like rods for multiplication and a separate set of wheels for addition and subtraction, with an automatic carry mechanism.</p>
+<p>The <strong>carry mechanism</strong> was the key innovation: when a digit wheel rolled from 9 to 0, it automatically advanced the next wheel by 1. This is the same principle as the carry in binary addition — the single most important operation in arithmetic.</p>
+<p>Schickard's machine was destroyed in a fire and largely forgotten. But the idea survived.</p>
+<hr />
+<h3>Pascal's Pascaline — 1642</h3>
+<p>Blaise Pascal, at age 18, built the <strong>Pascaline</strong> to help his father — a tax collector — with tedious addition and subtraction. It was the first mass-produced mechanical calculator (around 50 were built).</p>
+<p><strong>How it works:</strong></p>
+<ul>
+<li>A series of interlocked gear wheels, each representing one decimal digit (0–9)</li>
+<li>To add 1, you turn the rightmost wheel one notch</li>
+<li>When a wheel completes a full rotation (9 → 0), it advances the next wheel by one notch — the <strong>carry</strong></li>
+<li>Subtraction was done by a complementary method (adding the 9's complement)</li>
+</ul>
+<p>The Pascaline could only add and subtract. It could not multiply or divide directly. Its greatest contribution was the <strong>mechanical carry</strong> — proving that the most difficult part of arithmetic (propagating carries) could be done by gears without human intervention.</p>
+<p><strong>Why it matters:</strong> Pascal proved that <strong>arithmetic rules could be embedded in physical mechanisms</strong>. The law of adding carries isn't just a mental rule — it can be a gear meshing with another gear.</p>
+<hr />
+<h3>Leibniz's Stepped Reckoner — 1694</h3>
+<p>Gottfried Wilhelm Leibniz improved on Pascal by adding a <strong>stepped drum</strong> (Leibniz wheel) — a cylinder with 9 teeth of varying length. By sliding the drum, you could engage 1 to 9 teeth, effectively multiplying by any single digit.</p>
+<p>This allowed the Stepped Reckoner to <strong>multiply and divide</strong> via repeated addition/subtraction with a crank-operated register — the first calculator to support all four arithmetic operations.</p>
+<p>Leibniz was also the inventor of binary arithmetic. He wrote in 1679 about a system using only 0s and 1s, inspired by the Chinese I Ching. He never connected binary to circuits — that took another 258 years — but the mathematics was there.</p>
+<hr />
+<h3>The Pattern Across All These Machines</h3>
+<table>
+<thead>
+<tr>
+<th>Machine</th>
+<th>Year</th>
+<th>Operation</th>
+<th>Key Innovation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abacus</td>
+<td>~2400 BC</td>
+<td>Add/Subtract</td>
+<td>External state storage</td>
+</tr>
+<tr>
+<td>Napier's Bones</td>
+<td>1617</td>
+<td>Multiply</td>
+<td>Encoded lookup tables</td>
+</tr>
+<tr>
+<td>Schickard's Clock</td>
+<td>1623</td>
+<td>Add/Multiply</td>
+<td>Mechanical carry</td>
+</tr>
+<tr>
+<td>Pascaline</td>
+<td>1642</td>
+<td>Add/Subtract</td>
+<td>Reliable mechanical carry</td>
+</tr>
+<tr>
+<td>Stepped Reckoner</td>
+<td>1694</td>
+<td>All four ops</td>
+<td>Variable-engagement gear</td>
+</tr>
+</tbody>
+</table>
+<p>Each machine solved a real bottleneck. Each one embedded a rule of arithmetic into a physical mechanism, offloading cognitive work onto metal and motion.</p>
+<hr />
+<h2>The Concept: Encoding Information in Physical State</h2>
+<p>Every one of these machines shares a single deep idea: <strong>numbers are encoded as physical positions</strong>.</p>
+<ul>
+<li>A bead's position on a wire = a digit's value</li>
+<li>A gear wheel's rotational position = a digit (0–9)</li>
+<li>A rod's alignment = a multiplication table entry</li>
+</ul>
+<p>This is the essence of computing: <strong>representing information as physical state</strong> and <strong>manipulating that state according to rules</strong>.</p>
+<p>The shift from mechanical gears to electrical circuits is a shift in <em>medium</em>, not in <em>concept</em>. A transistor's on/off state is just a gear wheel's position, but a billion times faster and a billion times smaller.</p>
+<h3>What &quot;Carrying&quot; Really Means</h3>
+<p>The mechanical carry — when one wheel overflows and advances the next — is the physical embodiment of the arithmetic rule: &quot;when a column exceeds its base, subtract the base and add 1 to the next column.&quot;</p>
+<p>You will see this same idea in:</p>
+<ul>
+<li>Binary addition (Module 2.2)</li>
+<li>The ALU carry flag (Module 2.6)</li>
+<li>Computer overflow errors (Module 3.3)</li>
+</ul>
+<p>The gear that clicks forward when a wheel hits 9 is the ancestor of every carry bit in every processor ever made.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p>The simulation has three interactive tools:</p>
+<p><strong>Tool 1 — Napier's Bones</strong></p>
+<ul>
+<li>Select rods by clicking digit buttons</li>
+<li>Enter a multiplier (1–9)</li>
+<li>Watch the diagonal addition animate step by step</li>
+<li>Verify the result</li>
+</ul>
+<p><strong>Tool 2 — Virtual Pascaline</strong></p>
+<ul>
+<li>Click the input wheels to dial in a number</li>
+<li>Hit &quot;Add&quot; to add it to the accumulator</li>
+<li>Watch the carry propagate visually through the gear chain</li>
+<li>Try to cause a multi-digit carry (add 999 + 1)</li>
+</ul>
+<p><strong>What to observe:</strong></p>
+<ul>
+<li>How does the carry mechanism &quot;know&quot; to advance the next wheel?</li>
+<li>What happens when you overflow the accumulator (exceed 9999)?</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p>The Pascaline's carry mechanism had a fatal flaw: it used a <strong>sequential carry</strong>, meaning carries propagated one wheel at a time. Adding 999 + 1 caused a chain reaction through all wheels — it took longer than adding 001 + 1.</p>
+<p>This &quot;carry chain&quot; problem plagued mechanical calculators and later early electronic computers. The solution — <strong>carry lookahead</strong> — was one of the great innovations of the 1950s and is still used in every modern CPU. You'll build it in Module 2.4.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Use the Napier's Bones simulation to multiply <code>347 × 6</code> and <code>829 × 7</code>. Then explain in writing how the Pascaline's carry mechanism handles the addition <code>798 + 203</code>. Trace every wheel that moves.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-0-1-why-compute/lesson.html" class="btn-icon">← Prev: M 0.1</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-0-3-loom/lesson.html" class="btn-icon btn-primary">Next: M 0.3 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 11.2 — Linear Algebra for Machine Learning | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 11.2
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 11.2 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Linear Algebra for Machine Learning.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 11.2 — Linear Algebra for Machine Learning</p>
+<p><strong>Type:</strong> Calculation + implementation + proof<br />
+<strong>Estimated time:</strong> 45–55 minutes<br />
+<strong>Tools needed:</strong> NumPy + pen and paper</p>
+<hr />
+<h2>Part A — Matrix Multiplication</h2>
+<ol>
+<li>
+<p>Multiply these matrices by hand:</p>
+<pre><code>A = [[1, 2, 3],    B = [[7,  8],
+     [4, 5, 6]]         [9, 10],
+                        [11, 12]]
+</code></pre>
+<p>Show the calculation for C[0][0] and C[1][1] explicitly.</p>
+</li>
+<li>
+<p>A neural network layer: input X has shape (32, 784) — 32 examples, 784 features each. The weight matrix W has shape (784, 256). What is the shape of the output XW? What does each row of XW represent?</p>
+</li>
+<li>
+<p>Implement matrix multiplication from scratch in pure Python (no NumPy). Then verify your result matches <code>np.dot(A, B)</code>.</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Vector Operations</h2>
+<ol start="4">
+<li>
+<p>Compute the <strong>cosine similarity</strong> between <code>u = [1, 2, 3]</code> and <code>v = [4, 5, 6]</code>. Show all steps: dot product, norms, final similarity.</p>
+</li>
+<li>
+<p>Normalise both vectors to unit length. What is the dot product of the normalised vectors? How does it relate to your cosine similarity?</p>
+</li>
+<li>
+<p>Two word embeddings: <code>king = [0.8, 0.3, -0.1]</code>, <code>queen = [0.7, 0.4, -0.2]</code>. Compute their cosine similarity. Are they semantically similar according to this metric?</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — Matrix Properties</h2>
+<ol start="7">
+<li>
+<p>Prove algebraically that <code>(AB)ᵀ = BᵀAᵀ</code> for 2×2 matrices:</p>
+<pre><code>A = [[a, b],   B = [[e, f],
+     [c, d]]        [g, h]]
+</code></pre>
+<p>Compute both sides and show they're equal.</p>
+</li>
+<li>
+<p>What does it mean geometrically for a 2×2 matrix to be <strong>singular</strong> (non-invertible)? Compute the determinant of:</p>
+<pre><code>M1 = [[2, 4],    M2 = [[2, 3],
+       [1, 2]]          [4, 6]]
+</code></pre>
+<p>Which is singular? What does this mean about the linear system Mx = b?</p>
+</li>
+</ol>
+<hr />
+<h2>Part D — PCA by Hand</h2>
+<p>Given the 4-point dataset: <code>[(1,2), (2,4), (3,3), (4,5)]</code></p>
+<ol start="9">
+<li>
+<p>Compute the <strong>mean</strong> of each dimension. Center the data.</p>
+</li>
+<li>
+<p>Compute the <strong>2×2 covariance matrix</strong> of the centered data.</p>
+</li>
+<li>
+<p>The eigenvectors of the covariance matrix are the principal components. Without computing eigenvectors (hard to do by hand), describe qualitatively: in which direction does the data have the most variance? That direction is PC1.</p>
+</li>
+<li>
+<p>Implement PCA using NumPy: <code>pca(X, n_components=2)</code> that:</p>
+<ul>
+<li>Centers X</li>
+<li>Computes covariance matrix</li>
+<li>Computes eigenvalues and eigenvectors (<code>np.linalg.eig</code>)</li>
+<li>Returns the top n_components eigenvectors and the projected data</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2>Part E — Gradient in Matrix Form</h2>
+<p>For a single-layer linear model <code>ŷ = XW + b</code> with MSE loss <code>L = (1/n)||ŷ - y||²</code>:</p>
+<ol start="13">
+<li>
+<p>Write out <code>∂L/∂W</code> in matrix form. The answer is <code>(2/n) Xᵀ(ŷ - y)</code>. Verify the shapes match: X is (n,d), W is (d,m), ŷ and y are (n,m). What shape is <code>∂L/∂W</code>?</p>
+</li>
+<li>
+<p>Implement one gradient descent step on random data:</p>
+<pre><code class="language-python">n, d, m = 100, 10, 1
+X = np.random.randn(n, d)
+y = np.random.randn(n, m)
+W = np.zeros((d, m))
+b = np.zeros(m)
+lr = 0.01
+# compute gradient and update W and b
+</code></pre>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A matrix multiplication</td>
+<td>22</td>
+</tr>
+<tr>
+<td>B vector operations</td>
+<td>18</td>
+</tr>
+<tr>
+<td>C matrix properties</td>
+<td>20</td>
+</tr>
+<tr>
+<td>D PCA</td>
+<td>24</td>
+</tr>
+<tr>
+<td>E gradient</td>
+<td>16</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part A.1 — matrix multiply</summary>
+<p>A is (2,3), B is (3,2). C = AB has shape (2,2).</p>
+<p>C[0][0] = 1×7 + 2×9 + 3×11 = 7 + 18 + 33 = 58<br />
+C[0][1] = 1×8 + 2×10 + 3×12 = 8 + 20 + 36 = 64<br />
+C[1][0] = 4×7 + 5×9 + 6×11 = 28 + 45 + 66 = 139<br />
+C[1][1] = 4×8 + 5×10 + 6×12 = 32 + 50 + 72 = <strong>154</strong></p>
+</details>
+<details>
+<summary>Part B.4 — cosine similarity</summary>
+<p>u·v = 1×4 + 2×5 + 3×6 = 4 + 10 + 18 = 32<br />
+|u| = √(1+4+9) = √14 ≈ 3.742<br />
+|v| = √(16+25+36) = √77 ≈ 8.775<br />
+cosine = 32 / (3.742 × 8.775) = 32 / 32.83 ≈ <strong>0.975</strong> (very similar direction)</p>
+</details>
+<details>
+<summary>Part E.14 — gradient step</summary>
+<pre><code class="language-python">y_hat = X @ W + b                    # (n,m)
+error = y_hat - y                    # (n,m)
+dW = (2/n) * X.T @ error             # (d,m) ✓
+db = (2/n) * error.mean(axis=0)      # (m,)
+W  -= lr * dW
+b  -= lr * db
+</code></pre>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>

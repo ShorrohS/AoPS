@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 3.3 — Instruction Set Architecture | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 3.3
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Instruction Set Architecture
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 3 • Machine Architecture</div>
+      <h1 class="article-title">Module 3.3 — Instruction Set Architecture</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-3-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 3.3 — Instruction Set Architecture (ISA)</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>The ALU can add, subtract, AND, OR, XOR.<br />
+The FDE cycle can fetch and execute instructions.<br />
+Memory can store and retrieve bytes.</p>
+<p>But how does the CPU know <em>what to do</em> with a byte like 0x83?<br />
+How does it distinguish &quot;add these two registers&quot; from &quot;load this value&quot; from &quot;jump to that address&quot;?</p>
+<p>The answer is the <strong>Instruction Set Architecture</strong> — the contract between hardware and software that defines every operation a CPU can perform.</p>
+</blockquote>
+<p>The ISA is the most important design decision in computer architecture. It is the interface that software speaks and hardware implements. Every program ever compiled targets a specific ISA. Change the ISA and every program must be recompiled or rewritten.</p>
+<hr />
+<h2>The Story</h2>
+<h3>The First ISAs</h3>
+<p>Early computers had no standard instruction set. Each machine had its own unique set of operations, wired directly into its control unit. Writing a program for one machine meant it ran on nothing else. Moving programs between machines meant rewriting them from scratch.</p>
+<p>The <strong>IBM System/360</strong> (1964) was the first family of computers to share a common ISA across machines of different speeds and prices. A program written for the cheapest System/360 would run unchanged on the most powerful one. This was revolutionary: <strong>software became an asset that outlasted hardware</strong>.</p>
+<p>The System/360 ISA introduced concepts still present in x86-64 today.</p>
+<hr />
+<h3>What an ISA Defines</h3>
+<p>An ISA specifies:</p>
+<ol>
+<li><strong>Registers</strong> — how many, how wide, which are special</li>
+<li><strong>Data types</strong> — integers (8/16/32/64-bit), floats, vectors</li>
+<li><strong>Instructions</strong> — every operation the CPU supports</li>
+<li><strong>Addressing modes</strong> — how operands are located (immediate, register, memory, indirect)</li>
+<li><strong>Instruction encoding</strong> — how instructions are represented as bits</li>
+<li><strong>Memory model</strong> — byte order (endianness), alignment rules</li>
+<li><strong>Privilege levels</strong> — which instructions only the OS can use</li>
+<li><strong>Exception model</strong> — what happens on errors</li>
+</ol>
+<hr />
+<h3>RISC vs CISC</h3>
+<p>Two competing philosophies dominate ISA design:</p>
+<p><strong>CISC — Complex Instruction Set Computer</strong></p>
+<ul>
+<li>Many instructions, some very complex (string copy, matrix operations)</li>
+<li>Instructions of variable length (1–15 bytes on x86)</li>
+<li>Single instruction can do a memory read, an operation, and a memory write</li>
+<li>Fewer instructions needed in programs → smaller code size</li>
+<li>Complex decoder hardware needed</li>
+<li>Examples: Intel x86-64, AMD64</li>
+</ul>
+<p><strong>RISC — Reduced Instruction Set Computer</strong></p>
+<ul>
+<li>Few, simple instructions — each does exactly one thing</li>
+<li>Fixed instruction length (typically 32 bits)</li>
+<li>Memory access only via explicit load/store instructions</li>
+<li>More instructions needed for complex operations → larger programs</li>
+<li>Simple decoder → easier to pipeline, easier to optimise</li>
+<li>Examples: RISC-V, ARM (modern), MIPS, SPARC</li>
+</ul>
+<p><strong>The modern reality</strong>: ARM processors (RISC) run almost all smartphones and tablets. x86-64 (CISC) runs almost all desktop/laptop/server computing. Apple's M-series chips (ARM RISC) now run high-performance Macs, challenging x86-64 dominance. RISC-V is an open-source ISA gaining traction in embedded and research systems.</p>
+<p><em>Interesting nuance</em>: modern x86-64 CPUs internally translate CISC instructions into simpler micro-operations (μops) that look a lot like RISC. The CISC/RISC distinction has blurred at the implementation level, even if the ISA surface remains different.</p>
+<hr />
+<h3>Addressing Modes</h3>
+<p>How does an instruction specify where its data comes from? <strong>Addressing modes</strong> are the answer.</p>
+<p><strong>Immediate</strong>: the value is encoded directly in the instruction.<br />
+<code>LOAD A, 42</code> — loads the literal value 42 into register A.</p>
+<p><strong>Register</strong>: the value is in a register.<br />
+<code>ADD A, B</code> — adds the value in register B to register A.</p>
+<p><strong>Direct (absolute)</strong>: the value is at a specific memory address.<br />
+<code>LOAD A, [0x1000]</code> — loads the byte at memory address 0x1000 into A.</p>
+<p><strong>Indirect</strong>: the address of the value is in a register.<br />
+<code>LOAD A, [B]</code> — loads the byte from the address stored in register B.</p>
+<p><strong>Base + offset</strong>: address = register + constant.<br />
+<code>LOAD A, [B + 4]</code> — loads from the address (B's value + 4). Used for array indexing and struct field access.</p>
+<p><strong>PC-relative</strong>: address = PC + offset. Used for branch instructions.<br />
+<code>JMP +8</code> — jump forward 8 bytes from the current PC. Produces position-independent code.</p>
+<hr />
+<h3>Instruction Encoding</h3>
+<p>Every instruction must be represented as a pattern of bits. Two main approaches:</p>
+<p><strong>Fixed-length</strong> (RISC): every instruction is exactly 32 bits.</p>
+<pre><code>RISC-V R-type (32-bit):
+[31:25] funct7  [24:20] rs2  [19:15] rs1  [14:12] funct3  [11:7] rd  [6:0] opcode
+</code></pre>
+<p>Simple decoder: always knows exactly where each field is.</p>
+<p><strong>Variable-length</strong> (CISC): instructions range from 1 to 15 bytes.</p>
+<pre><code>x86-64 examples:
+NOP:           0x90           (1 byte)
+INC  eax:      0xFF 0xC0      (2 bytes)
+MOV  rax, imm: 0x48 0xB8 + 8-byte immediate  (10 bytes)
+</code></pre>
+<p>Complex decoder: must figure out instruction length before it can decode it. One reason x86 decoders are expensive in silicon area.</p>
+<hr />
+<h3>Our Toy ISA — 8 Instructions</h3>
+<p>For this module, we design and use a minimal ISA:</p>
+<table>
+<thead>
+<tr>
+<th>Opcode (hex)</th>
+<th>Mnemonic</th>
+<th>Format</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x01</td>
+<td>LOAD imm</td>
+<td>0x01 rr vv</td>
+<td>Load immediate value vv into register rr</td>
+</tr>
+<tr>
+<td>0x02</td>
+<td>LOAD_MEM</td>
+<td>0x02 rr aa</td>
+<td>Load from memory[aa] into register rr</td>
+</tr>
+<tr>
+<td>0x03</td>
+<td>STORE</td>
+<td>0x03 rr aa</td>
+<td>Store register rr to memory[aa]</td>
+</tr>
+<tr>
+<td>0x10</td>
+<td>ADD</td>
+<td>0x10 r1 r2</td>
+<td>r1 ← r1 + r2</td>
+</tr>
+<tr>
+<td>0x11</td>
+<td>SUB</td>
+<td>0x11 r1 r2</td>
+<td>r1 ← r1 − r2</td>
+</tr>
+<tr>
+<td>0x20</td>
+<td>JMP</td>
+<td>0x20 aa</td>
+<td>PC ← aa (unconditional)</td>
+</tr>
+<tr>
+<td>0x21</td>
+<td>JZ</td>
+<td>0x21 rr aa</td>
+<td>If rr=0: PC ← aa</td>
+</tr>
+<tr>
+<td>0xFF</td>
+<td>HALT</td>
+<td>0xFF</td>
+<td>Stop</td>
+</tr>
+</tbody>
+</table>
+<p>Register encoding: A=0x00, B=0x01, C=0x02, D=0x03</p>
+<p><strong>Example — sum of 1+2+3+4+5:</strong></p>
+<pre><code>Address: Bytes:   Meaning:
+0x00:    01 00 01  LOAD A, 1        ; accumulator = 1
+0x03:    01 01 06  LOAD B, 6        ; loop limit (stop before adding 6)
+0x06:    01 02 02  LOAD C, 2        ; next value to add
+0x09:    11 01 02  SUB B, C         ; B = B - C (check if done)
+0x0C:    21 01 14  JZ B, 0x14       ; if B=0: jump to HALT
+0x0F:    10 00 02  ADD A, C         ; A = A + C (accumulate)
+0x12:    20 09    JMP 0x09          ; loop back
+0x14:    FF       HALT
+</code></pre>
+<hr />
+<h3>Real ISA: x86-64 Subset</h3>
+<p>The actual instruction set your computer uses for every program you run:</p>
+<pre><code class="language-nasm">; Load values
+MOV rax, 5          ; rax = 5 (immediate)
+MOV rbx, [0x1000]   ; rbx = memory[0x1000] (direct)
+MOV rcx, [rax]      ; rcx = memory[rax] (indirect)
+MOV rdx, [rax + 8]  ; rdx = memory[rax + 8] (base+offset)
+
+; Arithmetic
+ADD rax, rbx        ; rax = rax + rbx
+SUB rax, 1          ; rax = rax - 1
+IMUL rax, rbx       ; rax = rax * rbx (signed multiply)
+IDIV rcx            ; rax = rax / rcx, rdx = rax mod rcx
+
+; Comparison and control flow
+CMP rax, 0          ; sets flags based on rax - 0 (doesn't modify rax)
+JE  label           ; jump if equal (ZF=1)
+JNE label           ; jump if not equal
+JL  label           ; jump if less (signed)
+JMP label           ; unconditional jump
+CALL function       ; push PC, jump to function
+RET                 ; pop PC (return from function)
+</code></pre>
+<p>Every C/C++/Rust/Go program you compile becomes sequences of these instructions.</p>
+<hr />
+<h2>The Concept: The ISA as Contract</h2>
+<p>The ISA is the most stable interface in computing. Intel has maintained backward compatibility with the 8086 ISA (1978) through every generation of x86 processor to this day. A program compiled in 1985 for DOS can still run on a 2024 Core i9 (in compatibility mode). This backward compatibility is both a massive commercial advantage (all old software keeps working) and an engineering burden (carrying 46 years of design decisions forward).</p>
+<p>ARM's decision to design a clean, simple RISC ISA in the 1980s is why ARM cores are so efficient — they don't carry the weight of 40 years of complexity.</p>
+<p>RISC-V represents a third path: a completely open, free ISA designed with modern knowledge, with no legacy baggage. Its adoption in research, embedded systems, and potentially data centres is growing rapidly.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Toy ISA CPU</strong></p>
+<ul>
+<li>Full implementation of the 8-instruction toy ISA</li>
+<li>Write programs directly in the memory editor (hex opcodes)</li>
+<li>Step through execution or run at speed</li>
+<li>Observe register states and memory after each instruction</li>
+</ul>
+<p><strong>Tool 2 — Instruction Encoder</strong></p>
+<ul>
+<li>Type a mnemonic instruction (e.g., <code>ADD A, B</code>)</li>
+<li>See the binary/hex encoding</li>
+<li>Understand how the CPU's decoder would parse each field</li>
+</ul>
+<p><strong>Tool 3 — Sum 1–5 Challenge</strong></p>
+<ul>
+<li>Pre-loaded program that computes 1+2+3+4+5</li>
+<li>Step through it and verify each register state</li>
+<li>Modify it to compute 1+2+3+4+5+6+7 instead</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>The ABI (Application Binary Interface)</strong>: Beyond the ISA, software needs conventions for how programs interact. Which register holds the first function argument? How is the stack organised? What is the calling convention? These rules, defined by the platform ABI (e.g., System V AMD64 ABI on Linux), are as important as the ISA itself for software compatibility.</p>
+<p><strong>ISA extensions</strong>: Modern x86-64 CPUs implement dozens of ISA extensions beyond the base set: SSE, AVX, AVX-512 (SIMD vector operations), AES-NI (hardware encryption), SHA extensions. A compiler detects which extensions the target CPU supports and emits the fastest instructions available.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Write and trace programs in the toy ISA, encode instructions into binary, design a new instruction, and reason about RISC vs CISC trade-offs.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-3-2-fetch-decode-execute/lesson.html" class="btn-icon">← Prev: M 3.2</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-3-4-io/lesson.html" class="btn-icon btn-primary">Next: M 3.4 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 1.6 — From Transistors to Chips: Moore&#x27;s Law | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 1.6
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        From Transistors to Chips: Moore&#x27;s Law
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 1 • Physical Computing</div>
+      <h1 class="article-title">Module 1.6 — From Transistors to Chips: Moore&#x27;s Law</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-1-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <h1>Module 1.6 — From Transistors to Chips: Moore's Law</h1>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>The transistor was invented in 1947. It was a breakthrough. But each transistor was still a separate component — you bought them individually, wired them together by hand, soldered connections one at a time.</p>
+<p>A computer with 1,000 transistors meant 1,000 separate parts, thousands of hand-soldered joints, and a reliability nightmare (every solder joint could fail). Building a computer with a million transistors by hand was practically impossible.</p>
+<p>The question: <strong>can we build the entire circuit — transistors, resistors, connections — all at once on a single piece of silicon?</strong></p>
+</blockquote>
+<p>The answer came from two people independently in 1958–1959, and it launched the modern world.</p>
+<hr />
+<h2>The Story</h2>
+<h3>The Integrated Circuit — 1958</h3>
+<p><strong>Jack Kilby</strong> at Texas Instruments built the first working integrated circuit in 1958. Using germanium, he placed a transistor, resistors, and capacitors on a single chip and connected them with fine gold wires. It was messy, but it worked.</p>
+<p><strong>Robert Noyce</strong> at Fairchild Semiconductor independently invented a cleaner approach in 1959: use deposited aluminium traces on top of silicon dioxide insulation to connect components without physical wires. This <strong>planar process</strong> is the foundation of every chip made since.</p>
+<p>Both Kilby and Noyce are credited as co-inventors of the IC. Kilby won the Nobel Prize in Physics in 2000 (Noyce had died in 1990).</p>
+<p><strong>Why the IC was revolutionary:</strong></p>
+<ul>
+<li>All components and connections fabricated simultaneously in one process</li>
+<li>Reliability improved: no hand-soldered joints to fail</li>
+<li>Size: the entire circuit is photolithographically patterned — smaller than any hand assembly</li>
+<li>Cost: manufacturing cost scales with chip area, not with number of components</li>
+<li>The same photomask that makes 1 transistor can make 1 million in the same process step</li>
+</ul>
+<hr />
+<h3>Moore's Law — 1965</h3>
+<p>Gordon Moore, co-founder of Fairchild and later Intel, observed in 1965 that the number of transistors on an integrated circuit had been doubling roughly every year since the IC's invention. He predicted this would continue for at least 10 more years.</p>
+<p>In 1975 he revised the prediction: doubling every <strong>two years</strong>.</p>
+<p>This became <strong>Moore's Law</strong>: <em>the number of transistors on a chip doubles approximately every two years.</em></p>
+<table>
+<thead>
+<tr>
+<th>Year</th>
+<th>Chip</th>
+<th>Transistors</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1971</td>
+<td>Intel 4004</td>
+<td>2,300</td>
+</tr>
+<tr>
+<td>1974</td>
+<td>Intel 8080</td>
+<td>4,500</td>
+</tr>
+<tr>
+<td>1978</td>
+<td>Intel 8086</td>
+<td>29,000</td>
+</tr>
+<tr>
+<td>1982</td>
+<td>Intel 286</td>
+<td>134,000</td>
+</tr>
+<tr>
+<td>1985</td>
+<td>Intel 386</td>
+<td>275,000</td>
+</tr>
+<tr>
+<td>1989</td>
+<td>Intel 486</td>
+<td>1,200,000</td>
+</tr>
+<tr>
+<td>1993</td>
+<td>Pentium</td>
+<td>3,100,000</td>
+</tr>
+<tr>
+<td>2000</td>
+<td>Pentium 4</td>
+<td>42,000,000</td>
+</tr>
+<tr>
+<td>2006</td>
+<td>Core 2 Duo</td>
+<td>291,000,000</td>
+</tr>
+<tr>
+<td>2012</td>
+<td>Ivy Bridge</td>
+<td>1,400,000,000</td>
+</tr>
+<tr>
+<td>2020</td>
+<td>Apple M1</td>
+<td>16,000,000,000</td>
+</tr>
+<tr>
+<td>2023</td>
+<td>Apple M3</td>
+<td>25,000,000,000</td>
+</tr>
+<tr>
+<td>2024</td>
+<td>Apple M4</td>
+<td>28,000,000,000</td>
+</tr>
+</tbody>
+</table>
+<p>From 2,300 to 28 billion in 53 years. That's a factor of <strong>12 million</strong>.</p>
+<hr />
+<h3>How Chips Are Made: Photolithography</h3>
+<p>The magic of ICs is <strong>photolithography</strong> — printing circuit patterns onto silicon using light.</p>
+<ol>
+<li><strong>Start with a silicon wafer</strong> — a disc of highly pure silicon, 300mm in diameter</li>
+<li><strong>Grow oxide</strong>: heat the wafer to grow a thin layer of SiO₂ on the surface</li>
+<li><strong>Apply photoresist</strong>: coat the wafer with a light-sensitive chemical</li>
+<li><strong>Expose through a mask</strong>: shine UV light through a photomask (like a film negative) — where light hits, photoresist becomes soluble</li>
+<li><strong>Develop</strong>: wash away the exposed photoresist — the pattern remains</li>
+<li><strong>Etch or dope</strong>: etch away the exposed oxide, or implant dopant atoms into the exposed silicon</li>
+<li><strong>Repeat</strong>: each chip layer requires multiple lithography-etch cycles (modern chips have 100+ layers)</li>
+<li><strong>Deposit metal</strong>: aluminium or copper traces connect transistors</li>
+</ol>
+<p>The minimum feature size — the width of the smallest line that can be printed — is the <strong>process node</strong> (or technology node). This is the number you see: 90nm, 45nm, 14nm, 7nm, 5nm, 3nm.</p>
+<p><strong>Shrinking the node</strong> by 2× means:</p>
+<ul>
+<li>Each transistor occupies 4× less area (2D shrink)</li>
+<li>4× more transistors fit on the same chip area</li>
+<li>Transistors are closer together → signals travel shorter distances → faster switching</li>
+<li>Smaller transistors have less capacitance → less energy per switch → lower power</li>
+</ul>
+<p>This is the physical mechanism behind Moore's Law: <strong>photolithography precision doubling every ~18 months</strong>.</p>
+<hr />
+<h3>Why Moore's Law Is Slowing</h3>
+<p>By the early 2010s, shrinking transistors was running into fundamental physical limits:</p>
+<p><strong>The quantum tunnelling problem</strong>: When a transistor gate is only a few atoms thick, electrons can <strong>quantum tunnel</strong> through the gate oxide even when the transistor is supposed to be OFF. This causes leakage current — the transistor can't fully shut off, wasting power and causing errors. At 2nm, the gate is roughly 10 atoms wide.</p>
+<p><strong>Heat density</strong>: Transistors have always generated heat. Smaller transistors generate less heat each, but you can pack so many more of them that total heat density has hit a ceiling. Most CPUs can't exceed ~100W/cm² without exotic cooling.</p>
+<p><strong>Economic limits</strong>: Each new fab (semiconductor fabrication facility) costs $10–20 billion to build. The number of companies that can afford leading-edge fabs has shrunk to: TSMC, Samsung, Intel. Each process node requires completely new equipment.</p>
+<p><strong>The industry response:</strong></p>
+<ul>
+<li><strong>3D stacking</strong>: stack multiple die layers (memory on top of logic) — going vertical instead of lateral</li>
+<li><strong>Heterogeneous integration</strong>: combine specialized chips (CPU + GPU + memory) in one package</li>
+<li><strong>New transistor designs</strong>: FinFET (2011), Gate-All-Around (2022) — new 3D transistor geometries instead of flat planar devices</li>
+<li><strong>Specialized hardware</strong>: GPUs for graphics, TPUs for AI — don't need a general CPU for everything</li>
+</ul>
+<hr />
+<h3>What Moore's Law Actually Enabled</h3>
+<p>Moore's Law isn't just an interesting observation. It's the engine behind every major computing development since 1965:</p>
+<table>
+<thead>
+<tr>
+<th>What changed</th>
+<th>Because of Moore's Law</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Personal computers (1980s)</td>
+<td>Chips cheap enough for individuals</td>
+</tr>
+<tr>
+<td>Internet (1990s)</td>
+<td>Routers, servers affordable at scale</td>
+</tr>
+<tr>
+<td>Smartphones (2007+)</td>
+<td>PC-power in pocket-size, battery-powered form</td>
+</tr>
+<tr>
+<td>Social media (2010s)</td>
+<td>Data centres with millions of cores</td>
+</tr>
+<tr>
+<td>Deep learning / AI (2010s+)</td>
+<td>GPUs with billions of transistors for matrix math</td>
+</tr>
+<tr>
+<td>Large language models (2020s)</td>
+<td>Trillion-parameter models require trillion-op/sec chips</td>
+</tr>
+</tbody>
+</table>
+<p>Every computer science topic from Level 2 onward exists because transistors got small enough, cheap enough, and fast enough.</p>
+<hr />
+<h2>The Concept: Exponential Growth</h2>
+<p>Moore's Law is an <strong>exponential process</strong>: each doubling multiplies the previous value by 2.</p>
+<p>Starting at 2,300 (Intel 4004, 1971), doubling every 2 years:</p>
+<pre><code>2,300 × 2^n where n = years_elapsed / 2
+
+After 52 years (2023): 2,300 × 2^(52/2) = 2,300 × 2^26 = 2,300 × 67,108,864 ≈ 154 billion
+</code></pre>
+<p>The M3 chip has 19 billion transistors — roughly in line (the doubling rate has slowed somewhat since 2015).</p>
+<p><strong>The intuition pump</strong>: a checkerboard with grains of rice doubling each square. The first 32 squares fill a bag. The last 32 squares require more rice than has ever been grown on Earth. Moore's Law has been running on the second half of that board for 20 years.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p>Three tools:</p>
+<p><strong>Tool 1 — Moore's Law Timeline</strong></p>
+<ul>
+<li>Interactive log-scale chart of transistor counts 1971–2024</li>
+<li>Hover over any chip to see specs</li>
+<li>Toggle &quot;actual data&quot; vs &quot;ideal Moore's Law&quot; to see where the curve bent</li>
+</ul>
+<p><strong>Tool 2 — Doubling Calculator</strong></p>
+<ul>
+<li>Enter a start value, doubling period, and number of years</li>
+<li>See the exponential growth plotted</li>
+<li>Explore: what if phones kept getting bigger instead of chips getting smaller?</li>
+</ul>
+<p><strong>Tool 3 — Photolithography Simulator</strong></p>
+<ul>
+<li>Drag a UV mask over a silicon surface</li>
+<li>Watch the pattern expose, develop, and etch</li>
+<li>Scale the feature size from 10µm (1970s) to 3nm (2022) and see how many transistors fit</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p>The 2nm process node (in production at TSMC and Samsung in 2024–2025) uses <strong>Gate-All-Around (GAA)</strong> transistors — nanosheet FETs where the gate wraps entirely around a thin ribbon of silicon. This is fundamentally different from the planar MOSFET described in Module 1.5, though the operating principle (voltage-controlled channel) is the same.</p>
+<p>Intel's answer is <strong>Intel 18A</strong> (scheduled for 2025), using its own GAA variant called RibbonFET. The competition between TSMC, Samsung, and Intel is now measured in angstroms (tenths of nanometres) — dimensions approaching individual atomic spacings.</p>
+<hr />
+<h2>Level 1 Capstone</h2>
+<p>You have now completed Level 1. Before advancing to Level 2, you should be able to answer:</p>
+<ol>
+<li>What are the three quantities in Ohm's Law and what does each mean physically? (Module 1.1)</li>
+<li>Why is a switch binary, and why does this connect to digital computing? (Module 1.2)</li>
+<li>How do relay contacts implement AND, OR, and NOT? (Module 1.3)</li>
+<li>What physical property makes vacuum tubes 1,000× faster than relays? (Module 1.4)</li>
+<li>What is the difference between a BJT and a MOSFET, and why does MOSFET dominate digital logic? (Module 1.5)</li>
+<li>What is Moore's Law, and what physical process drove it for 50 years? (Module 1.6)</li>
+</ol>
+<p>If you can answer all six, you are ready for <strong>Level 2: Digital Foundations</strong> — where transistors become logic gates, gates become circuits, and circuits become the building blocks of every processor ever made.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Calculate Moore's Law projections, estimate when physical limits will be hit, and trace the full path from Jacquard's punch card to a modern MOSFET in one continuous narrative.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../module-1-5-transistor/lesson.html" class="btn-icon">← Prev: M 1.5</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../../level-2-digital-foundations/module-2-1-why-binary/lesson.html" class="btn-icon btn-primary">Next: M 2.1 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

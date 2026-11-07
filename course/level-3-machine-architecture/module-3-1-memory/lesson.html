@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Module 3.1 — Memory: How Machines Remember | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--indigo);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .prose h2 {
+      font-size: 1.55rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose h3 {
+      font-size: 1.25rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.125rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose blockquote {
+      border-left: 3px solid var(--lacquer);
+      background: var(--callout-bg);
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .prose blockquote p {
+      margin: 0.4rem 0;
+      font-size: 1.05rem;
+    }
+
+    .prose ul, .prose ol {
+      margin: 1rem 0 1rem 1.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .prose li {
+      margin: 0.4rem 0;
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .prose hr {
+      border: none;
+      border-top: 1px solid var(--border-light);
+      margin: 2.5rem 0;
+    }
+
+    .zen-footer-nav {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .article-title {
+        font-size: 1.65rem;
+      }
+      .zen-topbar-left span.full-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="zen-progress"></div>
+
+  <!-- Sticky Top Navigation -->
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="../../../index.html" class="btn-icon" title="Return to Course Index">← Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        M 3.1
+      </span>
+      <span class="full-title" style="font-family:var(--font-sans); font-size:0.85rem; color:var(--muted); max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        Memory: How Machines Remember
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="./challenge.html" class="btn-icon" title="View Challenge Rubric">🎯 Challenge</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Dark/Light Mode">🌓</button>
+    </div>
+  </header>
+
+  <!-- Article Container -->
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">Level 3 • Machine Architecture</div>
+      <h1 class="article-title">Module 3.1 — Memory: How Machines Remember</h1>
+      <div class="article-meta-row">
+        <span>📖 Technical Lesson</span>
+        <span>•</span>
+        <a href="./lesson.md" target="_blank" style="color:var(--muted);">Raw Markdown</a>
+        <span>•</span>
+        <a href="../../../ebook/level-3-ebook.html" style="color:var(--indigo);">Full Volume eBook</a>
+      </div>
+    </div>
+
+    <!-- Rendered Markdown Body -->
+    <article class="prose">
+      <p>﻿# Module 3.1 — Memory: How Machines Remember</p>
+<hr />
+<h2>The Problem</h2>
+<blockquote>
+<p>You have an ALU that can add, subtract, and perform logic operations.<br />
+You have registers that hold values for a single clock cycle.</p>
+<p>But here is the problem: where do the values come from before they reach the ALU?<br />
+And where do results go after the ALU produces them?</p>
+<p>The answer is <strong>memory</strong> — the system that lets a machine remember anything at all.</p>
+</blockquote>
+<p>Without memory, a processor can only react to its current inputs. It cannot store a result, recall a previous value, or execute a program. Memory is what transforms a calculator into a computer.</p>
+<hr />
+<h2>The Story</h2>
+<h3>The Human Analogy</h3>
+<p>A human performing arithmetic uses two types of memory simultaneously:</p>
+<ul>
+<li><strong>Working memory</strong> — the few numbers held in mind right now (small, fast, volatile)</li>
+<li><strong>Long-term memory</strong> — everything learned and stored (large, slow, persistent)</li>
+</ul>
+<p>Computer memory works the same way, at every scale from a single chip to an entire data centre. The hierarchy exists because of a fundamental physical tradeoff: <strong>fast memory is expensive and small; slow memory is cheap and large.</strong></p>
+<p>Every computer architecture in history has navigated this tradeoff.</p>
+<hr />
+<h3>From Flip-Flops to Memory Arrays</h3>
+<p>In Module 2.5 you built a D flip-flop — a single bit of memory. One flip-flop stores one bit.</p>
+<p>Eight flip-flops wired together store one byte. That is a <strong>register</strong>.</p>
+<p>Now imagine 256 rows of 8 flip-flops each. That is 256 bytes of <strong>SRAM</strong> — Static Random Access Memory. Add an address decoder to select which row to read or write, and you have a functioning memory array.</p>
+<p>This is literally how CPU cache memory works today, scaled to millions of cells.</p>
+<hr />
+<h3>SRAM vs DRAM</h3>
+<p><strong>SRAM (Static RAM)</strong> — each bit stored in a flip-flop (6 transistors per bit)</p>
+<ul>
+<li>Fast: access time ~1 nanosecond</li>
+<li>Expensive: large die area</li>
+<li>Used for: CPU registers, L1/L2/L3 cache</li>
+</ul>
+<p><strong>DRAM (Dynamic RAM)</strong> — each bit stored as charge on a capacitor (1 transistor + 1 capacitor per bit)</p>
+<ul>
+<li>Slower: access time ~50–100 nanoseconds</li>
+<li>Cheap: very small cell, high density</li>
+<li>Problem: capacitors leak — must be <strong>refreshed</strong> every ~64 milliseconds</li>
+<li>Used for: main system RAM (DDR4, DDR5)</li>
+</ul>
+<p>The &quot;dynamic&quot; in DRAM refers to this need for constant refreshing. If the refresh circuit fails, all data is lost within milliseconds — even with power connected.</p>
+<hr />
+<h3>The Memory Hierarchy</h3>
+<p>Modern systems layer memory into a hierarchy based on speed and capacity:</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Type</th>
+<th>Size</th>
+<th>Speed</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L0</td>
+<td>CPU Registers</td>
+<td>16–32 × 64-bit</td>
+<td>1 cycle (~0.3 ns)</td>
+<td>On-chip</td>
+</tr>
+<tr>
+<td>L1</td>
+<td>SRAM Cache</td>
+<td>32–64 KB</td>
+<td>4 cycles (~1 ns)</td>
+<td>On-chip</td>
+</tr>
+<tr>
+<td>L2</td>
+<td>SRAM Cache</td>
+<td>256 KB–1 MB</td>
+<td>12 cycles (~4 ns)</td>
+<td>On-chip</td>
+</tr>
+<tr>
+<td>L3</td>
+<td>SRAM Cache</td>
+<td>4–32 MB</td>
+<td>40 cycles (~12 ns)</td>
+<td>On-chip</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>DRAM</td>
+<td>4–64 GB</td>
+<td>~200 cycles (~60 ns)</td>
+<td>Off-chip</td>
+</tr>
+<tr>
+<td>SSD</td>
+<td>Flash</td>
+<td>256 GB–4 TB</td>
+<td>~100,000 ns</td>
+<td>Off-chip</td>
+</tr>
+<tr>
+<td>HDD</td>
+<td>Magnetic</td>
+<td>1–20 TB</td>
+<td>~10,000,000 ns</td>
+<td>Off-chip</td>
+</tr>
+</tbody>
+</table>
+<p>The CPU operates on data in registers. When it needs data not in registers, it looks in L1 cache. On a miss, it checks L2, then L3, then RAM, then disk. Each level is roughly 10–100× slower than the one above.</p>
+<p>This is why <strong>cache locality</strong> matters so much in software performance: a program that accesses memory in sequential, predictable patterns keeps data in fast cache. A program that jumps around randomly keeps forcing expensive cache misses to main RAM.</p>
+<hr />
+<h3>Address Space and Addressability</h3>
+<p>Every byte in memory has a unique <strong>address</strong> — a number that identifies its location.</p>
+<p>For a 32-bit address space: 2³² = 4,294,967,296 addresses = 4 GB maximum.<br />
+For a 64-bit address space: 2⁶⁴ = 18,446,744,073,709,551,616 addresses = 16 exabytes.</p>
+<p><strong>Addressability</strong> refers to what unit each address points to. Most modern architectures are <strong>byte-addressable</strong>: each address identifies one byte. Some older or embedded systems are word-addressable (each address identifies 16 or 32 bits).</p>
+<p><strong>Memory map</strong>: not all addresses point to RAM. A typical x86-64 system uses its address space for:</p>
+<ul>
+<li>RAM (the majority)</li>
+<li>Memory-mapped I/O (peripherals that respond to memory read/write)</li>
+<li>BIOS/UEFI ROM</li>
+<li>Graphics framebuffer</li>
+<li>Reserved regions</li>
+</ul>
+<hr />
+<h3>How a Read Operation Works</h3>
+<p>When the CPU issues a <strong>read</strong>:</p>
+<ol>
+<li>CPU places the <strong>address</strong> on the address bus</li>
+<li>CPU asserts the <strong>read control signal</strong></li>
+<li>Memory decodes the address to select the correct row and column</li>
+<li>Memory places the <strong>data</strong> on the data bus</li>
+<li>CPU latches the data from the data bus into a register</li>
+</ol>
+<p>For DRAM, step 3–4 involves:</p>
+<ul>
+<li><strong>Row address strobe (RAS)</strong>: selects the row, copies it into a row buffer</li>
+<li><strong>Column address strobe (CAS)</strong>: selects the column from the row buffer</li>
+<li>CAS latency (CL) is the key DRAM timing spec (e.g., CL16 = 16 clock cycles)</li>
+</ul>
+<hr />
+<h3>How a Write Operation Works</h3>
+<p>When the CPU issues a <strong>write</strong>:</p>
+<ol>
+<li>CPU places the <strong>address</strong> on the address bus</li>
+<li>CPU places the <strong>data</strong> on the data bus</li>
+<li>CPU asserts the <strong>write control signal</strong></li>
+<li>Memory decodes the address, stores data at that location</li>
+</ol>
+<hr />
+<h2>The Concept: Memory as an Addressed Array</h2>
+<p>Think of memory as a post office with numbered mailboxes. Each mailbox (address) holds a fixed-size value (1 byte for byte-addressable memory). The postmaster (address decoder) routes requests to the correct box. Reading opens the box and copies its contents. Writing replaces its contents.</p>
+<p>The key abstractions:</p>
+<ul>
+<li><strong>Address</strong>: which location</li>
+<li><strong>Data</strong>: what value</li>
+<li><strong>Control</strong>: read or write</li>
+</ul>
+<p>These three signals — address, data, control — form the <strong>memory bus interface</strong>. Everything from a 1980s microprocessor to a modern server uses this same abstraction.</p>
+<hr />
+<h2>Hands-On Exercise</h2>
+<p><strong>Open the simulation:</strong> <a href="./simulation.html"><code>simulation.html</code></a></p>
+<p><strong>Tool 1 — Memory Array Explorer</strong></p>
+<ul>
+<li>A 16-byte memory array with addresses 0x00–0x0F</li>
+<li>Click any cell to select it; enter a value (0–255) to write</li>
+<li>Use Read/Write buttons to simulate bus operations</li>
+<li>Watch the address bus, data bus, and control signals light up</li>
+</ul>
+<p><strong>Tool 2 — Cache Simulator</strong></p>
+<ul>
+<li>A small &quot;CPU&quot; requests memory reads in a configurable pattern</li>
+<li>Watch L1 cache hits vs misses</li>
+<li>Try sequential access vs random access — observe the hit rate difference</li>
+</ul>
+<p><strong>Tool 3 — Hierarchy Visualizer</strong></p>
+<ul>
+<li>Animate a read request propagating through the memory hierarchy</li>
+<li>See the latency accumulate at each cache miss</li>
+</ul>
+<hr />
+<h2>Going Deeper</h2>
+<p><strong>Write-through vs write-back caches</strong>: When the CPU writes to a cached address, does it immediately write to RAM (write-through) or only update the cache and write to RAM later (write-back)? Write-back is faster but more complex — the cache must track which lines are &quot;dirty&quot; (modified but not yet written back). Modern CPUs use write-back with sophisticated coherency protocols.</p>
+<p><strong>Virtual memory</strong>: Programs don't see physical RAM addresses. The CPU's Memory Management Unit (MMU) translates virtual addresses (what the program uses) to physical addresses (where the data actually lives in RAM). This allows isolation between processes, larger address spaces than physical RAM, and demand paging. Module 4.4 covers this in depth.</p>
+<hr />
+<h2>Challenge</h2>
+<p><strong>Open:</strong> <a href="./challenge.md"><code>challenge.md</code></a></p>
+<p>Calculate access times across the memory hierarchy, trace read/write operations through an address decoder, write the contents of a simulated 8-byte memory as ASCII values, and analyse cache hit/miss patterns.</p>
+
+    </article>
+
+    <!-- Bottom Navigation -->
+    <nav class="zen-footer-nav">
+      <div>
+        <a href="../../level-2-digital-foundations/module-2-6-simple-alu/lesson.html" class="btn-icon">← Prev: M 2.6</a>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <a href="../../../index.html" class="btn-icon">Course Index</a>
+        <a href="../module-3-2-fetch-decode-execute/lesson.html" class="btn-icon btn-primary">Next: M 3.2 →</a>
+      </div>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    // Syntax highlighting
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+
+    // Math auto-render
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    // Theme toggle
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+
+    // Reading progress bar
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById('zen-progress').style.width = scrolled + '%';
+    });
+  </script>
+</body>
+</html>

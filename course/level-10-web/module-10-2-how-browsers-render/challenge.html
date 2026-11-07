@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="zen">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Challenge 10.2 — Modern CSS Layout &amp; Flex/Grid | AoPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="hljs-theme">
+  <style>
+    
+:root {
+  --paper:        #F5F4EF;
+  --paper-warm:   #EEECE4;
+  --washi:        #FFFFFF;
+  --bone:         #E8E5DC;
+  --ghost:        #D4D0C4;
+  --border-hair:  #1C1C1C;
+  --border-light: #D8D6CE;
+  --border-paper: #E8E6DF;
+  --ink:          #1C1C1C;
+  --text-body:    #2E2E2E;
+  --slate:        #4A5568;
+  --muted:        #787670;
+  --indigo:       #1C2D42;
+  --indigo-deep:  #0F1E2E;
+  --lacquer:      #C82A2A;
+  --gold:         #8B6914;
+  --sage:         #3D5B3F;
+  --card-bg:      #FFFFFF;
+  --code-bg:      #EBE8DF;
+  --callout-bg:   #FAF8F5;
+  
+  --font-display: 'Noto Serif JP', Georgia, serif;
+  --font-body:    'EB Garamond', Georgia, serif;
+  --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+  
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.12);
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+}
+
+[data-theme="dark"] {
+  --paper:        #141619;
+  --paper-warm:   #1A1D21;
+  --washi:        #1E2227;
+  --bone:         #2B3038;
+  --ghost:        #3B424D;
+  --border-hair:  #4A5260;
+  --border-light: #2D333D;
+  --border-paper: #22272E;
+  --ink:          #E6EDF3;
+  --text-body:    #C9D1D9;
+  --slate:        #8B949E;
+  --muted:        #8B949E;
+  --indigo:       #58A6FF;
+  --indigo-deep:  #161B22;
+  --lacquer:      #FF7B72;
+  --gold:         #D29922;
+  --sage:         #7EE787;
+  --card-bg:      #1C2128;
+  --code-bg:      #21262D;
+  --callout-bg:   #1F242C;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--indigo);
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+}
+
+code:not(pre code) {
+  background: var(--code-bg);
+  border: 1px solid var(--border-light);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.88em;
+  color: var(--ink);
+}
+
+/* Zen Progress Bar */
+#zen-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--lacquer);
+  width: 0%;
+  z-index: 999;
+  transition: width 0.1s linear;
+}
+
+/* Header & Top Bar */
+.zen-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zen-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.zen-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  background: var(--washi);
+  border: 1px solid var(--border-light);
+  color: var(--ink);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--paper-warm);
+  border-color: var(--border-hair);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--indigo);
+  color: #FFFFFF !important;
+  border-color: var(--indigo);
+}
+
+.btn-primary:hover {
+  background: var(--indigo-deep);
+  color: #FFFFFF !important;
+}
+
+.btn-accent {
+  background: var(--lacquer);
+  color: #FFFFFF !important;
+  border-color: var(--lacquer);
+}
+
+.btn-accent:hover {
+  filter: brightness(0.9);
+  color: #FFFFFF !important;
+}
+
+
+    .article-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 6rem;
+    }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 1.5rem;
+    }
+
+    .article-level-tag {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--lacquer);
+      background: var(--paper-warm);
+      border: 1px solid var(--border-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-xs);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1.25;
+      color: var(--ink);
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Markdown styling */
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+      font-family: var(--font-display);
+      color: var(--ink);
+      font-weight: 400;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .prose h2 {
+      font-size: 1.45rem;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.35rem;
+    }
+
+    .prose p {
+      margin: 1.1rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-body);
+    }
+
+    .prose table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+    }
+
+    .prose th, .prose td {
+      border: 1px solid var(--border-light);
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+
+    .prose th {
+      background: var(--paper-warm);
+      color: var(--ink);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="zen-topbar">
+    <div class="zen-topbar-left">
+      <a href="./lesson.html" class="btn-icon">← Lesson</a>
+      <a href="../../../index.html" class="btn-icon">Hub</a>
+      <span style="font-family:var(--font-sans); font-size:0.85rem; font-weight:600; color:var(--ink);">
+        Challenge 10.2
+      </span>
+    </div>
+    <div class="zen-topbar-right">
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <button id="theme-btn" class="btn-icon" title="Toggle Theme">🌓</button>
+    </div>
+  </header>
+
+  <main class="article-wrap">
+    <div class="article-header">
+      <div class="article-level-tag">🎯 Challenge & Graded Rubric</div>
+      <h1 class="article-title">Module 10.2 Challenge</h1>
+      <p style="font-family:var(--font-sans); font-size:0.95rem; color:var(--muted);">
+        Hands-on verification problem for Modern CSS Layout &amp; Flex/Grid.
+      </p>
+    </div>
+
+    <article class="prose">
+      <p>﻿# Challenge 10.2 — How Browsers Render Pages</p>
+<p><strong>Type:</strong> Analysis + optimisation + reasoning<br />
+<strong>Estimated time:</strong> 40–50 minutes<br />
+<strong>Tools needed:</strong> browser DevTools</p>
+<hr />
+<h2>Part A — Critical Rendering Path</h2>
+<ol>
+<li>
+<p>A web page loads these resources in <code>&lt;head&gt;</code>:</p>
+<pre><code class="language-html">&lt;link rel=&quot;stylesheet&quot; href=&quot;styles.css&quot;&gt;
+&lt;script src=&quot;app.js&quot;&gt;&lt;/script&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;theme.css&quot;&gt;
+</code></pre>
+<p>In what order do they block/not-block rendering? Draw a timeline showing when each resource is fetched and when rendering can begin.</p>
+</li>
+<li>
+<p>Rewrite the above with optimal loading attributes (<code>async</code>, <code>defer</code>, <code>rel=&quot;preload&quot;</code>). Explain what each attribute change does.</p>
+</li>
+<li>
+<p>What is the <strong>FOUC</strong> (Flash of Unstyled Content) and how does CSS loading in <code>&lt;head&gt;</code> (render-blocking) prevent it? What would happen if CSS were loaded at the bottom of <code>&lt;body&gt;</code> instead?</p>
+</li>
+</ol>
+<hr />
+<h2>Part B — Layout Thrashing</h2>
+<p>This JavaScript code is extremely slow. Identify the problem and fix it.</p>
+<pre><code class="language-javascript">const boxes = document.querySelectorAll('.box');
+for (let i = 0; i &lt; boxes.length; i++) {
+    const width  = boxes[i].offsetWidth;   // forces layout
+    boxes[i].style.height = width + 'px'; // writes to DOM
+}
+</code></pre>
+<ol start="4">
+<li>
+<p>What is &quot;layout thrashing&quot;? Why does this loop cause it?</p>
+</li>
+<li>
+<p>Rewrite the loop to avoid layout thrashing by separating all reads from all writes.</p>
+</li>
+<li>
+<p>For 1000 <code>.box</code> elements, estimate the performance difference between the thrashing version and the optimised version (in terms of layout recalculations).</p>
+</li>
+</ol>
+<hr />
+<h2>Part C — CSS Animation Performance</h2>
+<ol start="7">
+<li>
+<p>For each CSS property, state whether animating it triggers: (a) compositor only, (b) paint only, or (c) layout + paint + composite:</p>
+<ul>
+<li><code>transform: translateX(100px)</code></li>
+<li><code>left: 100px</code></li>
+<li><code>opacity: 0.5</code></li>
+<li><code>width: 200px</code></li>
+<li><code>background-color: red</code></li>
+<li><code>border-radius: 50%</code></li>
+</ul>
+</li>
+<li>
+<p>A card component slides in from the right. Compare these two implementations:</p>
+<pre><code class="language-css">/* Option A */
+.card { left: -300px; transition: left 0.3s; }
+.card.visible { left: 0; }
+
+/* Option B */
+.card { transform: translateX(-300px); transition: transform 0.3s; }
+.card.visible { transform: translateX(0); }
+</code></pre>
+<p>Which is faster? Explain the rendering pipeline difference.</p>
+</li>
+</ol>
+<hr />
+<h2>Part D — Layer Promotion</h2>
+<ol start="9">
+<li>
+<p>Explain why <code>will-change: transform</code> tells the browser to promote an element to its own compositor layer. What are the costs and benefits?</p>
+</li>
+<li>
+<p>A developer adds <code>will-change: transform</code> to every element on the page as a &quot;performance optimisation.&quot; Why is this actually harmful?</p>
+</li>
+<li>
+<p>Which of these elements automatically get their own compositor layer (no <code>will-change</code> needed)?</p>
+<ul>
+<li><code>position: fixed</code> navbar</li>
+<li><code>overflow: scroll</code> container</li>
+<li><code>video</code> element</li>
+<li><code>&lt;canvas&gt;</code> element</li>
+<li>Regular <code>&lt;div&gt;</code> with <code>background-color</code></li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2>Part E — Measuring Performance</h2>
+<ol start="12">
+<li>
+<p>The browser renders at 60 fps, giving a budget of 16.67ms per frame. A JavaScript event handler takes 25ms. What visual artifact does the user see?</p>
+</li>
+<li>
+<p><code>requestAnimationFrame(callback)</code> schedules the callback to run just before the next paint. Why is this better than <code>setTimeout(callback, 16)</code> for animations?</p>
+</li>
+<li>
+<p>Using the browser Performance tab, you profile a page scroll and see a long bar labelled &quot;Recalculate Style&quot; taking 45ms. What likely caused this? Give two specific CSS properties or operations that are expensive to recalculate.</p>
+</li>
+</ol>
+<hr />
+<h2>Rubric</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A critical rendering path</td>
+<td>22</td>
+</tr>
+<tr>
+<td>B layout thrashing</td>
+<td>22</td>
+</tr>
+<tr>
+<td>C CSS animation</td>
+<td>22</td>
+</tr>
+<tr>
+<td>D layer promotion</td>
+<td>18</td>
+</tr>
+<tr>
+<td>E performance measurement</td>
+<td>16</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 100 points</strong></p>
+<hr />
+<h2>Solutions</h2>
+<details>
+<summary>Part B.5 — fixed loop</summary>
+<pre><code class="language-javascript">const boxes = document.querySelectorAll('.box');
+
+// Phase 1: read all widths (one layout calculation)
+const widths = Array.from(boxes).map(b =&gt; b.offsetWidth);
+
+// Phase 2: write all heights (no layout recalculation between writes)
+boxes.forEach((b, i) =&gt; b.style.height = widths[i] + 'px');
+</code></pre>
+<p>Thrashing version: 1000 elements × 2 forced layouts = 2000 layout passes. Optimised: 1 layout read + 1 style update = 2 passes total. ~1000× fewer layout recalculations.</p>
+</details>
+<details>
+<summary>Part C.7 — CSS properties</summary>
+<ul>
+<li><code>transform</code>: compositor only ✓ (fastest)</li>
+<li><code>left</code>: layout + paint + composite (slowest — triggers full reflow)</li>
+<li><code>opacity</code>: compositor only ✓ (fastest)</li>
+<li><code>width</code>: layout + paint + composite (reflow)</li>
+<li><code>background-color</code>: paint + composite (no layout, but repaint)</li>
+<li><code>border-radius</code>: paint + composite (no layout if not affecting box model)</li>
+</ul>
+</details>
+<details>
+<summary>Part A.2 — optimal loading</summary>
+<pre><code class="language-html">&lt;link rel=&quot;preload&quot; href=&quot;styles.css&quot; as=&quot;style&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;styles.css&quot;&gt;        &lt;!-- render-blocking, but preloaded --&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;theme.css&quot;&gt;          &lt;!-- render-blocking --&gt;
+&lt;script src=&quot;app.js&quot; defer&gt;&lt;/script&gt;              &lt;!-- defer: fetch in parallel, execute after HTML parsed --&gt;
+</code></pre>
+<p><code>defer</code> for scripts ensures they download in parallel without blocking HTML parsing, and execute in order after the DOM is ready. <code>async</code> downloads in parallel but executes immediately when downloaded (out of order — dangerous for dependent scripts).</p>
+</details>
+
+    </article>
+
+    <div style="margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border-light); display:flex; gap:0.75rem;">
+      <a href="./lesson.html" class="btn-icon btn-primary">← Back to Lesson</a>
+      <a href="./simulation.html" class="btn-icon btn-accent" title="Open Interactive Sandbox">⚡ Launch Lab</a>
+      <a href="../../../index.html" class="btn-icon">Course Index</a>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>
+    if (typeof hljs !== 'undefined') hljs.highlightAll();
+    if (typeof renderMathInElement !== 'undefined') {
+      renderMathInElement(document.body, {
+        delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\\[', right: '\\]', display: true}
+        ],
+        throwOnError: false
+      });
+    }
+
+    const themeBtn = document.getElementById('theme-btn');
+    const currentTheme = localStorage.getItem('aops_theme') || 'zen';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    const hljsTheme = document.getElementById('hljs-theme');
+    if (hljsTheme) {
+      hljsTheme.href = currentTheme === 'dark' 
+        ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+        : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      const nextTheme = isDark ? 'zen' : 'dark';
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('aops_theme', nextTheme);
+      if (hljsTheme) {
+        hljsTheme.href = nextTheme === 'dark'
+          ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css'
+          : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css';
+      }
+    });
+  </script>
+</body>
+</html>
